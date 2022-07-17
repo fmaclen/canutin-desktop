@@ -6,8 +6,10 @@
 
 ## Get started
 
-1. `pnpm install`
-2. `pnpm start`
+- `pnpm install` installs all backend dependencies (Electron, Prisma, Express)
+- `npx prisma generate` puts Prisma's artifacts in `/node_modules`
+- `npx prisma migrate dev` creates `/prisma/Canutin.dev.vault` and seeds it with the minimum required data (account/asset types, categories, etc).
+- `pnpm start` runs the app
 
 ---
 
@@ -15,8 +17,6 @@
 
 - [x] Electron
 - [x] TypeScript
-- [ ] Express
-- [ ] Prisma + SQLite
+- [x] Prisma + SQLite
+- [x] Express
 - [ ] SvelteKit
-
-- run `npx prisma generate` to get PrismaClient be importable in prisma/seed.ts
