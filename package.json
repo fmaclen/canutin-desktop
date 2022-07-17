@@ -1,0 +1,18 @@
+{
+  "name": "desktop",
+  "version": "0.0.1",
+  "author": "Canutin <support@canutin.com> (https://canutin.com)",
+  "description": "Personal finance platform",
+  "main": "main.js",
+  "license": "Apache License 2.0",
+  "scripts": {
+    "start": "electron -r ts-node/register ./electron/main.ts"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "electron": "^19.0.8",
+    "express": "^4.18.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.4"
+  }
+}
