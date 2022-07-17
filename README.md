@@ -18,3 +18,5 @@
 - [ ] Express
 - [ ] Prisma + SQLite
 - [ ] SvelteKit
+
+- run `npx prisma generate` to get PrismaClient be importable in prisma/seed.ts

@@ -8,10 +8,15 @@
   "scripts": {
     "start": "electron -r ts-node/register ./electron/main.ts"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "devDependencies": {
+    "@prisma/client": "^4.0.0",
     "@types/express": "^4.17.13",
     "electron": "^19.0.8",
     "express": "^4.18.1",
+    "prisma": "^4.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
   }
