@@ -35,7 +35,12 @@ const trayTemplate = Menu.buildFromTemplate([
     click: () => toggleServer(),
   },
   { type: "separator" },
-  { label: "Quit", click: () => app.quit() },
+  { label: "About", click: () => app.showAboutPanel() },
+  {
+    label: "Quit",
+    accelerator: process.platform === "darwin" ? "Command+Q" : "Alt+F4",
+    click: () => app.quit(),
+  },
 ]);
 
 const toggleServer = () => {
