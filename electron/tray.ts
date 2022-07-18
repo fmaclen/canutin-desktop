@@ -1,11 +1,15 @@
-import { app, Tray, Menu } from "electron";
+import { app, Tray, Menu, shell } from "electron";
+import isDev from "electron-is-dev";
 
-import { startServer, stopServer } from "./server";
+import { SERVER_URL, startServer, stopServer } from "./server";
 
+const TRAY_ICON_ACTIVE = "./electron/icons/canutin-tray-active.png";
+const TRAY_ICON_IDLE = "./electron/icons/canutin-tray-idle.png";
 const SERVER_STATUS_NEGATIVE = "tray-server-status-negative";
 const SERVER_STATUS_POSITIVE = "tray-server-status-positive";
 const SERVER_START = "tray-server-start";
 const SERVER_STOP = "tray-server-stop";
+const OPEN_CANUTIN = "tray-open-canutin";
 
 let isServerRunning: boolean = false;
 
@@ -37,6 +41,12 @@ const trayTemplate = Menu.buildFromTemplate([
     click: () => toggleServer(),
   },
   { type: "separator" },
+  {
+    label: "Open Canutin",
+    id: OPEN_CANUTIN,
+    visible: false,
+    click: () => openBrowser(),
+  },
   { label: "About", click: () => app.showAboutPanel() },
   {
     label: "Quit",
@@ -45,43 +55,64 @@ const trayTemplate = Menu.buildFromTemplate([
   },
 ]);
 
-const toggleServer = () => {
-  const serverStatusNegative = trayTemplate.getMenuItemById(
-    SERVER_STATUS_NEGATIVE
-  );
-  const serverStatusPositive = trayTemplate.getMenuItemById(
-    SERVER_STATUS_POSITIVE
-  );
-  const serverStart = trayTemplate.getMenuItemById(SERVER_START);
-  const serverStop = trayTemplate.getMenuItemById(SERVER_STOP);
+let tray: Tray;
+export const setTray = () => {
+  tray = new Tray(TRAY_ICON_IDLE);
+  tray.setToolTip("Canutin");
+  tray.setContextMenu(trayTemplate);
 
+  toggleServer(); // Server runs when the app starts
+
+  // FIXME:
+  // To prevent opening the browser before the server is ready we wait 500ms.
+  // Server boot up time is likely to vary so ideally we would "ping"
+  // the server until it's ready and only then open the user's browser.
+  //
+  // Open the user's browser to the server's URL
+  !isDev && setTimeout(() => openBrowser(), 500);
+};
+
+const openBrowser = () => {
+  shell.openExternal(SERVER_URL);
+};
+
+const serverStatusNegative = trayTemplate.getMenuItemById(
+  SERVER_STATUS_NEGATIVE
+);
+const serverStatusPositive = trayTemplate.getMenuItemById(
+  SERVER_STATUS_POSITIVE
+);
+const serverStart = trayTemplate.getMenuItemById(SERVER_START);
+const serverStop = trayTemplate.getMenuItemById(SERVER_STOP);
+const openCanutin = trayTemplate.getMenuItemById(OPEN_CANUTIN);
+
+const toggleServer = () => {
   if (
     serverStatusNegative &&
     serverStatusPositive &&
     serverStart &&
-    serverStop
+    serverStop &&
+    openCanutin
   ) {
     if (isServerRunning) {
+      stopServer();
+      tray.setImage(TRAY_ICON_IDLE);
       serverStatusNegative.visible = true;
       serverStatusPositive.visible = false;
       serverStart.visible = true;
       serverStop.visible = false;
-      stopServer();
+      openCanutin.visible = false;
     } else {
       startServer();
+      tray.setImage(TRAY_ICON_ACTIVE);
       serverStatusNegative.visible = false;
       serverStatusPositive.visible = true;
       serverStart.visible = false;
       serverStop.visible = true;
+      openCanutin.visible = true;
     }
     isServerRunning = !isServerRunning;
   }
-};
-
-export const setTray = () => {
-  const tray = new Tray("./electron/icons/canutin-tray.png");
-  tray.setToolTip("Canutin");
-  tray.setContextMenu(trayTemplate);
 };
 
 export default setTray;
