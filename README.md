@@ -14,10 +14,9 @@
 
 ---
 
-### Planned Stack
+### Current Stack
 
 - [x] Electron
 - [x] TypeScript
 - [x] Prisma + SQLite
-- [x] Express
-- [ ] SvelteKit
+- [x] SvelteKit
