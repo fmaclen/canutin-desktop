@@ -1,11 +1,21 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 
+// import { handler } from "./build/handler.js";
+
 const prisma = new PrismaClient();
 const app = express();
 
+// let SvelteKit handle everything else, including serving prerendered pages and static assets
+// app.use(handler);
+
+// add a route that lives separately from the SvelteKit app
+app.get("/healthcheck", (req, res) => {
+  res.end("ok");
+});
+
 // Basic route to test the server can reach the database
-app.get("/", async (req, res) => {
+app.get("/db", async (req, res) => {
   const transactions = await prisma.transactionCategory.findMany();
   res.json(transactions);
 });
