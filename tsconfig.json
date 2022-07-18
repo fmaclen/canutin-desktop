@@ -7,6 +7,4 @@
     "strict": true,
     "skipLibCheck": true
   }
-  // "include": ["prisma/**/*"],
-  // "exclude": ["node_modules"]
 }
