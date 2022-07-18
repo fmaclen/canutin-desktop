@@ -1,34 +1,34 @@
-import express from "express";
-import { PrismaClient } from "@prisma/client";
+import { shell } from "electron";
+import { exec, spawn } from "child_process";
+import isDev from "electron-is-dev";
 
-// import { handler } from "./build/handler.js";
+export const SERVER_PORT = isDev ? "3000" : "42069";
+const SERVER_HOSTNAME = "127.0.0.1";
+const SERVER_START_COMMAND = "node app/build/index.js"; // Svelte's build with `@adapter-node`
+const START_SERVER_PROCESS = `PORT=${SERVER_PORT} HOST=${SERVER_HOSTNAME} ${SERVER_START_COMMAND}`;
 
-const prisma = new PrismaClient();
-const app = express();
+let serverPid: number;
+export const startServer = async () => {
+  isDev && console.log("Starting server...");
 
-// let SvelteKit handle everything else, including serving prerendered pages and static assets
-// app.use(handler);
+  const { pid } = exec(START_SERVER_PROCESS);
+  if (pid) {
+    const url = `http://localhost:${SERVER_PORT}`;
 
-// add a route that lives separately from the SvelteKit app
-app.get("/healthcheck", (req, res) => {
-  res.end("ok");
-});
+    serverPid = pid; // Set process id so we can kill it later
+    isDev && console.log(`🚀 Server ready at: ${url}`);
 
-// Basic route to test the server can reach the database
-app.get("/db", async (req, res) => {
-  const transactions = await prisma.transactionCategory.findMany();
-  res.json(transactions);
-});
-
-let server: any;
-export const startServer = () => {
-  server = app.listen(process.env.SERVER_PORT, () => {
-    console.log(
-      `🚀 Server ready at: http://localhost:${process.env.SERVER_PORT}`
-    );
-  });
+    // Open the user's browser to the server's URL
+    //
+    // FIXME:
+    // To prevent opening the browser before the server is ready we wait 500ms.
+    // Server boot up time is likely to vary so ideally we would "ping"
+    // the server until it's ready and only then open the user's browser.
+    setTimeout(() => shell.openExternal(url), 500);
+  }
 };
 
 export const stopServer = () => {
-  server.close();
+  isDev && console.log("Stopping server...");
+  process.kill(serverPid);
 };

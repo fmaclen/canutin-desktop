@@ -1,4 +1,5 @@
-import { app, Tray, Menu, shell } from "electron";
+import { app, Tray, Menu } from "electron";
+
 import { startServer, stopServer } from "./server";
 
 const SERVER_STATUS_NEGATIVE = "tray-server-status-negative";
@@ -68,7 +69,6 @@ const toggleServer = () => {
       stopServer();
     } else {
       startServer();
-      shell.openExternal(`http://localhost:${process.env.SERVER_PORT}`);
       serverStatusNegative.visible = false;
       serverStatusPositive.visible = true;
       serverStart.visible = false;
