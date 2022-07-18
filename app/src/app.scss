@@ -1,0 +1,71 @@
+:root {
+  --color-redPrimary:#FF3162;
+  --color-redSecondary:#F9ECEF;
+  --color-greenPrimary:#00A36F;
+  --color-greenSecondary:#ECF9F6;
+  --color-purplePrimary:#5255AC;
+  --color-goldPrimary:#B19B70;
+  --color-bluePrimary:#0366D6;
+  --color-blueSecondary:#EFF7FF;
+  --color-yellowPrimary:#FBA500;
+  --color-yellowSecondary:#FFF8E4;
+
+  --color-white:#FFFFFF;
+  --color-black:#000;
+
+  --color-border:#E2E2E2;
+
+  --color-grey3: #FAFAFA;
+  --color-grey5: #F2F2F2;
+  --color-grey7: #EDEDED;
+  --color-grey10: #E6E6E6;
+  --color-grey20: #CCCCCC;
+  --color-grey30: #B2B2B2;
+  --color-grey40: #999999;
+  --color-grey50: #7F7F7F;
+  --color-grey60: #666;
+  --color-grey70: #4C4C4C;
+  --color-grey80: #333333;
+  --color-grey90: #191919;
+
+  --font-sansSerif: "Inter", Helvetica, Arial, sans-serif;
+  --font-monospace: "Decima Mono Pro", "SF Mono", monospace;
+}
+
+// Fonts
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Inter'), url('./lib/fonts/Inter-Regular.woff2') format('woff2'), local('Inter'),
+    url('./lib/fonts/Inter-Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Inter'), url('./lib/fonts/Inter-SemiBold.woff2') format('woff2'), local('Inter'),
+    url('./lib/fonts/Inter-SemiBold.woff') format('woff');
+}
+
+/* Decima Mono Pro */
+@font-face {
+  font-family: 'Decima Mono Pro';
+  font-weight: 400;
+  font-style: normal;
+  src: local('Decima Mono Pro'), url('./lib/fonts/DecimaMonoPro-Regular.woff2') format('woff2'),
+    local('Decima Mono Pro'), url('./lib/fonts/DecimaMonoPro-Regular.woff') format('woff');
+}
+
+html.html {
+  height: 100%;
+}
+
+body.body {
+  font-family: var(--font-sansSerif);
+  color: var(--color-grey90);
+  background-color: var(--color-grey5);
+  margin: 0;
+  height: 100%;
+}
