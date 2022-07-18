@@ -17,6 +17,5 @@
 ### Current Stack
 
 - [x] Electron
-- [x] TypeScript
 - [x] Prisma + SQLite
 - [x] SvelteKit
