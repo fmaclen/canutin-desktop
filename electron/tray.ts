@@ -13,7 +13,7 @@ const OPEN_CANUTIN = "tray-open-canutin";
 
 let isServerRunning: boolean = false;
 
-// Default state
+// Default tray menu template
 const trayTemplate = Menu.buildFromTemplate([
   {
     label: "Canutin is not running",
