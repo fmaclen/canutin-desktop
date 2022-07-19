@@ -6,7 +6,9 @@
   "main": "main.js",
   "license": "Apache License 2.0",
   "scripts": {
-    "start": "electron -r ts-node/register ./electron/main.ts"
+    "start": "electron -r ts-node/register ./electron/main.ts",
+    "dev": "electron-esbuild dev",
+    "build": "electron-esbuild build"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -14,7 +16,9 @@
   "devDependencies": {
     "@prisma/client": "^4.0.0",
     "electron": "^19.0.8",
+    "electron-esbuild": "^5.0.2",
     "electron-is-dev": "^2.0.0",
+    "esbuild": "^0.14.49",
     "prisma": "^4.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
