@@ -8,7 +8,8 @@
   "scripts": {
     "start": "electron -r ts-node/register ./electron/main.ts",
     "dev": "electron-esbuild dev",
-    "build": "electron-esbuild build"
+    "build": "electron-esbuild build",
+    "package": "electron-builder"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -16,11 +17,61 @@
   "devDependencies": {
     "@prisma/client": "^4.0.0",
     "electron": "^19.0.8",
+    "electron-builder": "^23.1.0",
     "electron-esbuild": "^5.0.2",
     "electron-is-dev": "^2.0.0",
     "esbuild": "^0.14.49",
     "prisma": "^4.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
+  },
+  "build": {
+    "productName": "Canutin",
+    "appId": "com.canutin.desktop",
+    "artifactName": "${name}_v${version}-${os}-${arch}.${ext}",
+    "extraMetadata": {
+      "name": "desktop",
+      "main": "main.js"
+    },
+    "files": [
+      {
+        "from": ".",
+        "filter": [
+          "package.json"
+        ]
+      },
+      {
+        "from": "dist/main"
+      }
+    ],
+    "win": {
+      "target": [
+        "zip"
+      ]
+    },
+    "mac": {
+      "target": [
+        "zip"
+      ]
+    },
+    "linux": {
+      "target": [
+        "zip"
+      ]
+    },
+    "directories": {
+      "buildResources": "resources",
+      "app": "."
+    },
+    "extraFiles": [
+      {
+        "from": "electron/assets",
+        "to": "resources",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "publish": null
   }
 }
