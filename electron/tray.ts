@@ -2,7 +2,7 @@ import path from "path";
 import { app, Tray, Menu, shell } from "electron";
 import isDev from "electron-is-dev";
 
-import { SERVER_URL, startServer, stopServer } from "./server";
+import { serverUrl, startServer, stopServer } from "./server";
 
 const SERVER_STATUS_NEGATIVE = "tray-server-status-negative";
 const SERVER_STATUS_POSITIVE = "tray-server-status-positive";
@@ -15,7 +15,7 @@ let isServerRunning: boolean = false;
 const imgPath = (fileName: string) =>
   isDev
     ? `./electron/assets/${fileName}.png`
-    : path.join(process.resourcesPath, `${fileName}.png`);
+    : path.join(process.resourcesPath, `assets/${fileName}.png`);
 
 // Default tray menu template
 const trayTemplate = Menu.buildFromTemplate([
@@ -78,7 +78,7 @@ export const setTray = () => {
 };
 
 const openBrowser = () => {
-  shell.openExternal(SERVER_URL);
+  shell.openExternal(serverUrl);
 };
 
 const serverStatusNegative = trayTemplate.getMenuItemById(

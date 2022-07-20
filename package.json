@@ -8,8 +8,10 @@
   "scripts": {
     "start": "electron -r ts-node/register ./electron/main.ts",
     "dev": "electron-esbuild dev",
-    "build": "electron-esbuild build",
-    "package": "electron-builder"
+    "build": "pnpm build:electron && pnpm build:sveltekit",
+    "build:sveltekit": "cd app && pnpm build",
+    "build:electron": "electron-esbuild build",
+    "package": "pnpm build && electron-builder"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -66,7 +68,14 @@
     "extraFiles": [
       {
         "from": "electron/assets",
-        "to": "resources",
+        "to": "resources/assets",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "app/build",
+        "to": "resources/server",
         "filter": [
           "**/*"
         ]
