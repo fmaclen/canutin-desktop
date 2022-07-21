@@ -1,5 +1,5 @@
 import path from "path";
-import { exec, fork } from "child_process";
+import { fork } from "child_process";
 import isDev from "electron-is-dev";
 import { app } from "electron";
 
@@ -14,7 +14,7 @@ export const startServer = async () => {
 
   // Svelte's build with `@adapter-node`
   const serverModulePath = app.isPackaged
-    ? `${path.join(process.resourcesPath, "server/index.js")}`
+    ? `${path.resolve(__dirname, "server/index.js")}`
     : `${path.resolve(__dirname, "../../app/build/index.js")}`;
 
   const { pid } = fork(serverModulePath, {

@@ -44,6 +44,10 @@
       },
       {
         "from": "dist/main"
+      },
+      {
+        "from": "app/build",
+        "to": "server"
       }
     ],
     "win": {
@@ -72,15 +76,9 @@
         "filter": [
           "**/*"
         ]
-      },
-      {
-        "from": "app/build",
-        "to": "resources/server",
-        "filter": [
-          "**/*"
-        ]
       }
     ],
+    "asar": false,
     "publish": null
   }
 }
