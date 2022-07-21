@@ -9,7 +9,7 @@
     "start": "electron -r ts-node/register ./electron/main.ts",
     "dev": "electron-esbuild dev",
     "build": "pnpm build:electron && pnpm build:sveltekit",
-    "build:sveltekit": "cd app && pnpm build",
+    "build:sveltekit": "cd app && pnpm build && cd .. && node scripts/generate-package-json.js",
     "build:electron": "electron-esbuild build",
     "package": "pnpm build && electron-builder"
   },

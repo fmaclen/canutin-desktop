@@ -8,5 +8,5 @@
     "skipLibCheck": true,
     "allowJs": true
   },
-  "exclude": ["app", "dist"]
+  "exclude": ["app", "dist", "scripts"]
 }
