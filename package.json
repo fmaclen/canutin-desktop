@@ -8,10 +8,10 @@
   "scripts": {
     "start": "node scripts/start-sveltekit-dev.js",
     "dev": "electron-esbuild dev",
-    "build": "pnpm build:electron && pnpm build:sveltekit",
-    "build:sveltekit": "cd app && pnpm build && cd .. && node scripts/generate-package-json.js",
+    "build": "npm run build:electron && npm run build:sveltekit",
+    "build:sveltekit": "cd app && npm run build && cd .. && node scripts/generate-package-json.js",
     "build:electron": "electron-esbuild build",
-    "package": "pnpm build && electron-builder"
+    "package": "npm run build && electron-builder"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -22,7 +22,7 @@
     "electron-esbuild": "^5.0.2",
     "electron-is-dev": "^2.0.0",
     "esbuild": "^0.14.49",
-    "prisma": "^4.0.0",
+    "prisma": "^4.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
   },
@@ -49,7 +49,7 @@
         "to": "server"
       },
       {
-        "from": "node_modules/@prisma/client/.prisma/client",
+        "from": "node_modules/.prisma/client",
         "to": "node_modules/@prisma/client"
       }
     ],
