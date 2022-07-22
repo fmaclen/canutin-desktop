@@ -14,7 +14,7 @@ export const startServer = async () => {
   // Svelte's build with `@adapter-node`
   const serverModulePath = app.isPackaged
     ? path.join(process.resourcesPath, `sveltekit/index.js`)
-    : `${path.resolve(__dirname, "../../app/build/index.js")}`;
+    : `${path.resolve(__dirname, "../../sveltekit/build/index.js")}`;
 
   const { pid } = fork(serverModulePath, {
     env: { ...process.env, HOST, PORT: serverPort, DATABASE_URL: databaseUrl },

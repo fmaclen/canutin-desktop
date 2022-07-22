@@ -5,7 +5,7 @@ const absolutePathToDevVault = require("path").resolve(
 );
 
 require("child_process").execSync(
-  `cd app && DATABASE_URL=file:${absolutePathToDevVault} npm run dev`,
+  `cd sveltekit && DATABASE_URL=file:${absolutePathToDevVault} npm run dev`,
   {
     stdio: "inherit",
   }
