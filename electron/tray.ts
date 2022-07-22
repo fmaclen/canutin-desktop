@@ -1,10 +1,8 @@
+import path from "path";
 import { app, Tray, Menu, shell } from "electron";
-import isDev from "electron-is-dev";
 
-import { SERVER_URL, startServer, stopServer } from "./server";
+import { serverUrl, startServer, stopServer } from "./server";
 
-const TRAY_ICON_ACTIVE = "./electron/icons/canutin-tray-active.png";
-const TRAY_ICON_IDLE = "./electron/icons/canutin-tray-idle.png";
 const SERVER_STATUS_NEGATIVE = "tray-server-status-negative";
 const SERVER_STATUS_POSITIVE = "tray-server-status-positive";
 const SERVER_START = "tray-server-start";
@@ -13,17 +11,23 @@ const OPEN_CANUTIN = "tray-open-canutin";
 
 let isServerRunning: boolean = false;
 
+const imgPath = (fileName: string) =>
+  app.isPackaged
+    ? path.join(process.resourcesPath, `assets/${fileName}.png`)
+    : `./resources/assets/${fileName}.png`;
+
 // Default tray menu template
 const trayTemplate = Menu.buildFromTemplate([
   {
     label: "Canutin is not running",
-    icon: "./electron/icons/status-negative.png",
+
+    icon: imgPath("status-negative"),
     id: SERVER_STATUS_NEGATIVE,
     enabled: false,
   },
   {
     label: "Canutin is running",
-    icon: "./electron/icons/status-positive.png",
+    icon: imgPath("status-positive"),
     id: SERVER_STATUS_POSITIVE,
     enabled: false,
     visible: false,
@@ -57,7 +61,7 @@ const trayTemplate = Menu.buildFromTemplate([
 
 let tray: Tray;
 export const setTray = () => {
-  tray = new Tray(TRAY_ICON_IDLE);
+  tray = new Tray(imgPath("canutin-tray-idle"));
   tray.setToolTip("Canutin");
   tray.setContextMenu(trayTemplate);
 
@@ -69,11 +73,11 @@ export const setTray = () => {
   // the server until it's ready and only then open the user's browser.
   //
   // Open the user's browser to the server's URL
-  !isDev && setTimeout(() => openBrowser(), 500);
+  app.isPackaged && setTimeout(() => openBrowser(), 500);
 };
 
 const openBrowser = () => {
-  shell.openExternal(SERVER_URL);
+  shell.openExternal(serverUrl);
 };
 
 const serverStatusNegative = trayTemplate.getMenuItemById(
@@ -96,7 +100,7 @@ const toggleServer = () => {
   ) {
     if (isServerRunning) {
       stopServer();
-      tray.setImage(TRAY_ICON_IDLE);
+      tray.setImage(imgPath("canutin-tray-idle"));
       serverStatusNegative.visible = true;
       serverStatusPositive.visible = false;
       serverStart.visible = true;
@@ -104,7 +108,7 @@ const toggleServer = () => {
       openCanutin.visible = false;
     } else {
       startServer();
-      tray.setImage(TRAY_ICON_ACTIVE);
+      tray.setImage(imgPath("canutin-tray-active"));
       serverStatusNegative.visible = false;
       serverStatusPositive.visible = true;
       serverStart.visible = false;

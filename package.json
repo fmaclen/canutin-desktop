@@ -6,17 +6,83 @@
   "main": "main.js",
   "license": "Apache License 2.0",
   "scripts": {
-    "start": "electron -r ts-node/register ./electron/main.ts"
+    "start": "node scripts/start-sveltekit-dev.js",
+    "dev": "electron-esbuild dev",
+    "build": "npm run build:electron && npm run build:sveltekit",
+    "build:sveltekit": "cd app && npm run build && cd .. && node scripts/generate-package-json.js",
+    "build:electron": "electron-esbuild build",
+    "package": "npm run build && electron-builder"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
-    "@prisma/client": "^4.0.0",
     "electron": "^19.0.8",
-    "electron-is-dev": "^2.0.0",
-    "prisma": "^4.0.0",
+    "electron-builder": "^23.1.0",
+    "electron-esbuild": "^5.0.2",
+    "esbuild": "^0.14.49",
+    "prisma": "^4.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
+  },
+  "build": {
+    "productName": "Canutin",
+    "appId": "com.canutin.desktop",
+    "artifactName": "${name}_v${version}-${os}-${arch}.${ext}",
+    "extraMetadata": {
+      "name": "desktop",
+      "main": "main.js"
+    },
+    "files": [
+      {
+        "from": ".",
+        "filter": [
+          "package.json"
+        ]
+      },
+      {
+        "from": "dist/main"
+      }
+    ],
+    "win": {
+      "target": [
+        "zip"
+      ]
+    },
+    "mac": {
+      "target": [
+        "zip"
+      ]
+    },
+    "linux": {
+      "target": [
+        "zip"
+      ]
+    },
+    "directories": {
+      "buildResources": "resources",
+      "app": "."
+    },
+    "extraResources": [
+      {
+        "from": "resources/assets",
+        "to": "assets"
+      },
+      {
+        "from": "app/build",
+        "to": "sveltekit"
+      },
+      {
+        "from": "node_modules/.prisma/client",
+        "to": "sveltekit/node_modules/.prisma/client"
+      },
+      {
+        "from": "node_modules/@prisma/client",
+        "to": "sveltekit/node_modules/@prisma/client"
+      }
+    ]
+  },
+  "dependencies": {
+    "@prisma/client": "^4.1.0"
   }
 }
