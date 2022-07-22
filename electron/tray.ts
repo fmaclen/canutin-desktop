@@ -1,6 +1,5 @@
 import path from "path";
 import { app, Tray, Menu, shell } from "electron";
-import isDev from "electron-is-dev";
 
 import { serverUrl, startServer, stopServer } from "./server";
 
@@ -13,9 +12,9 @@ const OPEN_CANUTIN = "tray-open-canutin";
 let isServerRunning: boolean = false;
 
 const imgPath = (fileName: string) =>
-  isDev
-    ? `./electron/assets/${fileName}.png`
-    : path.join(process.resourcesPath, `assets/${fileName}.png`);
+  app.isPackaged
+    ? path.join(process.resourcesPath, `assets/${fileName}.png`)
+    : `./resources/assets/${fileName}.png`;
 
 // Default tray menu template
 const trayTemplate = Menu.buildFromTemplate([
@@ -74,7 +73,7 @@ export const setTray = () => {
   // the server until it's ready and only then open the user's browser.
   //
   // Open the user's browser to the server's URL
-  !isDev && setTimeout(() => openBrowser(), 500);
+  app.isPackaged && setTimeout(() => openBrowser(), 500);
 };
 
 const openBrowser = () => {
