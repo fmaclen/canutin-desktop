@@ -11,13 +11,13 @@ You'll need to run these commands to set up the environment before getting start
 1. Install all backend dependencies (**Electron, Prisma**)
 
 ```bash
-% npm run isntall
+% npm install
 ```
 
 2. Install all frontend dependencies (**SvelteKit**)
 
 ```bash
-% cd app && npm run install
+% cd app && npm install
 ```
 
 3. Generate **Prisma's** artifacts.
