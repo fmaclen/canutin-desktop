@@ -11,6 +11,7 @@ export const startServer = async () => {
   isDev && console.log("Starting server...");
 
   const HOST = "127.0.0.1";
+  const databaseUrl = "file:./Canutin.vault"; // FIXME: this should be loaded from an Electron dialog — https://www.electronjs.org/docs/latest/api/dialog
 
   // Svelte's build with `@adapter-node`
   const serverModulePath = app.isPackaged
@@ -18,7 +19,7 @@ export const startServer = async () => {
     : `${path.resolve(__dirname, "../../app/build/index.js")}`;
 
   const { pid } = fork(serverModulePath, {
-    env: { ...process.env, PORT: serverPort, HOST },
+    env: { ...process.env, HOST, PORT: serverPort, DATABASE_URL: databaseUrl },
   });
 
   serverPid = pid; // Set process id so we can kill it later

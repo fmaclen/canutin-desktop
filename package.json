@@ -6,7 +6,7 @@
   "main": "main.js",
   "license": "Apache License 2.0",
   "scripts": {
-    "start": "electron -r ts-node/register ./electron/main.ts",
+    "start": "node scripts/start-sveltekit-dev.js",
     "dev": "electron-esbuild dev",
     "build": "pnpm build:electron && pnpm build:sveltekit",
     "build:sveltekit": "cd app && pnpm build && cd .. && node scripts/generate-package-json.js",
@@ -17,7 +17,6 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
-    "@prisma/client": "^4.0.0",
     "electron": "^19.0.8",
     "electron-builder": "^23.1.0",
     "electron-esbuild": "^5.0.2",
@@ -48,6 +47,10 @@
       {
         "from": "app/build",
         "to": "server"
+      },
+      {
+        "from": "node_modules/@prisma/client/.prisma/client",
+        "to": "node_modules/@prisma/client"
       }
     ],
     "win": {
@@ -80,5 +83,8 @@
     ],
     "asar": false,
     "publish": null
+  },
+  "dependencies": {
+    "@prisma/client": "^4.1.0"
   }
 }
