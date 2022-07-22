@@ -20,14 +20,13 @@ You'll need to run these commands to set up the environment before getting start
 % cd app && npm run install
 ```
 
-3. Generate **Prisma's** artifacts (The path will be: `/node_modules/@prisma/client/.prisma/client`).
-   The contents of this folder will be packaged with the Electron app. Also, SvelteKit gets the `PrismaClient` from these files in dev mode.
+3. Generate **Prisma's** artifacts.
 
 ```bash
 % npx prisma generate
 ```
 
-4. Create and seed a vault (The path will be: `/prisma/Canutin.dev.vault`) which will be seeded with the minimum required data (account/asset types, categories, etc).
+4. Create and seed a vault which will be seeded with the minimum required data (account/asset types, categories, etc).
 
 ```bash
 % npx prisma migrate dev

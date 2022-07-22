@@ -1,7 +1,7 @@
 // Starts Sveltekit's dev server with `DATABASE_URL` pointing to the dev vault.
 
 const absolutePathToDevVault = require("path").resolve(
-  "./prisma/Canutin.production.vault"
+  "./prisma/Canutin.dev.vault"
 );
 
 require("child_process").execSync(

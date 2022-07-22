@@ -43,14 +43,6 @@
       },
       {
         "from": "dist/main"
-      },
-      {
-        "from": "app/build",
-        "to": "server"
-      },
-      {
-        "from": "node_modules/.prisma/client",
-        "to": "node_modules/@prisma/client"
       }
     ],
     "win": {
@@ -72,17 +64,24 @@
       "buildResources": "resources",
       "app": "."
     },
-    "extraFiles": [
+    "extraResources": [
       {
         "from": "electron/assets",
-        "to": "resources/assets",
-        "filter": [
-          "**/*"
-        ]
+        "to": "assets"
+      },
+      {
+        "from": "app/build",
+        "to": "sveltekit"
+      },
+      {
+        "from": "node_modules/.prisma/client",
+        "to": "sveltekit/node_modules/.prisma/client"
+      },
+      {
+        "from": "node_modules/@prisma/client",
+        "to": "sveltekit/node_modules/@prisma/client"
       }
-    ],
-    "asar": false,
-    "publish": null
+    ]
   },
   "dependencies": {
     "@prisma/client": "^4.1.0"
