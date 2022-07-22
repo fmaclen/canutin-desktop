@@ -9,8 +9,8 @@
     "start": "node scripts/start-sveltekit-dev.js",
     "dev": "electron-esbuild dev",
     "build": "npm run build:electron && npm run build:sveltekit",
-    "build:sveltekit": "cd app && npm run build && cd .. && node scripts/generate-package-json.js",
     "build:electron": "electron-esbuild build",
+    "build:sveltekit": "cd sveltekit && npm run build && cd .. && node scripts/generate-package-json.js",
     "package": "npm run build && electron-builder"
   },
   "prisma": {
@@ -60,8 +60,7 @@
       ]
     },
     "directories": {
-      "buildResources": "resources",
-      "app": "."
+      "buildResources": "resources"
     },
     "extraResources": [
       {
@@ -69,7 +68,7 @@
         "to": "assets"
       },
       {
-        "from": "app/build",
+        "from": "sveltekit/build",
         "to": "sveltekit"
       },
       {
