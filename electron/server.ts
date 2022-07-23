@@ -2,7 +2,8 @@ import path from "path";
 import { fork } from "child_process";
 import { app } from "electron";
 
-const serverPort = app.isPackaged ? "42069" : "3000";
+const { isPackaged } = app;
+const serverPort = isPackaged ? "42069" : "3000";
 
 export const serverUrl = `http://localhost:${serverPort}`;
 
@@ -11,7 +12,7 @@ export const startServer = async (vaultPath: string) => {
   const HOST = "127.0.0.1";
 
   // Svelte's build with `@adapter-node`
-  const serverModulePath = app.isPackaged
+  const serverModulePath = isPackaged
     ? path.join(process.resourcesPath, `sveltekit/index.js`)
     : path.resolve(__dirname, "../../sveltekit/build/index.js");
 
@@ -26,7 +27,7 @@ export const startServer = async (vaultPath: string) => {
 
   serverPid = pid; // Set process id so we can kill it later
 
-  app.isPackaged && console.log(`\n-> Server started at ${serverUrl}\n`);
+  !isPackaged && console.log(`\n-> Server started at ${serverUrl}\n`);
 };
 
 export const stopServer = () => {
