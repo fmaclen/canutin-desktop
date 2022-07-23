@@ -17,7 +17,7 @@ You'll need to run these commands to set up the environment before getting start
 2. Install all frontend dependencies (**SvelteKit**)
 
 ```bash
-% cd app && npm install
+% cd sveltekit && npm install
 ```
 
 3. Generate **Prisma's** artifacts.

@@ -161,6 +161,7 @@ const toggleServer = () => {
 
 const setTray = () => {
   tray = new Tray(imgPath("canutin-tray-idle"));
+  tray.on("click", ()=> tray.popUpContextMenu());
   tray.setToolTip("Canutin");
   tray.setContextMenu(Menu.buildFromTemplate(currentTemplate));
 
