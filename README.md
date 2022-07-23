@@ -71,7 +71,7 @@ This command will create builds of everything and will copy all of the files tha
 **SveteKit Preview**
 
 ```bash
-% cd app && npm run preview
+% cd sveltekit && npm run preview
 ```
 
 ---
