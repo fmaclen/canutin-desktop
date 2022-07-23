@@ -12,6 +12,7 @@ import Store from "electron-store";
 
 import { serverUrl, startServer, stopServer } from "./server";
 
+const OPEN_BROWSER_DELAY = 500;
 const MENU_SERVER_STATUS = "menu-server-status";
 const MENU_SERVER_TOGGLE = "menu-server-toggle";
 const MENU_OPEN_IN_BROWSER = "menu-open-in-browser";
@@ -28,8 +29,12 @@ const imgPath = (fileName: string) =>
     ? path.join(process.resourcesPath, `assets/${fileName}.png`)
     : `./resources/assets/${fileName}.png`;
 
-const openBrowser = () => {
-  shell.openExternal(serverUrl);
+const openBrowser = (delay: number = 0) => {
+  // FIXME:
+  // To prevent opening the browser before the server is ready we wait.
+  // Server boot up time is likely to vary so ideally we would "ping"
+  // the server until it's ready and only then open the user's browser.
+  setTimeout(() => shell.openExternal(serverUrl), delay);
 };
 
 const menuServerStatus = {
@@ -49,7 +54,7 @@ const menuServerToggle = {
 const menuOpenInBrowser = {
   label: "Open in browser",
   id: MENU_OPEN_IN_BROWSER,
-  accelerator: process.platform === "darwin" ? "Command+O" : "Ctrl+0",
+  accelerator: process.platform === "darwin" ? "Command+T" : "Ctrl+T",
   visible: false,
   click: () => openBrowser(),
 } as MenuItemConstructorOptions;
@@ -63,6 +68,7 @@ const menuVaultPath = {
 const menuOpenVault = {
   label: "Open vault...",
   id: MENU_VAULT_OPEN,
+  accelerator: process.platform === "darwin" ? "Command+O" : "Ctrl+O",
   click: () => openVault(),
 } as MenuItemConstructorOptions;
 
@@ -108,10 +114,11 @@ const openVault = () => {
 
   // Starting (or restarting) the server
   if (isServerRunning) {
-    toggleServer();
-    toggleServer();
+    toggleServer(); // Stops the server
+    toggleServer(); // Starts the server
   } else {
-    toggleServer();
+    toggleServer(); // Starts the server
+    openBrowser(OPEN_BROWSER_DELAY);
   }
 };
 
@@ -132,6 +139,7 @@ const toggleServer = () => {
     menuServerToggle.label = "Start Canutin";
     menuServerStatus.label = "Canutin is not running";
     menuServerStatus.icon = imgPath("status-negative");
+    menuOpenInBrowser.visible = false;
     updateContextMenu();
   } else if (vaultPath) {
     // Start the server
@@ -141,8 +149,13 @@ const toggleServer = () => {
     menuServerToggle.label = "Stop Canutin";
     menuServerStatus.label = "Canutin is running";
     menuServerStatus.icon = imgPath("status-positive");
+    menuOpenInBrowser.visible = true;
     updateContextMenu();
   }
+
+  // FIXME:
+  // It would be better to check if the server is actually running (or not)
+  // instead of blindingly reversing the vaule of `isServerRunnig`.
   isServerRunning = !isServerRunning;
 };
 
@@ -155,13 +168,10 @@ const setTray = () => {
   setVaultPath(store.get("vaultPath") as string | undefined);
 
   // Start the server when the app boots up if there is a vault set
-  vaultPath && toggleServer();
-
-  // FIXME:
-  // To prevent opening the browser before the server is ready we wait 500ms.
-  // Server boot up time is likely to vary so ideally we would "ping"
-  // the server until it's ready and only then open the user's browser.
-  app.isPackaged && setTimeout(() => openBrowser(), 500);
+  if (vaultPath) {
+    toggleServer();
+    app.isPackaged && openBrowser(OPEN_BROWSER_DELAY);
+  }
 };
 
 export default setTray;
