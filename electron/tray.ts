@@ -8,6 +8,7 @@ import {
   MenuItemConstructorOptions,
   MenuItem,
 } from "electron";
+import Store from "electron-store";
 
 import { serverUrl, startServer, stopServer } from "./server";
 
@@ -17,8 +18,10 @@ const MENU_OPEN_IN_BROWSER = "menu-open-in-browser";
 const MENU_VAULT_PATH = "menu-vault-path";
 const MENU_VAULT_OPEN = "menu-vault-open";
 
-let isServerRunning: boolean = false;
+const store = new Store();
+let tray: Tray;
 let vaultPath: string | undefined;
+let isServerRunning: boolean = false;
 
 const imgPath = (fileName: string) =>
   app.isPackaged
@@ -100,50 +103,59 @@ const openVault = () => {
   });
 
   if (!dialogPaths) return;
-  vaultPath = dialogPaths[0];
-  menuVaultPath.label = vaultPath;
 
+  setVaultPath(dialogPaths[0]);
+
+  // Starting (or restarting) the server
   if (isServerRunning) {
-    // Restarting the server by toggling it off and then on.
     toggleServer();
     toggleServer();
   } else {
-    // Start server
     toggleServer();
   }
+};
 
+const setVaultPath = (path: string | undefined) => {
+  if (!path) return;
+
+  vaultPath = path;
+  menuVaultPath.label = vaultPath;
+  store.set({ vaultPath: vaultPath });
   updateContextMenu();
 };
 
 const toggleServer = () => {
   if (isServerRunning) {
     // Stop the server
+    stopServer();
+    tray.setImage(imgPath("canutin-tray-idle"));
     menuServerToggle.label = "Start Canutin";
     menuServerStatus.label = "Canutin is not running";
     menuServerStatus.icon = imgPath("status-negative");
     updateContextMenu();
-    stopServer();
-    tray.setImage(imgPath("canutin-tray-idle"));
   } else if (vaultPath) {
     // Start the server
+    startServer(vaultPath);
+    tray.setImage(imgPath("canutin-tray-active"));
     menuServerToggle.visible = true;
     menuServerToggle.label = "Stop Canutin";
     menuServerStatus.label = "Canutin is running";
     menuServerStatus.icon = imgPath("status-positive");
     updateContextMenu();
-    startServer(vaultPath);
-    tray.setImage(imgPath("canutin-tray-active"));
   }
   isServerRunning = !isServerRunning;
 };
 
-let tray: Tray;
 const setTray = () => {
   tray = new Tray(imgPath("canutin-tray-idle"));
   tray.setToolTip("Canutin");
   tray.setContextMenu(Menu.buildFromTemplate(currentTemplate));
 
-  toggleServer(); // Server runs when the app starts
+  // Read vault path from the user's settings
+  setVaultPath(store.get("vaultPath") as string | undefined);
+
+  // Start the server when the app boots up if there is a vault set
+  vaultPath && toggleServer();
 
   // FIXME:
   // To prevent opening the browser before the server is ready we wait 500ms.

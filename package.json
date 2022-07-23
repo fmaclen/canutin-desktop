@@ -20,6 +20,7 @@
     "electron": "^19.0.8",
     "electron-builder": "^23.1.0",
     "electron-esbuild": "^5.0.2",
+    "electron-store": "^8.0.2",
     "esbuild": "^0.14.49",
     "prisma": "^4.1.0",
     "ts-node": "^10.9.1",
