@@ -36,7 +36,10 @@ describe("Server", () => {
     expect(server["pid"]).toBe(undefined);
 
     server.start();
-    expect(spyPathJoin).toHaveBeenCalled();
+    expect(spyPathJoin).toHaveBeenCalledWith(
+      expect.stringContaining("/electron"),
+      "../../sveltekit/build/index.js"
+    );
     expect(spyChildProcessFork).toHaveBeenCalledWith(fakePathToSvelteKitIndex, {
       env: {
         ...process.env,
@@ -51,6 +54,10 @@ describe("Server", () => {
     isAppPackaged = true;
     server = new Server(isAppPackaged, fakePathToVault);
     server.start();
+    expect(spyPathJoin).toHaveBeenCalledWith(
+      process.resourcesPath,
+      "sveltekit/index.js"
+    );
     expect(spyChildProcessFork).toHaveBeenCalledWith(fakePathToSvelteKitIndex, {
       env: {
         ...process.env,
