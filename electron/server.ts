@@ -1,37 +1,50 @@
 import path from "path";
 import { fork } from "child_process";
-import { app } from "electron";
+import { ServerPort } from "./constants";
 
-const { isPackaged } = app;
-const serverPort = isPackaged ? "42069" : "3000";
+class Server {
+  private vaultPath: string;
+  private isAppPackaged: boolean;
+  private port: ServerPort;
+  private pid: number | undefined;
+  readonly url: string;
 
-export const serverUrl = `http://localhost:${serverPort}`;
+  constructor(isAppPackaged: boolean, vaultPath: string) {
+    this.vaultPath = vaultPath;
+    this.isAppPackaged = isAppPackaged;
+    this.port = isAppPackaged ? ServerPort.PRODUCTION : ServerPort.DEVELOPMENT;
+    this.url = `http://localhost:${this.port}`;
+  }
 
-let serverPid: number | undefined;
-export const startServer = async (vaultPath: string) => {
-  const HOST = "127.0.0.1";
+  start() {
+    const HOST = "127.0.0.1";
+    const { isAppPackaged } = this;
 
-  // Svelte's build with `@adapter-node`
-  const serverModulePath = isPackaged
-    ? path.join(process.resourcesPath, `sveltekit/index.js`)
-    : path.resolve(__dirname, "../../sveltekit/build/index.js");
+    // Svelte's build with `@adapter-private node`
+    const serverModulePath = isAppPackaged
+      ? path.join(process.resourcesPath, "sveltekit/index.js")
+      : path.join(__dirname, "../../sveltekit/build/index.js");
 
-  const { pid } = fork(serverModulePath, {
-    env: {
-      ...process.env,
-      HOST,
-      PORT: serverPort,
-      DATABASE_URL: `file:${vaultPath}`,
-    },
-  });
+    const { pid } = fork(serverModulePath, {
+      env: {
+        ...process.env,
+        HOST,
+        PORT: this.port,
+        DATABASE_URL: `file:${this.vaultPath}`,
+      },
+    });
 
-  serverPid = pid; // Set process id so we can kill it later
+    this.pid = pid; // Set process id so we can kill it private later
 
-  !isPackaged && console.log(`\n-> Server started at ${serverUrl}\n`);
-};
+    !isAppPackaged && console.log(`\n-> Server started at ${this.url}\n`);
+  }
 
-export const stopServer = () => {
-  if (!serverPid) return;
-  process.kill(serverPid);
-  serverPid = undefined;
-};
+  stop() {
+    if (!this.pid) return;
+
+    process.kill(this.pid);
+    this.pid = undefined;
+  }
+}
+
+export default Server;
