@@ -10,7 +10,7 @@ import {
 } from "electron";
 import Store from "electron-store";
 
-import { serverUrl, startServer, stopServer } from "./server";
+import Server from "./server";
 
 const OPEN_BROWSER_DELAY = 500;
 const MENU_SERVER_STATUS = "menu-server-status";
@@ -20,6 +20,7 @@ const MENU_VAULT_PATH = "menu-vault-path";
 const MENU_VAULT_OPEN = "menu-vault-open";
 
 const store = new Store();
+let server: Server;
 let tray: Tray;
 let vaultPath: string | undefined;
 let isServerRunning: boolean = false;
@@ -34,7 +35,7 @@ const openBrowser = (delay: number = 0) => {
   // To prevent opening the browser before the server is ready we wait.
   // Server boot up time is likely to vary so ideally we would "ping"
   // the server until it's ready and only then open the user's browser.
-  setTimeout(() => shell.openExternal(serverUrl), delay);
+  setTimeout(() => shell.openExternal(server.url), delay);
 };
 
 const menuServerStatus = {
@@ -134,7 +135,7 @@ const setVaultPath = (path: string | undefined) => {
 const toggleServer = () => {
   if (isServerRunning) {
     // Stop the server
-    stopServer();
+    server.stop();
     tray.setImage(imgPath("canutin-tray-idle"));
     menuServerToggle.label = "Start Canutin";
     menuServerStatus.label = "Canutin is not running";
@@ -143,7 +144,7 @@ const toggleServer = () => {
     updateContextMenu();
   } else if (vaultPath) {
     // Start the server
-    startServer(vaultPath);
+    server.start();
     tray.setImage(imgPath("canutin-tray-active"));
     menuServerToggle.visible = true;
     menuServerToggle.label = "Stop Canutin";
@@ -161,7 +162,7 @@ const toggleServer = () => {
 
 const setTray = () => {
   tray = new Tray(imgPath("canutin-tray-idle"));
-  tray.on("click", ()=> tray.popUpContextMenu());
+  tray.on("click", () => tray.popUpContextMenu());
   tray.setToolTip("Canutin");
   tray.setContextMenu(Menu.buildFromTemplate(currentTemplate));
 
@@ -170,9 +171,14 @@ const setTray = () => {
 
   // Start the server when the app boots up if there is a vault set
   if (vaultPath) {
+    server = new Server(app.isPackaged, vaultPath);
     toggleServer();
     app.isPackaged && openBrowser(OPEN_BROWSER_DELAY);
   }
 };
+
+app.on("before-quit", () => {
+  server.stop();
+});
 
 export default setTray;
