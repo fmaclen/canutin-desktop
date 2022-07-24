@@ -71,11 +71,10 @@ describe("Server", () => {
   test("the server stops", () => {
     jest.mock("process");
 
-    let isAppPackaged = true;
-    let server = new Server(isAppPackaged, fakePathToVault);
-    server["pid"] = fakePid;
+    const isAppPackaged = true;
+    const server = new Server(isAppPackaged, fakePathToVault);
     const spyProcessKill = jest.spyOn(process, "kill").mockReturnValue(true);
-
+    server["pid"] = fakePid;
     server.stop();
     expect(spyProcessKill).toHaveBeenCalledWith(fakePid);
     expect(server["pid"]).toBe(undefined);
