@@ -1,5 +1,5 @@
-.vscode
 .DS_Store
 node_modules
-*.vault
 dist
+*.vault
+.vscode/settings.json
