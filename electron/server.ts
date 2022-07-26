@@ -1,24 +1,31 @@
 import path from "path";
+import { app } from "electron";
 import { fork } from "child_process";
-import { ServerPort } from "./constants";
 
 class Server {
+  static readonly PORT_DEVELOPMENT = "3000";
+  static readonly PORT_PRODUCTION = "42069";
+
   private vaultPath: string;
   private isAppPackaged: boolean;
-  private port: ServerPort;
+  private port: string;
   private pid: number | undefined;
   readonly url: string;
+  isRunning: boolean;
 
-  constructor(isAppPackaged: boolean, vaultPath: string) {
+  constructor(vaultPath: string) {
     this.vaultPath = vaultPath;
-    this.isAppPackaged = isAppPackaged;
-    this.port = isAppPackaged ? ServerPort.PRODUCTION : ServerPort.DEVELOPMENT;
+    this.isAppPackaged = app.isPackaged;
+    this.port = this.isAppPackaged
+      ? Server.PORT_PRODUCTION
+      : Server.PORT_DEVELOPMENT;
+    this.isRunning = false;
     this.url = `http://localhost:${this.port}`;
   }
 
   start() {
     const HOST = "127.0.0.1";
-    const { isAppPackaged } = this;
+    const isAppPackaged = this.isAppPackaged;
 
     // Svelte's build with `@adapter-private node`
     const serverModulePath = isAppPackaged
@@ -34,6 +41,7 @@ class Server {
       },
     });
 
+    this.isRunning = true;
     this.pid = pid; // Set process id so we can kill it private later
 
     !isAppPackaged && console.log(`\n-> Server started at ${this.url}\n`);

@@ -1,21 +1,32 @@
 import path from "path";
 import child_process from "child_process";
+import Electron from "electron";
 
 import Server from "../server";
-import { ServerPort } from "../constants";
+
+jest.mock("electron", () => {
+  return {
+    app: {
+      get isPackaged(): boolean {
+        return false;
+      },
+    },
+  };
+});
 
 describe("Server", () => {
   const fakePathToVault = "/fake/path/to/Canutin.vault";
   const fakePid = 123456;
+  const isPackagedSpy = jest.spyOn(Electron.app, "isPackaged", "get");
 
   test("url is different in development and production environments", () => {
-    let isAppPackaged = false;
-    let server = new Server(isAppPackaged, fakePathToVault);
-    expect(server.url).toBe(`http://localhost:${ServerPort.DEVELOPMENT}`);
+    let server = new Server(fakePathToVault);
+    expect(server.url).toBe(`http://localhost:${Server.PORT_DEVELOPMENT}`);
 
-    isAppPackaged = true;
-    server = new Server(isAppPackaged, fakePathToVault);
-    expect(server.url).toBe(`http://localhost:${ServerPort.PRODUCTION}`);
+    // app.isPackaged = true;
+    isPackagedSpy.mockReturnValueOnce(true);
+    server = new Server(fakePathToVault);
+    expect(server.url).toBe(`http://localhost:${Server.PORT_PRODUCTION}`);
   });
 
   test("the server starts with the correct parameters", () => {
@@ -31,8 +42,8 @@ describe("Server", () => {
       .mockReturnValue({ pid: fakePid } as child_process.ChildProcess);
 
     // Start the server in development mode
-    let isAppPackaged = false;
-    let server = new Server(isAppPackaged, fakePathToVault);
+    let server = new Server(fakePathToVault);
+    expect(server.isRunning).toBe(false);
     expect(server["pid"]).toBe(undefined);
 
     server.start();
@@ -44,15 +55,17 @@ describe("Server", () => {
       env: {
         ...process.env,
         HOST: "127.0.0.1",
-        PORT: ServerPort.DEVELOPMENT,
+        PORT: Server.PORT_DEVELOPMENT,
         DATABASE_URL: `file:${fakePathToVault}`,
       },
     });
+    expect(server.isRunning).toBe(true);
     expect(server["pid"]).toBe(fakePid);
 
     // Start the server in production mode
-    isAppPackaged = true;
-    server = new Server(isAppPackaged, fakePathToVault);
+    isPackagedSpy.mockReturnValueOnce(true);
+    server = new Server(fakePathToVault);
+
     server.start();
     expect(spyPathJoin).toHaveBeenCalledWith(
       process.resourcesPath,
@@ -62,7 +75,7 @@ describe("Server", () => {
       env: {
         ...process.env,
         HOST: "127.0.0.1",
-        PORT: ServerPort.PRODUCTION,
+        PORT: Server.PORT_PRODUCTION,
         DATABASE_URL: `file:${fakePathToVault}`,
       },
     });
@@ -71,8 +84,7 @@ describe("Server", () => {
   test("the server stops", () => {
     jest.mock("process");
 
-    const isAppPackaged = true;
-    const server = new Server(isAppPackaged, fakePathToVault);
+    const server = new Server(fakePathToVault);
     const spyProcessKill = jest.spyOn(process, "kill").mockReturnValue(true);
     server["pid"] = fakePid;
     server.stop();

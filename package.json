@@ -11,7 +11,7 @@
     "build": "npm run build:electron && npm run build:sveltekit",
     "build:electron": "electron-esbuild build",
     "build:sveltekit": "cd sveltekit && npm run build && cd .. && node scripts/generate-package-json.js",
-    "test": "jest",
+    "test": "jest --watchAll",
     "package": "npm run build && electron-builder"
   },
   "prisma": {
