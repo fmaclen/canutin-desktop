@@ -19,14 +19,14 @@ const shell = {
 };
 
 const dialog = {
-  // showErrorBox: jest.fn(() => Promise.resolve()),
-  // showMessageBox: jest.fn(() => Promise.resolve()),
   showOpenDialogSync: jest.fn(() =>
     Promise.resolve({
       canceled: false,
       filePaths: ["/fake/path/to/Canutin.vault"],
     })
   ),
+  // showErrorBox: jest.fn(() => Promise.resolve()),
+  // showMessageBox: jest.fn(() => Promise.resolve()),
   // showSaveDialog: jest.fn(() =>
   //   Promise.resolve({ canceled: false, filePath: undefined })
   // ),
@@ -49,5 +49,5 @@ module.exports = {
   shell,
   Menu,
   Tray,
-  // dialog,
+  dialog,
 };

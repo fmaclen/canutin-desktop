@@ -31,7 +31,7 @@ class TrayMenu {
 
   private tray: Tray;
   private vault: Vault;
-  private server: Server | undefined;
+  server: Server | undefined;
 
   private menuServerStatus: MenuItemConstructorOptions;
   private menuServerToggle: MenuItemConstructorOptions;
