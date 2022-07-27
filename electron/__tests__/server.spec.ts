@@ -4,18 +4,6 @@ import Electron from "electron";
 
 import Server from "../server";
 
-jest.mock("electron", () => {
-  return {
-    app: {
-      get isPackaged(): boolean {
-        return false;
-      },
-    },
-  };
-});
-jest.mock("path");
-jest.mock("child_process");
-
 describe("Server", () => {
   const fakePathToVault = "/fake/path/to/Canutin.vault";
   const fakePid = 123456;
@@ -23,14 +11,17 @@ describe("Server", () => {
 
   const spyPathJoin = jest
     .spyOn(path, "join")
-    .mockImplementation(() => fakePathToSvelteKitIndex);
+    .mockReturnValue(fakePathToSvelteKitIndex);
   const spyChildProcessFork = jest
     .spyOn(child_process, "fork")
     .mockReturnValue({ pid: fakePid } as child_process.ChildProcess);
   const spyIsPackaged = jest.spyOn(Electron.app, "isPackaged", "get");
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe("develoment environment", () => {
-    spyIsPackaged.mockReturnValue(false);
     const server = new Server(fakePathToVault);
 
     test("server url has the correct port", () => {
@@ -42,7 +33,6 @@ describe("Server", () => {
       expect(server["pid"]).toBe(undefined);
 
       server.start();
-
       expect(spyPathJoin).toHaveBeenCalledWith(
         expect.stringContaining("/electron"),
         "../../sveltekit/build/index.js"
@@ -92,8 +82,6 @@ describe("Server", () => {
   });
 
   test("the server stops", () => {
-    jest.mock("process");
-
     const server = new Server(fakePathToVault);
     const spyProcessKill = jest.spyOn(process, "kill").mockReturnValue(true);
     server["pid"] = fakePid;

@@ -45,7 +45,7 @@ class TrayMenu {
   constructor(vault: Vault) {
     this.vault = vault;
     this.isServerRunning = false;
-    this.isAppPackaged = app.isPackaged;
+    this.isAppPackaged = app.isPackaged || false;
     this.isMacOs = process.platform === "darwin";
 
     // Menu items (not in order)
@@ -110,10 +110,8 @@ class TrayMenu {
       this.menuSeparator,
       ...this.menuPresistentOptions,
     ];
-    this.tray = this.setTray();
-  }
 
-  private setTray = () => {
+    // Set the tray
     this.tray = new Tray(this.getImagePath(TrayMenu.ICON_TRAY_IDLE));
     this.tray.on("click", () => this.tray?.popUpContextMenu()); // Left-click opens the context menu in Windows
     this.tray.setToolTip("Canutin");
@@ -123,21 +121,19 @@ class TrayMenu {
       this.toggleServer();
       this.isAppPackaged && this.openBrowser(TrayMenu.OPEN_BROWSER_DELAY);
     }
-
-    return this.tray;
-  };
+  }
 
   private openVault = () => {
-    const vault = this.vault;
+    const userSettings = this.vault;
     const dialogPaths = dialog.showOpenDialogSync({
       properties: ["openFile"],
       filters: [{ name: "Canutin Vault", extensions: ["vault"] }],
     });
 
-    if (dialogPaths && vault) {
+    if (dialogPaths && userSettings) {
       const vaultPath = dialogPaths[0];
       this.menuVaultPath.label = vaultPath;
-      vault.saveToUserSettings(vaultPath);
+      userSettings.saveToUserSettings(vaultPath);
       this.updateTray();
 
       // Starting (or restarting) the server
@@ -181,6 +177,8 @@ class TrayMenu {
     // It would be better to check if the server is actually running (or not)
     // instead of blindingly reversing the vaule of `isServerRunnig`.
     this.isServerRunning = !this.isServerRunning;
+
+    return true;
   };
 
   private updateTray = () => {

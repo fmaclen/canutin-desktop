@@ -6,6 +6,7 @@ describe("Vault", () => {
   let vault: Vault;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     vault = new Vault();
     vault.saveToUserSettings(null);
   });

@@ -44,7 +44,9 @@ class Server {
     this.isRunning = true;
     this.pid = pid; // Set process id so we can kill it private later
 
-    !isAppPackaged && console.log(`\n-> Server started at ${this.url}\n`);
+    // Loggin the url to the console in development so it's easier to click
+    process.env.NODE_ENV == "development" &&
+      console.log(`\n-> Server started at ${this.url}\n`);
   }
 
   stop() {
