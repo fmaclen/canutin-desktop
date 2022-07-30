@@ -258,6 +258,7 @@ const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 	}
 };
 
+// Gets the Account or Asset type id from the name
 const getModelType = async (modelTypeName: string, isAccount: boolean) => {
 	const DEFAULT_TYPE = 'Other';
 	let modelTypeId: { id: number } | null = null;
@@ -297,6 +298,7 @@ const getModelType = async (modelTypeName: string, isAccount: boolean) => {
 	return modelTypeId!.id;
 };
 
+// Gets the Transaction category id from the name
 const getCategoryId = async (categoryName: string) => {
 	const DEFAULT_CATEGORY = 'Uncategorized';
 	let transactionCategoryId: { id: number } | null = null;
