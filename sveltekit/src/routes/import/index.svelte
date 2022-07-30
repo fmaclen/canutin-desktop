@@ -1,10 +1,10 @@
 <script lang="ts">
+	import type { ImportSummary } from './index.json';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
-	import type { ImportSummary } from '$lib/helpers/importFromCanutinFile';
 
 	export let title = 'Import data';
-	export let importSummary: ImportSummary | undefined;
+	export let importSummary: ImportSummary | undefined = undefined;
 
 	const submitForm = (event: any) => {
 		event.preventDefault();
