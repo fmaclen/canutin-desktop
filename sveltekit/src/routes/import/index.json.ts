@@ -125,7 +125,7 @@ const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 						isAutoCalculated: account.isAutoCalculated,
 						isClosed: account.isClosed,
 						institution: account.institution,
-						accountTypeId: await getAccountTypeId(account.accountTypeName)
+						accountTypeId: await getModelType(account.accountTypeName, true)
 					}
 				});
 				importedAccounts.created.push(existingAccount.id);
@@ -133,13 +133,11 @@ const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 				importedAccounts.updated.push(existingAccount.id);
 			}
 
-			const { transactions, balanceStatements } = account;
-
 			// Skip to the next account if there are no transactions or balance statements
-			if (!transactions || !balanceStatements) continue;
+			if (!account.transactions || !account.balanceStatements) continue;
 
 			// Account balance statements
-			for (const balanceStatement of balanceStatements) {
+			for (const balanceStatement of account.balanceStatements) {
 				try {
 					const { id } = await prisma.accountBalanceStatement.create({
 						data: {
@@ -161,7 +159,7 @@ const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 			}
 
 			// Transactions
-			for (const transaction of transactions) {
+			for (const transaction of account.transactions) {
 				const transactionBlueprint = {
 					createdAt: fromUnixTime(transaction.createdAt),
 					description: transaction.description,
@@ -197,8 +195,58 @@ const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 			}
 		}
 
-		for (const assets of canutinFile.assets) {
-			// do the same in accounts but for assets
+		// Assets
+		for (const asset of canutinFile.assets) {
+			let existingAsset = await prisma.asset.findFirst({
+				where: {
+					name: {
+						contains: asset.name
+					}
+				}
+			});
+
+			// Create asset if it doesn't exist
+			if (!existingAsset) {
+				existingAsset = await prisma.asset.create({
+					data: {
+						name: asset.name,
+						balanceGroup: asset.balanceGroup,
+						isSold: asset.isSold,
+						symbol: asset.symbol,
+						assetTypeId: await getModelType(asset.assetTypeName, false)
+					}
+				});
+				importedAssets.created.push(existingAsset.id);
+			} else {
+				importedAssets.updated.push(existingAsset.id);
+			}
+
+			// Skip to the next asset if there are no transactions or balance statements
+			if (!asset.balanceStatements) continue;
+
+			// Asset balance statements
+			for (const balanceStatement of asset.balanceStatements) {
+				try {
+					const { id } = await prisma.assetBalanceStatement.create({
+						data: {
+							assetId: existingAsset.id,
+							value: balanceStatement.value,
+							quantity: balanceStatement.quantity,
+							cost: balanceStatement.cost,
+							createdAt: fromUnixTime(balanceStatement.createdAt)
+						}
+					});
+					importedAssets.balanceStatements.created.push(id);
+				} catch (error) {
+					if (error instanceof Prisma.PrismaClientKnownRequestError) {
+						if (error.code === 'P2002') {
+							importedAssets.balanceStatements.skipped.push(balanceStatement);
+							continue;
+						}
+					}
+					throw error;
+				}
+			}
 		}
 
 		return {
@@ -210,12 +258,12 @@ const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 	}
 };
 
-const getAccountTypeId = async (accountTypeName: string) => {
-	const DEFAULT_ACCOUNT_TYPE = 'Other';
-	let accountTypeId: { id: number } | null = null;
+const getModelType = async (modelTypeName: string, isAccount: boolean) => {
+	const DEFAULT_TYPE = 'Other';
+	let modelTypeId: { id: number } | null = null;
 
-	const findAccountByName = async (name: string) => {
-		return await prisma.accountType.findFirst({
+	const findModel = async (name: string) => {
+		const prismaQuery = {
 			where: {
 				name: {
 					contains: name
@@ -224,21 +272,29 @@ const getAccountTypeId = async (accountTypeName: string) => {
 			select: {
 				id: true
 			}
-		});
+		};
+
+		if (isAccount) {
+			return await prisma.accountType.findFirst({ ...prismaQuery });
+		} else {
+			return await prisma.assetType.findFirst({ ...prismaQuery });
+		}
 	};
 
-	accountTypeId = await findAccountByName(accountTypeName);
+	modelTypeId = await findModel(modelTypeName);
 
-	if (!accountTypeId) {
-		accountTypeId = await findAccountByName(DEFAULT_ACCOUNT_TYPE);
+	if (!modelTypeId) {
+		modelTypeId = await findModel(DEFAULT_TYPE);
 
-		if (!accountTypeId)
+		if (!modelTypeId)
 			throw new Error(
-				`The default account type "${DEFAULT_ACCOUNT_TYPE}" was not found. Is the database is setup correctly?`
+				`The default ${
+					isAccount ? 'account' : 'asset'
+				} type "${DEFAULT_TYPE}" was not found. Is the database is setup correctly?`
 			);
 	}
 
-	return accountTypeId!.id;
+	return modelTypeId!.id;
 };
 
 const getCategoryId = async (categoryName: string) => {
