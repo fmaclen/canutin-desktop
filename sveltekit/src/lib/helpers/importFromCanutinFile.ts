@@ -1,13 +1,41 @@
+import { Prisma } from '@prisma/client';
 import { fromUnixTime } from 'date-fns';
 
 import prisma from '$lib/helpers/prismaClient';
 
-// FIXME:
-// This is meant to be a temporary implementation until we have a UI that can import CanutinFiles.
-// Remove `/tmp` path from `.gitignore` as well.
-import canutinFile from '$lib/tmp/canutin_file_v2.json';
+// import z from 'zod';
 
-interface CanutinFileBalanceStatement {
+// const CanutinFile = z.object({
+// 	accounts: z.array(
+// 		z.object({
+// 			name: z.string(),
+// 			balanceGroup: z.number(),
+// 			isAutoCalculated: z.boolean(),
+// 			isClosed: z.boolean(),
+// 			institution: z.string(),
+// 			accountTypeName: z.string(),
+// 			balanceStatements: z.array(
+// 				z.object({
+// 					createdAt: z.number(),
+// 					value: z.number()
+// 				})
+// 			),
+// 			transactions: z.array(
+// 				z.object({
+// 					createdAt: z.number(),
+// 					description: z.string(),
+// 					date: z.number(),
+// 					value: z.number(),
+// 					isExcluded: z.boolean(),
+// 					isPending: z.boolean(),
+// 					categoryName: z.string()
+// 				})
+// 			)
+// 		})
+// 	)
+// });
+
+interface CanutinFileAccountBalanceStatement {
 	createdAt: number;
 	value: number;
 }
@@ -22,160 +50,254 @@ interface CanutinFileTransaction {
 	categoryName: string;
 }
 
-const importFromCanutinFile = async () => {
-	const formatBalanceStatements = (balanceStatements: CanutinFileBalanceStatement[]) => {
-		if (!balanceStatements) return [];
+interface CanutinFileAccount {
+	name: string;
+	balanceGroup: number;
+	isAutoCalculated: boolean;
+	isClosed: boolean;
+	institution: string;
+	accountTypeName: string;
+	balanceStatements: CanutinFileAccountBalanceStatement[];
+	transactions: CanutinFileTransaction[];
+}
 
-		return balanceStatements.map((accountBalanceStatement) => {
-			return {
-				...accountBalanceStatement,
-				createdAt: fromUnixTime(accountBalanceStatement.createdAt)
-			};
+interface CanutinFileAssetBalanceStatement {
+	createdAt: number;
+	value: number;
+	quantity?: number;
+	cost?: number;
+}
+
+interface CanutinFileAsset {
+	name: string;
+	balanceGroup: number;
+	isSold: boolean;
+	symbol?: string;
+	assetTypeName: string;
+	balanceStatements: CanutinFileAssetBalanceStatement[];
+}
+
+interface CanutinFile {
+	accounts: CanutinFileAccount[];
+	assets: CanutinFileAsset[];
+}
+
+interface ImportedAccounts {
+	created: number[];
+	updated: number[];
+	transactions: {
+		created: number[];
+		skipped: CanutinFileTransaction[];
+	};
+	balanceStatements: {
+		created: number[];
+		skipped: CanutinFileAccountBalanceStatement[];
+	};
+}
+
+interface ImportedAssets {
+	created: number[];
+	updated: number[];
+	balanceStatements: {
+		created: number[];
+		skipped: CanutinFileAssetBalanceStatement[];
+	};
+}
+
+export interface ImportSummary {
+	error?: string;
+	importedAccounts?: ImportedAccounts;
+	importedAssets?: ImportedAssets;
+}
+
+const importFromCanutinFile = async (canutinFile: CanutinFile) => {
+	const importSessionDate = new Date();
+
+	const importedAccounts: ImportedAccounts = {
+		created: [],
+		updated: [],
+		transactions: { created: [], skipped: [] },
+		balanceStatements: { created: [], skipped: [] }
+	};
+
+	const importedAssets: ImportedAssets = {
+		created: [],
+		updated: [],
+		balanceStatements: { created: [], skipped: [] }
+	};
+
+	try {
+		// Accounts
+		for (const account of canutinFile.accounts) {
+			let existingAccount = await prisma.account.findFirst({
+				where: {
+					name: {
+						contains: account.name
+					}
+				}
+			});
+
+			// Create account if it doesn't exist
+			if (!existingAccount) {
+				existingAccount = await prisma.account.create({
+					data: {
+						name: account.name,
+						balanceGroup: account.balanceGroup,
+						isAutoCalculated: account.isAutoCalculated,
+						isClosed: account.isClosed,
+						institution: account.institution,
+						accountTypeId: await getAccountTypeId(account.accountTypeName)
+					}
+				});
+				importedAccounts.created.push(existingAccount.id);
+			} else {
+				importedAccounts.updated.push(existingAccount.id);
+			}
+
+			const { transactions, balanceStatements } = account;
+
+			// Skip to the next account if there are no transactions or balance statements
+			if (!transactions || !balanceStatements) continue;
+
+			// Account balance statements
+			for (const balanceStatement of balanceStatements) {
+				try {
+					const { id } = await prisma.accountBalanceStatement.create({
+						data: {
+							accountId: existingAccount.id,
+							value: balanceStatement.value,
+							createdAt: fromUnixTime(balanceStatement.createdAt)
+						}
+					});
+					importedAccounts.balanceStatements.created.push(id);
+				} catch (error) {
+					if (error instanceof Prisma.PrismaClientKnownRequestError) {
+						if (error.code === 'P2002') {
+							importedAccounts.balanceStatements.skipped.push(balanceStatement);
+							continue;
+						}
+					}
+					throw error;
+				}
+			}
+
+			// Transactions
+			for (const transaction of transactions) {
+				const transactionBlueprint = {
+					createdAt: fromUnixTime(transaction.createdAt),
+					description: transaction.description,
+					date: fromUnixTime(transaction.date),
+					value: transaction.value,
+					isExcluded: transaction.isExcluded,
+					isPending: transaction.isExcluded,
+					accountId: existingAccount.id,
+					categoryId: await getCategoryId(transaction.categoryName)
+				};
+
+				// Check if transaction is already in database
+				const existingTransaction = await prisma.transaction.findFirst({
+					where: {
+						...transactionBlueprint
+					}
+				});
+
+				// Skip duplicate transactions
+				if (existingTransaction) {
+					importedAccounts.transactions.skipped.push(transaction);
+					continue;
+				}
+
+				// Create transaction
+				const { id } = await prisma.transaction.create({
+					data: {
+						...transactionBlueprint,
+						importedAt: importSessionDate
+					}
+				});
+				importedAccounts.transactions.created.push(id);
+			}
+		}
+
+		for (const assets of canutinFile.assets) {
+			// do the same in accounts but for assets
+		}
+
+		return {
+			importedAccounts,
+			importedAssets
+		};
+	} catch (error) {
+		return { error, importedAccounts, importedAssets };
+	}
+};
+
+const getAccountTypeId = async (accountTypeName: string) => {
+	const DEFAULT_ACCOUNT_TYPE = 'Other';
+	let accountTypeId: { id: number } | null = null;
+
+	const findAccountByName = async (name: string) => {
+		return await prisma.accountType.findFirst({
+			where: {
+				name: {
+					contains: name
+				}
+			},
+			select: {
+				id: true
+			}
 		});
 	};
 
-	// Import accounts
-	for (const account of canutinFile.accounts) {
-		const {
-			balanceGroup,
-			name,
-			institution,
-			isAutoCalculated,
-			isClosed,
-			balanceStatements,
-			transactions,
-			accountTypeName
-		} = account;
+	accountTypeId = await findAccountByName(accountTypeName);
 
-		const getAccountTypeId = async (accountTypeName: string) => {
-			const accountType = await prisma.accountType.findFirst({
-				where: {
-					name: {
-						contains: accountTypeName
-					}
-				},
-				select: {
-					id: true
-				}
-			});
+	if (!accountTypeId) {
+		accountTypeId = await findAccountByName(DEFAULT_ACCOUNT_TYPE);
 
-			return accountType?.id;
-		};
-
-		const getCategoryId = async (categoryName: string) => {
-			if (categoryName === 'Imported') {
-				categoryName = 'Uncategorized';
-			}
-
-			const transactionCategory = await prisma.transactionCategory.findFirst({
-				where: {
-					name: {
-						contains: categoryName
-					}
-				},
-				select: {
-					id: true
-				}
-			});
-
-			return transactionCategory?.id;
-		};
-
-		const formatTransactions = async (transactions: CanutinFileTransaction[]) => {
-			if (!transactions) return [];
-
-			return Promise.all(
-				transactions.map(async (transaction) => {
-					return {
-						createdAt: fromUnixTime(transaction.createdAt),
-						description: transaction.description,
-						date: fromUnixTime(transaction.date),
-						value: transaction.value,
-						isExcluded: transaction.isExcluded,
-						isPending: transaction.isExcluded,
-						categoryId: await getCategoryId(transaction.categoryName)
-					};
-				})
+		if (!accountTypeId)
+			throw new Error(
+				`The default account type "${DEFAULT_ACCOUNT_TYPE}" was not found. Is the database is setup correctly?`
 			);
-		};
-
-		let createAccount: any = {
-			balanceGroup,
-			name,
-			institution,
-			isAutoCalculated,
-			isClosed,
-			accountTypeId: await getAccountTypeId(accountTypeName)
-		};
-
-		if (balanceStatements) {
-			createAccount = {
-				...createAccount,
-				accountBalanceStatements: {
-					create: formatBalanceStatements(balanceStatements as CanutinFileBalanceStatement[])
-				}
-			};
-		}
-
-		if (transactions) {
-			createAccount = {
-				...createAccount,
-				transactions: {
-					create: await formatTransactions(transactions as CanutinFileTransaction[])
-				}
-			};
-		}
-
-		await prisma.account.upsert({
-			where: { name },
-			update: {},
-			create: createAccount
-		});
 	}
 
-	// Import assets
-	for (const asset of canutinFile.assets) {
-		const { balanceGroup, name, isSold, balanceStatements, assetTypeName } = asset;
+	return accountTypeId!.id;
+};
 
-		const getAssetTypeId = async (assetTypeName: string) => {
-			const assetType = await prisma.assetType.findFirst({
-				where: {
-					name: {
-						contains: assetTypeName
-					}
-				},
-				select: {
-					id: true
+const getCategoryId = async (categoryName: string) => {
+	const DEFAULT_CATEGORY = 'Uncategorized';
+	let transactionCategoryId: { id: number } | null = null;
+
+	const findCategoryByName = async (name: string) => {
+		return await prisma.transactionCategory.findFirst({
+			where: {
+				name: {
+					contains: name
 				}
-			});
-
-			return assetType?.id;
-		};
-
-		let createAsset: any = {
-			balanceGroup,
-			name,
-			isSold,
-			assetTypeId: await getAssetTypeId(assetTypeName)
-		};
-
-		if (balanceStatements) {
-			createAsset = {
-				...createAsset,
-				assetBalanceStatements: {
-					create: formatBalanceStatements(balanceStatements as CanutinFileBalanceStatement[])
-				}
-			};
-		}
-
-		await prisma.asset.upsert({
-			where: { name },
-			update: {},
-			create: createAsset
+			},
+			select: {
+				id: true
+			}
 		});
+	};
+
+	transactionCategoryId = await findCategoryByName(categoryName);
+
+	if (!transactionCategoryId) {
+		transactionCategoryId = await findCategoryByName(DEFAULT_CATEGORY);
+
+		if (!transactionCategoryId)
+			throw new Error(
+				`The default transaction category "${DEFAULT_CATEGORY}" was not found. Is the database is setup correctly?`
+			);
 	}
 
-	return true;
+	return transactionCategoryId!.id;
 };
 
 export default importFromCanutinFile;
+
+// Validate JSON schema
+// Import Account:
+// If already accounts exist add transactions and account balances
+// Check if transaction is already in database (might need to add a `importedAt` date column)
+// Check date of last account balance and only add newer balances
+// If it doesn't exist create account and add transactions and account balances
