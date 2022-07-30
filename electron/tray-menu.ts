@@ -177,8 +177,6 @@ class TrayMenu {
     // It would be better to check if the server is actually running (or not)
     // instead of blindingly reversing the vaule of `isServerRunnig`.
     this.isServerRunning = !this.isServerRunning;
-
-    return true;
   };
 
   private updateTray = () => {
