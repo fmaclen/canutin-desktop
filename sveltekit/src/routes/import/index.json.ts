@@ -221,7 +221,7 @@ const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 				importedAssets.updated.push(existingAsset.id);
 			}
 
-			// Skip to the next asset if there are no transactions or balance statements
+			// Skip to the next asset if there are no balance statements
 			if (!asset.balanceStatements) continue;
 
 			// Asset balance statements
