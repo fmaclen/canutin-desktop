@@ -107,144 +107,152 @@ const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 
 	try {
 		// Accounts
-		for (const account of canutinFile.accounts) {
-			let existingAccount = await prisma.account.findFirst({
-				where: {
-					name: {
-						contains: account.name
-					}
-				}
-			});
-
-			// Create account if it doesn't exist
-			if (!existingAccount) {
-				existingAccount = await prisma.account.create({
-					data: {
-						name: account.name,
-						balanceGroup: account.balanceGroup,
-						isAutoCalculated: account.isAutoCalculated,
-						isClosed: account.isClosed,
-						institution: account.institution,
-						accountTypeId: await getModelType(account.accountTypeName, true)
+		if (canutinFile.accounts) {
+			for (const account of canutinFile.accounts) {
+				let existingAccount = await prisma.account.findFirst({
+					where: {
+						name: {
+							contains: account.name
+						}
 					}
 				});
-				importedAccounts.created.push(existingAccount.id);
-			} else {
-				importedAccounts.updated.push(existingAccount.id);
-			}
 
-			// Skip to the next account if there are no transactions or balance statements
-			if (!account.transactions || !account.balanceStatements) continue;
-
-			// Account balance statements
-			for (const balanceStatement of account.balanceStatements) {
-				try {
-					const { id } = await prisma.accountBalanceStatement.create({
+				// Create account if it doesn't exist
+				if (!existingAccount) {
+					existingAccount = await prisma.account.create({
 						data: {
-							accountId: existingAccount.id,
-							value: balanceStatement.value,
-							createdAt: fromUnixTime(balanceStatement.createdAt)
+							name: account.name,
+							balanceGroup: account.balanceGroup,
+							isAutoCalculated: account.isAutoCalculated,
+							isClosed: account.isClosed,
+							institution: account.institution,
+							accountTypeId: await getModelType(account.accountTypeName, true)
 						}
 					});
-					importedAccounts.balanceStatements.created.push(id);
-				} catch (error) {
-					if (error instanceof Prisma.PrismaClientKnownRequestError) {
-						if (error.code === 'P2002') {
-							importedAccounts.balanceStatements.skipped.push(balanceStatement);
-							continue;
+					importedAccounts.created.push(existingAccount.id);
+				} else {
+					importedAccounts.updated.push(existingAccount.id);
+				}
+
+				// Skip to the next account if there are no transactions or balance statements
+				if (!account.transactions && !account.balanceStatements) continue;
+
+				// Account balance statements
+				if (account.balanceStatements) {
+					for (const balanceStatement of account.balanceStatements) {
+						try {
+							const { id } = await prisma.accountBalanceStatement.create({
+								data: {
+									accountId: existingAccount.id,
+									value: balanceStatement.value,
+									createdAt: fromUnixTime(balanceStatement.createdAt)
+								}
+							});
+							importedAccounts.balanceStatements.created.push(id);
+						} catch (error) {
+							if (error instanceof Prisma.PrismaClientKnownRequestError) {
+								if (error.code === 'P2002') {
+									importedAccounts.balanceStatements.skipped.push(balanceStatement);
+									continue;
+								}
+							}
+							throw error;
 						}
 					}
-					throw error;
-				}
-			}
-
-			// Transactions
-			for (const transaction of account.transactions) {
-				const transactionBlueprint = {
-					createdAt: fromUnixTime(transaction.createdAt),
-					description: transaction.description,
-					date: fromUnixTime(transaction.date),
-					value: transaction.value,
-					isExcluded: transaction.isExcluded,
-					isPending: transaction.isExcluded,
-					accountId: existingAccount.id,
-					categoryId: await getCategoryId(transaction.categoryName)
-				};
-
-				// Check if transaction is already in database
-				const existingTransaction = await prisma.transaction.findFirst({
-					where: {
-						...transactionBlueprint
-					}
-				});
-
-				// Skip duplicate transactions
-				if (existingTransaction) {
-					importedAccounts.transactions.skipped.push(transaction);
-					continue;
 				}
 
-				// Create transaction
-				const { id } = await prisma.transaction.create({
-					data: {
-						...transactionBlueprint,
-						importedAt: importSessionDate
+				// Transactions
+				if (account.transactions) {
+					for (const transaction of account.transactions) {
+						const transactionBlueprint = {
+							createdAt: fromUnixTime(transaction.createdAt),
+							description: transaction.description,
+							date: fromUnixTime(transaction.date),
+							value: transaction.value,
+							isExcluded: transaction.isExcluded,
+							isPending: transaction.isExcluded,
+							accountId: existingAccount.id,
+							categoryId: await getCategoryId(transaction.categoryName)
+						};
+
+						// Check if transaction is already in database
+						const existingTransaction = await prisma.transaction.findFirst({
+							where: {
+								...transactionBlueprint
+							}
+						});
+
+						// Skip duplicate transactions
+						if (existingTransaction) {
+							importedAccounts.transactions.skipped.push(transaction);
+							continue;
+						}
+
+						// Create transaction
+						const { id } = await prisma.transaction.create({
+							data: {
+								...transactionBlueprint,
+								importedAt: importSessionDate
+							}
+						});
+						importedAccounts.transactions.created.push(id);
 					}
-				});
-				importedAccounts.transactions.created.push(id);
+				}
 			}
 		}
 
 		// Assets
-		for (const asset of canutinFile.assets) {
-			let existingAsset = await prisma.asset.findFirst({
-				where: {
-					name: {
-						contains: asset.name
-					}
-				}
-			});
-
-			// Create asset if it doesn't exist
-			if (!existingAsset) {
-				existingAsset = await prisma.asset.create({
-					data: {
-						name: asset.name,
-						balanceGroup: asset.balanceGroup,
-						isSold: asset.isSold,
-						symbol: asset.symbol,
-						assetTypeId: await getModelType(asset.assetTypeName, false)
+		if (canutinFile.assets) {
+			for (const asset of canutinFile.assets) {
+				let existingAsset = await prisma.asset.findFirst({
+					where: {
+						name: {
+							contains: asset.name
+						}
 					}
 				});
-				importedAssets.created.push(existingAsset.id);
-			} else {
-				importedAssets.updated.push(existingAsset.id);
-			}
 
-			// Skip to the next asset if there are no balance statements
-			if (!asset.balanceStatements) continue;
-
-			// Asset balance statements
-			for (const balanceStatement of asset.balanceStatements) {
-				try {
-					const { id } = await prisma.assetBalanceStatement.create({
+				// Create asset if it doesn't exist
+				if (!existingAsset) {
+					existingAsset = await prisma.asset.create({
 						data: {
-							assetId: existingAsset.id,
-							value: balanceStatement.value,
-							quantity: balanceStatement.quantity,
-							cost: balanceStatement.cost,
-							createdAt: fromUnixTime(balanceStatement.createdAt)
+							name: asset.name,
+							balanceGroup: asset.balanceGroup,
+							isSold: asset.isSold,
+							symbol: asset.symbol,
+							assetTypeId: await getModelType(asset.assetTypeName, false)
 						}
 					});
-					importedAssets.balanceStatements.created.push(id);
-				} catch (error) {
-					if (error instanceof Prisma.PrismaClientKnownRequestError) {
-						if (error.code === 'P2002') {
-							importedAssets.balanceStatements.skipped.push(balanceStatement);
-							continue;
+					importedAssets.created.push(existingAsset.id);
+				} else {
+					importedAssets.updated.push(existingAsset.id);
+				}
+
+				// Skip to the next asset if there are no balance statements
+				if (!asset.balanceStatements) continue;
+
+				// Asset balance statements
+				for (const balanceStatement of asset.balanceStatements) {
+					try {
+						const { id } = await prisma.assetBalanceStatement.create({
+							data: {
+								assetId: existingAsset.id,
+								value: balanceStatement.value,
+								quantity: balanceStatement.quantity,
+								cost: balanceStatement.cost,
+								createdAt: fromUnixTime(balanceStatement.createdAt)
+							}
+						});
+						importedAssets.balanceStatements.created.push(id);
+					} catch (error) {
+						if (error instanceof Prisma.PrismaClientKnownRequestError) {
+							if (error.code === 'P2002') {
+								importedAssets.balanceStatements.skipped.push(balanceStatement);
+								continue;
+							}
 						}
+						throw error;
 					}
-					throw error;
 				}
 			}
 		}
@@ -254,7 +262,15 @@ const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 			importedAssets
 		};
 	} catch (error: any) {
-		return { error: error.message, importedAccounts, importedAssets };
+		let errorMessage;
+
+		if (error instanceof Prisma.PrismaClientValidationError) {
+			errorMessage = 'The CanutinFile provided is invalid';
+		} else {
+			errorMessage = error.message;
+		}
+
+		return { error: errorMessage, importedAccounts, importedAssets };
 	}
 };
 

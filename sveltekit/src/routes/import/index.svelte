@@ -12,11 +12,13 @@
 
 	const submitForm = (event: any) => {
 		event.preventDefault();
-		importSummary = undefined; // Reset the previous import summary
+		importSummary = undefined; // Reset the previous import summary (if any)
 
-		const rawFile = event.target.file.files[0];
-		if (!rawFile) noFileError = 'No file was chosen';
-		if (noFileError) return;
+		const chosenFile = event.target.file.files[0];
+		if (!chosenFile) {
+			noFileError = 'No file was chosen';
+			return;
+		}
 
 		isLoading = true;
 		const reader = new FileReader();
@@ -33,7 +35,7 @@
 			isLoading = false;
 		};
 
-		reader.readAsText(rawFile);
+		reader.readAsText(chosenFile);
 	};
 </script>
 
@@ -42,152 +44,158 @@
 </svelte:head>
 
 <ScrollView {title}>
+	{@const error = noFileError || importSummary?.error}
+
 	<Section title="Import data">
-		<div slot="CONTENT">
+		<div slot="CONTENT" class="importForm">
 			<form on:submit={submitForm}>
 				<input type="file" name="file" accept=".json" />
 				<button>Upload</button>
 			</form>
+
+			{#if isLoading}
+				<p class="importNotice">Processing import...</p>
+			{/if}
+
+			{#if error}
+				<p class="importNotice importNotice--error">{error}</p>
+			{/if}
 		</div>
 	</Section>
 
-	{#if importSummary || isLoading}
-		{#if isLoading}
-			<p class="importNotice">Processing import...</p>
-		{/if}
+	{#if !isLoading && !error && importSummary}
+		<div class="importStatus">
+			<div class="importStatus__model">
+				<Section title="Accounts">
+					<div slot="CONTENT" class="importSummary" data-test-id="accounts-import-summary">
+						{@const createdAccounts = importSummary?.importedAccounts?.created.length || 0}
+						<Card
+							title="Created"
+							appearance={createdAccounts == 0 ? CardAppearance.SECONDARY : undefined}
+							value={createdAccounts}
+						/>
 
-		{#if noFileError || importSummary?.error}
-			<p class="importNotice importNotice--error">{noFileError || importSummary?.error}</p>
-		{/if}
+						{@const updatedAccounts = importSummary?.importedAccounts?.updated.length || 0}
+						<Card
+							title="Updated"
+							appearance={updatedAccounts == 0 ? CardAppearance.SECONDARY : undefined}
+							value={updatedAccounts}
+						/>
+					</div>
+				</Section>
 
-		{#if !isLoading}
-			<div class="importStatus">
-				<div class="importStatus__model">
-					<Section title="Accounts">
-						<div slot="CONTENT" class="importSummary">
-							{@const createdAccounts = importSummary?.importedAccounts?.created.length || 0}
-							<Card
-								title="Created"
-								appearance={createdAccounts == 0 ? CardAppearance.SECONDARY : undefined}
-								value={createdAccounts}
-							/>
+				<Section title="Accounts balance statements">
+					<div slot="CONTENT" class="importSummary">
+						{@const createdAccountBalances =
+							importSummary?.importedAccounts?.balanceStatements.created.length || 0}
+						<Card
+							title="Created"
+							appearance={createdAccountBalances == 0 ? CardAppearance.SECONDARY : undefined}
+							value={createdAccountBalances}
+						/>
 
-							{@const updatedAccounts = importSummary?.importedAccounts?.updated.length || 0}
-							<Card
-								title="Updated"
-								appearance={updatedAccounts == 0 ? CardAppearance.SECONDARY : undefined}
-								value={updatedAccounts}
-							/>
-						</div>
-					</Section>
+						{@const skippedAccountBalances =
+							importSummary?.importedAccounts?.balanceStatements.skipped.length || 0}
+						<Card
+							title="Duplicates (Skipped)"
+							appearance={skippedAccountBalances == 0 ? CardAppearance.SECONDARY : undefined}
+							value={skippedAccountBalances}
+						/>
 
-					<Section title="Accounts balance statements">
-						<div slot="CONTENT" class="importSummary">
-							{@const createdAccountBalances =
-								importSummary?.importedAccounts?.balanceStatements.created.length || 0}
-							<Card
-								title="Created"
-								appearance={createdAccountBalances == 0 ? CardAppearance.SECONDARY : undefined}
-								value={createdAccountBalances}
-							/>
+						{#if skippedAccountBalances > 0}
+							<code class="importSummary__code">
+								<pre class="importSummary__pre">// Duplicates</pre>
+								{JSON.stringify(importSummary?.importedAccounts?.balanceStatements.skipped)}
+							</code>
+						{/if}
+					</div>
+				</Section>
 
-							{@const skippedAccountBalances =
-								importSummary?.importedAccounts?.balanceStatements.skipped.length || 0}
-							<Card
-								title="Duplicates (Skipped)"
-								appearance={skippedAccountBalances == 0 ? CardAppearance.SECONDARY : undefined}
-								value={skippedAccountBalances}
-							/>
+				<Section title="Accounts transactions">
+					<div slot="CONTENT" class="importSummary">
+						{@const createdTransactions =
+							importSummary?.importedAccounts?.transactions.created.length || 0}
+						<Card
+							title="Created"
+							appearance={createdTransactions == 0 ? CardAppearance.SECONDARY : undefined}
+							value={createdTransactions}
+						/>
 
-							{#if skippedAccountBalances > 0}
-								<code class="importSummary__code">
-									<pre class="importSummary__pre">// Duplicates</pre>
-									{JSON.stringify(importSummary?.importedAccounts?.balanceStatements.skipped)}
-								</code>
-							{/if}
-						</div>
-					</Section>
+						{@const skippedTransactions =
+							importSummary?.importedAccounts?.transactions.skipped.length || 0}
+						<Card
+							title="Duplicates (Skipped)"
+							appearance={skippedTransactions == 0 ? CardAppearance.SECONDARY : undefined}
+							value={skippedTransactions}
+						/>
 
-					<Section title="Accounts transactions">
-						<div slot="CONTENT" class="importSummary">
-							{@const createdTransactions =
-								importSummary?.importedAccounts?.transactions.created.length || 0}
-							<Card
-								title="Created"
-								appearance={createdTransactions == 0 ? CardAppearance.SECONDARY : undefined}
-								value={createdTransactions}
-							/>
-
-							{@const skippedTransactions =
-								importSummary?.importedAccounts?.transactions.skipped.length || 0}
-							<Card
-								title="Duplicates (Skipped)"
-								appearance={skippedTransactions == 0 ? CardAppearance.SECONDARY : undefined}
-								value={skippedTransactions}
-							/>
-
-							{#if skippedTransactions > 0}
-								<code class="importSummary__code">
-									<pre class="importSummary__pre">// Duplicates</pre>
-									{JSON.stringify(importSummary?.importedAccounts?.transactions.skipped)}
-								</code>
-							{/if}
-						</div>
-					</Section>
-				</div>
-
-				<div class="importStatus__model">
-					<Section title="Assets">
-						<div slot="CONTENT" class="importSummary">
-							{@const createdAssets = importSummary?.importedAssets?.created.length || 0}
-							<Card
-								title="Created"
-								appearance={createdAssets == 0 ? CardAppearance.SECONDARY : undefined}
-								value={createdAssets}
-							/>
-
-							{@const updatedAssets = importSummary?.importedAssets?.updated.length || 0}
-							<Card
-								title="Updated"
-								appearance={updatedAssets == 0 ? CardAppearance.SECONDARY : undefined}
-								value={updatedAssets}
-							/>
-						</div>
-					</Section>
-
-					<Section title="Assets balance statements">
-						<div slot="CONTENT" class="importSummary">
-							{@const createdAssetBalances =
-								importSummary?.importedAssets?.balanceStatements.created.length || 0}
-							<Card
-								title="Created"
-								appearance={createdAssetBalances == 0 ? CardAppearance.SECONDARY : undefined}
-								value={createdAssetBalances}
-							/>
-
-							{@const skippedAssetBalances =
-								importSummary?.importedAssets?.balanceStatements.skipped.length || 0}
-							<Card
-								title="Duplicates (Skipped)"
-								appearance={skippedAssetBalances == 0 ? CardAppearance.SECONDARY : undefined}
-								value={skippedAssetBalances}
-							/>
-
-							{#if skippedAssetBalances > 0}
-								<code class="importSummary__code">
-									<pre class="importSummary__pre">// Duplicates</pre>
-									{JSON.stringify(importSummary?.importedAssets?.balanceStatements.skipped)}
-								</code>
-							{/if}
-						</div>
-					</Section>
-				</div>
+						{#if skippedTransactions > 0}
+							<code class="importSummary__code">
+								<pre class="importSummary__pre">// Duplicates</pre>
+								{JSON.stringify(importSummary?.importedAccounts?.transactions.skipped)}
+							</code>
+						{/if}
+					</div>
+				</Section>
 			</div>
-		{/if}
+
+			<div class="importStatus__model">
+				<Section title="Assets">
+					<div slot="CONTENT" class="importSummary" data-test-id="assets-import-summary">
+						{@const createdAssets = importSummary?.importedAssets?.created.length || 0}
+						<Card
+							title="Created"
+							appearance={createdAssets == 0 ? CardAppearance.SECONDARY : undefined}
+							value={createdAssets}
+						/>
+
+						{@const updatedAssets = importSummary?.importedAssets?.updated.length || 0}
+						<Card
+							title="Updated"
+							appearance={updatedAssets == 0 ? CardAppearance.SECONDARY : undefined}
+							value={updatedAssets}
+						/>
+					</div>
+				</Section>
+
+				<Section title="Assets balance statements">
+					<div slot="CONTENT" class="importSummary">
+						{@const createdAssetBalances =
+							importSummary?.importedAssets?.balanceStatements.created.length || 0}
+						<Card
+							title="Created"
+							appearance={createdAssetBalances == 0 ? CardAppearance.SECONDARY : undefined}
+							value={createdAssetBalances}
+						/>
+
+						{@const skippedAssetBalances =
+							importSummary?.importedAssets?.balanceStatements.skipped.length || 0}
+						<Card
+							title="Duplicates (Skipped)"
+							appearance={skippedAssetBalances == 0 ? CardAppearance.SECONDARY : undefined}
+							value={skippedAssetBalances}
+						/>
+
+						{#if skippedAssetBalances > 0}
+							<code class="importSummary__code">
+								<pre class="importSummary__pre">// Duplicates</pre>
+								{JSON.stringify(importSummary?.importedAssets?.balanceStatements.skipped)}
+							</code>
+						{/if}
+					</div>
+				</Section>
+			</div>
+		</div>
 	{/if}
 </ScrollView>
 
 <style lang="scss">
+	div.importForm {
+		display: flex;
+		flex-direction: column;
+		row-gap: 16px;
+	}
+
 	p.importNotice {
 		display: flex;
 		align-items: center;
