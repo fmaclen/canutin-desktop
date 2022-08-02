@@ -152,7 +152,7 @@ test.describe('Import data', () => {
 		);
 	});
 
-	test('CanutinFile that only contain accounts can be imported', async ({ page }) => {
+	test('CanutinFile that only contains Accounts can be imported', async ({ page }) => {
 		await page.goto('/');
 		await page.locator('a', { hasText: 'Import data' }).click();
 		await page.setInputFiles(
@@ -166,7 +166,7 @@ test.describe('Import data', () => {
 		expect(await page.textContent('.card__value--netWorth')).toBe('-$3,299');
 	});
 
-	test('CanutinFile that only contain assets can be imported', async ({ page }) => {
+	test('CanutinFile that only contains Assets can be imported', async ({ page }) => {
 		await page.goto('/');
 		await page.locator('a', { hasText: 'Import data' }).click();
 		await page.setInputFiles('input[type="file"]', './tests/fixtures/canutinFile-only-assets.json');
