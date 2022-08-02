@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Card from '$lib/components/Card.svelte';
@@ -44,13 +45,28 @@
 </svelte:head>
 
 <ScrollView {title}>
-	{@const error = noFileError || importSummary?.error}
+	<Section title="From API">
+		<div slot="CONTENT">
+			<p class="importNotice">
+				Submit a <code class="importNotice__code">POST</code> request to
+				<code class="importNotice__code">{$page.url}.json</code> with a CanutinFile payload
+			</p>
+		</div>
+	</Section>
 
-	<Section title="Import data">
+	{@const error = noFileError || importSummary?.error}
+	<Section title="Manually">
 		<div slot="CONTENT" class="importForm">
-			<form on:submit={submitForm}>
-				<input type="file" name="file" accept=".json" />
-				<button>Upload</button>
+			<form class="form" on:submit={submitForm}>
+				<fieldset class="form__fieldset">
+					<div class="form__field">
+						<label class="form__label" for="file">CanutinFile</label>
+						<input class="form__input" type="file" name="file" accept=".json" />
+					</div>
+				</fieldset>
+				<footer class="form__footer">
+					<button class="form__button" type="submit">Upload</button>
+				</footer>
 			</form>
 
 			{#if isLoading}
@@ -196,6 +212,75 @@
 		row-gap: 16px;
 	}
 
+	form.form {
+		border: 1px solid var(--color-border);
+		border-radius: 4px;
+		display: grid;
+	}
+
+	fieldset.form__fieldset {
+		border: none;
+		padding: 12px 0;
+		display: grid;
+		grid-row-gap: 8px;
+		margin: 0;
+	}
+
+	div.form__field {
+		display: grid;
+		grid-template-columns: 1.25fr 2fr 0.75fr;
+		column-gap: 20px;
+	}
+
+	label.form__label {
+		display: flex;
+		margin-left: auto;
+		align-items: center;
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: -0.03em;
+		color: var(--color-grey70);
+	}
+
+	input.form__input {
+		background-color: var(--color-white);
+		border: 2px solid var(--color-border);
+		border-radius: 4px;
+		padding: 6px;
+		font-family: var(--font-sansSerif);
+		font-size: 12px;
+		box-sizing: border-box;
+
+		&:active,
+		&:focus {
+			border-color: var(--color-bluePrimary);
+		}
+	}
+
+	footer.form__footer {
+		display: flex;
+		justify-content: flex-end;
+		padding: 8px 12px;
+		background-color: var(--color-border);
+	}
+
+	button.form__button {
+		border-radius: 4px;
+		border: none;
+		padding: 8px 12px;
+		cursor: pointer;
+		letter-spacing: -0.03em;
+		font-size: 12px;
+		font-weight: 600;
+		font-family: var(--font-sansSerif);
+		background-color: var(--color-bluePrimary);
+		color: var(--color-white);
+
+		&:active {
+			transform: scale(0.95);
+		}
+	}
+
 	p.importNotice {
 		display: flex;
 		align-items: center;
@@ -211,6 +296,17 @@
 			color: var(--color-redPrimary);
 			background-color: var(--color-redSecondary);
 		}
+	}
+
+	code.importNotice__code {
+		margin-left: 6px;
+		margin-right: 6px;
+		padding: 4px;
+		border-radius: 4px;
+		font-size: 12px;
+		font-family: var(--font-monospace);
+		color: var(--color-grey70);
+		background-color: var(--color-grey7);
 	}
 
 	div.importStatus {

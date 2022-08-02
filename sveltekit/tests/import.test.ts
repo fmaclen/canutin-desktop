@@ -177,6 +177,18 @@ test.describe('Import data', () => {
 		expect(await page.textContent('.card__value--netWorth')).toBe('$129,420');
 	});
 
+	test('UI is rendered correctly', async ({ page }) => {
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Import data' }).click();
+		expect(await page.locator('section', { hasText: 'From api' }).textContent()).toMatch(
+			`Submit a POST request to`
+		);
+		expect(await page.locator('section', { hasText: 'From api' }).textContent()).toMatch(
+			`${page.url()}.json with a CanutinFile payload`
+		);
+		expect(await page.locator('section', { hasText: 'Manually' }).textContent()).toMatch('Upload');
+	});
+
 	test('submitting a CanutinFile via import json endpoint', async ({ page }) => {
 		await page.goto('/');
 		const importEndpoint = `${page.url()}import.json`;
