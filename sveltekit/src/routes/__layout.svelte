@@ -1,25 +1,29 @@
 <script lang="ts">
-	import '../app.scss';
+	import { page } from '$app/stores';
 
-	export let importStatus: number;
-	const triggerImport = async () => {
-		const res = await fetch('/import');
-		importStatus = res.status;
-	};
+	import logo from '$lib/assets/canutin-iso-logo.svg';
+	import '../app.scss';
 </script>
 
 <div class="layout">
 	<aside class="layout__aside">
+		<a class="layout__logo" href="/">
+			<img class="layout__img" src={logo} alt="Canutin logo" />
+		</a>
 		<nav class="layout__nav">
-			<a href="/">The big picture</a>
-			<a href="/balanceSheet">Balance sheet</a>
+			<a class="layout__a {$page.url.pathname === '/' && 'layout__a--active'}" href="/"
+				>The big picture</a
+			>
+			<a
+				class="layout__a {$page.url.pathname === '/balanceSheet' && 'layout__a--active'}"
+				href="/balanceSheet">Balance sheet</a
+			>
 		</nav>
 
 		<nav class="layout__nav layout__nav--bottom">
-			<button type="button" on:click={triggerImport}>Import from CanutinFile (v2)</button>
-			{#if importStatus}
-				<p>{importStatus}</p>
-			{/if}
+			<a class="layout__a {$page.url.pathname === '/import' && 'layout__a--active'}" href="/import"
+				>Import data</a
+			>
 		</nav>
 	</aside>
 	<slot />
@@ -35,19 +39,49 @@
 	aside.layout__aside {
 		display: flex;
 		flex-direction: column;
-		row-gap: 32px;
+		row-gap: 16px;
 		background-color: var(--color-white);
 		border-right: 1px solid var(--color-border);
+	}
+
+	a.layout__logo {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 48px;
+		border-bottom: 1px solid var(--color-border);
+
+		&:hover {
+			background-color: var(--color-grey3);
+		}
+	}
+
+	img.layout__img {
+		width: 48px;
 	}
 
 	nav.layout__nav {
 		display: flex;
 		flex-direction: column;
-		row-gap: 8px;
-		padding: 16px;
 
 		&--bottom {
 			margin-top: auto;
+		}
+	}
+
+	a.layout__a {
+		font-size: 13px;
+		font-weight: 600;
+		text-decoration: none;
+		color: var(--color-grey80);
+		padding: 16px 32px;
+
+		&:hover {
+			background-color: var(--color-grey3);
+		}
+
+		&--active {
+			color: var(--color-bluePrimary);
 		}
 	}
 </style>

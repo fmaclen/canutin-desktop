@@ -71,7 +71,7 @@ This command will create builds of everything and will copy all of the files tha
 **SvelteKit integration tests**
 
 ```javascript
-// TODO
+% cd sveltekit && npm test
 ```
 
 #### Other commands

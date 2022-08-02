@@ -2,7 +2,7 @@
 	import type { CardAppearance } from './Card';
 
 	export let title: string;
-	export let value: string;
+	export let value: string | number;
 	export let appearance: CardAppearance | null = null;
 </script>
 

@@ -34,7 +34,7 @@
 								title={formatCurrency(balanceSheetTypeGroup.currentBalance)}
 							/>
 
-							<div slot="CONTENT" class="balanceSheet__typeGroup">
+							<div slot="CONTENT" class="balanceSheetTypeGroup">
 								{#each balanceSheetTypeGroup.balanceSheetItems as balanceSheetItem}
 									<Card
 										title={balanceSheetItem.name}
@@ -53,7 +53,6 @@
 <style lang="scss">
 	div.balanceSheet {
 		display: flex;
-		flex-grow: 1fr;
 		column-gap: 32px;
 	}
 
@@ -64,7 +63,7 @@
 		width: 100%;
 	}
 
-	div.balanceSheet__typeGroup {
+	div.balanceSheetTypeGroup {
 		display: flex;
 		flex-direction: column;
 		row-gap: 4px;
