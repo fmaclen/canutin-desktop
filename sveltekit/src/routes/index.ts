@@ -1,7 +1,8 @@
 import prisma from '$lib/helpers/prismaClient';
-import { getBalanceGroupLabel, BalanceGroup } from '$lib/helpers/constants';
+import { getBalanceGroupLabel, SortOrder, BalanceGroup } from '$lib/helpers/constants';
 import { getAccountCurrentBalance } from '$lib/helpers/accounts';
 import { getAssetCurrentBalance } from '$lib/helpers/assets';
+import { sortByKey } from '$lib/helpers/misc';
 
 interface BigPictureBalanceGroup {
 	id: BalanceGroup;
@@ -62,6 +63,9 @@ export const GET = async () => {
 			});
 		}
 	}
+
+	// Sort `balanceSheetBalanceGroups` by `balanceGroup`
+	sortByKey(bigPictureBalanceGroups, 'id', SortOrder.DESC);
 
 	// Calculate `netWorth` by the sum of all `balanceGroups` current balances
 	const bigPictureSummary: BigPictureSummary = {

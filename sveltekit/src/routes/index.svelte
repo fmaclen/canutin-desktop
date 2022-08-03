@@ -2,7 +2,7 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Card from '$lib/components/Card.svelte';
-	import { formatCurrency } from '$lib/helpers/currency';
+	import { formatCurrency } from '$lib/helpers/misc';
 	import { balanceGroupAppearance, CardAppearance } from '$lib/components/Card';
 	import type { BigPictureSummary } from '.';
 
