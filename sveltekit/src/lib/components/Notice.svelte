@@ -15,6 +15,7 @@
 		border-radius: 4px;
 		color: var(--color-grey50);
 		background-color: var(--color-border);
+		flex-wrap: wrap;
 
 		&--error {
 			color: var(--color-redPrimary);
