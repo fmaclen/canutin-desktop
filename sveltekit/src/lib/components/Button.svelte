@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let isNegative = false;
+	export let isNegative: boolean = false;
 </script>
 
 <button type="submit" class="button {isNegative && 'button--negative'}"><slot /></button>
