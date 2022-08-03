@@ -2,6 +2,7 @@ import prisma from '$lib/helpers/prismaClient';
 import { getBalanceGroupLabel, SortOrder, BalanceGroup } from '$lib/helpers/constants';
 import { getAccountCurrentBalance } from '$lib/helpers/accounts';
 import { getAssetCurrentBalance } from '$lib/helpers/assets';
+import { sortByKey } from '$lib/helpers/misc';
 
 interface BalanceSheetItem {
 	name: string;
@@ -25,12 +26,6 @@ export interface BalanceSheetBalanceGroup {
 }
 
 export const GET = async () => {
-	const sortByKey = (array: any[], key: string, order: SortOrder) => {
-		order == SortOrder.DESC
-			? array.sort((a, b) => (Math.abs(a[key]) > Math.abs(b[key]) ? 1 : -1))
-			: array.sort((a, b) => (Math.abs(a[key]) < Math.abs(b[key]) ? 1 : -1));
-	};
-
 	// Get Accounts and Assets
 	const accounts = await prisma.account.findMany({
 		include: {

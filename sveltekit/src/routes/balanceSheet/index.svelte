@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatCurrency } from '$lib/helpers/currency';
+	import { formatCurrency } from '$lib/helpers/misc';
 	import type { BalanceSheetBalanceGroup } from '.';
 
 	import ScrollView from '$lib/components/ScrollView.svelte';

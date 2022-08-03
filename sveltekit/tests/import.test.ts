@@ -35,7 +35,6 @@ test.describe('Import data', () => {
 			'input[type="file"]',
 			'./tests/fixtures/canutinFile-minimum-data.json'
 		);
-		await page.pause();
 		await page.locator('button', { hasText: 'Upload' }).click();
 		expect(await page.$('p.notice--error')).toBeNull();
 
