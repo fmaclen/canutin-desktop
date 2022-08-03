@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { dev } from '$app/env';
 
 	import logo from '$lib/assets/canutin-iso-logo.svg';
 	import '../app.scss';
@@ -21,6 +22,12 @@
 		</nav>
 
 		<nav class="layout__nav layout__nav--bottom">
+			{#if dev}
+				<a
+					class="layout__a {$page.url.pathname === '/devTools' && 'layout__a--active'}"
+					href="/devTools">Developer tools</a
+				>
+			{/if}
 			<a class="layout__a {$page.url.pathname === '/import' && 'layout__a--active'}" href="/import"
 				>Import data</a
 			>
