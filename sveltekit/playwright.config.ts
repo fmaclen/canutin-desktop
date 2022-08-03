@@ -8,8 +8,9 @@ const config: PlaywrightTestConfig = {
 	use: {
 		headless: true,
 		trace: 'off'
-		// trace: 'retain-on-failure'
+		// trace: 'retain-on-failure' // uncomment to see use TraceViewer when a test fails
 	},
+	// Can't have more than 1 worker because the tests read/write to the same DB at the same time
 	workers: 1
 };
 
