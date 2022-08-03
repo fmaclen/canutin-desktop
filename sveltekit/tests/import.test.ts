@@ -27,9 +27,7 @@ test.describe('Import data', () => {
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
 
-		expect(await page.textContent('p.importNotice--error')).toBe(
-			'The CanutinFile provided is invalid'
-		);
+		expect(await page.textContent('p.notice--error')).toBe('The CanutinFile provided is invalid');
 		expect(await importStatus.count()).toBe(0);
 
 		// Import some data
@@ -39,7 +37,7 @@ test.describe('Import data', () => {
 		);
 		await page.pause();
 		await page.locator('button', { hasText: 'Upload' }).click();
-		expect(await page.$('p.importNotice--error')).toBeNull();
+		expect(await page.$('p.notice--error')).toBeNull();
 
 		let importStatusSection = page.locator('data-test-id=accounts-import-summary');
 		expect(await importStatusSection.textContent()).toMatch('Created 1');
@@ -77,7 +75,7 @@ test.describe('Import data', () => {
 			'./tests/fixtures/canutinFile-maximum-data.json'
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
-		expect(await page.$('p.importNotice--error')).toBeNull();
+		expect(await page.$('p.notice--error')).toBeNull();
 
 		importStatusSection = page.locator('data-test-id=accounts-import-summary');
 		expect(await importStatusSection.textContent()).toMatch('Created 1');
@@ -140,7 +138,7 @@ test.describe('Import data', () => {
 			'./tests/fixtures/canutinFile-only-accounts.json'
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
-		expect(await page.$('p.importNotice--error')).toBeNull();
+		expect(await page.$('p.notice--error')).toBeNull();
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
 		expect(await page.textContent('.card__value--netWorth')).toBe('$750');
@@ -151,7 +149,7 @@ test.describe('Import data', () => {
 		await page.locator('a', { hasText: 'Import data' }).click();
 		await page.setInputFiles('input[type="file"]', './tests/fixtures/canutinFile-only-assets.json');
 		await page.locator('button', { hasText: 'Upload' }).click();
-		expect(await page.$('p.importNotice--error')).toBeNull();
+		expect(await page.$('p.notice--error')).toBeNull();
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
 		expect(await page.textContent('.card__value--netWorth')).toBe('$75,991');

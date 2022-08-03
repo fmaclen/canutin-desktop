@@ -3,6 +3,8 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Card from '$lib/components/Card.svelte';
+	import Button from '$lib/components/Button.svelte';
+	import Notice from '$lib/components/Notice.svelte';
 	import type { ImportSummary } from './index.json';
 	import { CardAppearance } from '$lib/components/Card';
 
@@ -47,10 +49,10 @@
 <ScrollView {title}>
 	<Section title="From API">
 		<div slot="CONTENT">
-			<p class="importNotice">
-				Submit a <code class="importNotice__code">POST</code> request to
-				<code class="importNotice__code">{$page.url}.json</code> with a CanutinFile payload
-			</p>
+			<Notice>
+				Submit a <code class="code">POST</code> request to
+				<code class="code">{$page.url}.json</code> with a CanutinFile payload
+			</Notice>
 		</div>
 	</Section>
 
@@ -65,16 +67,16 @@
 					</div>
 				</fieldset>
 				<footer class="form__footer">
-					<button class="form__button" type="submit">Upload</button>
+					<Button>Upload</Button>
 				</footer>
 			</form>
 
 			{#if isLoading}
-				<p class="importNotice">Processing import...</p>
+				<Notice>Processing import...</Notice>
 			{/if}
 
 			{#if error}
-				<p class="importNotice importNotice--error">{error}</p>
+				<Notice isError={true}>{error}</Notice>
 			{/if}
 		</div>
 	</Section>
@@ -264,41 +266,7 @@
 		background-color: var(--color-border);
 	}
 
-	button.form__button {
-		border-radius: 4px;
-		border: none;
-		padding: 8px 12px;
-		cursor: pointer;
-		letter-spacing: -0.03em;
-		font-size: 12px;
-		font-weight: 600;
-		font-family: var(--font-sansSerif);
-		background-color: var(--color-bluePrimary);
-		color: var(--color-white);
-
-		&:active {
-			transform: scale(0.95);
-		}
-	}
-
-	p.importNotice {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 12px;
-		padding: 32px;
-		margin: 0;
-		border-radius: 4px;
-		color: var(--color-grey50);
-		background-color: var(--color-border);
-
-		&--error {
-			color: var(--color-redPrimary);
-			background-color: var(--color-redSecondary);
-		}
-	}
-
-	code.importNotice__code {
+	code.code {
 		margin-left: 6px;
 		margin-right: 6px;
 		padding: 4px;
