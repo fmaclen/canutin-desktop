@@ -28,12 +28,7 @@ test.describe('Import data', () => {
 		expect(await page.textContent('h1')).toBe('The big picture');
 
 		const sidebarImportData = await page.locator('a:has-text("Import data")');
-		expect(sidebarImportData).toHaveAttribute('href', '/import');
-		expect(sidebarImportData).toHaveClass(/layout__a/);
-		expect(sidebarImportData).not.toHaveClass(/layout__a--active/);
 		await sidebarImportData.click();
-
-		expect(sidebarImportData).toHaveClass(/layout__a--active/);
 		expect(await page.textContent('h1')).toBe('Import data');
 
 		// Try to import invalid CanutinFile
