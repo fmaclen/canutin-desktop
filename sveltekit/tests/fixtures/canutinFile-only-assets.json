@@ -1,14 +1,11 @@
 {
 	"assets": [
 		{
-			"name": "2022 Ford F-150",
+			"name": "1998 Fiat Multipla",
 			"balanceGroup": 3,
 			"isSold": false,
 			"assetTypeName": "Vehicles",
-			"balanceStatements": [
-				{ "createdAt": 1659410735, "value": 59999.51 },
-				{ "createdAt": 1628467200, "value": 49999.51 }
-			]
+			"balanceStatements": [{ "createdAt": 1659410735, "value": 6570.51 }]
 		},
 		{
 			"name": "Bitcoin",

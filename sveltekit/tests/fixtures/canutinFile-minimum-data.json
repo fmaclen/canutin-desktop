@@ -1,21 +1,21 @@
 {
 	"accounts": [
 		{
-			"name": "Alice's Savings",
-			"balanceGroup": 0,
+			"name": "Alice's Limited Rewards",
+			"balanceGroup": 1,
 			"isAutoCalculated": true,
 			"isClosed": false,
 			"institution": "Ransack Bank",
-			"accountTypeName": "savings"
+			"accountTypeName": "credit card"
 		}
 	],
 	"assets": [
 		{
-			"name": "2022 Ford F-150",
+			"name": "1998 Fiat Multipla",
 			"balanceGroup": 3,
 			"isSold": false,
 			"assetTypeName": "Vehicles",
-			"balanceStatements": [{ "createdAt": 1659372389, "value": 49999.99 }]
+			"balanceStatements": [{ "createdAt": 1628467200, "value": 7570.51 }]
 		}
 	]
 }

@@ -1,12 +1,49 @@
 {
 	"accounts": [
 		{
-			"name": "Alice's Savings",
+			"name": "Bob's Laughable-Yield Checking",
 			"balanceGroup": 0,
+			"isAutoCalculated": true,
+			"isClosed": false,
+			"institution": "Juggernaut Financial",
+			"accountTypeName": "checking",
+			"transactions": [
+				{
+					"createdAt": 1628467200.816349,
+					"description": "Del Boca Vista Apartments",
+					"date": 1628467200.0,
+					"value": -2750.51,
+					"isExcluded": false,
+					"isPending": false,
+					"categoryName": "Rent"
+				},
+				{
+					"createdAt": 1603670400.0,
+					"description": "Transfer to Savings Account - 69420",
+					"date": 1593561600.0,
+					"value": -99.51,
+					"isExcluded": true,
+					"isPending": true,
+					"categoryName": "Transfers"
+				},
+				{
+					"createdAt": 1603670400.0,
+					"description": "Initech Payroll",
+					"date": 1593501600.0,
+					"value": 3500.21,
+					"isExcluded": true,
+					"isPending": true,
+					"categoryName": "Payroll & benefits"
+				}
+			]
+		},
+		{
+			"name": "Alice's Limited Rewards",
+			"balanceGroup": 1,
 			"isAutoCalculated": false,
 			"isClosed": false,
 			"institution": "Ransack Bank",
-			"accountTypeName": "savings",
+			"accountTypeName": "Credit card",
 			"balanceStatements": [
 				{ "createdAt": 1659410735, "value": 3599.99 },
 				{ "createdAt": 1603670400.0, "value": 2759.99 }
@@ -16,7 +53,7 @@
 					"createdAt": 1659410735,
 					"description": "Evergreen Market",
 					"date": 1593561600.0,
-					"value": -49.99,
+					"value": -149.99,
 					"isExcluded": false,
 					"isPending": false,
 					"categoryName": "Groceries"
@@ -25,37 +62,9 @@
 					"createdAt": 1593648171.816349,
 					"description": "Transfer from Checking Account - 42069",
 					"date": 1593561600.0,
-					"value": 1249.99,
+					"value": 99.51,
 					"isExcluded": true,
 					"isPending": false,
-					"categoryName": "Transfers"
-				}
-			]
-		},
-		{
-			"name": "Bob's Laughable-Yield Checking",
-			"balanceGroup": 0,
-			"isAutoCalculated": true,
-			"isClosed": false,
-			"institution": "Juggernaut Finnancial",
-			"accountTypeName": "checking",
-			"transactions": [
-				{
-					"createdAt": 1628467200.816349,
-					"description": "Del Boca Vista Apartments",
-					"date": 1628467200.0,
-					"value": -5649.51,
-					"isExcluded": false,
-					"isPending": false,
-					"categoryName": "Rent"
-				},
-				{
-					"createdAt": 1603670400.0,
-					"description": "Transfer to Savings Account - 69420",
-					"date": 1593561600.0,
-					"value": -1249.51,
-					"isExcluded": true,
-					"isPending": true,
 					"categoryName": "Transfers"
 				}
 			]
@@ -63,13 +72,13 @@
 	],
 	"assets": [
 		{
-			"name": "2022 Ford F-150",
+			"name": "1998 Fiat Multipla",
 			"balanceGroup": 3,
 			"isSold": false,
 			"assetTypeName": "Vehicles",
 			"balanceStatements": [
-				{ "createdAt": 1659410735, "value": 59999.51 },
-				{ "createdAt": 1628467200, "value": 49999.51 }
+				{ "createdAt": 1659410735, "value": 6570.51 },
+				{ "createdAt": 1628467200, "value": 7570.51 }
 			]
 		},
 		{

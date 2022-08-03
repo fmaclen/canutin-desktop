@@ -1,38 +1,26 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import { expect, test } from '@playwright/test';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
-test.beforeAll(() => {
-	// Tests will delete all the data in the current database set by DATABASE_URL
-	// so we need to check that we are operating on the development vault.
-	const DEV_VAULT = 'file:./Canutin.dev.vault';
-	const dbUrl = process.env.DATABASE_URL;
-	if (dbUrl !== DEV_VAULT)
-		throw new Error(`
-			Expected "DATABASE_URL" to be "${DEV_VAULT}" but instead it is: "${dbUrl}"
-		`);
-});
+import { checkVaultIsDev, wipeVault } from './fixtures/helpers.js';
+// import { PrismaClient } from '@prisma/client';
 
 test.describe('Import data', () => {
-	test.beforeEach(async () => {
-		// Wipe the database before each test
-		await prisma.account.deleteMany({});
-		await prisma.asset.deleteMany({});
+	test.beforeAll(() => {
+		checkVaultIsDev();
 	});
 
-	test('CanutinFile with the minimum required data', async ({ page }) => {
-		await page.goto('/');
-		expect(await page.textContent('h1')).toBe('The big picture');
+	test.beforeEach(async () => {
+		await wipeVault();
+	});
 
-		const sidebarImportData = await page.locator('a:has-text("Import data")');
+	test('CanutinFile at different levels of provided data', async ({ page }) => {
+		await page.goto('/');
+		const sidebarImportData = page.locator('a', { hasText: 'Import data' });
 		await sidebarImportData.click();
-		expect(await page.textContent('h1')).toBe('Import data');
+		await expect(page.locator('h1', { hasText: 'Import data' })).toBeVisible();
 
 		// Try to import invalid CanutinFile
-		const importStatus = await page.locator('.importStatus');
+		const importStatus = page.locator('.importStatus');
 		expect(await importStatus.count()).toBe(0);
 		await page.setInputFiles(
 			'input[type="file"]',
@@ -50,37 +38,38 @@ test.describe('Import data', () => {
 			'input[type="file"]',
 			'./tests/fixtures/canutinFile-minimum-data.json'
 		);
+		await page.pause();
 		await page.locator('button', { hasText: 'Upload' }).click();
 		expect(await page.$('p.importNotice--error')).toBeNull();
 
-		let importStatusSection = await page.locator('data-test-id=accounts-import-summary');
+		let importStatusSection = page.locator('data-test-id=accounts-import-summary');
 		expect(await importStatusSection.textContent()).toMatch('Created 1');
 		expect(await importStatusSection.textContent()).toMatch('Updated 0');
 
-		importStatusSection = await page.locator('section.section', {
+		importStatusSection = page.locator('section.section', {
 			hasText: 'Accounts Balance Statements'
 		});
 		expect(await importStatusSection.textContent()).toMatch('Created 0');
 		expect(await importStatusSection.textContent()).toMatch('Duplicates (Skipped) 0');
 
-		importStatusSection = await page.locator('section.section', {
+		importStatusSection = page.locator('section.section', {
 			hasText: 'Accounts Transactions'
 		});
 		expect(await importStatusSection.textContent()).toMatch('Created 0');
 		expect(await importStatusSection.textContent()).toMatch('Duplicates (Skipped) 0');
 
-		importStatusSection = await page.locator('data-test-id=assets-import-summary');
+		importStatusSection = page.locator('data-test-id=assets-import-summary');
 		expect(await importStatusSection.textContent()).toMatch('Created 1');
 		expect(await importStatusSection.textContent()).toMatch('Updated 0');
 
-		importStatusSection = await page.locator('section.section', {
+		importStatusSection = page.locator('section.section', {
 			hasText: 'Assets Balance Statements'
 		});
 		expect(await importStatusSection.textContent()).toMatch('Created 1');
 		expect(await importStatusSection.textContent()).toMatch('Duplicates (Skipped) 0');
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
-		expect(await page.textContent('.card__value--netWorth')).toBe('$50,000');
+		expect(await page.textContent('.card__value--netWorth')).toBe('$7,571');
 
 		// Import CanutinFile with new and duplicated data
 		await sidebarImportData.click();
@@ -91,59 +80,56 @@ test.describe('Import data', () => {
 		await page.locator('button', { hasText: 'Upload' }).click();
 		expect(await page.$('p.importNotice--error')).toBeNull();
 
-		importStatusSection = await page.locator('data-test-id=accounts-import-summary');
+		importStatusSection = page.locator('data-test-id=accounts-import-summary');
 		expect(await importStatusSection.textContent()).toMatch('Created 1');
 		expect(await importStatusSection.textContent()).toMatch('Updated 1');
 
-		importStatusSection = await page.locator('section.section', {
+		importStatusSection = page.locator('section.section', {
 			hasText: 'Accounts Balance Statements'
 		});
 		expect(await importStatusSection.textContent()).toMatch('Created 2');
 		expect(await importStatusSection.textContent()).toMatch('Duplicates (Skipped) 0');
 
-		importStatusSection = await page.locator('section.section', {
+		importStatusSection = page.locator('section.section', {
 			hasText: 'Accounts Transactions'
 		});
-		expect(await importStatusSection.textContent()).toMatch('Created 4');
+		expect(await importStatusSection.textContent()).toMatch('Created 5');
 		expect(await importStatusSection.textContent()).toMatch('Duplicates (Skipped) 0');
 
-		importStatusSection = await page.locator('data-test-id=assets-import-summary');
+		importStatusSection = page.locator('data-test-id=assets-import-summary');
 		expect(await importStatusSection.textContent()).toMatch('Created 1');
 		expect(await importStatusSection.textContent()).toMatch('Updated 1');
 
-		importStatusSection = await page.locator('section.section', {
+		importStatusSection = page.locator('section.section', {
 			hasText: 'Assets Balance Statements'
 		});
-		expect(await importStatusSection.textContent()).toMatch('Created 4');
-		expect(await importStatusSection.textContent()).toMatch('Duplicates (Skipped) 0');
+		expect(await importStatusSection.textContent()).toMatch('Created 3');
+		expect(await importStatusSection.textContent()).toMatch('Duplicates (Skipped) 1');
+		expect(await page.locator('.importSummary__code').textContent()).toBe(
+			'// Duplicates [{"createdAt":1628467200,"value":7570.51}]'
+		);
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
-		expect(await page.textContent('.card__value--netWorth')).toBe('$123,720');
+		expect(await page.textContent('.card__value--netWorth')).toBe('$76,590');
 
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
-		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('-$5,699');
-		expect(await page.locator('.card', { hasText: "Alice's Savings" }).textContent()).toMatch(
-			'$1,200'
-		);
+		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$650');
 		expect(
 			await page.locator('.card', { hasText: "Bob's Laughable-Yield Checking" }).textContent()
-		).toMatch('-$6,899');
-		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('-$5,699');
-		expect(await page.locator('.card', { hasText: "Alice's Savings" }).textContent()).toMatch(
-			'$1,200'
-		);
+		).toMatch('$650');
+		expect(await page.locator('.card', { hasText: 'Debt' }).textContent()).toMatch('-$50');
 		expect(
-			await page.locator('.card', { hasText: "Bob's Laughable-Yield Checking" }).textContent()
-		).toMatch('-$6,899');
+			await page.locator('.card', { hasText: "Alice's Limited Rewards" }).textContent()
+		).toMatch('-$50');
 		expect(await page.locator('.card', { hasText: 'Investments' }).textContent()).toMatch(
 			'$69,420'
 		);
 		expect(await page.locator('.card', { hasText: 'Bitcoin' }).textContent()).toMatch('$69,420');
 		expect(await page.locator('.card', { hasText: 'Other assets' }).textContent()).toMatch(
-			'$60,000'
+			'$6,571'
 		);
-		expect(await page.locator('.card', { hasText: '2022 Ford F-150' }).textContent()).toMatch(
-			'$60,000'
+		expect(await page.locator('.card', { hasText: '1998 Fiat Multipla' }).textContent()).toMatch(
+			'$6,571'
 		);
 	});
 
@@ -158,7 +144,7 @@ test.describe('Import data', () => {
 		expect(await page.$('p.importNotice--error')).toBeNull();
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
-		expect(await page.textContent('.card__value--netWorth')).toBe('-$3,299');
+		expect(await page.textContent('.card__value--netWorth')).toBe('$750');
 	});
 
 	test('CanutinFile that only contains Assets can be imported', async ({ page }) => {
@@ -169,24 +155,24 @@ test.describe('Import data', () => {
 		expect(await page.$('p.importNotice--error')).toBeNull();
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
-		expect(await page.textContent('.card__value--netWorth')).toBe('$129,420');
+		expect(await page.textContent('.card__value--netWorth')).toBe('$75,991');
 	});
 
-	test('UI is rendered correctly', async ({ page }) => {
+	test('UI is rendered correctly', async ({ page, baseURL }) => {
 		await page.goto('/');
 		await page.locator('a', { hasText: 'Import data' }).click();
 		expect(await page.locator('section', { hasText: 'From api' }).textContent()).toMatch(
 			`Submit a POST request to`
 		);
 		expect(await page.locator('section', { hasText: 'From api' }).textContent()).toMatch(
-			`${page.url()}.json with a CanutinFile payload`
+			`${baseURL}/import.json with a CanutinFile payload`
 		);
 		expect(await page.locator('section', { hasText: 'Manually' }).textContent()).toMatch('Upload');
 	});
 
-	test('submitting a CanutinFile via import json endpoint', async ({ page }) => {
+	test('submitting a CanutinFile via import json endpoint', async ({ page, baseURL }) => {
 		await page.goto('/');
-		const importEndpoint = `${page.url()}import.json`;
+		const importEndpoint = `${baseURL}/import.json`;
 		expect(await page.textContent('h1')).toBe('The big picture');
 		expect(await page.textContent('.card__value--netWorth')).toBe('$0');
 
@@ -227,7 +213,7 @@ test.describe('Import data', () => {
 			expect(importSummary.importedAssets).toBeDefined();
 
 			await page.reload();
-			expect(await page.textContent('.card__value--netWorth')).toBe('$50,000');
+			expect(await page.textContent('.card__value--netWorth')).toBe('$7,571');
 		});
 	});
 });

@@ -8,7 +8,9 @@ const config: PlaywrightTestConfig = {
 	use: {
 		headless: true,
 		trace: 'off'
-	}
+		// trace: 'retain-on-failure'
+	},
+	workers: 1
 };
 
 export default config;
