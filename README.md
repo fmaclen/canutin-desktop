@@ -60,7 +60,7 @@ To **package the app** for distribution run:
 
 This command will create builds of everything and will copy all of the files that are needed to run the released app. For details on what happens in the background check the `package.json` on the root directory.
 
-#### Testing
+### Testing
 
 **Electron unit tests**
 
@@ -74,7 +74,7 @@ This command will create builds of everything and will copy all of the files tha
 % cd sveltekit && npm test
 ```
 
-#### Other commands
+### Other commands
 
 **Prisma Studio**
 
