@@ -2,7 +2,6 @@ import fs from 'fs';
 import fetch from 'node-fetch';
 import { expect, test } from '@playwright/test';
 import { checkVaultIsDev, wipeVault } from './fixtures/helpers.js';
-// import { PrismaClient } from '@prisma/client';
 
 test.describe('Import data', () => {
 	test.beforeAll(() => {
