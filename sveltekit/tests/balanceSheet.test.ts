@@ -2,8 +2,11 @@ import { expect, test } from '@playwright/test';
 import { checkVaultIsDev, importCanutinFile, wipeVault } from './fixtures/helpers.js';
 
 test.describe('Balance sheet', () => {
-	test.beforeEach(async () => {
+	test.beforeAll(() => {
 		checkVaultIsDev();
+	});
+
+	test.beforeEach(async () => {
 		await wipeVault();
 	});
 

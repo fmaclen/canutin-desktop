@@ -1,5 +1,5 @@
 import prisma from '$lib/helpers/prismaClient';
-import { getBalanceGroupLabel, type BalanceGroup } from '$lib/helpers/constants';
+import { getBalanceGroupLabel, BalanceGroup } from '$lib/helpers/constants';
 import { getAccountCurrentBalance } from '$lib/helpers/accounts';
 import { getAssetCurrentBalance } from '$lib/helpers/assets';
 
@@ -45,6 +45,20 @@ export const GET = async () => {
 				id: balanceGroup,
 				label: getBalanceGroupLabel(balanceGroup),
 				currentBalance
+			});
+		}
+	}
+
+	// Add balanceGroups with a balance of $0 for those without any balances
+	const balanceGroups = Object.values(BalanceGroup).filter(
+		(balanceGroup) => typeof balanceGroup === 'number'
+	);
+	for (const balanceGroup of balanceGroups) {
+		if (!bigPictureBalanceGroups.find(({ id }) => id === balanceGroup)) {
+			bigPictureBalanceGroups.push({
+				id: balanceGroup as BalanceGroup,
+				label: getBalanceGroupLabel(balanceGroup as BalanceGroup),
+				currentBalance: 0
 			});
 		}
 	}
