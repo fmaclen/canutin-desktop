@@ -1,5 +1,5 @@
 import prisma from '$lib/helpers/prismaClient';
-import { getBalanceGroupLabel, SortOrder, type BalanceGroup } from '$lib/helpers/constants';
+import { getBalanceGroupLabel, SortOrder, BalanceGroup } from '$lib/helpers/constants';
 import { getAccountCurrentBalance } from '$lib/helpers/accounts';
 import { getAssetCurrentBalance } from '$lib/helpers/assets';
 
@@ -131,6 +131,21 @@ export const GET = async () => {
 				label: getBalanceGroupLabel(balanceGroup),
 				currentBalance,
 				balanceItemsTypeGroups: [balanceSheetTypeGroup]
+			});
+		}
+	}
+
+	// Add balanceGroups with a balance of $0 for those without any balances
+	const balanceGroups = Object.values(BalanceGroup).filter(
+		(balanceGroup) => typeof balanceGroup === 'number'
+	);
+	for (const balanceGroup of balanceGroups) {
+		if (!balanceSheetBalanceGroups.find(({ id }) => id === balanceGroup)) {
+			balanceSheetBalanceGroups.push({
+				id: balanceGroup as BalanceGroup,
+				label: getBalanceGroupLabel(balanceGroup as BalanceGroup),
+				currentBalance: 0,
+				balanceItemsTypeGroups: []
 			});
 		}
 	}
