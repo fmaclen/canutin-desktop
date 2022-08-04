@@ -8,9 +8,19 @@
 	import type { BigPictureSummary, TrailingCashflow } from '.';
 
 	export let title = 'The big picture';
+
+	// Summary
 	export let bigPictureSummary: BigPictureSummary;
+
+	// Trailing cashflow
 	export let trailingCashflow: TrailingCashflow;
 	export let currentSegment = TrailingCashflowPeriods.LAST_6_MONTHS;
+	export let toggleSegment = () => {
+		currentSegment =
+			currentSegment === TrailingCashflowPeriods.LAST_6_MONTHS
+				? TrailingCashflowPeriods.LAST_12_MONTHS
+				: TrailingCashflowPeriods.LAST_6_MONTHS;
+	};
 </script>
 
 <svelte:head>
@@ -36,20 +46,24 @@
 		</div>
 	</Section>
 
-	{@const { last6Months, last12Months } = trailingCashflow}
-
 	<Section title="Trailing cashflow">
-		<nav slot="HEADER">{currentSegment}</nav>
+		<nav class="segmentedControl" slot="HEADER">
+			{#each Object.values(TrailingCashflowPeriods) as period}
+				<button
+					class="segmentedControl__button {currentSegment == period &&
+						'segmentedControl__button--active'}"
+					type="button"
+					on:click={toggleSegment}>{period}</button
+				>
+			{/each}
+		</nav>
 		<div class="bigPictureTrailingCashflow" slot="CONTENT">
+			{@const { last6Months, last12Months } = trailingCashflow}
 			{@const segment =
 				currentSegment === TrailingCashflowPeriods.LAST_6_MONTHS ? last6Months : last12Months}
-
-			{@const incomeAverage = (segment?.incomeAverage && segment.incomeAverage) || 0}
-			<Card title="Income per month" value={formatCurrency(incomeAverage)} />
-			{@const expensesAverage = (segment?.expensesAverage && segment.expensesAverage) || 0}
-			<Card title="Expenses per month" value={formatCurrency(expensesAverage)} />
-			{@const surplusAverage = (segment?.surplusAverage && segment.surplusAverage) || 0}
-			<Card title="Surplus per month" value={formatCurrency(surplusAverage)} />
+			<Card title="Income per month" value={formatCurrency(segment.incomeAverage)} />
+			<Card title="Expenses per month" value={formatCurrency(segment.expensesAverage)} />
+			<Card title="Surplus per month" value={formatCurrency(segment.surplusAverage)} />
 		</div>
 	</Section>
 </ScrollView>
@@ -65,5 +79,35 @@
 	div.bigPictureSummary {
 		grid-template-rows: repeat(2, 1fr);
 		grid-row-gap: 8px;
+	}
+
+	nav.segmentedControl {
+		display: grid;
+		grid-gap: 4px;
+		grid-auto-flow: column;
+	}
+
+	button.segmentedControl__button {
+		font-family: var(--font-monospace);
+		text-transform: uppercase;
+		font-size: 12px;
+		line-height: 1em;
+		border: none;
+		background-color: var(--color-grey10);
+		padding: 6px 8px;
+		border-radius: 4px;
+		color: var(--color-grey50);
+		cursor: pointer;
+
+		&:hover {
+			color: var(--color-grey80);
+		}
+
+		&--active {
+			color: var(--color-bluePrimary);
+			background-color: var(--color-white);
+			box-shadow: var(--box-shadow);
+			pointer-events: none;
+		}
 	}
 </style>

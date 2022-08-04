@@ -39,9 +39,8 @@ export const GET = async () => {
 		// Skip `balanceItems` with a `currentBalance` of 0
 		if (currentBalance === 0) continue;
 
-		const { balanceGroup } = balanceItem;
-
 		// Find existing balanceGroup
+		const { balanceGroup } = balanceItem;
 		const bigPictureBalanceGroup = bigPictureBalanceGroups.find(({ id }) => id === balanceGroup);
 
 		if (bigPictureBalanceGroup) {
