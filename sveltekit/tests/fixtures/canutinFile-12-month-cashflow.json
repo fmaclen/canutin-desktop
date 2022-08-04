@@ -1,0 +1,140 @@
+{
+	"accounts": [
+		{
+			"name": "Bob's Laughable-Yield Checking",
+			"balanceGroup": 0,
+			"isAutoCalculated": true,
+			"isClosed": false,
+			"institution": "Juggernaut Financial",
+			"accountTypeName": "checking",
+			"transactions": [
+				{
+					"createdAt": 1603670400,
+					"description": "Aug 15",
+					"date": 1603670400,
+					"value": -1000,
+					"isExcluded": false,
+					"isPending": false,
+					"categoryName": "Rent"
+				},
+				{
+					"createdAt": 1659312000,
+					"description": "Aug 1",
+					"date": 1659312000,
+					"value": 2000,
+					"isExcluded": false,
+					"isPending": true,
+					"categoryName": "Transfers"
+				},
+				{
+					"createdAt": 1657843200,
+					"description": "Jul 15",
+					"date": 1657843200,
+					"value": -1000,
+					"isExcluded": false,
+					"isPending": false,
+					"categoryName": "Rent"
+				},
+				{
+					"createdAt": 1656648000,
+					"description": "Jul 1",
+					"date": 1656648000,
+					"value": 2000,
+					"isExcluded": false,
+					"isPending": true,
+					"categoryName": "Transfers"
+				},
+				{
+					"createdAt": 1655251200,
+					"description": "Jun 15",
+					"date": 1655251200,
+					"value": -1000,
+					"isExcluded": false,
+					"isPending": false,
+					"categoryName": "Rent"
+				},
+				{
+					"createdAt": 1654056000,
+					"description": "Jun 1",
+					"date": 1654056000,
+					"value": 2000,
+					"isExcluded": false,
+					"isPending": true,
+					"categoryName": "Transfers"
+				},
+				{
+					"createdAt": 1652572800,
+					"description": "May 15",
+					"date": 1652572800,
+					"value": -1000,
+					"isExcluded": false,
+					"isPending": false,
+					"categoryName": "Rent"
+				},
+				{
+					"createdAt": 1651377600,
+					"description": "May 1",
+					"date": 1651377600,
+					"value": 2000,
+					"isExcluded": false,
+					"isPending": true,
+					"categoryName": "Transfers"
+				},
+				{
+					"createdAt": 1649980800,
+					"description": "Apr 15",
+					"date": 1649980800,
+					"value": -1000,
+					"isExcluded": false,
+					"isPending": false,
+					"categoryName": "Rent"
+				},
+				{
+					"createdAt": 1648785600,
+					"description": "Apr 1",
+					"date": 1648785600,
+					"value": 2000,
+					"isExcluded": false,
+					"isPending": true,
+					"categoryName": "Transfers"
+				},
+				{
+					"createdAt": 1647302400,
+					"description": "Mar 15",
+					"date": 1647302400,
+					"value": -1000,
+					"isExcluded": false,
+					"isPending": false,
+					"categoryName": "Rent"
+				},
+				{
+					"createdAt": 1646110800,
+					"description": "Mar 1",
+					"date": 1646110800,
+					"value": 2000,
+					"isExcluded": false,
+					"isPending": true,
+					"categoryName": "Transfers"
+				},
+				{
+					"createdAt": 1644883200,
+					"description": "Feb 15",
+					"date": 1644883200,
+					"value": -1000,
+					"isExcluded": false,
+					"isPending": false,
+					"categoryName": "Rent"
+				},
+				{
+					"createdAt": 1643691600,
+					"description": "Feb 1",
+					"date": 1643691600,
+					"value": 2000,
+					"isExcluded": false,
+					"isPending": true,
+					"categoryName": "Transfers"
+				}
+			]
+		}
+	]
+}

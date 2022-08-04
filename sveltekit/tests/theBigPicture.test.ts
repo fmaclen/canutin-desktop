@@ -33,7 +33,7 @@ test.describe('Balance sheet', () => {
 		);
 
 		// Check that the balanceGroups are in the correct order
-		const balanceGroups = page.locator('.card');
+		const balanceGroups = page.locator('.bigPictureSummary .card');
 		expect(await balanceGroups.count()).toBe(5);
 		expect(await balanceGroups.nth(0).textContent()).toMatch('Net worth');
 		expect(await balanceGroups.nth(1).textContent()).toMatch('Cash');

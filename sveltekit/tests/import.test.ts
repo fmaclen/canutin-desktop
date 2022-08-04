@@ -109,14 +109,14 @@ test.describe('Import data', () => {
 		expect(await page.textContent('.card__value--netWorth')).toBe('$76,590');
 
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
-		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$650');
+		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$750');
 		expect(
 			await page.locator('.card', { hasText: "Bob's Laughable-Yield Checking" }).textContent()
-		).toMatch('$650');
-		expect(await page.locator('.card', { hasText: 'Debt' }).textContent()).toMatch('-$50');
+		).toMatch('$750');
+		expect(await page.locator('.card', { hasText: 'Debt' }).textContent()).toMatch('-$150');
 		expect(
 			await page.locator('.card', { hasText: "Alice's Limited Rewards" }).textContent()
-		).toMatch('-$50');
+		).toMatch('-$150');
 		expect(await page.locator('.card', { hasText: 'Investments' }).textContent()).toMatch(
 			'$69,420'
 		);
@@ -140,7 +140,7 @@ test.describe('Import data', () => {
 		expect(await page.$('p.notice--error')).toBeNull();
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
-		expect(await page.textContent('.card__value--netWorth')).toBe('$750');
+		expect(await page.textContent('.card__value--netWorth')).toBe('$849');
 	});
 
 	test('CanutinFile that only contains Assets can be imported', async ({ page }) => {

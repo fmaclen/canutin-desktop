@@ -31,7 +31,7 @@
 					"description": "Initech Payroll",
 					"date": 1593501600.0,
 					"value": 3500.21,
-					"isExcluded": true,
+					"isExcluded": false,
 					"isPending": true,
 					"categoryName": "Payroll & benefits"
 				}

@@ -7,7 +7,8 @@ export const getAccountCurrentBalance = async (account: Account) => {
 		// For auto-calculated accounts sum all of the transactions
 		const balanceFromTransactions = await prisma.transaction.aggregate({
 			where: {
-				accountId: account.id
+				accountId: account.id,
+				isExcluded: false
 			},
 			_sum: {
 				value: true

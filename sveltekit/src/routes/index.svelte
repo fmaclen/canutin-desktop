@@ -3,11 +3,14 @@
 	import Section from '$lib/components/Section.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import { formatCurrency } from '$lib/helpers/misc';
+	import { TrailingCashflowPeriods } from '$lib/helpers/constants';
 	import { balanceGroupAppearance, CardAppearance } from '$lib/components/Card';
-	import type { BigPictureSummary } from '.';
+	import type { BigPictureSummary, TrailingCashflow } from '.';
 
 	export let title = 'The big picture';
 	export let bigPictureSummary: BigPictureSummary;
+	export let trailingCashflow: TrailingCashflow;
+	export let currentTrailingCashflowSegment = TrailingCashflowPeriods.LAST_6_MONTHS;
 </script>
 
 <svelte:head>
@@ -32,14 +35,37 @@
 			{/each}
 		</div>
 	</Section>
+
+	{@const { last6Months, last12Months } = trailingCashflow}
+
+	<Section title="Trailing cashflow">
+		<nav slot="HEADER">{currentTrailingCashflowSegment}</nav>
+		<div class="bigPictureTrailingCashflow" slot="CONTENT">
+			{@const segment =
+				currentTrailingCashflowSegment === TrailingCashflowPeriods.LAST_6_MONTHS
+					? last6Months
+					: last12Months}
+
+			{@const incomeAverage = (segment?.incomeAverage && segment.incomeAverage) || 0}
+			<Card title="Income per month" value={formatCurrency(incomeAverage)} />
+			{@const expensesAverage = (segment?.expensesAverage && segment.expensesAverage) || 0}
+			<Card title="Expenses per month" value={formatCurrency(expensesAverage)} />
+			{@const surplusAverage = (segment?.surplusAverage && segment.surplusAverage) || 0}
+			<Card title="Surplus per month" value={formatCurrency(surplusAverage)} />
+		</div>
+	</Section>
 </ScrollView>
 
 <style lang="scss">
-	div.bigPictureSummary {
+	div.bigPictureSummary,
+	div.bigPictureTrailingCashflow {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
-		grid-template-rows: repeat(2, 1fr);
 		grid-column-gap: 8px;
+	}
+
+	div.bigPictureSummary {
+		grid-template-rows: repeat(2, 1fr);
 		grid-row-gap: 8px;
 	}
 </style>
