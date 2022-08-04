@@ -10,7 +10,7 @@
 	export let title = 'The big picture';
 	export let bigPictureSummary: BigPictureSummary;
 	export let trailingCashflow: TrailingCashflow;
-	export let currentTrailingCashflowSegment = TrailingCashflowPeriods.LAST_6_MONTHS;
+	export let currentSegment = TrailingCashflowPeriods.LAST_6_MONTHS;
 </script>
 
 <svelte:head>
@@ -39,12 +39,10 @@
 	{@const { last6Months, last12Months } = trailingCashflow}
 
 	<Section title="Trailing cashflow">
-		<nav slot="HEADER">{currentTrailingCashflowSegment}</nav>
+		<nav slot="HEADER">{currentSegment}</nav>
 		<div class="bigPictureTrailingCashflow" slot="CONTENT">
 			{@const segment =
-				currentTrailingCashflowSegment === TrailingCashflowPeriods.LAST_6_MONTHS
-					? last6Months
-					: last12Months}
+				currentSegment === TrailingCashflowPeriods.LAST_6_MONTHS ? last6Months : last12Months}
 
 			{@const incomeAverage = (segment?.incomeAverage && segment.incomeAverage) || 0}
 			<Card title="Income per month" value={formatCurrency(incomeAverage)} />
