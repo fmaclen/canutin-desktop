@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import seedDemoData from './fixtures/factories/seedDemoData.js';
-import { checkVaultIsDev, importCanutinFile, wipeVault } from './fixtures/helpers.js';
+import { checkVaultIsDev, importCanutinFile, seedDemoData, wipeVault } from './fixtures/helpers.js';
 
 test.describe('Balance sheet', () => {
 	test.beforeAll(() => {
@@ -44,9 +43,37 @@ test.describe('Balance sheet', () => {
 		expect(await balanceGroups.nth(4).textContent()).toMatch('Other assets');
 	});
 
-	test('Trailing cashflow totals are calculated correctly', async ({ page }) => {
-		await seedDemoData();
+	test('Trailing cashflow totals are calculated correctly', async ({ page, baseURL }) => {
 		await page.goto('/');
-		await page.screenshot({ path: 'theBigPicture-trailingCashflow.png' });
+		const netWorthCard = page.locator('.card', { hasText: 'Net worth' });
+		const incomePerMonthCard = page.locator('.card', { hasText: 'Income per month' });
+		const expensesPerMonthCard = page.locator('.card', { hasText: 'Expenses per month' });
+		const surplusPerMonthCard = page.locator('.card', { hasText: 'Surplus per month' });
+		expect(await netWorthCard.textContent()).toMatch('$0');
+		expect(await incomePerMonthCard.textContent()).toMatch('$0');
+		expect(await expensesPerMonthCard.textContent()).toMatch('$0');
+		expect(await surplusPerMonthCard.textContent()).toMatch('$0');
+
+		const last6MonthsButton = page.locator('.segmentedControl__button', {
+			hasText: 'Last 6 months'
+		});
+		const last12MonthsButton = page.locator('.segmentedControl__button', {
+			hasText: 'Last 12 months'
+		});
+		await seedDemoData(baseURL!);
+		await page.reload();
+		expect(await netWorthCard.textContent()).toMatch('$185,719');
+		expect(await incomePerMonthCard.textContent()).toMatch('$7,647');
+		expect(await expensesPerMonthCard.textContent()).toMatch('-$6,677');
+		expect(await surplusPerMonthCard.textContent()).toMatch('$970');
+		expect(await last6MonthsButton).toHaveClass(/segmentedControl__button--active/);
+		expect(await last12MonthsButton).not.toHaveClass(/segmentedControl__button--active/);
+
+		await last12MonthsButton.click();
+		expect(await incomePerMonthCard.textContent()).toMatch('$7,612');
+		expect(await expensesPerMonthCard.textContent()).toMatch('-$6,929');
+		expect(await surplusPerMonthCard.textContent()).toMatch('$683');
+		expect(await last6MonthsButton).not.toHaveClass(/segmentedControl__button--active/);
+		expect(await last12MonthsButton).toHaveClass(/segmentedControl__button--active/);
 	});
 });

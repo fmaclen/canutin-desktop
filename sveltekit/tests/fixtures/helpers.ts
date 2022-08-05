@@ -1,6 +1,7 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import { PrismaClient } from '@prisma/client';
+import { DeveloperFunctions } from '../../src/lib/helpers/constants.js';
 
 export const checkVaultIsDev = () => {
 	// Tests will delete all the data in the current database set by DATABASE_URL
@@ -22,12 +23,20 @@ export const wipeVault = async () => {
 
 export const importCanutinFile = async (baseUrl: string, fixtureName: string) => {
 	const canutinFile = fs.readFileSync(`./tests/fixtures/canutinFile-${fixtureName}.json`);
-	const result = await fetch(`${baseUrl}/import.json`, {
+	await fetch(`${baseUrl}/import.json`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
 		},
 		body: canutinFile
 	});
-	return result.json();
+};
+
+export const seedDemoData = async (baseUrl: string) => {
+	await fetch(`${baseUrl}/devTools.json?functionType=${DeveloperFunctions.DB_SEED}`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	});
 };
