@@ -100,7 +100,7 @@
 		cursor: pointer;
 
 		&:hover {
-			color: var(--color-grey80);
+			color: var(--color-grey70);
 		}
 
 		&--active {
