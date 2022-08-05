@@ -1,7 +1,6 @@
 import prisma from '$lib/helpers/prismaClient';
 import { getBalanceGroupLabel, SortOrder, BalanceGroup } from '$lib/helpers/constants';
-import { getAccountCurrentBalance } from '$lib/helpers/accounts';
-import { getAssetCurrentBalance } from '$lib/helpers/assets';
+import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
 import { sortByKey } from '$lib/helpers/misc';
 
 interface BalanceSheetItem {

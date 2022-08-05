@@ -2,7 +2,7 @@
 	export let isNegative: boolean = false;
 </script>
 
-<button type="submit" class="button {isNegative && 'button--negative'}"><slot /></button>
+<button class="button {isNegative && 'button--negative'}" on:click><slot /></button>
 
 <style lang="scss">
 	button.button {

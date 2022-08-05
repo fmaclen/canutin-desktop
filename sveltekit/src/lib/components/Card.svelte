@@ -18,7 +18,7 @@
 		grid-gap: 16px;
 		justify-content: space-between;
 		padding: 16px;
-		box-shadow: 0px 4px 15px rgb(0 0 0 / 10%), 0px 1px 1px rgb(0 0 0 / 5%);
+		box-shadow: var(--box-shadow);
 		border-radius: 4px;
 		background-color: var(--color-white);
 

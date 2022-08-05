@@ -3,14 +3,24 @@
 	import Section from '$lib/components/Section.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Notice from '$lib/components/Notice.svelte';
+	import { DeveloperFunctions } from '$lib/helpers/constants';
 
 	export let title = 'Developer tools';
 	export let isSuccesful: boolean = false;
 
-	const submitForm = async (event: any) => {
-		event.preventDefault();
+	const databaseSeed = async () => {
+		await fetch(`/devTools.json?functionType=${DeveloperFunctions.DB_SEED}`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then((response) => {
+			isSuccesful = response.ok;
+		});
+	};
 
-		await fetch('/devTools.json', {
+	const databaseWipe = async () => {
+		await fetch(`/devTools.json?functionType=${DeveloperFunctions.DB_WIPE}`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -28,12 +38,13 @@
 <ScrollView {title}>
 	<Section title="Database">
 		<div slot="CONTENT" class="database">
-			<form class="form" on:submit={submitForm}>
-				<Button isNegative={true}>Delete all data</Button>
-			</form>
+			<nav class="nav">
+				<Button on:click={databaseSeed}>Seed demo data</Button>
+				<Button on:click={databaseWipe} isNegative={true}>Delete all data</Button>
+			</nav>
 
 			{#if isSuccesful}
-				<Notice>Database wiped succesfully</Notice>
+				<Notice>Database action was performed (likely without errors)</Notice>
 			{/if}
 		</div>
 	</Section>
@@ -46,7 +57,10 @@
 		row-gap: 16px;
 	}
 
-	form.form {
+	nav.nav {
+		display: flex;
+		flex-direction: row;
+		column-gap: 12px;
 		border: 1px solid var(--color-border);
 		border-radius: 4px;
 		display: flex;

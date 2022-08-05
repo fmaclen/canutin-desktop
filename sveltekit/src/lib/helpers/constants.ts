@@ -22,3 +22,13 @@ export enum SortOrder {
 	DESC = 'desc',
 	ASC = 'asc'
 }
+
+export enum TrailingCashflowPeriods {
+	LAST_6_MONTHS = 'Last 6 months',
+	LAST_12_MONTHS = 'Last 12 months'
+}
+
+export enum DeveloperFunctions {
+	DB_WIPE,
+	DB_SEED
+}
