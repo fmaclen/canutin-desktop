@@ -7,8 +7,7 @@ import {
 	BalanceGroup,
 	TrailingCashflowPeriods
 } from '$lib/helpers/constants';
-import { getAccountCurrentBalance } from '$lib/helpers/accounts';
-import { getAssetCurrentBalance } from '$lib/helpers/assets';
+import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
 import { sortByKey } from '$lib/helpers/misc';
 
 interface BigPictureBalanceGroup {
@@ -117,7 +116,7 @@ export interface TrailingCashflow {
 	last12Months: PeriodAverageCashflow;
 }
 
-const getTrailingCashflow = async () => {
+const getTrailingCashflow = async (): Promise<TrailingCashflow> => {
 	const transactions = await prisma.transaction.findMany({
 		where: {
 			date: {
@@ -136,7 +135,19 @@ const getTrailingCashflow = async () => {
 	});
 
 	// Don't continue if there are no transactions
-	if (transactions.length === 0) return;
+	if (transactions.length === 0) {
+		const noAverages = {
+			incomeAverage: 0,
+			expensesAverage: 0,
+			surplusAverage: 0
+		};
+
+		return {
+			periods: [],
+			last6Months: noAverages,
+			last12Months: noAverages
+		};
+	}
 
 	const monthDates = eachMonthOfInterval({
 		start: transactions[transactions.length - 1].date,
