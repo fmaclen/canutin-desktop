@@ -10,6 +10,17 @@ import {
 import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
 import { sortByKey } from '$lib/helpers/misc';
 
+export const GET = async () => {
+	return {
+		body: {
+			summary: await getSummary(),
+			trailingCashflow: await getTrailingCashflow()
+		}
+	};
+};
+
+// Summary
+
 interface BigPictureBalanceGroup {
 	id: BalanceGroup;
 	label: string;
@@ -21,7 +32,7 @@ export interface BigPictureSummary {
 	balanceGroups: BigPictureBalanceGroup[];
 }
 
-export const GET = async () => {
+const getSummary = async () => {
 	// Get Accounts and Assets
 	const accounts = await prisma.account.findMany();
 	const assets = await prisma.asset.findMany();
@@ -72,24 +83,17 @@ export const GET = async () => {
 	// Sort `balanceSheetBalanceGroups` by `balanceGroup`
 	sortByKey(bigPictureBalanceGroups, 'id', SortOrder.DESC);
 
-	// Calculate `netWorth` by the sum of all `balanceGroups` current balances
-	const bigPictureSummary: BigPictureSummary = {
+	return {
+		// Calculate `netWorth` by the sum of all `balanceGroups` current balances
 		netWorth: bigPictureBalanceGroups.reduce(
 			(sum, { currentBalance }) => (sum += currentBalance),
 			0
 		),
 		balanceGroups: bigPictureBalanceGroups
 	};
-
-	const trailingCashflow = await getTrailingCashflow();
-
-	return {
-		body: {
-			bigPictureSummary,
-			trailingCashflow
-		}
-	};
 };
+
+// Trailing Cashflow
 
 interface TransactionForCashflow {
 	date: Date;
@@ -117,6 +121,7 @@ export interface TrailingCashflow {
 }
 
 const getTrailingCashflow = async (): Promise<TrailingCashflow> => {
+	// Get all transactions in the last 12 months (except for excluded ones)
 	const transactions = await prisma.transaction.findMany({
 		where: {
 			date: {
@@ -149,7 +154,7 @@ const getTrailingCashflow = async (): Promise<TrailingCashflow> => {
 		};
 	}
 
-	const monthDates = eachMonthOfInterval({
+	const monthsInPeriod = eachMonthOfInterval({
 		start: transactions[transactions.length - 1].date,
 		end: new Date()
 	});
@@ -166,24 +171,28 @@ const getTrailingCashflow = async (): Promise<TrailingCashflow> => {
 		);
 	};
 
+	// Strip timezone from date and set to UTC
 	const dateInUTC = (date: Date) => {
 		return new Date(
 			Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0)
 		);
 	};
 
-	const monthlyCashflow = monthDates.reduce((acc: PeriodCashflow[], monthDate, index) => {
-		const monthlyTransactions = getTransactionsInPeriod(
+	// Get the income, expense and surplus totals for each month
+	const monthlyCashflow = monthsInPeriod.reduce((acc: PeriodCashflow[], monthDate, index) => {
+		const transactionsInPeriod = getTransactionsInPeriod(
 			transactions,
 			dateInUTC(monthDate),
-			monthDates[index + 1] ? dateInUTC(monthDates[index + 1]) : dateInUTC(endOfMonth(new Date()))
+			monthsInPeriod[index + 1]
+				? dateInUTC(monthsInPeriod[index + 1])
+				: dateInUTC(endOfMonth(new Date()))
 		);
 
-		const income = monthlyTransactions.reduce(
+		const income = transactionsInPeriod.reduce(
 			(acc, { value }) => (value > 0 ? value + acc : acc),
 			0
 		);
-		const expenses = monthlyTransactions.reduce(
+		const expenses = transactionsInPeriod.reduce(
 			(acc, { value }) => (value < 0 ? value + acc : acc),
 			0
 		);
@@ -201,6 +210,7 @@ const getTrailingCashflow = async (): Promise<TrailingCashflow> => {
 		];
 	}, []);
 
+	// Calculate the trailing averages for the chosen period
 	const getAverages = (period: TrailingCashflowPeriods) => {
 		const months = period === TrailingCashflowPeriods.LAST_6_MONTHS ? 6 : 12;
 

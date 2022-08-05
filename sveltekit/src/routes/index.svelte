@@ -10,7 +10,7 @@
 	export let title = 'The big picture';
 
 	// Summary
-	export let bigPictureSummary: BigPictureSummary;
+	export let summary: BigPictureSummary;
 
 	// Trailing cashflow
 	export let trailingCashflow: TrailingCashflow;
@@ -32,11 +32,11 @@
 		<div class="bigPictureSummary" slot="CONTENT">
 			<Card
 				title="Net worth"
-				value={formatCurrency(bigPictureSummary.netWorth)}
+				value={formatCurrency(summary.netWorth)}
 				appearance={CardAppearance.NET_WORTH}
 			/>
 
-			{#each bigPictureSummary.balanceGroups as balanceGroup}
+			{#each summary.balanceGroups as balanceGroup}
 				<Card
 					title={balanceGroup.label}
 					value={formatCurrency(balanceGroup.currentBalance)}
