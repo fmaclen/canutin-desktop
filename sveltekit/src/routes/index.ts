@@ -101,7 +101,7 @@ interface TransactionForCashflow {
 }
 
 interface PeriodCashflow {
-	month: Date;
+	periodMonth: Date;
 	income: number;
 	expenses: number;
 	surplus: number;
@@ -179,10 +179,10 @@ const getTrailingCashflow = async (): Promise<TrailingCashflow> => {
 	};
 
 	// Get the income, expense and surplus totals for each month
-	const monthlyCashflow = monthsInPeriod.reduce((acc: PeriodCashflow[], monthDate, index) => {
+	const monthlyCashflow = monthsInPeriod.reduce((acc: PeriodCashflow[], periodMonth, index) => {
 		const transactionsInPeriod = getTransactionsInPeriod(
 			transactions,
-			dateInUTC(monthDate),
+			dateInUTC(periodMonth),
 			monthsInPeriod[index + 1]
 				? dateInUTC(monthsInPeriod[index + 1])
 				: dateInUTC(endOfMonth(new Date()))
@@ -201,7 +201,7 @@ const getTrailingCashflow = async (): Promise<TrailingCashflow> => {
 		return [
 			...acc,
 			{
-				month: monthDate,
+				periodMonth,
 				income,
 				expenses,
 				surplus,
