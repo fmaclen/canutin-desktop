@@ -1,15 +1,11 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import { expect, test } from '@playwright/test';
-import { checkVaultIsDev, wipeVault } from './fixtures/helpers.js';
+import { databaseWipe } from './fixtures/helpers.js';
 
 test.describe('Import data', () => {
-	test.beforeAll(() => {
-		checkVaultIsDev();
-	});
-
-	test.beforeEach(async () => {
-		await wipeVault();
+	test.beforeEach(async ({ baseURL }) => {
+		await databaseWipe(baseURL!);
 	});
 
 	test('CanutinFile at different levels of provided data', async ({ page }) => {

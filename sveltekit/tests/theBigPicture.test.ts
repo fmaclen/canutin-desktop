@@ -1,14 +1,10 @@
 import { expect, test } from '@playwright/test';
 
-import { checkVaultIsDev, importCanutinFile, seedDemoData, wipeVault } from './fixtures/helpers.js';
+import { importCanutinFile, databaseSeed, databaseWipe } from './fixtures/helpers.js';
 
 test.describe('Balance sheet', () => {
-	test.beforeAll(() => {
-		checkVaultIsDev();
-	});
-
-	test.beforeEach(async () => {
-		await wipeVault();
+	test.beforeEach(async ({ baseURL }) => {
+		await databaseWipe(baseURL!);
 	});
 
 	test('Summary totals are calculated correctly', async ({ page, baseURL }) => {
@@ -60,20 +56,20 @@ test.describe('Balance sheet', () => {
 		const last12MonthsButton = page.locator('.segmentedControl__button', {
 			hasText: 'Last 12 months'
 		});
-		await seedDemoData(baseURL!);
+		await databaseSeed(baseURL!);
 		await page.reload();
 		expect(await netWorthCard.textContent()).toMatch('$185,719');
 		expect(await incomePerMonthCard.textContent()).toMatch('$7,647');
 		expect(await expensesPerMonthCard.textContent()).toMatch('-$6,677');
 		expect(await surplusPerMonthCard.textContent()).toMatch('$970');
-		expect(await last6MonthsButton).toHaveClass(/segmentedControl__button--active/);
-		expect(await last12MonthsButton).not.toHaveClass(/segmentedControl__button--active/);
+		await expect(last6MonthsButton).toHaveClass(/segmentedControl__button--active/);
+		await expect(last12MonthsButton).not.toHaveClass(/segmentedControl__button--active/);
 
 		await last12MonthsButton.click();
 		expect(await incomePerMonthCard.textContent()).toMatch('$7,612');
 		expect(await expensesPerMonthCard.textContent()).toMatch('-$6,929');
 		expect(await surplusPerMonthCard.textContent()).toMatch('$683');
-		expect(await last6MonthsButton).not.toHaveClass(/segmentedControl__button--active/);
-		expect(await last12MonthsButton).toHaveClass(/segmentedControl__button--active/);
+		await expect(last6MonthsButton).not.toHaveClass(/segmentedControl__button--active/);
+		await expect(last12MonthsButton).toHaveClass(/segmentedControl__button--active/);
 	});
 });

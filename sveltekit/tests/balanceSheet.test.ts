@@ -1,13 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { checkVaultIsDev, importCanutinFile, wipeVault } from './fixtures/helpers.js';
+import { importCanutinFile, databaseWipe } from './fixtures/helpers.js';
 
 test.describe('Balance sheet', () => {
-	test.beforeAll(() => {
-		checkVaultIsDev();
-	});
-
-	test.beforeEach(async () => {
-		await wipeVault();
+	test.beforeEach(async ({ baseURL }) => {
+		await databaseWipe(baseURL!);
 	});
 
 	test('UI is rendered correctly', async ({ page, baseURL }) => {
