@@ -1,4 +1,6 @@
 import { expect, test } from '@playwright/test';
+
+import seedDemoData from './fixtures/factories/seedDemoData.js';
 import { checkVaultIsDev, importCanutinFile, wipeVault } from './fixtures/helpers.js';
 
 test.describe('Balance sheet', () => {
@@ -40,5 +42,11 @@ test.describe('Balance sheet', () => {
 		expect(await balanceGroups.nth(2).textContent()).toMatch('Debt');
 		expect(await balanceGroups.nth(3).textContent()).toMatch('Investments');
 		expect(await balanceGroups.nth(4).textContent()).toMatch('Other assets');
+	});
+
+	test('Trailing cashflow totals are calculated correctly', async ({ page }) => {
+		await seedDemoData();
+		await page.goto('/');
+		await page.screenshot({ path: 'theBigPicture-trailingCashflow.png' });
 	});
 });
