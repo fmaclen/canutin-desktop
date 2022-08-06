@@ -200,12 +200,16 @@ const getCashflow = async (): Promise<Cashflow> => {
 			...acc,
 			{
 				id,
-				// Would love to pass the Date object as-is but the return gets serialized to JSON
-				// so Dates are converted to string. So instead, we convert the month to a Unix timestamp.
-				month: getUnixTime(month),
 				income,
 				expenses,
 				surplus,
+
+				// Would love to pass the Date object as-is but the endpoint returns a serialized JSON
+				// so Dates are converted to string. Instead, we convert the month to a Unix timestamp.
+				month: getUnixTime(month),
+
+				// We don't know the value of `chartRatio` at this point so we set it to 0.
+				// It will be overwriten later after we get the `highestSurplus` and `lowestSurplus`.
 				chartRatio: 0
 			}
 		];

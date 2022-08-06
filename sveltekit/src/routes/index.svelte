@@ -17,8 +17,8 @@
 
 	// Cashflow
 	export let cashflow: Cashflow;
-	export let activePeriod = 11;
 	export let currentPeriod = cashflow.periods[cashflow.periods.length - 1];
+	export let activePeriod = currentPeriod.id;
 	export let activeIncome = currentPeriod.income;
 	export let activeExpenses = currentPeriod.expenses;
 	export let activeSurplus = currentPeriod.surplus;
@@ -66,6 +66,7 @@
 	<Section title="Cashflow">
 		<div slot="CONTENT" class="cashflow">
 			{@const { chart } = cashflow}
+
 			<div class="chart">
 				{#each cashflow.periods as period}
 					{@const isCurrentPeriod = currentPeriod.id === period.id}
@@ -74,9 +75,9 @@
 						isActive ||
 						isCurrentPeriod ||
 						[chart.highestSurplus, chart.lowestSurplus].includes(period.surplus)}
-
 					{@const month = fromUnixTime(period.month)}
 					{@const isJanuary = month.getMonth() === 0}
+
 					<div
 						class="chart__period {isActive && 'chart__period--active'} {isJanuary &&
 							'chart__period--january'}"
@@ -92,7 +93,7 @@
 							positiveRatio={chart.positiveRatio}
 							negativeRatio={chart.negativeRatio}
 						/>
-						<time class="chart__time {isActive && 'chart__time--active'} ">
+						<time class="chart__time {isActive && 'chart__time--active'}">
 							{format(month, 'MMM')}
 							{isJanuary ? `'${format(month, 'yy')}` : ''}
 						</time>
@@ -130,7 +131,7 @@
 			{@const { last6Months, last12Months } = trailingCashflow}
 			{@const segment =
 				currentSegment === TrailingCashflowPeriods.LAST_6_MONTHS ? last6Months : last12Months}
-			<Card title="Income per month" value={formatCurrency(0)} />
+			<Card title="Income per month" value={formatCurrency(segment.incomeAverage)} />
 			<Card title="Expenses per month" value={formatCurrency(segment.expensesAverage)} />
 			<Card title="Surplus per month" value={formatCurrency(segment.surplusAverage)} />
 		</div>
@@ -169,6 +170,16 @@
 
 		&--january {
 			border-left-style: dashed;
+		}
+
+		&:first-child {
+			div.chart__hr::before {
+				content: '$0';
+				position: absolute;
+				display: block;
+				left: 0;
+				top: 0;
+			}
 		}
 	}
 

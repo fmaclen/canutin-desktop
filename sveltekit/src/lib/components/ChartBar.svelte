@@ -10,12 +10,12 @@
 	export let positiveRatio: number;
 	export let negativeRatio: number;
 
-	let barRatio = `grid-template-rows: ${positiveRatio}fr 1px ${negativeRatio}fr;`;
+	let barGridTemplateRows = `grid-template-rows: ${positiveRatio}fr 1px ${negativeRatio}fr;`;
 	let barHeight = `height: ${height}%;`;
 	let barBackground = isCurrentPeriod ? `--background-url: url(${currentPeriodBackground});` : '';
 </script>
 
-<div class="chart__barContainer" style={barRatio} title={value.toString()}>
+<div class="chart__barContainer" style={barGridTemplateRows} title={value.toString()}>
 	{#if sentiment === 'negative'}
 		<div class="chart__barPlaceholder" />
 		<hr class="chart__hr" />
@@ -125,8 +125,8 @@
 	}
 
 	hr.chart__hr {
-		height: 1px;
 		border: none;
+		height: 1px;
 		margin: 0;
 		background-color: var(--color-border);
 	}
