@@ -251,7 +251,7 @@ const getCashflow = async (): Promise<Cashflow> => {
 		const chartRatio =
 			cashflowPeriod.surplus > 0
 				? proportionBetween(cashflowPeriod.surplus, highestSurplus)
-				: proportionBetween(Math.abs(cashflowPeriod.surplus), lowestSurplus);
+				: proportionBetween(Math.abs(cashflowPeriod.surplus), Math.abs(lowestSurplus));
 
 		return {
 			...cashflowPeriod,
