@@ -1,7 +1,6 @@
 <script lang="ts">
 	import currentPeriodBackground from '$lib/assets/chart-current-background.svg';
 
-	export let sentiment: string;
 	export let isCurrentPeriod: boolean;
 	export let isActive: boolean;
 	export let isLabelVisible: boolean;
@@ -9,9 +8,12 @@
 	export let height: number;
 	export let positiveRatio: number;
 	export let negativeRatio: number;
+	export let sentiment: string | undefined;
 
-	let barGridTemplateRows = `grid-template-rows: ${positiveRatio}fr 1px ${negativeRatio}fr;`;
-	let barHeight = `height: ${height}%;`;
+	let barGridTemplateRows = `grid-template-rows: ${Math.round(positiveRatio)}fr 1px ${Math.round(
+		negativeRatio
+	)}fr;`;
+	let barHeight = `height: calc(${height}% - 32px);`;
 	let barBackground = isCurrentPeriod ? `--background-url: url(${currentPeriodBackground});` : '';
 </script>
 
@@ -21,18 +23,24 @@
 		<hr class="chart__hr" />
 	{/if}
 
-	<div class="chart__bar chart__bar--{sentiment}">
-		<p class="chart__label {isLabelVisible && 'chart__label--visible'}">
-			{value}
-		</p>
+	{#if sentiment === 'positive' || sentiment === 'negative'}
+		<div class="chart__bar {sentiment && `chart__bar--${sentiment}`}">
+			<p class="chart__label {isLabelVisible && 'chart__label--visible'}">
+				{value}
+			</p>
 
-		<div
-			class="chart__graph {isActive &&
-				!isCurrentPeriod &&
-				'chart__graph--active'} {isCurrentPeriod && 'chart__graph--currentPeriod'}"
-			style={`${barHeight} ${barBackground}`}
-		/>
-	</div>
+			<div
+				class="chart__graph {isActive &&
+					!isCurrentPeriod &&
+					'chart__graph--active'} {isCurrentPeriod && 'chart__graph--currentPeriod'}"
+				style={`${barHeight} ${barBackground}`}
+			/>
+		</div>
+	{:else}
+		<div class="chart__barPlaceholder" />
+		<hr class="chart__hr" />
+		<div class="chart__barPlaceholder" />
+	{/if}
 
 	{#if sentiment === 'positive'}
 		<hr class="chart__hr" />
@@ -54,8 +62,10 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		min-height: 28px;
+		min-height: 32px;
 		overflow: hidden;
+		color: var(--color-grey50);
+		border: none;
 
 		&--positive {
 			color: var(--color-greenPrimary);

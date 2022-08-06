@@ -89,7 +89,11 @@
 							{isLabelVisible}
 							value={formatCurrency(period.surplus)}
 							height={period.chartRatio}
-							sentiment={period.surplus > 0 ? 'positive' : 'negative'}
+							sentiment={period.surplus > 0
+								? 'positive'
+								: period.surplus < 0
+								? 'negative'
+								: undefined}
 							positiveRatio={chart.positiveRatio}
 							negativeRatio={chart.negativeRatio}
 						/>
@@ -200,7 +204,7 @@
 		border-radius: 0 0 4px 4px;
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
-		grid-gap: 16px;
+		grid-gap: 8px;
 		grid-column-start: span 12;
 		padding: 16px;
 		background-color: var(--color-grey3);

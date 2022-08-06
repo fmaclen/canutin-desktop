@@ -16,12 +16,13 @@ import {
 	TrailingCashflowPeriods
 } from '$lib/helpers/constants';
 import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
-import { proportionBetween, sortByKey } from '$lib/helpers/misc';
+import { dateInUTC, proportionBetween, sortByKey } from '$lib/helpers/misc';
 
 let cashflow: Cashflow;
 
 export const GET = async () => {
 	cashflow = await getCashflow();
+
 	return {
 		body: {
 			summary: await getSummary(),
@@ -129,12 +130,19 @@ export interface Cashflow {
 }
 
 const getCashflow = async (): Promise<Cashflow> => {
+	const CASHFLOW_PERIODS = 11;
+
+	const monthsInPeriod = eachMonthOfInterval({
+		start: sub(new Date(), { months: CASHFLOW_PERIODS }),
+		end: new Date()
+	});
+
 	// Get all transactions in the last 12 months (except for excluded ones)
 	const transactions = await prisma.transaction.findMany({
 		where: {
 			date: {
 				lte: new Date(),
-				gte: sub(new Date(), { months: 11 })
+				gte: sub(new Date(), { months: CASHFLOW_PERIODS })
 			},
 			isExcluded: false
 		},
@@ -147,17 +155,25 @@ const getCashflow = async (): Promise<Cashflow> => {
 		}
 	});
 
-	// Don't continue if there are no transactions
-	if (transactions.length === 0)
+	// If there are no transactions we return zeroed cashflow periods
+	if (transactions.length === 0) {
+		const periods: PeriodCashflow[] = [];
+		for (const [index, month] of monthsInPeriod.entries()) {
+			periods.push({
+				id: index,
+				income: 0,
+				expenses: 0,
+				surplus: 0,
+				month: getUnixTime(month),
+				chartRatio: 0
+			});
+		}
+
 		return {
-			periods: [],
+			periods,
 			chart: { positiveRatio: 0, negativeRatio: 0, highestSurplus: 0, lowestSurplus: 0 }
 		};
-
-	const monthsInPeriod = eachMonthOfInterval({
-		start: transactions[transactions.length - 1].date,
-		end: new Date()
-	});
+	}
 
 	const getTransactionsInPeriod = (
 		transactions: TransactionForCashflow[],
@@ -168,13 +184,6 @@ const getCashflow = async (): Promise<Cashflow> => {
 			(transaction) =>
 				(isBefore(from, transaction.date) || isEqual(from, transaction.date)) &&
 				isAfter(to, transaction.date)
-		);
-	};
-
-	// Strip timezone from date and set to UTC
-	const dateInUTC = (date: Date) => {
-		return new Date(
-			Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0)
 		);
 	};
 
@@ -221,14 +230,21 @@ const getCashflow = async (): Promise<Cashflow> => {
 		.sort((a, b) => b.surplus - a.surplus)[0].surplus;
 
 	// Get the lowest negative surplus
-	const lowestSurplus = Math.abs(
-		cashflowPeriods.filter(({ surplus }) => surplus < 0).sort((a, b) => a.surplus - b.surplus)[0]
-			.surplus
-	);
+	const lowestSurplus = cashflowPeriods
+		.filter(({ surplus }) => surplus < 0)
+		.sort((a, b) => a.surplus - b.surplus)[0].surplus;
 
-	const surplusRange = highestSurplus + lowestSurplus;
-	const positiveRatio = proportionBetween(highestSurplus, surplusRange);
-	const negativeRatio = proportionBetween(lowestSurplus, surplusRange);
+	const surplusRange = highestSurplus + Math.abs(lowestSurplus);
+	let positiveRatio = proportionBetween(highestSurplus, surplusRange);
+	let negativeRatio = proportionBetween(Math.abs(lowestSurplus), surplusRange);
+
+	if (positiveRatio > negativeRatio) {
+		positiveRatio = positiveRatio / negativeRatio;
+		negativeRatio = 1;
+	} else {
+		negativeRatio = negativeRatio / positiveRatio;
+		positiveRatio = 1;
+	}
 
 	// Update the chartRatio for each period
 	cashflowPeriods = cashflowPeriods.map((cashflowPeriod) => {
@@ -245,7 +261,7 @@ const getCashflow = async (): Promise<Cashflow> => {
 
 	return {
 		periods: cashflowPeriods,
-		chart: { positiveRatio, negativeRatio, highestSurplus, lowestSurplus: lowestSurplus * -1 }
+		chart: { positiveRatio, negativeRatio, highestSurplus, lowestSurplus: lowestSurplus }
 	};
 };
 

@@ -16,6 +16,7 @@
 		display: grid;
 		grid-auto-flow: column;
 		grid-gap: 16px;
+		align-items: center;
 		justify-content: space-between;
 		padding: 16px;
 		box-shadow: var(--box-shadow);
