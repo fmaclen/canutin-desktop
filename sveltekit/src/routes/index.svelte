@@ -171,16 +171,6 @@
 		&--january {
 			border-left-style: dashed;
 		}
-
-		&:first-child {
-			div.chart__hr::before {
-				content: '$0';
-				position: absolute;
-				display: block;
-				left: 0;
-				top: 0;
-			}
-		}
 	}
 
 	time.chart__time {
