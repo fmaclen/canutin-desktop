@@ -9,12 +9,7 @@ import {
 } from 'date-fns';
 
 import prisma from '$lib/helpers/prismaClient';
-import {
-	getBalanceGroupLabel,
-	SortOrder,
-	BalanceGroup,
-	TrailingCashflowPeriods
-} from '$lib/helpers/constants';
+import { getBalanceGroupLabel, SortOrder, BalanceGroup } from '$lib/helpers/constants';
 import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
 import { dateInUTC, proportionBetween, sortByKey } from '$lib/helpers/misc';
 
@@ -27,12 +22,12 @@ export const GET = async () => {
 		body: {
 			summary: await getSummary(),
 			cashflow,
-			trailingCashflow: await getTrailingCashflow()
+			trailingCashflow: await getTrailingCashflow(cashflow)
 		}
 	};
 };
 
-// Summary
+// Summary ---------------------------------------------------------------------
 
 interface BigPictureBalanceGroup {
 	id: BalanceGroup;
@@ -106,7 +101,7 @@ const getSummary = async () => {
 	};
 };
 
-// Cashflow
+// Cashflow --------------------------------------------------------------------
 
 export interface PeriodCashflow {
 	id: number;
@@ -272,7 +267,7 @@ const getCashflow = async (): Promise<Cashflow> => {
 	};
 };
 
-// Trailing Cashflow
+// Trailing Cashflow -----------------------------------------------------------
 
 interface TransactionForCashflow {
 	date: Date;
@@ -291,7 +286,7 @@ export interface TrailingCashflow {
 }
 
 // Calculate the trailing averages for the chosen period
-const getTrailingCashflow = (): TrailingCashflow => {
+const getTrailingCashflow = (cashflow: Cashflow): TrailingCashflow => {
 	const MONTHS_6 = 6;
 	const MONTHS_12 = 12;
 

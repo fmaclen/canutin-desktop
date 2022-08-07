@@ -10,10 +10,17 @@
 	export let negativeRatio: number;
 	export let sentiment: string | undefined;
 
+	// When the positive and negative ratio are the same we render them in a 1:1 ratio.
+	// The most common scenario is when the chart has no data and all the values are 0.
+	if (positiveRatio === negativeRatio) {
+		positiveRatio = 1;
+		negativeRatio = 1;
+	}
+
 	let barGridTemplateRows = `grid-template-rows: ${Math.round(positiveRatio)}fr 1px ${Math.round(
 		negativeRatio
 	)}fr;`;
-	let barHeight = `height: calc(${height}% - 32px);`;
+	let barHeight = `height: ${height}%;`;
 	let barBackground = isCurrentPeriod ? `--background-url: url(${currentPeriodBackground});` : '';
 </script>
 
