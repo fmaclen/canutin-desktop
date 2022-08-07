@@ -140,4 +140,8 @@
 		margin: 0;
 		background-color: var(--color-border);
 	}
+
+	div.chart__barPlaceholder {
+		min-height: 32px;
+	}
 </style>

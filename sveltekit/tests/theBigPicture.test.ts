@@ -59,16 +59,16 @@ test.describe('Balance sheet', () => {
 		await databaseSeed(baseURL!);
 		await page.reload();
 		expect(await netWorthCard.textContent()).toMatch('$185,719');
-		expect(await incomePerMonthCard.textContent()).toMatch('$7,647');
-		expect(await expensesPerMonthCard.textContent()).toMatch('-$6,677');
-		expect(await surplusPerMonthCard.textContent()).toMatch('$970');
+		expect(await incomePerMonthCard.textContent()).toMatch('$7,577');
+		expect(await expensesPerMonthCard.textContent()).toMatch('-$7,137');
+		expect(await surplusPerMonthCard.textContent()).toMatch('$440');
 		await expect(last6MonthsButton).toHaveClass(/segmentedControl__button--active/);
 		await expect(last12MonthsButton).not.toHaveClass(/segmentedControl__button--active/);
 
 		await last12MonthsButton.click();
 		expect(await incomePerMonthCard.textContent()).toMatch('$7,612');
-		expect(await expensesPerMonthCard.textContent()).toMatch('-$6,929');
-		expect(await surplusPerMonthCard.textContent()).toMatch('$683');
+		expect(await expensesPerMonthCard.textContent()).toMatch('-$7,167');
+		expect(await surplusPerMonthCard.textContent()).toMatch('$445');
 		await expect(last6MonthsButton).not.toHaveClass(/segmentedControl__button--active/);
 		await expect(last12MonthsButton).toHaveClass(/segmentedControl__button--active/);
 	});

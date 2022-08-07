@@ -130,19 +130,20 @@ export interface Cashflow {
 }
 
 const getCashflow = async (): Promise<Cashflow> => {
-	const CASHFLOW_PERIODS = 11;
+	const CASHFLOW_PERIODS = 13;
 
+	const today = dateInUTC(new Date());
 	const monthsInPeriod = eachMonthOfInterval({
-		start: sub(new Date(), { months: CASHFLOW_PERIODS }),
-		end: new Date()
+		start: sub(today, { months: CASHFLOW_PERIODS - 1 }),
+		end: endOfMonth(today)
 	});
 
 	// Get all transactions in the last 12 months (except for excluded ones)
 	const transactions = await prisma.transaction.findMany({
 		where: {
 			date: {
-				lte: new Date(),
-				gte: sub(new Date(), { months: CASHFLOW_PERIODS })
+				lte: endOfMonth(today),
+				gte: sub(today, { months: CASHFLOW_PERIODS })
 			},
 			isExcluded: false
 		},
@@ -225,25 +226,31 @@ const getCashflow = async (): Promise<Cashflow> => {
 	}, []);
 
 	// Get the highest positive surplus
-	const highestSurplus = cashflowPeriods
-		.filter(({ surplus }) => surplus > 0)
-		.sort((a, b) => b.surplus - a.surplus)[0].surplus;
+	const positiveSurplusPeriods = cashflowPeriods.filter(({ surplus }) => surplus > 0);
+	const highestSurplus =
+		positiveSurplusPeriods.length > 0
+			? positiveSurplusPeriods.sort((a, b) => b.surplus - a.surplus)[0].surplus
+			: 0;
 
 	// Get the lowest negative surplus
-	const lowestSurplus = cashflowPeriods
-		.filter(({ surplus }) => surplus < 0)
-		.sort((a, b) => a.surplus - b.surplus)[0].surplus;
+	const negativeSurplusPeriods = cashflowPeriods.filter(({ surplus }) => surplus < 0);
+	const lowestSurplus =
+		negativeSurplusPeriods.length > 0
+			? negativeSurplusPeriods.sort((a, b) => a.surplus - b.surplus)[0].surplus
+			: 0;
 
 	const surplusRange = highestSurplus + Math.abs(lowestSurplus);
 	let positiveRatio = proportionBetween(highestSurplus, surplusRange);
 	let negativeRatio = proportionBetween(Math.abs(lowestSurplus), surplusRange);
 
 	if (positiveRatio > negativeRatio) {
-		positiveRatio = positiveRatio / negativeRatio;
-		negativeRatio = 1;
+		const isNegativeRatioZero = negativeRatio === 0;
+		positiveRatio = isNegativeRatioZero ? 1 : positiveRatio / negativeRatio;
+		negativeRatio = isNegativeRatioZero ? 0 : 1;
 	} else {
-		negativeRatio = negativeRatio / positiveRatio;
-		positiveRatio = 1;
+		const isPositiveRatioZero = positiveRatio === 0;
+		negativeRatio = isPositiveRatioZero ? 1 : negativeRatio / positiveRatio;
+		positiveRatio = isPositiveRatioZero ? 0 : 1;
 	}
 
 	// Update the chartRatio for each period
@@ -285,8 +292,14 @@ export interface TrailingCashflow {
 
 // Calculate the trailing averages for the chosen period
 const getTrailingCashflow = (): TrailingCashflow => {
-	const getAverages = (period: TrailingCashflowPeriods) => {
-		const cashflowPeriods = cashflow.periods;
+	const MONTHS_6 = 6;
+	const MONTHS_12 = 12;
+
+	const getAverages = (period: number) => {
+		const cashflowPeriods =
+			period === MONTHS_6
+				? cashflow.periods.slice(MONTHS_6, MONTHS_12)
+				: cashflow.periods.slice(0, MONTHS_12);
 
 		// Return zeroes if there are no cashflow periods
 		if (cashflowPeriods.length === 0) {
@@ -297,11 +310,9 @@ const getTrailingCashflow = (): TrailingCashflow => {
 			};
 		}
 
-		const months = period === TrailingCashflowPeriods.LAST_6_MONTHS ? 6 : 12;
-		const incomeAverage =
-			cashflowPeriods.slice(0, months).reduce((acc, { income }) => income + acc, 0) / months;
+		const incomeAverage = cashflowPeriods.reduce((acc, { income }) => income + acc, 0) / period;
 		const expensesAverage =
-			cashflowPeriods.slice(0, months).reduce((acc, { expenses }) => expenses + acc, 0) / months;
+			cashflowPeriods.reduce((acc, { expenses }) => expenses + acc, 0) / period;
 		const surplusAverage = expensesAverage + incomeAverage;
 
 		return {
@@ -311,8 +322,8 @@ const getTrailingCashflow = (): TrailingCashflow => {
 		};
 	};
 
-	const last6Months = getAverages(TrailingCashflowPeriods.LAST_6_MONTHS);
-	const last12Months = getAverages(TrailingCashflowPeriods.LAST_12_MONTHS);
+	const last6Months = getAverages(MONTHS_6);
+	const last12Months = getAverages(MONTHS_12);
 
 	return { last6Months, last12Months };
 };
