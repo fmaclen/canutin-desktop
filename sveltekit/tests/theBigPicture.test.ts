@@ -96,13 +96,14 @@ test.describe('Balance sheet', () => {
 		const thisMonth = format(new Date(), 'MMM');
 		expect(await chartPeriods.nth(12).textContent()).toMatch(thisMonth);
 
+		// Check that there are 2 periods with the *name* of the current month
 		let chartPeriod = page.locator('.chart__period', { hasText: thisMonth });
-		expect(await chartPeriod.count()).toBeGreaterThanOrEqual(1);
-		expect(await chartPeriod.count()).toBeLessThanOrEqual(2);
+		expect(await chartPeriod.count()).toBe(2);
 		expect(await chartPeriod.last().textContent()).not.toMatch('$1,000');
 		expect(chartPeriod.first()).not.toHaveClass(/chart__period--active/);
 		expect(chartPeriod.last()).toHaveClass(/chart__period--active/);
 
+		// Check that the latest period that mates "January" also displays the current year
 		chartPeriod = page.locator('.chart__period', { hasText: 'Jan' });
 		expect(await chartPeriod.last().textContent()).toMatch(`Jan '${format(new Date(), 'yy')}`);
 		expect(chartPeriod.last()).toHaveClass(/chart__period--january/);
@@ -232,7 +233,7 @@ test.describe('Balance sheet', () => {
 		await seedCashflow();
 		await page.reload();
 
-		// Hovering over a column highlight them
+		// Hovering over a column highlights it
 		expect(await chartPeriods.count()).toBe(13);
 		expect(chartPeriods.nth(0)).not.toHaveClass(/chart__period--active/);
 		expect(chartPeriods.nth(3)).not.toHaveClass(/chart__period--active/);
@@ -281,6 +282,7 @@ test.describe('Balance sheet', () => {
 		await expect(chartLabels.nth(9)).toHaveClass(/chart__label--visible/);
 		await expect(chartLabels.nth(11)).toHaveClass(/chart__label--visible/);
 
+		// Check the periods have the correct "trend" based on their surplus value
 		const chartBars = page.locator('.chart__bar');
 		// One of the periods has a balance of 0 and doesn't have a `.chart__bar`
 		expect(await chartBars.count()).toBe(12);
@@ -291,6 +293,7 @@ test.describe('Balance sheet', () => {
 		await expect(chartBars.nth(11)).toHaveClass(/chart__bar--positive/);
 		await expect(chartBars.nth(11)).not.toHaveClass(/chart__bar--negative/);
 
+		// Check the height of the bars is correct
 		const chartGraph = page.locator('.chart__graph');
 		// One of the periods has a balance of 0 and doesn't have a `.chart__graph`
 		expect(await chartGraph.count()).toBe(12);
