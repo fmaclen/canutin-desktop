@@ -262,7 +262,6 @@ test.describe('Balance sheet', () => {
 		expect(chartLabels.nth(3)).not.toHaveClass(/chart__label--visible/);
 		expect(await chartLabels.nth(3).textContent()).toMatch('-$2,000');
 		expect(chartLabels.nth(6)).toHaveClass(/chart__label--visible/);
-		await page.screenshot({ path: 'screenshots.png' });
 		expect(await chartLabels.nth(6).textContent()).toMatch('$32,000');
 		expect(chartLabels.nth(9)).not.toHaveClass(/chart__label--visible/);
 		expect(await chartLabels.nth(9).textContent()).toMatch('$4,000');

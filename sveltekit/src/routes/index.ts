@@ -13,16 +13,16 @@ import { getBalanceGroupLabel, SortOrder, BalanceGroup } from '$lib/helpers/cons
 import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
 import { dateInUTC, proportionBetween, sortByKey } from '$lib/helpers/misc';
 
-let cashflow: Cashflow;
-
 export const GET = async () => {
-	cashflow = await getCashflow();
+	const summary = await getSummary();
+	const cashflow = await getCashflow();
+	const trailingCashflow = getTrailingCashflow(cashflow);
 
 	return {
 		body: {
-			summary: await getSummary(),
+			summary,
 			cashflow,
-			trailingCashflow: await getTrailingCashflow(cashflow)
+			trailingCashflow
 		}
 	};
 };
@@ -125,6 +125,7 @@ export interface Cashflow {
 }
 
 const getCashflow = async (): Promise<Cashflow> => {
+	// We want 13 periods, one for the current month and the 12 previous months
 	const CASHFLOW_PERIODS = 13;
 
 	const today = dateInUTC(new Date());
@@ -133,7 +134,7 @@ const getCashflow = async (): Promise<Cashflow> => {
 		end: endOfMonth(today)
 	});
 
-	// Get all transactions in the last 12 months (except for excluded ones)
+	// Get all transactions in the last 13 months (except for excluded ones)
 	const transactions = await prisma.transaction.findMany({
 		where: {
 			date: {
@@ -263,7 +264,7 @@ const getCashflow = async (): Promise<Cashflow> => {
 
 	return {
 		periods: cashflowPeriods,
-		chart: { positiveRatio, negativeRatio, highestSurplus, lowestSurplus: lowestSurplus }
+		chart: { positiveRatio, negativeRatio, highestSurplus, lowestSurplus }
 	};
 };
 
@@ -287,14 +288,14 @@ export interface TrailingCashflow {
 
 // Calculate the trailing averages for the chosen period
 const getTrailingCashflow = (cashflow: Cashflow): TrailingCashflow => {
-	const MONTHS_6 = 6;
-	const MONTHS_12 = 12;
+	const SIX_MONTHS = 6;
+	const TWELVE_MONTHS = 12;
 
 	const getAverages = (period: number) => {
 		const cashflowPeriods =
-			period === MONTHS_6
-				? cashflow.periods.slice(MONTHS_6, MONTHS_12)
-				: cashflow.periods.slice(0, MONTHS_12);
+			period === SIX_MONTHS
+				? cashflow.periods.slice(SIX_MONTHS, TWELVE_MONTHS)
+				: cashflow.periods.slice(0, TWELVE_MONTHS);
 
 		// Return zeroes if there are no cashflow periods
 		if (cashflowPeriods.length === 0) {
@@ -317,8 +318,5 @@ const getTrailingCashflow = (cashflow: Cashflow): TrailingCashflow => {
 		};
 	};
 
-	const last6Months = getAverages(MONTHS_6);
-	const last12Months = getAverages(MONTHS_12);
-
-	return { last6Months, last12Months };
+	return { last6Months: getAverages(SIX_MONTHS), last12Months: getAverages(TWELVE_MONTHS) };
 };
