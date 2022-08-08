@@ -89,11 +89,7 @@
 							{isLabelVisible}
 							value={formatCurrency(period.surplus)}
 							height={period.chartRatio}
-							sentiment={period.surplus > 0
-								? 'positive'
-								: period.surplus < 0
-								? 'negative'
-								: undefined}
+							trend={period.surplus > 0 ? 'positive' : period.surplus < 0 ? 'negative' : undefined}
 							positiveRatio={chart.positiveRatio}
 							negativeRatio={chart.negativeRatio}
 						/>

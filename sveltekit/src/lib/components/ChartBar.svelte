@@ -8,7 +8,7 @@
 	export let height: number;
 	export let positiveRatio: number;
 	export let negativeRatio: number;
-	export let sentiment: string | undefined;
+	export let trend: string | undefined;
 
 	// When the positive and negative ratio are the same we render them in a 1:1 ratio.
 	// The most common scenario is when the chart has no data and all the values are 0.
@@ -25,13 +25,13 @@
 </script>
 
 <div class="chart__barContainer" style={barGridTemplateRows} title={value.toString()}>
-	{#if sentiment === 'negative'}
+	{#if trend === 'negative'}
 		<div class="chart__barPlaceholder" />
 		<hr class="chart__hr" />
 	{/if}
 
-	{#if sentiment === 'positive' || sentiment === 'negative'}
-		<div class="chart__bar {sentiment && `chart__bar--${sentiment}`}">
+	{#if trend === 'positive' || trend === 'negative'}
+		<div class="chart__bar {trend && `chart__bar--${trend}`}">
 			<p class="chart__label {isLabelVisible && 'chart__label--visible'}">
 				{value}
 			</p>
@@ -49,7 +49,7 @@
 		<div class="chart__barPlaceholder" />
 	{/if}
 
-	{#if sentiment === 'positive'}
+	{#if trend === 'positive'}
 		<hr class="chart__hr" />
 		<div class="chart__barPlaceholder" />
 	{/if}
