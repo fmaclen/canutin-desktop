@@ -1,25 +1,33 @@
-import { isAfter, isBefore, sub, eachMonthOfInterval, isEqual, endOfMonth } from 'date-fns';
+import {
+	isAfter,
+	isBefore,
+	sub,
+	eachMonthOfInterval,
+	isEqual,
+	endOfMonth,
+	getUnixTime
+} from 'date-fns';
 
 import prisma from '$lib/helpers/prismaClient';
-import {
-	getBalanceGroupLabel,
-	SortOrder,
-	BalanceGroup,
-	TrailingCashflowPeriods
-} from '$lib/helpers/constants';
+import { getBalanceGroupLabel, SortOrder, BalanceGroup } from '$lib/helpers/constants';
 import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
-import { sortByKey } from '$lib/helpers/misc';
+import { dateInUTC, proportionBetween, sortByKey } from '$lib/helpers/misc';
 
 export const GET = async () => {
+	const summary = await getSummary();
+	const cashflow = await getCashflow();
+	const trailingCashflow = getTrailingCashflow(cashflow);
+
 	return {
 		body: {
-			summary: await getSummary(),
-			trailingCashflow: await getTrailingCashflow()
+			summary,
+			cashflow,
+			trailingCashflow
 		}
 	};
 };
 
-// Summary
+// Summary ---------------------------------------------------------------------
 
 interface BigPictureBalanceGroup {
 	id: BalanceGroup;
@@ -93,40 +101,45 @@ const getSummary = async () => {
 	};
 };
 
-// Trailing Cashflow
+// Cashflow --------------------------------------------------------------------
 
-interface TransactionForCashflow {
-	date: Date;
-	value: number;
-}
-
-interface PeriodCashflow {
-	periodMonth: Date;
+export interface PeriodCashflow {
+	id: number;
+	month: number;
 	income: number;
 	expenses: number;
 	surplus: number;
-	id: number;
+	chartRatio: number;
 }
 
-interface PeriodAverageCashflow {
-	incomeAverage: number;
-	expensesAverage: number;
-	surplusAverage: number;
+interface CashflowChart {
+	positiveRatio: number;
+	negativeRatio: number;
+	highestSurplus: number;
+	lowestSurplus: number;
 }
 
-export interface TrailingCashflow {
+export interface Cashflow {
 	periods: PeriodCashflow[];
-	last6Months: PeriodAverageCashflow;
-	last12Months: PeriodAverageCashflow;
+	chart: CashflowChart;
 }
 
-const getTrailingCashflow = async (): Promise<TrailingCashflow> => {
-	// Get all transactions in the last 12 months (except for excluded ones)
+const getCashflow = async (): Promise<Cashflow> => {
+	// We want 13 periods, one for the current month and the 12 previous months
+	const CASHFLOW_PERIODS = 13;
+
+	const today = dateInUTC(new Date());
+	const monthsInPeriod = eachMonthOfInterval({
+		start: sub(today, { months: CASHFLOW_PERIODS - 1 }),
+		end: endOfMonth(today)
+	});
+
+	// Get all transactions in the last 13 months (except for excluded ones)
 	const transactions = await prisma.transaction.findMany({
 		where: {
 			date: {
-				lte: new Date(),
-				gte: sub(new Date(), { months: 13 })
+				lte: endOfMonth(today),
+				gte: sub(today, { months: CASHFLOW_PERIODS })
 			},
 			isExcluded: false
 		},
@@ -139,25 +152,25 @@ const getTrailingCashflow = async (): Promise<TrailingCashflow> => {
 		}
 	});
 
-	// Don't continue if there are no transactions
+	// If there are no transactions we return zeroed cashflow periods
 	if (transactions.length === 0) {
-		const noAverages = {
-			incomeAverage: 0,
-			expensesAverage: 0,
-			surplusAverage: 0
-		};
+		const periods: PeriodCashflow[] = [];
+		for (const [index, month] of monthsInPeriod.entries()) {
+			periods.push({
+				id: index,
+				income: 0,
+				expenses: 0,
+				surplus: 0,
+				month: getUnixTime(month),
+				chartRatio: 0
+			});
+		}
 
 		return {
-			periods: [],
-			last6Months: noAverages,
-			last12Months: noAverages
+			periods,
+			chart: { positiveRatio: 0, negativeRatio: 0, highestSurplus: 0, lowestSurplus: 0 }
 		};
 	}
-
-	const monthsInPeriod = eachMonthOfInterval({
-		start: transactions[transactions.length - 1].date,
-		end: new Date()
-	});
 
 	const getTransactionsInPeriod = (
 		transactions: TransactionForCashflow[],
@@ -171,21 +184,12 @@ const getTrailingCashflow = async (): Promise<TrailingCashflow> => {
 		);
 	};
 
-	// Strip timezone from date and set to UTC
-	const dateInUTC = (date: Date) => {
-		return new Date(
-			Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0)
-		);
-	};
-
 	// Get the income, expense and surplus totals for each month
-	const monthlyCashflow = monthsInPeriod.reduce((acc: PeriodCashflow[], periodMonth, index) => {
+	let cashflowPeriods = monthsInPeriod.reduce((acc: PeriodCashflow[], month, id) => {
 		const transactionsInPeriod = getTransactionsInPeriod(
 			transactions,
-			dateInUTC(periodMonth),
-			monthsInPeriod[index + 1]
-				? dateInUTC(monthsInPeriod[index + 1])
-				: dateInUTC(endOfMonth(new Date()))
+			dateInUTC(month),
+			monthsInPeriod[id + 1] ? dateInUTC(monthsInPeriod[id + 1]) : dateInUTC(endOfMonth(new Date()))
 		);
 
 		const income = transactionsInPeriod.reduce(
@@ -201,23 +205,110 @@ const getTrailingCashflow = async (): Promise<TrailingCashflow> => {
 		return [
 			...acc,
 			{
-				periodMonth,
+				id,
 				income,
 				expenses,
 				surplus,
-				id: index
+
+				// Would love to pass the Date object as-is but the endpoint returns a serialized JSON
+				// so Dates are converted to string. Instead, we convert the month to a Unix timestamp.
+				month: getUnixTime(month),
+
+				// We don't know the value of `chartRatio` at this point so we set it to 0.
+				// It will be overwriten later after we get the `highestSurplus` and `lowestSurplus`.
+				chartRatio: 0
 			}
 		];
 	}, []);
 
-	// Calculate the trailing averages for the chosen period
-	const getAverages = (period: TrailingCashflowPeriods) => {
-		const months = period === TrailingCashflowPeriods.LAST_6_MONTHS ? 6 : 12;
+	// Get the highest positive surplus
+	const positiveSurplusPeriods = cashflowPeriods.filter(({ surplus }) => surplus > 0);
+	const highestSurplus =
+		positiveSurplusPeriods.length > 0
+			? positiveSurplusPeriods.sort((a, b) => b.surplus - a.surplus)[0].surplus
+			: 0;
 
-		const incomeAverage =
-			monthlyCashflow.slice(0, months).reduce((acc, { income }) => income + acc, 0) / months;
+	// Get the lowest negative surplus
+	const negativeSurplusPeriods = cashflowPeriods.filter(({ surplus }) => surplus < 0);
+	const lowestSurplus =
+		negativeSurplusPeriods.length > 0
+			? negativeSurplusPeriods.sort((a, b) => a.surplus - b.surplus)[0].surplus
+			: 0;
+
+	const surplusRange = highestSurplus + Math.abs(lowestSurplus);
+	let positiveRatio = proportionBetween(highestSurplus, surplusRange);
+	let negativeRatio = proportionBetween(Math.abs(lowestSurplus), surplusRange);
+
+	if (positiveRatio > negativeRatio) {
+		const isNegativeRatioZero = negativeRatio === 0;
+		positiveRatio = isNegativeRatioZero ? 1 : positiveRatio / negativeRatio;
+		negativeRatio = isNegativeRatioZero ? 0 : 1;
+	} else {
+		const isPositiveRatioZero = positiveRatio === 0;
+		negativeRatio = isPositiveRatioZero ? 1 : negativeRatio / positiveRatio;
+		positiveRatio = isPositiveRatioZero ? 0 : 1;
+	}
+
+	// Update the chartRatio for each period
+	cashflowPeriods = cashflowPeriods.map((cashflowPeriod) => {
+		const chartRatio =
+			cashflowPeriod.surplus > 0
+				? proportionBetween(cashflowPeriod.surplus, highestSurplus)
+				: proportionBetween(Math.abs(cashflowPeriod.surplus), Math.abs(lowestSurplus));
+
+		return {
+			...cashflowPeriod,
+			chartRatio: chartRatio
+		};
+	});
+
+	return {
+		periods: cashflowPeriods,
+		chart: { positiveRatio, negativeRatio, highestSurplus, lowestSurplus }
+	};
+};
+
+// Trailing Cashflow -----------------------------------------------------------
+
+interface TransactionForCashflow {
+	date: Date;
+	value: number;
+}
+
+interface PeriodAverageCashflow {
+	incomeAverage: number;
+	expensesAverage: number;
+	surplusAverage: number;
+}
+
+export interface TrailingCashflow {
+	last6Months: PeriodAverageCashflow;
+	last12Months: PeriodAverageCashflow;
+}
+
+// Calculate the trailing averages for the chosen period
+const getTrailingCashflow = (cashflow: Cashflow): TrailingCashflow => {
+	const SIX_MONTHS = 6;
+	const TWELVE_MONTHS = 12;
+
+	const getAverages = (period: number) => {
+		const cashflowPeriods =
+			period === SIX_MONTHS
+				? cashflow.periods.slice(SIX_MONTHS, TWELVE_MONTHS)
+				: cashflow.periods.slice(0, TWELVE_MONTHS);
+
+		// Return zeroes if there are no cashflow periods
+		if (cashflowPeriods.length === 0) {
+			return {
+				incomeAverage: 0,
+				expensesAverage: 0,
+				surplusAverage: 0
+			};
+		}
+
+		const incomeAverage = cashflowPeriods.reduce((acc, { income }) => income + acc, 0) / period;
 		const expensesAverage =
-			monthlyCashflow.slice(0, months).reduce((acc, { expenses }) => expenses + acc, 0) / months;
+			cashflowPeriods.reduce((acc, { expenses }) => expenses + acc, 0) / period;
 		const surplusAverage = expensesAverage + incomeAverage;
 
 		return {
@@ -227,8 +318,5 @@ const getTrailingCashflow = async (): Promise<TrailingCashflow> => {
 		};
 	};
 
-	const last6Months = getAverages(TrailingCashflowPeriods.LAST_6_MONTHS);
-	const last12Months = getAverages(TrailingCashflowPeriods.LAST_12_MONTHS);
-
-	return { periods: monthlyCashflow, last6Months, last12Months };
+	return { last6Months: getAverages(SIX_MONTHS), last12Months: getAverages(TWELVE_MONTHS) };
 };
