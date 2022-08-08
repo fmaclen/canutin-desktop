@@ -4,11 +4,11 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Card from '$lib/components/Card.svelte';
+	import ChartBar from '$lib/components/ChartBar.svelte';
 	import { formatCurrency } from '$lib/helpers/misc';
 	import { TrailingCashflowPeriods } from '$lib/helpers/constants';
 	import { balanceGroupAppearance, CardAppearance } from '$lib/components/Card';
 	import type { BigPictureSummary, Cashflow, PeriodCashflow, TrailingCashflow } from '.';
-	import ChartBar from '$lib/components/ChartBar.svelte';
 
 	export let title = 'The big picture';
 
