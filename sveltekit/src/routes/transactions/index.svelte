@@ -66,7 +66,7 @@
 	// Sum the total from all the transaction values
 	export const sumTransactions = () => {
 		return transactions.reduce((acc, transaction) => {
-			return acc + transaction.value;
+			return !transaction.isExcluded ? acc + transaction.value : 0;
 		}, 0);
 	};
 </script>
@@ -76,7 +76,7 @@
 </svelte:head>
 
 <ScrollView {title}>
-	<Section title="Find transaction">
+	<Section title="Find transactions">
 		<div slot="CONTENT" class="importForm">
 			<form class="form" on:submit={submitForm} method="GET">
 				<fieldset class="form__fieldset">
@@ -85,7 +85,7 @@
 						<input
 							class="form__input"
 							type="text"
-							placeholder="Search by description or amount"
+							placeholder="Search by description, amount, category or account"
 							value={currentKeyword ? currentKeyword : ''}
 							name="keyword"
 						/>

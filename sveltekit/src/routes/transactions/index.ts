@@ -37,6 +37,16 @@ export const GET = async ({ url }: { url: URL }) => {
 						}
 					},
 					{
+						transactionCategory: {
+							name: { contains: paramKeyword }
+						}
+					},
+					{
+						account: {
+							name: { contains: paramKeyword }
+						}
+					},
+					{
 						value: {
 							equals: paramKeywordAsNumber
 						}
