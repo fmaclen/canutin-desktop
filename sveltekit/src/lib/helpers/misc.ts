@@ -1,11 +1,11 @@
 import { SortOrder } from '$lib/helpers/constants';
 
 // Format: $1,523.00 || -$1,523.00
-export const formatCurrency = (value: number) => {
+export const formatCurrency = (value: number, decimals?: number) => {
 	return new Intl.NumberFormat('en-US', {
 		currency: 'USD',
 		style: 'currency',
-		maximumFractionDigits: 0
+		maximumFractionDigits: decimals ? decimals : 0
 	}).format(value);
 };
 

@@ -25,9 +25,6 @@ export const GET = async ({ url }: { url: URL }) => {
 			date: {
 				lte: dateTo,
 				gte: dateFrom
-			},
-			description: {
-				contains: paramKeyword
 			}
 		},
 		include: {

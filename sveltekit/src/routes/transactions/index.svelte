@@ -4,10 +4,14 @@
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
-	import Notice from '$lib/components/Notice.svelte';
+	import SectionTitle from '$lib/components/SectionTitle.svelte';
+	import Button from '$lib/components/Button.svelte';
 	import { SortOrder } from '$lib/helpers/constants';
+	import { formatCurrency } from '$lib/helpers/misc';
 
 	export let title = 'Transactions';
+
+	// FIXME: see if we can set proper types on these variables
 	export let transactions: any[];
 	export let searchParams: any;
 
@@ -25,6 +29,7 @@
 	const accountId = searchParams.dateFrom ? `accountId=${searchParams.dateFrom}` : null;
 	const currentParams = [dateFrom, dateTo, transactionCategoryId, accountId].filter(Boolean);
 
+	$: currentKeyword = searchParams.keyword;
 	$: currentSortBy = searchParams.sortBy;
 	$: currentSortOrder = searchParams.sortOrder;
 
@@ -63,6 +68,15 @@
 		'sortBy=value',
 		`sortOrder=${['value', null].includes(currentSortBy) && currentSortOrder === desc ? asc : desc}`
 	].join('&')}`;
+
+	const submitForm = (event: any) => {};
+
+	// Sum the total from all the transaction values
+	export const sumTransactions = () => {
+		return transactions.reduce((acc, transaction) => {
+			return acc + transaction.value;
+		}, 0);
+	};
 </script>
 
 <svelte:head>
@@ -70,7 +84,30 @@
 </svelte:head>
 
 <ScrollView {title}>
-	<Section title="Transactions">
+	<Section title="Find transaction">
+		<div slot="CONTENT" class="importForm">
+			<form class="form" on:submit={submitForm} method="GET">
+				<fieldset class="form__fieldset">
+					<div class="form__field">
+						<label class="form__label" for="keyword">Keyword</label>
+						<input
+							class="form__input"
+							type="text"
+							placeholder="Search for descriptions, amounts, categories & accounts"
+							value={currentKeyword ? currentKeyword : ''}
+							name="keyword"
+						/>
+					</div>
+				</fieldset>
+				<footer class="form__footer">
+					<Button>Search</Button>
+				</footer>
+			</form>
+		</div>
+	</Section>
+
+	<Section title="Transactions ({transactions.length}) ">
+		<SectionTitle slot="HEADER" title={formatCurrency(sumTransactions(), 2)} />
 		<div slot="CONTENT">
 			<table class="table">
 				<thead>
@@ -118,14 +155,22 @@
 				<tbody>
 					{#if transactions.length > 0}
 						{#each transactions as transaction}
-							{@const { date, description, transactionCategory, account, value } = transaction}
+							{@const { date, description, transactionCategory, account, value, isExcluded } =
+								transaction}
 							<tr class="table__tr">
 								<td class="table__td table__td--date">{format(Date.parse(date), 'MMM dd, yyyy')}</td
 								>
 								<td class="table__td">{description}</td>
 								<td class="table__td">{transactionCategory.name}</td>
 								<td class="table__td">{account.name}</td>
-								<td class="table__td table__td--total">{value}</td>
+								<td class="table__td table__td--total {value > 0 && `table__td--positive`}"
+									><span
+										class={isExcluded && `table__excluded`}
+										title="This transaction is excluded from 'The big picture' and 'Balance sheet' totals"
+									>
+										{formatCurrency(value, 2)}
+									</span></td
+								>
 							</tr>
 						{/each}
 					{:else}
@@ -242,11 +287,75 @@
 			text-align: right;
 		}
 
+		&--positive {
+			color: var(--color-greenPrimary);
+		}
+
 		&--notice {
 			text-align: center;
 			padding: 32px;
 			background-color: var(--color-grey5);
 			color: var(--color-grey50);
 		}
+	}
+
+	span.table__excluded {
+		display: inline-block;
+		color: var(--color-grey40);
+		border-bottom: 1px dashed var(--color-grey10);
+		cursor: help;
+	}
+
+	form.form {
+		border: 1px solid var(--color-border);
+		border-radius: 4px;
+		display: grid;
+	}
+
+	fieldset.form__fieldset {
+		border: none;
+		padding: 12px 0;
+		display: grid;
+		grid-row-gap: 8px;
+		margin: 0;
+	}
+
+	div.form__field {
+		display: grid;
+		grid-template-columns: 1.25fr 2fr 0.75fr;
+		column-gap: 20px;
+	}
+
+	label.form__label {
+		display: flex;
+		margin-left: auto;
+		align-items: center;
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: -0.03em;
+		color: var(--color-grey70);
+	}
+
+	input.form__input {
+		background-color: var(--color-white);
+		border: 2px solid var(--color-border);
+		border-radius: 4px;
+		padding: 6px;
+		font-family: var(--font-sansSerif);
+		font-size: 12px;
+		box-sizing: border-box;
+		min-height: 32px;
+
+		&:active,
+		&:focus {
+			border-color: var(--color-bluePrimary);
+		}
+	}
+
+	footer.form__footer {
+		display: flex;
+		justify-content: flex-end;
+		padding: 8px 12px;
+		background-color: var(--color-border);
 	}
 </style>
