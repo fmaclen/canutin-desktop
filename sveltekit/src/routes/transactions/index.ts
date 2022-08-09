@@ -20,12 +20,44 @@ export const GET = async ({ url }: { url: URL }) => {
 		? fromUnixTime(Date.parse(paramDateTo) / 1000)
 		: endOfMonth(new Date());
 
+	// If a keyword param is provided we try to match it against the `description`
+	// or `value` columns.
+	const whereOr = () => {
+		if (paramKeyword) {
+			// For `value` we want to match the keyword number as positive and negative
+			const paramKeywordAsNumber = !isNaN(parseFloat(paramKeyword))
+				? parseFloat(paramKeyword)
+				: undefined;
+
+			return {
+				OR: [
+					{
+						description: {
+							contains: paramKeyword
+						}
+					},
+					{
+						value: {
+							equals: paramKeywordAsNumber
+						}
+					},
+					{
+						value: {
+							equals: paramKeywordAsNumber ? paramKeywordAsNumber * -1 : undefined
+						}
+					}
+				]
+			};
+		}
+	};
+
 	const transactions = await prisma.transaction.findMany({
 		where: {
 			date: {
 				lte: dateTo,
 				gte: dateFrom
-			}
+			},
+			...whereOr()
 		},
 		include: {
 			transactionCategory: true,
