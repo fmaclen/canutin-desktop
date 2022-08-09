@@ -260,8 +260,8 @@
 		border-bottom: 1px solid var(--color-grey5);
 		vertical-align: top;
 
-		&:nth-child(even) {
-			td.table__td:first-child {
+		&:nth-child(odd) {
+			td.table__td {
 				background-color: var(--color-grey3);
 			}
 		}
@@ -270,7 +270,7 @@
 	td.table__td {
 		font-size: 12px;
 		padding: 12px 16px 12px 0;
-		color: var(--color-grey90);
+		color: var(--color-grey80);
 
 		&:first-child:not(.table__td--notice) {
 			padding-left: 16px;
