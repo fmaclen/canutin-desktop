@@ -23,11 +23,9 @@
 	const dateFrom = searchParams.dateFrom ? `dateFrom=${searchParams.dateFrom}` : null;
 	const dateTo = searchParams.dateTo ? `dateTo=${searchParams.dateTo}` : null;
 
-	const transactionCategoryId = searchParams.dateTo
-		? `transactionCategoryId=${searchParams.dateTo}`
-		: null;
+	const categoryId = searchParams.dateTo ? `categoryId=${searchParams.dateTo}` : null;
 	const accountId = searchParams.dateFrom ? `accountId=${searchParams.dateFrom}` : null;
-	const currentParams = [dateFrom, dateTo, transactionCategoryId, accountId].filter(Boolean);
+	const currentParams = [dateFrom, dateTo, categoryId, accountId].filter(Boolean);
 
 	$: currentKeyword = searchParams.keyword;
 	$: currentSortBy = searchParams.sortBy;
@@ -42,31 +40,25 @@
 	$: urlDescription = `${pathname}?${[
 		...currentParams,
 		'sortBy=description',
-		`sortOrder=${
-			['description', null].includes(currentSortBy) && currentSortOrder === desc ? asc : desc
-		}`
+		`sortOrder=${currentSortBy === 'description' && currentSortOrder === desc ? asc : desc}`
 	].join('&')}`;
 
 	$: urlCategory = `${pathname}?${[
 		...currentParams,
 		'sortBy=categoryId',
-		`sortOrder=${
-			['categoryId', null].includes(currentSortBy) && currentSortOrder === desc ? asc : desc
-		}`
+		`sortOrder=${currentSortBy === 'categoryId' && currentSortOrder === desc ? asc : desc}`
 	].join('&')}`;
 
 	$: urlAccount = `${pathname}?${[
 		...currentParams,
 		'sortBy=accountId',
-		`sortOrder=${
-			['accountId', null].includes(currentSortBy) && currentSortOrder === desc ? asc : desc
-		}`
+		`sortOrder=${currentSortBy === 'accountId' && currentSortOrder === desc ? asc : desc}`
 	].join('&')}`;
 
 	$: urlVaule = `${pathname}?${[
 		...currentParams,
 		'sortBy=value',
-		`sortOrder=${['value', null].includes(currentSortBy) && currentSortOrder === desc ? asc : desc}`
+		`sortOrder=${currentSortBy === 'value' && currentSortOrder === desc ? asc : desc}`
 	].join('&')}`;
 
 	const submitForm = (event: any) => {};
@@ -129,8 +121,8 @@
 					>
 					<th class="table__th"
 						><a
-							class="table__sortable {currentSortBy === 'transactionCategoryId' &&
-								'table__sortable--active'} {currentSortBy === 'transactionCategoryId' &&
+							class="table__sortable {currentSortBy === 'categoryId' &&
+								'table__sortable--active'} {currentSortBy === 'categoryId' &&
 								`table__sortable--${currentSortOrder}`}"
 							href={`${urlCategory}`}>Category</a
 						></th
