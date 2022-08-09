@@ -4,6 +4,7 @@
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
+	import Notice from '$lib/components/Notice.svelte';
 	import { SortOrder } from '$lib/helpers/constants';
 
 	export let title = 'Transactions';
@@ -115,16 +116,23 @@
 					>
 				</thead>
 				<tbody>
-					{#each transactions as transaction}
-						{@const { date, description, transactionCategory, account, value } = transaction}
+					{#if transactions.length > 0}
+						{#each transactions as transaction}
+							{@const { date, description, transactionCategory, account, value } = transaction}
+							<tr class="table__tr">
+								<td class="table__td table__td--date">{format(Date.parse(date), 'MMM dd, yyyy')}</td
+								>
+								<td class="table__td">{description}</td>
+								<td class="table__td">{transactionCategory.name}</td>
+								<td class="table__td">{account.name}</td>
+								<td class="table__td table__td--total">{value}</td>
+							</tr>
+						{/each}
+					{:else}
 						<tr class="table__tr">
-							<td class="table__td table__td--date">{format(Date.parse(date), 'MMM dd, yyyy')}</td>
-							<td class="table__td">{description}</td>
-							<td class="table__td">{transactionCategory.name}</td>
-							<td class="table__td">{account.name}</td>
-							<td class="table__td table__td--total">{value}</td>
+							<td class="table__td table__td--notice" colspan="999">No transactions found</td>
 						</tr>
-					{/each}
+					{/if}
 				</tbody>
 			</table>
 		</div>
@@ -138,7 +146,6 @@
 		width: 100%;
 		table-layout: auto;
 		border-collapse: collapse;
-		border-radius: 4px;
 		background-color: var(--color-white);
 		box-shadow: var(--box-shadow);
 		font-size: 12px;
@@ -157,12 +164,10 @@
 		box-sizing: border-box;
 
 		&:first-child {
-			border-top-left-radius: 4px;
 			padding-left: 16px;
 		}
 
 		&:last-child {
-			border-top-right-radius: 4px;
 			padding-right: 16px;
 		}
 
@@ -215,25 +220,16 @@
 				background-color: var(--color-grey3);
 			}
 		}
-
-		&:first-child td.table__td:first-child {
-			border-top-left-radius: 4px;
-		}
-		&:first-child td.table__td:last-child {
-			border-top-right-radius: 4px;
-		}
-		&:last-child td.table__td:first-child {
-			border-bottom-left-radius: 4px;
-		}
-		&:last-child td.table__td:last-child {
-			border-bottom-right-radius: 4px;
-		}
 	}
 
 	td.table__td {
 		font-size: 12px;
 		padding: 12px 16px 12px 0;
 		color: var(--color-grey90);
+
+		&:first-child:not(.table__td--notice) {
+			padding-left: 16px;
+		}
 
 		&--date {
 			font-family: var(--font-monospace);
@@ -246,8 +242,11 @@
 			text-align: right;
 		}
 
-		&:first-child {
-			padding-left: 16px;
+		&--notice {
+			text-align: center;
+			padding: 32px;
+			background-color: var(--color-grey5);
+			color: var(--color-grey50);
 		}
 	}
 </style>
