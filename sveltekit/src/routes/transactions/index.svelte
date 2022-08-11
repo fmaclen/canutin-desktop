@@ -7,7 +7,8 @@
 		startOfYear,
 		endOfYear,
 		endOfDay,
-		format
+		format,
+		fromUnixTime
 	} from 'date-fns';
 	import { onMount } from 'svelte';
 
@@ -199,7 +200,7 @@
 					<Card
 						appearance={CardAppearance.SECONDARY}
 						title="Transactions"
-						value={transactions?.length}
+						value={filteredTransactions?.length}
 					/>
 					<Card
 						appearance={CardAppearance.SECONDARY}
@@ -226,12 +227,14 @@
 					{/each}
 				</thead>
 				<tbody>
-					{#if transactions?.length > 0}
+					{#if filteredTransactions?.length > 0}
 						{#each filteredTransactions as transaction}
 							{@const { date, description, transactionCategory, account, value, isExcluded } =
 								transaction}
 							<tr class="table__tr">
-								<td class="table__td table__td--date">{format(date, 'MMM dd, yyyy')}</td>
+								<td class="table__td table__td--date"
+									>{format(fromUnixTime(date), 'MMM dd, yyyy')}</td
+								>
 								<td class="table__td">{description}</td>
 								<td class="table__td">{transactionCategory.name}</td>
 								<td class="table__td">{account.name}</td>
