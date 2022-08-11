@@ -1,73 +1,171 @@
 <script lang="ts">
-	import { format } from 'date-fns';
-	import { page } from '$app/stores';
+	import {
+		subMonths,
+		subYears,
+		startOfMonth,
+		endOfMonth,
+		startOfYear,
+		endOfYear,
+		endOfDay,
+		format,
+		fromUnixTime
+	} from 'date-fns';
+	import { onMount } from 'svelte';
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
-	import SectionTitle from '$lib/components/SectionTitle.svelte';
-	import Button from '$lib/components/Button.svelte';
-	import { SortOrder } from '$lib/helpers/constants';
+	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
+	import FormInput from '$lib/components/FormInput.svelte';
+	import FormSelect from '$lib/components/FormSelect.svelte';
+	import Card from '$lib/components/Card.svelte';
+	import { CardAppearance } from '$lib/components/Card';
 	import { formatCurrency } from '$lib/helpers/misc';
+	import { SortOrder } from '$lib/helpers/constants';
+	import type { EndpointTransaction } from './index.json';
 
-	export let title = 'Transactions';
+	const title = 'Transactions';
 
-	// FIXME: see if we can set proper types on these variables
-	export let transactions: any[];
-	export let searchParams: any;
+	const today = new Date();
+	const thisMonthFrom = startOfMonth(today);
+	const thisMonthTo = endOfMonth(today);
+	const thisYearFrom = startOfYear(today);
+	const thisYearTo = endOfYear(today);
+	const periods = [
+		{
+			label: 'This month',
+			dateFrom: thisMonthFrom,
+			dateTo: thisMonthTo
+		},
+		{
+			label: 'Last month',
+			dateFrom: subMonths(thisMonthFrom, 1),
+			dateTo: subMonths(thisMonthTo, 1)
+		},
+		{
+			label: 'Last 3 months',
+			dateFrom: subMonths(today, 3),
+			dateTo: endOfDay(today)
+		},
+		{
+			label: 'Last 6 months',
+			dateFrom: subMonths(today, 6),
+			dateTo: endOfDay(today)
+		},
+		{
+			label: 'Last 12 months',
+			dateFrom: subMonths(today, 12),
+			dateTo: endOfDay(today)
+		},
+		{
+			label: 'Year to date',
+			dateFrom: thisYearFrom,
+			dateTo: endOfDay(today)
+		},
+		{
+			label: 'Last year',
+			dateFrom: subYears(thisYearFrom, 1),
+			dateTo: subYears(thisYearTo, 1)
+		},
+		{
+			label: 'Lifetime',
+			dateFrom: subYears(today, 900),
+			dateTo: endOfDay(today)
+		}
+	];
 
-	const { pathname } = $page.url;
+	enum Filter {
+		ALL = 'all',
+		CREDITS = 'credits',
+		DEBITS = 'debits'
+	}
 
-	const asc = SortOrder.ASC;
-	const desc = SortOrder.DESC;
+	const TABLE_HEADERS = [
+		{
+			label: 'Date',
+			column: 'date'
+		},
+		{
+			label: 'Description',
+			column: 'description'
+		},
+		{
+			label: 'Category',
+			column: 'categoryId'
+		},
+		{
+			label: 'Account',
+			column: 'accountId'
+		},
+		{
+			label: 'Amount',
+			column: 'value'
+		}
+	];
 
-	const dateFrom = searchParams.dateFrom ? `dateFrom=${searchParams.dateFrom}` : null;
-	const dateTo = searchParams.dateTo ? `dateTo=${searchParams.dateTo}` : null;
+	// Default values
+	$: transactions = [] as EndpointTransaction[];
+	$: filteredTransactions = [] as EndpointTransaction[];
+	$: periodIndex = 2; // Last 3 months
+	$: dateFrom = format(periods[periodIndex].dateFrom, 'yyyy-MM-dd');
+	$: dateTo = format(periods[periodIndex].dateTo, 'yyyy-MM-dd');
+	$: filterBy = Filter.ALL;
+	$: sortBy = TABLE_HEADERS[0].column; // Date
+	$: sortOrder = SortOrder.DESC;
+	$: keyword = '';
 
-	const categoryId = searchParams.dateTo ? `categoryId=${searchParams.dateTo}` : null;
-	const accountId = searchParams.dateFrom ? `accountId=${searchParams.dateFrom}` : null;
-	const currentParams = [dateFrom, dateTo, categoryId, accountId].filter(Boolean);
+	const getTransactions = async () => {
+		const params = [
+			`dateFrom=${dateFrom}`,
+			`dateTo=${dateTo}`,
+			`sortBy=${sortBy}`,
+			`sortOrder=${sortOrder}`,
+			`filterBy=${filterBy}`,
+			`keyword=${keyword}`
+		];
+		const response = await fetch(`/transactions.json?${params.join('&')}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+		const data = await response.json();
+		transactions = data.transactions;
+		setFilterBy(filterBy);
+	};
 
-	$: currentKeyword = searchParams.keyword;
-	$: currentSortBy = searchParams.sortBy;
-	$: currentSortOrder = searchParams.sortOrder;
+	// When the component is mounted retrieve transactions with default values
+	onMount(async () => {
+		await getTransactions();
+	});
 
-	$: urlDate = `${pathname}?${[
-		...currentParams,
-		'sortBy=date',
-		`sortOrder=${['date', null].includes(currentSortBy) && currentSortOrder === desc ? asc : desc}`
-	].join('&')}`;
+	// Sorts the transactions by column and asc/desc order
+	const sortTransactionsBy = async (column: string) => {
+		if (sortBy === column) {
+			sortOrder = sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC;
+		} else {
+			sortBy = column;
+		}
+		await getTransactions();
+	};
 
-	$: urlDescription = `${pathname}?${[
-		...currentParams,
-		'sortBy=description',
-		`sortOrder=${currentSortBy === 'description' && currentSortOrder === desc ? asc : desc}`
-	].join('&')}`;
-
-	$: urlCategory = `${pathname}?${[
-		...currentParams,
-		'sortBy=categoryId',
-		`sortOrder=${currentSortBy === 'categoryId' && currentSortOrder === desc ? asc : desc}`
-	].join('&')}`;
-
-	$: urlAccount = `${pathname}?${[
-		...currentParams,
-		'sortBy=accountId',
-		`sortOrder=${currentSortBy === 'accountId' && currentSortOrder === desc ? asc : desc}`
-	].join('&')}`;
-
-	$: urlVaule = `${pathname}?${[
-		...currentParams,
-		'sortBy=value',
-		`sortOrder=${currentSortBy === 'value' && currentSortOrder === desc ? asc : desc}`
-	].join('&')}`;
-
-	const submitForm = (event: any) => {};
-
-	// Sum the total from all the transaction values
-	export const sumTransactions = () => {
+	// Sum the total from all the transaction values (ignoring "excluded" ones)
+	const sumTransactions = (transactions: EndpointTransaction[]) => {
 		return transactions.reduce((acc, transaction) => {
-			return !transaction.isExcluded ? acc + transaction.value : 0;
+			return transaction.isExcluded ? acc : acc + transaction.value;
 		}, 0);
+	};
+
+	// Filters transactions by their positive or negative value
+	const setFilterBy = (filter: Filter) => {
+		filterBy = filter ? filter : filterBy;
+
+		if (filter === Filter.ALL) {
+			filteredTransactions = transactions;
+		} else {
+			filteredTransactions = transactions.filter((transaction) =>
+				filter === Filter.CREDITS ? transaction.value >= 0 : transaction.value < 0
+			);
+		}
 	};
 </script>
 
@@ -76,88 +174,74 @@
 </svelte:head>
 
 <ScrollView {title}>
-	<Section title="Find transactions">
-		<div slot="CONTENT" class="importForm">
-			<form class="form" on:submit={submitForm} method="GET">
-				<fieldset class="form__fieldset">
-					<div class="form__field">
-						<label class="form__label" for="keyword">Keyword</label>
-						<input
-							class="form__input"
-							type="text"
-							placeholder="Search by description, amount, category or account"
-							value={currentKeyword ? currentKeyword : ''}
-							name="keyword"
-						/>
-					</div>
-				</fieldset>
-				<footer class="form__footer">
-					<Button>Search</Button>
-				</footer>
-			</form>
+	<Section title="Browse transactions">
+		<div slot="HEADER">
+			<SegmentedControl
+				segments={Object.values(Filter)}
+				currentSegment={filterBy}
+				callback={setFilterBy}
+			/>
 		</div>
-	</Section>
 
-	<Section title="Transactions ({transactions.length}) ">
-		<SectionTitle slot="HEADER" title={formatCurrency(sumTransactions(), 2)} />
-		<div slot="CONTENT">
+		<div slot="CONTENT" class="transactions">
+			<header class="transactions__header">
+				<FormInput
+					type="text"
+					name="keyword"
+					placeholder="Type to filter by description, amount, category or account"
+					bind:value={keyword}
+					on:keyup={() => getTransactions()}
+				/>
+				<FormSelect
+					options={periods}
+					bind:value={periodIndex}
+					on:change={() => getTransactions()}
+				/>
+				<div class="transactions__summary">
+					<Card
+						appearance={CardAppearance.SECONDARY}
+						title="Transactions"
+						value={filteredTransactions?.length}
+					/>
+					<Card
+						appearance={CardAppearance.SECONDARY}
+						title="Net balance"
+						value={formatCurrency(sumTransactions(filteredTransactions), 2)}
+					/>
+				</div>
+			</header>
+
 			<table class="table">
 				<thead>
-					<th class="table__th">
-						<a
-							class="table__sortable {currentSortBy === 'date' &&
-								'table__sortable--active'} {currentSortBy === 'date' &&
-								`table__sortable--${currentSortOrder}`}"
-							href={`${urlDate}`}>Date</a
+					{#each TABLE_HEADERS as tableHeader}
+						{@const { label, column } = tableHeader}
+						<th
+							class="table__th {tableHeader.label === TABLE_HEADERS[4].label && 'table__th--total'}"
 						>
-					</th>
-					<th class="table__th"
-						><a
-							class="table__sortable {currentSortBy === 'description' &&
-								'table__sortable--active'} {currentSortBy === 'description' &&
-								`table__sortable--${currentSortOrder}`}"
-							href={`${urlDescription}`}>Description</a
-						></th
-					>
-					<th class="table__th"
-						><a
-							class="table__sortable {currentSortBy === 'categoryId' &&
-								'table__sortable--active'} {currentSortBy === 'categoryId' &&
-								`table__sortable--${currentSortOrder}`}"
-							href={`${urlCategory}`}>Category</a
-						></th
-					>
-					<th class="table__th"
-						><a
-							class="table__sortable {currentSortBy === 'accountId' &&
-								'table__sortable--active'} {currentSortBy === 'accountId' &&
-								`table__sortable--${currentSortOrder}`}"
-							href={`${urlAccount}`}>Account</a
-						></th
-					>
-					<th class="table__th table__th--total"
-						><a
-							class="table__sortable {currentSortBy === 'value' &&
-								'table__sortable--active'} {currentSortBy === 'value' &&
-								`table__sortable--${currentSortOrder}`}"
-							href={`${urlVaule}`}>Amount</a
-						></th
-					>
+							<button
+								class="table__sortable
+								{sortBy === column && 'table__sortable--active'}
+								{sortBy === column && `table__sortable--${sortOrder}`}"
+								on:click={() => sortTransactionsBy(column)}>{label}</button
+							>
+						</th>
+					{/each}
 				</thead>
 				<tbody>
-					{#if transactions.length > 0}
-						{#each transactions as transaction}
+					{#if filteredTransactions?.length > 0}
+						{#each filteredTransactions as transaction}
 							{@const { date, description, transactionCategory, account, value, isExcluded } =
 								transaction}
 							<tr class="table__tr">
-								<td class="table__td table__td--date">{format(Date.parse(date), 'MMM dd, yyyy')}</td
+								<td class="table__td table__td--date"
+									>{format(fromUnixTime(date), 'MMM dd, yyyy')}</td
 								>
 								<td class="table__td">{description}</td>
 								<td class="table__td">{transactionCategory.name}</td>
 								<td class="table__td">{account.name}</td>
 								<td class="table__td table__td--total {value > 0 && `table__td--positive`}"
 									><span
-										class={isExcluded && `table__excluded`}
+										class={isExcluded ? `table__excluded` : null}
 										title="This transaction is excluded from 'The big picture' and 'Balance sheet' totals"
 									>
 										{formatCurrency(value, 2)}
@@ -177,6 +261,28 @@
 </ScrollView>
 
 <style lang="scss">
+	div.transactions {
+		box-shadow: var(--box-shadow);
+	}
+
+	header.transactions__header {
+		display: grid;
+		grid-template-columns: 4fr 1fr;
+		grid-template-rows: 1fr;
+		gap: 8px;
+		border-radius: 4px 4px 0 0;
+		background-color: var(--color-grey3);
+		border-bottom: 1px solid var(--color-border);
+		padding: 16px;
+	}
+
+	div.transactions__summary {
+		display: grid;
+		grid-auto-flow: column;
+		column-gap: 8px;
+		grid-column: span 2;
+	}
+
 	table.table {
 		position: relative;
 		z-index: 1;
@@ -184,7 +290,6 @@
 		table-layout: auto;
 		border-collapse: collapse;
 		background-color: var(--color-white);
-		box-shadow: var(--box-shadow);
 		font-size: 12px;
 	}
 
@@ -213,9 +318,13 @@
 		}
 	}
 
-	a.table__sortable {
+	button.table__sortable {
+		border: none;
+		padding: 0;
+		background-color: transparent;
 		color: var(--color-grey40);
 		text-decoration: none;
+		cursor: pointer;
 
 		&:hover,
 		&:hover::after {
@@ -296,58 +405,5 @@
 		color: var(--color-grey40);
 		border-bottom: 1px dashed var(--color-grey10);
 		cursor: help;
-	}
-
-	form.form {
-		border: 1px solid var(--color-border);
-		border-radius: 4px;
-		display: grid;
-	}
-
-	fieldset.form__fieldset {
-		border: none;
-		padding: 12px 0;
-		display: grid;
-		grid-row-gap: 8px;
-		margin: 0;
-	}
-
-	div.form__field {
-		display: grid;
-		grid-template-columns: 1.25fr 2fr 0.75fr;
-		column-gap: 20px;
-	}
-
-	label.form__label {
-		display: flex;
-		margin-left: auto;
-		align-items: center;
-		font-size: 12px;
-		font-weight: 600;
-		letter-spacing: -0.03em;
-		color: var(--color-grey70);
-	}
-
-	input.form__input {
-		background-color: var(--color-white);
-		border: 2px solid var(--color-border);
-		border-radius: 4px;
-		padding: 6px;
-		font-family: var(--font-sansSerif);
-		font-size: 12px;
-		box-sizing: border-box;
-		min-height: 32px;
-
-		&:active,
-		&:focus {
-			border-color: var(--color-bluePrimary);
-		}
-	}
-
-	footer.form__footer {
-		display: flex;
-		justify-content: flex-end;
-		padding: 8px 12px;
-		background-color: var(--color-border);
 	}
 </style>

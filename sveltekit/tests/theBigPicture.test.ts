@@ -44,13 +44,15 @@ test.describe('Balance sheet', () => {
 	test('Cashflow totals are calculated and rendered in a chart correctly', async ({ page }) => {
 		await page.goto('/');
 		expect(
-			await page.locator('.cashflow__summary .card', { hasText: 'Income' }).textContent()
+			await page.locator('.bigPictureCashflow__summary .card', { hasText: 'Income' }).textContent()
 		).toMatch('$0');
 		expect(
-			await page.locator('.cashflow__summary .card', { hasText: 'Expenses' }).textContent()
+			await page
+				.locator('.bigPictureCashflow__summary .card', { hasText: 'Expenses' })
+				.textContent()
 		).toMatch('$0');
 		expect(
-			await page.locator('.cashflow__summary .card', { hasText: 'Surplus' }).textContent()
+			await page.locator('.bigPictureCashflow__summary .card', { hasText: 'Surplus' }).textContent()
 		).toMatch('$0');
 
 		const chartPeriods = page.locator('.chart__period');
@@ -310,9 +312,15 @@ test.describe('Balance sheet', () => {
 		);
 
 		// Hovering over a column updates the cashflow summary values
-		const incomeSummaryCard = page.locator('.cashflow__summary .card', { hasText: 'Income' });
-		const expensesSummaryCard = page.locator('.cashflow__summary .card', { hasText: 'Expenses' });
-		const surplusSummaryCard = page.locator('.cashflow__summary .card', { hasText: 'Surplus' });
+		const incomeSummaryCard = page.locator('.bigPictureCashflow__summary .card', {
+			hasText: 'Income'
+		});
+		const expensesSummaryCard = page.locator('.bigPictureCashflow__summary .card', {
+			hasText: 'Expenses'
+		});
+		const surplusSummaryCard = page.locator('.bigPictureCashflow__summary .card', {
+			hasText: 'Surplus'
+		});
 
 		await chartPeriods.nth(0).hover();
 		expect(await incomeSummaryCard.textContent()).toMatch('$0');

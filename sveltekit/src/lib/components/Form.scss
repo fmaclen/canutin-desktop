@@ -1,0 +1,15 @@
+@mixin baseInput {
+  background-color: var(--color-white);
+  border: 2px solid var(--color-border);
+  border-radius: 4px;
+  padding: 10px;
+  font-family: var(--font-sansSerif);
+  font-size: 12px;
+  box-sizing: border-box;
+
+  &:active,
+  &:focus {
+    outline-color: var(--color-bluePrimary);
+    outline-style: auto;
+  }
+}

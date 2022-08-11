@@ -1,7 +1,14 @@
-import { startOfMonth, endOfMonth, sub, fromUnixTime } from 'date-fns';
+import { startOfMonth, endOfMonth, sub, fromUnixTime, getUnixTime } from 'date-fns';
 
+import type { Account, Transaction, TransactionCategory } from '@prisma/client';
 import prisma from '$lib/helpers/prismaClient';
 import { SortOrder } from '$lib/helpers/constants';
+
+export interface EndpointTransaction extends Omit<Transaction, 'date'> {
+	date: number;
+	transactionCategory: TransactionCategory;
+	account: Account;
+}
 
 export const GET = async ({ url }: { url: URL }) => {
 	const { searchParams } = url;
@@ -76,17 +83,16 @@ export const GET = async ({ url }: { url: URL }) => {
 		orderBy: Object.fromEntries([[paramSortBy, paramSortOrder]])
 	});
 
+	// Endpoint body gets returned as serialized JSON so we convert the date to Unix timestamps.
+	const endpointTransactions: EndpointTransaction[] = transactions.map((transaction) => ({
+		...transaction,
+		date: getUnixTime(transaction.date)
+	}));
+
 	return {
 		status: 200,
 		body: {
-			transactions,
-			searchParams: {
-				keyword: paramKeyword,
-				dateFrom: paramDateFrom,
-				dateTo: paramDateTo,
-				sortBy: paramSortBy,
-				sortOrder: paramSortOrder
-			}
+			transactions: endpointTransactions
 		}
 	};
 };

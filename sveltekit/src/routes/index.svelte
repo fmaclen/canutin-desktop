@@ -5,24 +5,25 @@
 	import Section from '$lib/components/Section.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import ChartBar from '$lib/components/ChartBar.svelte';
+	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
 	import { formatCurrency } from '$lib/helpers/misc';
 	import { TrailingCashflowPeriods } from '$lib/helpers/constants';
 	import { balanceGroupAppearance, CardAppearance } from '$lib/components/Card';
 	import type { BigPictureSummary, Cashflow, PeriodCashflow, TrailingCashflow } from '.';
 
-	export let title = 'The big picture';
+	const title = 'The big picture';
 
 	// Summary
 	export let summary: BigPictureSummary;
 
 	// Cashflow
 	export let cashflow: Cashflow;
-	export let currentPeriod = cashflow.periods[cashflow.periods.length - 1];
-	export let activePeriod = currentPeriod.id;
-	export let activeIncome = currentPeriod.income;
-	export let activeExpenses = currentPeriod.expenses;
-	export let activeSurplus = currentPeriod.surplus;
-	export let setActivePeriod = (period: PeriodCashflow) => {
+	let currentPeriod = cashflow.periods[cashflow.periods.length - 1];
+	let activePeriod = currentPeriod.id;
+	let activeIncome = currentPeriod.income;
+	let activeExpenses = currentPeriod.expenses;
+	let activeSurplus = currentPeriod.surplus;
+	let setActivePeriod = (period: PeriodCashflow) => {
 		activePeriod = period.id;
 		activeIncome = period.income;
 		activeExpenses = period.expenses;
@@ -31,8 +32,8 @@
 
 	// Trailing cashflow
 	export let trailingCashflow: TrailingCashflow;
-	export let currentSegment = TrailingCashflowPeriods.LAST_6_MONTHS;
-	export let toggleSegment = () => {
+	let currentSegment = TrailingCashflowPeriods.LAST_6_MONTHS;
+	const toggleSegment = () => {
 		currentSegment =
 			currentSegment === TrailingCashflowPeriods.LAST_6_MONTHS
 				? TrailingCashflowPeriods.LAST_12_MONTHS
@@ -64,7 +65,7 @@
 	</Section>
 
 	<Section title="Cashflow">
-		<div slot="CONTENT" class="cashflow">
+		<div slot="CONTENT" class="bigPictureCashflow">
 			{@const { chart } = cashflow}
 
 			<div class="chart">
@@ -100,7 +101,7 @@
 					</div>
 				{/each}
 			</div>
-			<div class="cashflow__summary">
+			<div class="bigPictureCashflow__summary">
 				<Card
 					title="Income"
 					appearance={CardAppearance.SECONDARY}
@@ -117,16 +118,13 @@
 	</Section>
 
 	<Section title="Trailing cashflow">
-		<nav class="segmentedControl" slot="HEADER">
-			{#each Object.values(TrailingCashflowPeriods) as period}
-				<button
-					class="segmentedControl__button {currentSegment == period &&
-						'segmentedControl__button--active'}"
-					type="button"
-					on:click={toggleSegment}>{period}</button
-				>
-			{/each}
-		</nav>
+		<div slot="HEADER">
+			<SegmentedControl
+				{currentSegment}
+				segments={Object.values(TrailingCashflowPeriods)}
+				callback={toggleSegment}
+			/>
+		</div>
 		<div class="bigPictureTrailingCashflow" slot="CONTENT">
 			{@const { last6Months, last12Months } = trailingCashflow}
 			{@const segment =
@@ -149,6 +147,23 @@
 	div.bigPictureSummary {
 		grid-template-rows: repeat(2, 1fr);
 		grid-row-gap: 8px;
+	}
+
+	div.bigPictureCashflow {
+		background-color: var(--color-white);
+		border-radius: 4px;
+		box-shadow: var(--box-shadow);
+		width: 100%;
+	}
+
+	div.bigPictureCashflow__summary {
+		border-radius: 0 0 4px 4px;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		grid-gap: 8px;
+		grid-column-start: span 12;
+		padding: 16px;
+		background-color: var(--color-grey3);
 	}
 
 	div.chart {
@@ -186,53 +201,6 @@
 
 		&--active {
 			color: var(--color-grey70);
-		}
-	}
-
-	div.cashflow {
-		background-color: var(--color-white);
-		border-radius: 4px;
-		box-shadow: var(--box-shadow);
-		width: 100%;
-	}
-
-	div.cashflow__summary {
-		border-radius: 0 0 4px 4px;
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		grid-gap: 8px;
-		grid-column-start: span 12;
-		padding: 16px;
-		background-color: var(--color-grey3);
-	}
-
-	nav.segmentedControl {
-		display: grid;
-		grid-gap: 4px;
-		grid-auto-flow: column;
-	}
-
-	button.segmentedControl__button {
-		font-family: var(--font-monospace);
-		text-transform: uppercase;
-		font-size: 12px;
-		line-height: 1em;
-		border: none;
-		background-color: var(--color-grey10);
-		padding: 6px 8px;
-		border-radius: 4px;
-		color: var(--color-grey50);
-		cursor: pointer;
-
-		&:hover {
-			color: var(--color-grey70);
-		}
-
-		&--active {
-			color: var(--color-bluePrimary);
-			background-color: var(--color-white);
-			box-shadow: var(--box-shadow);
-			pointer-events: none;
 		}
 	}
 </style>
