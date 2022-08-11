@@ -79,14 +79,7 @@ export const GET = async ({ url }: { url: URL }) => {
 	return {
 		status: 200,
 		body: {
-			transactions,
-			searchParams: {
-				keyword: paramKeyword,
-				dateFrom: paramDateFrom,
-				dateTo: paramDateTo,
-				sortBy: paramSortBy,
-				sortOrder: paramSortOrder
-			}
+			transactions
 		}
 	};
 };

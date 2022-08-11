@@ -1,74 +1,60 @@
 <script lang="ts">
 	import { format } from 'date-fns';
+	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
-	import SectionTitle from '$lib/components/SectionTitle.svelte';
-	import Button from '$lib/components/Button.svelte';
-	import { SortOrder } from '$lib/helpers/constants';
+	import Card from '$lib/components/Card.svelte';
+	import { CardAppearance } from '$lib/components/Card';
 	import { formatCurrency } from '$lib/helpers/misc';
+	import { SortOrder } from '$lib/helpers/constants';
 
 	export let title = 'Transactions';
 
-	// FIXME: see if we can set proper types on these variables
-	export let transactions: any[];
-	export let searchParams: any;
+	$: transactions = [];
+	$: keyword = '';
+	$: sortBy = 'date';
+	$: sortOrder = 'desc';
+	$: dateTo = '2022-08-31';
+	$: dateFrom = '2022-01-01';
 
-	const { pathname } = $page.url;
+	const getTransactions = async () => {
+		const response = await fetch(
+			`/transactions.json?keyword=${keyword}&sortBy=${sortBy}&sortOrder=${sortOrder}&dateFrom=${dateFrom}&dateTo=${dateTo}`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		);
+		const data = await response.json();
+		transactions = data.transactions;
+	};
 
-	const asc = SortOrder.ASC;
-	const desc = SortOrder.DESC;
+	onMount(async () => {
+		await getTransactions();
+	});
 
-	const dateFrom = searchParams.dateFrom ? `dateFrom=${searchParams.dateFrom}` : null;
-	const dateTo = searchParams.dateTo ? `dateTo=${searchParams.dateTo}` : null;
-
-	const categoryId = searchParams.dateTo ? `categoryId=${searchParams.dateTo}` : null;
-	const accountId = searchParams.dateFrom ? `accountId=${searchParams.dateFrom}` : null;
-	const currentParams = [dateFrom, dateTo, categoryId, accountId].filter(Boolean);
-
-	$: currentKeyword = searchParams.keyword;
-	$: currentSortBy = searchParams.sortBy;
-	$: currentSortOrder = searchParams.sortOrder;
-
-	$: urlDate = `${pathname}?${[
-		...currentParams,
-		'sortBy=date',
-		`sortOrder=${['date', null].includes(currentSortBy) && currentSortOrder === desc ? asc : desc}`
-	].join('&')}`;
-
-	$: urlDescription = `${pathname}?${[
-		...currentParams,
-		'sortBy=description',
-		`sortOrder=${currentSortBy === 'description' && currentSortOrder === desc ? asc : desc}`
-	].join('&')}`;
-
-	$: urlCategory = `${pathname}?${[
-		...currentParams,
-		'sortBy=categoryId',
-		`sortOrder=${currentSortBy === 'categoryId' && currentSortOrder === desc ? asc : desc}`
-	].join('&')}`;
-
-	$: urlAccount = `${pathname}?${[
-		...currentParams,
-		'sortBy=accountId',
-		`sortOrder=${currentSortBy === 'accountId' && currentSortOrder === desc ? asc : desc}`
-	].join('&')}`;
-
-	$: urlVaule = `${pathname}?${[
-		...currentParams,
-		'sortBy=value',
-		`sortOrder=${currentSortBy === 'value' && currentSortOrder === desc ? asc : desc}`
-	].join('&')}`;
-
-	const submitForm = (event: any) => {};
+	export const sortTransactionsBy = async (column: string) => {
+		if (sortBy === column) {
+			sortOrder = sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC;
+		} else {
+			sortBy = column;
+		}
+		await getTransactions();
+	};
 
 	// Sum the total from all the transaction values
-	export const sumTransactions = () => {
+	export const sumTransactions = (transactions: any[]) => {
+		// FIXME: see if we can set proper types on `transaction`
 		return transactions.reduce((acc, transaction) => {
 			return !transaction.isExcluded ? acc + transaction.value : 0;
 		}, 0);
 	};
+
+	console.log(sortBy);
 </script>
 
 <svelte:head>
@@ -76,76 +62,88 @@
 </svelte:head>
 
 <ScrollView {title}>
-	<Section title="Find transactions">
-		<div slot="CONTENT" class="importForm">
-			<form class="form" on:submit={submitForm} method="GET">
-				<fieldset class="form__fieldset">
-					<div class="form__field">
-						<label class="form__label" for="keyword">Keyword</label>
+	<Section title="Browse transactions">
+		<nav class="segmentedControl" slot="HEADER">
+			<button class="segmentedControl__button segmentedControl__button--active" type="button"
+				>All</button
+			>
+			<button class="segmentedControl__button" type="button">Credits</button>
+			<button class="segmentedControl__button" type="button">Debits</button>
+		</nav>
+		<div slot="CONTENT" class="transactions">
+			<header class="transactions__header">
+				<form class="transactions__form" on:submit|preventDefault={getTransactions}>
+					<fieldset class="transactions__fieldset">
 						<input
 							class="form__input"
 							type="text"
-							placeholder="Search by description, amount, category or account"
-							value={currentKeyword ? currentKeyword : ''}
+							placeholder="Type to filter by description, amount, category or account"
 							name="keyword"
+							bind:value={keyword}
 						/>
-					</div>
-				</fieldset>
-				<footer class="form__footer">
-					<Button>Search</Button>
-				</footer>
-			</form>
-		</div>
-	</Section>
+						<select class="form__input">
+							<option>Last 3 months</option>
+						</select>
+					</fieldset>
+				</form>
+				<div class="transactions__summary">
+					<Card
+						appearance={CardAppearance.SECONDARY}
+						title="Transactions"
+						value={transactions?.length}
+					/>
+					<Card
+						appearance={CardAppearance.SECONDARY}
+						title="Net balance"
+						value={formatCurrency(sumTransactions(transactions), 2)}
+					/>
+				</div>
+			</header>
 
-	<Section title="Transactions ({transactions.length}) ">
-		<SectionTitle slot="HEADER" title={formatCurrency(sumTransactions(), 2)} />
-		<div slot="CONTENT">
 			<table class="table">
 				<thead>
 					<th class="table__th">
-						<a
-							class="table__sortable {currentSortBy === 'date' &&
-								'table__sortable--active'} {currentSortBy === 'date' &&
-								`table__sortable--${currentSortOrder}`}"
-							href={`${urlDate}`}>Date</a
+						<button
+							class="table__sortable {sortBy === 'date' && 'table__sortable--active'} {sortBy ===
+								'date' && `table__sortable--${sortOrder}`}"
+							on:click={() => sortTransactionsBy('date')}>Date</button
 						>
 					</th>
 					<th class="table__th"
-						><a
-							class="table__sortable {currentSortBy === 'description' &&
-								'table__sortable--active'} {currentSortBy === 'description' &&
-								`table__sortable--${currentSortOrder}`}"
-							href={`${urlDescription}`}>Description</a
+						><button
+							class="table__sortable {sortBy === 'description' &&
+								'table__sortable--active'} {sortBy === 'description' &&
+								`table__sortable--${sortOrder}`}"
+							on:click={() => sortTransactionsBy('description')}
+							type="button">Description</button
 						></th
 					>
 					<th class="table__th"
-						><a
-							class="table__sortable {currentSortBy === 'categoryId' &&
-								'table__sortable--active'} {currentSortBy === 'categoryId' &&
-								`table__sortable--${currentSortOrder}`}"
-							href={`${urlCategory}`}>Category</a
+						><button
+							class="table__sortable {sortBy === 'categoryId' &&
+								'table__sortable--active'} {sortBy === 'categoryId' &&
+								`table__sortable--${sortOrder}`}"
+							on:click={() => sortTransactionsBy('categoryId')}>Category</button
 						></th
 					>
 					<th class="table__th"
-						><a
-							class="table__sortable {currentSortBy === 'accountId' &&
-								'table__sortable--active'} {currentSortBy === 'accountId' &&
-								`table__sortable--${currentSortOrder}`}"
-							href={`${urlAccount}`}>Account</a
+						><button
+							class="table__sortable {sortBy === 'accountId' &&
+								'table__sortable--active'} {sortBy === 'accountId' &&
+								`table__sortable--${sortOrder}`}"
+							on:click={() => sortTransactionsBy('accountId')}>Account</button
 						></th
 					>
 					<th class="table__th table__th--total"
-						><a
-							class="table__sortable {currentSortBy === 'value' &&
-								'table__sortable--active'} {currentSortBy === 'value' &&
-								`table__sortable--${currentSortOrder}`}"
-							href={`${urlVaule}`}>Amount</a
+						><button
+							class="table__sortable {sortBy === 'value' && 'table__sortable--active'} {sortBy ===
+								'value' && `table__sortable--${sortOrder}`}"
+							on:click={() => sortTransactionsBy('value')}>Amount</button
 						></th
 					>
 				</thead>
 				<tbody>
-					{#if transactions.length > 0}
+					{#if transactions?.length > 0}
 						{#each transactions as transaction}
 							{@const { date, description, transactionCategory, account, value, isExcluded } =
 								transaction}
@@ -177,6 +175,26 @@
 </ScrollView>
 
 <style lang="scss">
+	div.transactions {
+		box-shadow: var(--box-shadow);
+	}
+
+	header.transactions__header {
+		display: flex;
+		flex-direction: column;
+		row-gap: 8px;
+		border-radius: 4px 4px 0 0;
+		background-color: var(--color-grey3);
+		border-bottom: 1px solid var(--color-border);
+		padding: 16px;
+	}
+
+	div.transactions__summary {
+		display: grid;
+		grid-auto-flow: column;
+		column-gap: 8px;
+	}
+
 	table.table {
 		position: relative;
 		z-index: 1;
@@ -184,7 +202,6 @@
 		table-layout: auto;
 		border-collapse: collapse;
 		background-color: var(--color-white);
-		box-shadow: var(--box-shadow);
 		font-size: 12px;
 	}
 
@@ -213,9 +230,13 @@
 		}
 	}
 
-	a.table__sortable {
+	button.table__sortable {
+		border: none;
+		padding: 0;
+		background-color: transparent;
 		color: var(--color-grey40);
 		text-decoration: none;
+		cursor: pointer;
 
 		&:hover,
 		&:hover::after {
@@ -298,18 +319,12 @@
 		cursor: help;
 	}
 
-	form.form {
-		border: 1px solid var(--color-border);
-		border-radius: 4px;
+	fieldset.transactions__fieldset {
 		display: grid;
-	}
-
-	fieldset.form__fieldset {
+		column-gap: 8px;
+		grid-template-columns: 4fr 1fr;
 		border: none;
-		padding: 12px 0;
-		display: grid;
-		grid-row-gap: 8px;
-		margin: 0;
+		padding: 0;
 	}
 
 	div.form__field {
