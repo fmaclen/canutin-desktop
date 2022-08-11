@@ -109,7 +109,7 @@
 	$: dateFrom = format(periods[periodIndex].dateFrom, 'yyyy-MM-dd');
 	$: dateTo = format(periods[periodIndex].dateTo, 'yyyy-MM-dd');
 	$: filterBy = Filter.ALL;
-	$: sortBy = TABLE_HEADERS[0].column;
+	$: sortBy = TABLE_HEADERS[0].column; // Date
 	$: sortOrder = SortOrder.DESC;
 	$: keyword = '';
 
