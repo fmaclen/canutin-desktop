@@ -5,7 +5,7 @@
 	import Notice from '$lib/components/Notice.svelte';
 	import { DeveloperFunctions } from '$lib/helpers/constants';
 
-	let title = 'Developer tools';
+	const title = 'Developer tools';
 	let isSuccesful: boolean = false;
 
 	const databaseSeed = async () => {

@@ -11,7 +11,7 @@
 	import { balanceGroupAppearance, CardAppearance } from '$lib/components/Card';
 	import type { BigPictureSummary, Cashflow, PeriodCashflow, TrailingCashflow } from '.';
 
-	let title = 'The big picture';
+	const title = 'The big picture';
 
 	// Summary
 	export let summary: BigPictureSummary;

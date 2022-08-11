@@ -10,7 +10,7 @@
 	import type { ImportSummary } from './index.json';
 	import { CardAppearance } from '$lib/components/Card';
 
-	let title = 'Import data';
+	const title = 'Import data';
 
 	let isLoading: boolean = false;
 	let noFileError: string | undefined = undefined;

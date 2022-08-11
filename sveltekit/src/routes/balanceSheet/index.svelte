@@ -8,7 +8,7 @@
 	import SectionTitle from '$lib/components/SectionTitle.svelte';
 	import { balanceGroupAppearance } from '$lib/components/Card';
 
-	let title = 'Balance sheet';
+	const title = 'Balance sheet';
 
 	export let balanceSheetBalanceGroups: BalanceSheetBalanceGroup[];
 </script>

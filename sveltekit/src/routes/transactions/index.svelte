@@ -22,7 +22,7 @@
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { EndpointTransaction } from './index.json';
 
-	export let title = 'Transactions';
+	const title = 'Transactions';
 
 	const today = new Date();
 	const thisMonthFrom = startOfMonth(today);
