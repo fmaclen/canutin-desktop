@@ -10,10 +10,11 @@
 	import type { ImportSummary } from './index.json';
 	import { CardAppearance } from '$lib/components/Card';
 
-	export let title = 'Import data';
-	export let isLoading: boolean = false;
-	export let noFileError: string | undefined = undefined;
-	export let importSummary: ImportSummary | undefined = undefined;
+	let title = 'Import data';
+
+	let isLoading: boolean = false;
+	let noFileError: string | undefined = undefined;
+	let importSummary: ImportSummary | undefined = undefined;
 
 	const submitForm = (event: any) => {
 		event.preventDefault();

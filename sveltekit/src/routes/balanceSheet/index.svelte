@@ -8,8 +8,9 @@
 	import SectionTitle from '$lib/components/SectionTitle.svelte';
 	import { balanceGroupAppearance } from '$lib/components/Card';
 
+	let title = 'Balance sheet';
+
 	export let balanceSheetBalanceGroups: BalanceSheetBalanceGroup[];
-	export let title = 'Balance sheet';
 </script>
 
 <svelte:head>

@@ -5,25 +5,25 @@
 	import Section from '$lib/components/Section.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import ChartBar from '$lib/components/ChartBar.svelte';
+	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
 	import { formatCurrency } from '$lib/helpers/misc';
 	import { TrailingCashflowPeriods } from '$lib/helpers/constants';
 	import { balanceGroupAppearance, CardAppearance } from '$lib/components/Card';
 	import type { BigPictureSummary, Cashflow, PeriodCashflow, TrailingCashflow } from '.';
-	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
 
-	export let title = 'The big picture';
+	let title = 'The big picture';
 
 	// Summary
 	export let summary: BigPictureSummary;
 
 	// Cashflow
 	export let cashflow: Cashflow;
-	export let currentPeriod = cashflow.periods[cashflow.periods.length - 1];
-	export let activePeriod = currentPeriod.id;
-	export let activeIncome = currentPeriod.income;
-	export let activeExpenses = currentPeriod.expenses;
-	export let activeSurplus = currentPeriod.surplus;
-	export let setActivePeriod = (period: PeriodCashflow) => {
+	let currentPeriod = cashflow.periods[cashflow.periods.length - 1];
+	let activePeriod = currentPeriod.id;
+	let activeIncome = currentPeriod.income;
+	let activeExpenses = currentPeriod.expenses;
+	let activeSurplus = currentPeriod.surplus;
+	let setActivePeriod = (period: PeriodCashflow) => {
 		activePeriod = period.id;
 		activeIncome = period.income;
 		activeExpenses = period.expenses;
@@ -32,8 +32,8 @@
 
 	// Trailing cashflow
 	export let trailingCashflow: TrailingCashflow;
-	export let currentSegment = TrailingCashflowPeriods.LAST_6_MONTHS;
-	export let toggleSegment = () => {
+	let currentSegment = TrailingCashflowPeriods.LAST_6_MONTHS;
+	const toggleSegment = () => {
 		currentSegment =
 			currentSegment === TrailingCashflowPeriods.LAST_6_MONTHS
 				? TrailingCashflowPeriods.LAST_12_MONTHS
@@ -65,7 +65,7 @@
 	</Section>
 
 	<Section title="Cashflow">
-		<div slot="CONTENT" class="cashflow">
+		<div slot="CONTENT" class="bigPictureCashflow">
 			{@const { chart } = cashflow}
 
 			<div class="chart">
@@ -101,7 +101,7 @@
 					</div>
 				{/each}
 			</div>
-			<div class="cashflow__summary">
+			<div class="bigPictureCashflow__summary">
 				<Card
 					title="Income"
 					appearance={CardAppearance.SECONDARY}
@@ -117,11 +117,11 @@
 		</div>
 	</Section>
 
-	<Section title="Trailing bigPictureCashflow">
+	<Section title="Trailing cashflow">
 		<div slot="HEADER">
 			<SegmentedControl
-				segments={Object.values(TrailingCashflowPeriods)}
 				{currentSegment}
+				segments={Object.values(TrailingCashflowPeriods)}
 				callback={toggleSegment}
 			/>
 		</div>
