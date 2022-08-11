@@ -1,7 +1,15 @@
 <script lang="ts">
-	import { format } from 'date-fns';
+	import {
+		subMonths,
+		subYears,
+		startOfMonth,
+		endOfMonth,
+		startOfYear,
+		endOfYear,
+		endOfDay,
+		format
+	} from 'date-fns';
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
@@ -14,12 +22,93 @@
 
 	export let title = 'Transactions';
 
+	const today = new Date();
+	const thisMonthFrom = startOfMonth(today);
+	const thisMonthTo = endOfMonth(today);
+	const thisYearFrom = startOfYear(today);
+	const thisYearTo = endOfYear(today);
+	const periods = [
+		{
+			label: 'This month',
+			dateFrom: thisMonthFrom,
+			dateTo: thisMonthTo
+		},
+		{
+			label: 'Last month',
+			dateFrom: subMonths(thisMonthFrom, 1),
+			dateTo: subMonths(thisMonthTo, 1)
+		},
+		{
+			label: 'Last 3 months',
+			dateFrom: subMonths(today, 3),
+			dateTo: endOfDay(today)
+		},
+		{
+			label: 'Last 6 months',
+			dateFrom: subMonths(today, 6),
+			dateTo: endOfDay(today)
+		},
+		{
+			label: 'Last 12 months',
+			dateFrom: subMonths(today, 12),
+			dateTo: endOfDay(today)
+		},
+		{
+			label: 'Year to date',
+			dateFrom: thisYearFrom,
+			dateTo: endOfDay(today)
+		},
+		{
+			label: 'Last year',
+			dateFrom: subYears(thisYearFrom, 1),
+			dateTo: subYears(thisYearTo, 1)
+		},
+		{
+			label: 'Lifetime',
+			dateFrom: subYears(today, 900),
+			dateTo: endOfDay(today)
+		}
+	];
+
+	enum Filter {
+		ALL = 'all',
+		CREDITS = 'credits',
+		DEBITS = 'debits'
+	}
+
+	const TABLE_HEADERS = [
+		{
+			label: 'Date',
+			param: 'date'
+		},
+		{
+			label: 'Description',
+			param: 'description'
+		},
+		{
+			label: 'Category',
+			param: 'categoryId'
+		},
+		{
+			label: 'Account',
+			param: 'accountId'
+		},
+		{
+			label: 'Amount',
+			param: 'value'
+		}
+	];
+
+	// Default values
 	$: transactions = [];
+	$: filterBy = Filter.ALL;
+	$: filteredTransactions = [];
 	$: keyword = '';
-	$: sortBy = 'date';
-	$: sortOrder = 'desc';
-	$: dateTo = '2022-08-31';
-	$: dateFrom = '2022-01-01';
+	$: sortBy = TABLE_HEADERS[0].param;
+	$: sortOrder = SortOrder.DESC;
+	$: periodIndex = 2;
+	$: dateTo = format(periods[periodIndex].dateTo, 'yyyy-MM-dd');
+	$: dateFrom = format(periods[periodIndex].dateFrom, 'yyyy-MM-dd');
 
 	const getTransactions = async () => {
 		const response = await fetch(
@@ -33,6 +122,7 @@
 		);
 		const data = await response.json();
 		transactions = data.transactions;
+		setFilterBy(filterBy);
 	};
 
 	onMount(async () => {
@@ -52,11 +142,25 @@
 	export const sumTransactions = (transactions: any[]) => {
 		// FIXME: see if we can set proper types on `transaction`
 		return transactions.reduce((acc, transaction) => {
-			return !transaction.isExcluded ? acc + transaction.value : 0;
+			return !transaction.isExcluded ? acc + transaction.value : acc;
 		}, 0);
 	};
 
-	console.log(sortBy);
+	export let setFilterBy = (filter?: Filter) => {
+		filterBy = filter ? filter : filterBy;
+
+		switch (filter) {
+			case Filter.CREDITS:
+				filteredTransactions = transactions.filter((transaction) => transaction.value > 0);
+				break;
+			case Filter.DEBITS:
+				filteredTransactions = transactions.filter((transaction) => transaction.value < 0);
+				break;
+			case Filter.ALL:
+			default:
+				filteredTransactions = transactions;
+		}
+	};
 </script>
 
 <svelte:head>
@@ -72,6 +176,7 @@
 			<button class="segmentedControl__button" type="button">Credits</button>
 			<button class="segmentedControl__button" type="button">Debits</button>
 		</nav>
+
 		<div slot="CONTENT" class="transactions">
 			<header class="transactions__header">
 				<FormInput
@@ -95,56 +200,27 @@
 					<Card
 						appearance={CardAppearance.SECONDARY}
 						title="Net balance"
-						value={formatCurrency(sumTransactions(transactions), 2)}
+						value={formatCurrency(sumTransactions(filteredTransactions), 2)}
 					/>
 				</div>
 			</header>
 
 			<table class="table">
 				<thead>
-					<th class="table__th">
-						<button
-							class="table__sortable {sortBy === 'date' && 'table__sortable--active'} {sortBy ===
-								'date' && `table__sortable--${sortOrder}`}"
-							on:click={() => sortTransactionsBy('date')}>Date</button
-						>
-					</th>
-					<th class="table__th"
-						><button
-							class="table__sortable {sortBy === 'description' &&
-								'table__sortable--active'} {sortBy === 'description' &&
-								`table__sortable--${sortOrder}`}"
-							on:click={() => sortTransactionsBy('description')}
-							type="button">Description</button
-						></th
-					>
-					<th class="table__th"
-						><button
-							class="table__sortable {sortBy === 'categoryId' &&
-								'table__sortable--active'} {sortBy === 'categoryId' &&
-								`table__sortable--${sortOrder}`}"
-							on:click={() => sortTransactionsBy('categoryId')}>Category</button
-						></th
-					>
-					<th class="table__th"
-						><button
-							class="table__sortable {sortBy === 'accountId' &&
-								'table__sortable--active'} {sortBy === 'accountId' &&
-								`table__sortable--${sortOrder}`}"
-							on:click={() => sortTransactionsBy('accountId')}>Account</button
-						></th
-					>
-					<th class="table__th table__th--total"
-						><button
-							class="table__sortable {sortBy === 'value' && 'table__sortable--active'} {sortBy ===
-								'value' && `table__sortable--${sortOrder}`}"
-							on:click={() => sortTransactionsBy('value')}>Amount</button
-						></th
-					>
+					{#each TABLE_HEADERS as tableHeader}
+						<th class="table__th">
+							<button
+								class="table__sortable {sortBy === tableHeader.param &&
+									'table__sortable--active'} {sortBy === tableHeader.param &&
+									`table__sortable--${sortOrder}`}"
+								on:click={() => sortTransactionsBy(tableHeader.param)}>{tableHeader.label}</button
+							>
+						</th>
+					{/each}
 				</thead>
 				<tbody>
 					{#if transactions?.length > 0}
-						{#each transactions as transaction}
+						{#each filteredTransactions as transaction}
 							{@const { date, description, transactionCategory, account, value, isExcluded } =
 								transaction}
 							<tr class="table__tr">
@@ -180,9 +256,10 @@
 	}
 
 	header.transactions__header {
-		display: flex;
-		flex-direction: column;
-		row-gap: 8px;
+		display: grid;
+		grid-template-columns: 4fr 1fr;
+		grid-template-rows: 1fr;
+		gap: 8px;
 		border-radius: 4px 4px 0 0;
 		background-color: var(--color-grey3);
 		border-bottom: 1px solid var(--color-border);
@@ -193,6 +270,7 @@
 		display: grid;
 		grid-auto-flow: column;
 		column-gap: 8px;
+		grid-column: span 2;
 	}
 
 	table.table {
