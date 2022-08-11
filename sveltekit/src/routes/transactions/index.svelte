@@ -5,6 +5,8 @@
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
+	import FormInput from '$lib/components/FormInput.svelte';
+	import FormSelect from '$lib/components/FormSelect.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import { CardAppearance } from '$lib/components/Card';
 	import { formatCurrency } from '$lib/helpers/misc';
@@ -72,20 +74,18 @@
 		</nav>
 		<div slot="CONTENT" class="transactions">
 			<header class="transactions__header">
-				<form class="transactions__form" on:submit|preventDefault={getTransactions}>
-					<fieldset class="transactions__fieldset">
-						<input
-							class="form__input"
-							type="text"
-							placeholder="Type to filter by description, amount, category or account"
-							name="keyword"
-							bind:value={keyword}
-						/>
-						<select class="form__input">
-							<option>Last 3 months</option>
-						</select>
-					</fieldset>
-				</form>
+				<FormInput
+					type="text"
+					name="keyword"
+					placeholder="Type to filter by description, amount, category or account"
+					bind:value={keyword}
+					on:change={() => getTransactions()}
+				/>
+				<FormSelect
+					options={periods}
+					bind:value={periodIndex}
+					on:change={() => getTransactions()}
+				/>
 				<div class="transactions__summary">
 					<Card
 						appearance={CardAppearance.SECONDARY}
@@ -325,44 +325,5 @@
 		grid-template-columns: 4fr 1fr;
 		border: none;
 		padding: 0;
-	}
-
-	div.form__field {
-		display: grid;
-		grid-template-columns: 1.25fr 2fr 0.75fr;
-		column-gap: 20px;
-	}
-
-	label.form__label {
-		display: flex;
-		margin-left: auto;
-		align-items: center;
-		font-size: 12px;
-		font-weight: 600;
-		letter-spacing: -0.03em;
-		color: var(--color-grey70);
-	}
-
-	input.form__input {
-		background-color: var(--color-white);
-		border: 2px solid var(--color-border);
-		border-radius: 4px;
-		padding: 6px;
-		font-family: var(--font-sansSerif);
-		font-size: 12px;
-		box-sizing: border-box;
-		min-height: 32px;
-
-		&:active,
-		&:focus {
-			border-color: var(--color-bluePrimary);
-		}
-	}
-
-	footer.form__footer {
-		display: flex;
-		justify-content: flex-end;
-		padding: 8px 12px;
-		background-color: var(--color-border);
 	}
 </style>
