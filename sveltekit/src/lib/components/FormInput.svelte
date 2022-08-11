@@ -14,7 +14,7 @@
 
 <style lang="scss">
 	input.formInput {
-		@import '../styles/baseInput.scss';
+		@import './Form.scss';
 		@include baseInput;
 	}
 </style>

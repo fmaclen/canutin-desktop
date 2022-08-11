@@ -30,7 +30,7 @@
 	}
 
 	select.formSelect__select {
-		@import '../styles/baseInput.scss';
+		@import './Form.scss';
 		@include baseInput;
 
 		appearance: none;

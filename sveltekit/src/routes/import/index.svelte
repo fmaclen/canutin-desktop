@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Notice from '$lib/components/Notice.svelte';
+	import FormInput from '$lib/components/FormInput.svelte';
 	import type { ImportSummary } from './index.json';
 	import { CardAppearance } from '$lib/components/Card';
-	import FormInput from '$lib/components/FormInput.svelte';
 
 	export let title = 'Import data';
 	export let isLoading: boolean = false;
