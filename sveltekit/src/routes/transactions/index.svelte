@@ -122,7 +122,6 @@
 			`filterBy=${filterBy}`,
 			`keyword=${keyword}`
 		];
-
 		const response = await fetch(`/transactions.json?${params.join('&')}`, {
 			method: 'GET',
 			headers: {
@@ -149,7 +148,7 @@
 		await getTransactions();
 	};
 
-	// Sum the total from all the transaction values
+	// Sum the total from all the transaction values (ignoring "excluded" ones)
 	const sumTransactions = (transactions: EndpointTransaction[]) => {
 		return transactions.reduce((acc, transaction) => {
 			return !transaction.isExcluded ? acc + transaction.value : acc;
@@ -160,16 +159,12 @@
 	const setFilterBy = (filter: Filter) => {
 		filterBy = filter ? filter : filterBy;
 
-		switch (filter) {
-			case Filter.CREDITS:
-				filteredTransactions = transactions.filter((transaction) => transaction.value > 0);
-				break;
-			case Filter.DEBITS:
-				filteredTransactions = transactions.filter((transaction) => transaction.value < 0);
-				break;
-			case Filter.ALL:
-			default:
-				filteredTransactions = transactions;
+		if (filter === Filter.ALL) {
+			filteredTransactions = transactions;
+		} else {
+			filteredTransactions = transactions.filter((transaction) =>
+				filter === Filter.CREDITS ? transaction.value >= 0 : transaction.value < 0
+			);
 		}
 	};
 </script>
