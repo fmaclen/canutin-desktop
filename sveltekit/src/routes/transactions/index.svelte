@@ -81,23 +81,23 @@
 	const TABLE_HEADERS = [
 		{
 			label: 'Date',
-			param: 'date'
+			column: 'date'
 		},
 		{
 			label: 'Description',
-			param: 'description'
+			column: 'description'
 		},
 		{
 			label: 'Category',
-			param: 'categoryId'
+			column: 'categoryId'
 		},
 		{
 			label: 'Account',
-			param: 'accountId'
+			column: 'accountId'
 		},
 		{
 			label: 'Amount',
-			param: 'value'
+			column: 'value'
 		}
 	];
 
@@ -106,9 +106,9 @@
 	$: filteredTransactions = [] as EndpointTransaction[];
 	$: filterBy = Filter.ALL;
 	$: keyword = '';
-	$: sortBy = TABLE_HEADERS[0].param;
+	$: sortBy = TABLE_HEADERS[0].column;
 	$: sortOrder = SortOrder.DESC;
-	$: periodIndex = 2;
+	$: periodIndex = 2; // Last 3 months
 	$: dateTo = format(periods[periodIndex].dateTo, 'yyyy-MM-dd');
 	$: dateFrom = format(periods[periodIndex].dateFrom, 'yyyy-MM-dd');
 
@@ -212,14 +212,15 @@
 			<table class="table">
 				<thead>
 					{#each TABLE_HEADERS as tableHeader}
+						{@const {label, column} = tableHeader}
 						<th
 							class="table__th {tableHeader.label === TABLE_HEADERS[4].label && 'table__th--total'}"
 						>
 							<button
 								class="table__sortable
-								{sortBy === tableHeader.param && 'table__sortable--active'}
-								{sortBy === tableHeader.param && `table__sortable--${sortOrder}`}"
-								on:click={() => sortTransactionsBy(tableHeader.param)}>{tableHeader.label}</button
+								{sortBy === column && 'table__sortable--active'}
+								{sortBy === column && `table__sortable--${sortOrder}`}"
+								on:click={() => sortTransactionsBy(column)}>{label}</button
 							>
 						</th>
 					{/each}
