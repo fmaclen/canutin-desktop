@@ -10,7 +10,7 @@
 	};
 </script>
 
-<input class="formInput" use:setType {name} {placeholder} {accept} bind:value on:change />
+<input class="formInput" use:setType {name} {placeholder} {accept} bind:value on:keyup />
 
 <style lang="scss">
 	input.formInput {

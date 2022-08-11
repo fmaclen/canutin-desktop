@@ -186,9 +186,9 @@
 				<FormInput
 					type="text"
 					name="keyword"
-					placeholder="Search by description, amount, category or account"
+					placeholder="Type to filter by description, amount, category or account"
 					bind:value={keyword}
-					on:change={() => getTransactions()}
+					on:keyup={() => getTransactions()}
 				/>
 				<FormSelect
 					options={periods}
@@ -212,7 +212,7 @@
 			<table class="table">
 				<thead>
 					{#each TABLE_HEADERS as tableHeader}
-						{@const {label, column} = tableHeader}
+						{@const { label, column } = tableHeader}
 						<th
 							class="table__th {tableHeader.label === TABLE_HEADERS[4].label && 'table__th--total'}"
 						>
