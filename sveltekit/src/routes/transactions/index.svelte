@@ -105,24 +105,30 @@
 	// Default values
 	$: transactions = [] as EndpointTransaction[];
 	$: filteredTransactions = [] as EndpointTransaction[];
+	$: periodIndex = 2; // Last 3 months
+	$: dateFrom = format(periods[periodIndex].dateFrom, 'yyyy-MM-dd');
+	$: dateTo = format(periods[periodIndex].dateTo, 'yyyy-MM-dd');
 	$: filterBy = Filter.ALL;
-	$: keyword = '';
 	$: sortBy = TABLE_HEADERS[0].column;
 	$: sortOrder = SortOrder.DESC;
-	$: periodIndex = 2; // Last 3 months
-	$: dateTo = format(periods[periodIndex].dateTo, 'yyyy-MM-dd');
-	$: dateFrom = format(periods[periodIndex].dateFrom, 'yyyy-MM-dd');
+	$: keyword = '';
 
 	const getTransactions = async () => {
-		const response = await fetch(
-			`/transactions.json?keyword=${keyword}&sortBy=${sortBy}&sortOrder=${sortOrder}&dateFrom=${dateFrom}&dateTo=${dateTo}`,
-			{
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json'
-				}
+		const params = [
+			`dateFrom=${dateFrom}`,
+			`dateTo=${dateTo}`,
+			`sortBy=${sortBy}`,
+			`sortOrder=${sortOrder}`,
+			`filterBy=${filterBy}`,
+			`keyword=${keyword}`
+		];
+
+		const response = await fetch(`/transactions.json?${params.join('&')}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
 			}
-		);
+		});
 		const data = await response.json();
 		transactions = data.transactions;
 		setFilterBy(filterBy);
