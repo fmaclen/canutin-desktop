@@ -143,7 +143,7 @@
 	};
 
 	// Sum the total from all the transaction values
-	const sumTransactions = (transactions: any[]) => {
+	const sumTransactions = (transactions: EndpointTransaction[]) => {
 		return transactions.reduce((acc, transaction) => {
 			return !transaction.isExcluded ? acc + transaction.value : acc;
 		}, 0);
