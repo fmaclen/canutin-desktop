@@ -9,6 +9,7 @@
 	import { TrailingCashflowPeriods } from '$lib/helpers/constants';
 	import { balanceGroupAppearance, CardAppearance } from '$lib/components/Card';
 	import type { BigPictureSummary, Cashflow, PeriodCashflow, TrailingCashflow } from '.';
+	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
 
 	export let title = 'The big picture';
 
@@ -116,17 +117,14 @@
 		</div>
 	</Section>
 
-	<Section title="Trailing cashflow">
-		<nav class="segmentedControl" slot="HEADER">
-			{#each Object.values(TrailingCashflowPeriods) as period}
-				<button
-					class="segmentedControl__button {currentSegment == period &&
-						'segmentedControl__button--active'}"
-					type="button"
-					on:click={toggleSegment}>{period}</button
-				>
-			{/each}
-		</nav>
+	<Section title="Trailing bigPictureCashflow">
+		<div slot="HEADER">
+			<SegmentedControl
+				segments={Object.values(TrailingCashflowPeriods)}
+				{currentSegment}
+				callback={toggleSegment}
+			/>
+		</div>
 		<div class="bigPictureTrailingCashflow" slot="CONTENT">
 			{@const { last6Months, last12Months } = trailingCashflow}
 			{@const segment =
@@ -149,6 +147,23 @@
 	div.bigPictureSummary {
 		grid-template-rows: repeat(2, 1fr);
 		grid-row-gap: 8px;
+	}
+
+	div.bigPictureCashflow {
+		background-color: var(--color-white);
+		border-radius: 4px;
+		box-shadow: var(--box-shadow);
+		width: 100%;
+	}
+
+	div.bigPictureCashflow__summary {
+		border-radius: 0 0 4px 4px;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		grid-gap: 8px;
+		grid-column-start: span 12;
+		padding: 16px;
+		background-color: var(--color-grey3);
 	}
 
 	div.chart {
@@ -186,53 +201,6 @@
 
 		&--active {
 			color: var(--color-grey70);
-		}
-	}
-
-	div.cashflow {
-		background-color: var(--color-white);
-		border-radius: 4px;
-		box-shadow: var(--box-shadow);
-		width: 100%;
-	}
-
-	div.cashflow__summary {
-		border-radius: 0 0 4px 4px;
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		grid-gap: 8px;
-		grid-column-start: span 12;
-		padding: 16px;
-		background-color: var(--color-grey3);
-	}
-
-	nav.segmentedControl {
-		display: grid;
-		grid-gap: 4px;
-		grid-auto-flow: column;
-	}
-
-	button.segmentedControl__button {
-		font-family: var(--font-monospace);
-		text-transform: uppercase;
-		font-size: 12px;
-		line-height: 1em;
-		border: none;
-		background-color: var(--color-grey10);
-		padding: 6px 8px;
-		border-radius: 4px;
-		color: var(--color-grey50);
-		cursor: pointer;
-
-		&:hover {
-			color: var(--color-grey70);
-		}
-
-		&--active {
-			color: var(--color-bluePrimary);
-			background-color: var(--color-white);
-			box-shadow: var(--box-shadow);
-			pointer-events: none;
 		}
 	}
 </style>

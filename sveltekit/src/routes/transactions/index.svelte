@@ -13,6 +13,7 @@
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
+	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import Card from '$lib/components/Card.svelte';
@@ -169,13 +170,13 @@
 
 <ScrollView {title}>
 	<Section title="Browse transactions">
-		<nav class="segmentedControl" slot="HEADER">
-			<button class="segmentedControl__button segmentedControl__button--active" type="button"
-				>All</button
-			>
-			<button class="segmentedControl__button" type="button">Credits</button>
-			<button class="segmentedControl__button" type="button">Debits</button>
-		</nav>
+		<div slot="HEADER">
+			<SegmentedControl
+				segments={Object.values(Filter)}
+				currentSegment={filterBy}
+				callback={setFilterBy}
+			/>
+		</div>
 
 		<div slot="CONTENT" class="transactions">
 			<header class="transactions__header">
