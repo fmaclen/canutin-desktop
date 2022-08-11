@@ -74,9 +74,9 @@
 	];
 
 	enum Filter {
-		ALL = 'all',
-		CREDITS = 'credits',
-		DEBITS = 'debits'
+		ALL = 'All',
+		CREDITS = 'Credits',
+		DEBITS = 'Debits'
 	}
 
 	const TABLE_HEADERS = [
