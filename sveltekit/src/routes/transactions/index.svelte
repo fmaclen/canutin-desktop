@@ -151,11 +151,11 @@
 	// Sum the total from all the transaction values (ignoring "excluded" ones)
 	const sumTransactions = (transactions: EndpointTransaction[]) => {
 		return transactions.reduce((acc, transaction) => {
-			return !transaction.isExcluded ? acc + transaction.value : acc;
+			return transaction.isExcluded ? acc : acc + transaction.value;
 		}, 0);
 	};
 
-	// Filters transactions by their amount value
+	// Filters transactions by their positive or negative value
 	const setFilterBy = (filter: Filter) => {
 		filterBy = filter ? filter : filterBy;
 
