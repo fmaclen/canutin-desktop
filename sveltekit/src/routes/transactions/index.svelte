@@ -20,6 +20,7 @@
 	import { CardAppearance } from '$lib/components/Card';
 	import { formatCurrency } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
+	import type { EndpointTransaction } from './index.json';
 
 	export let title = 'Transactions';
 
@@ -101,9 +102,9 @@
 	];
 
 	// Default values
-	$: transactions = [];
+	$: transactions = [] as EndpointTransaction[];
+	$: filteredTransactions = [] as EndpointTransaction[];
 	$: filterBy = Filter.ALL;
-	$: filteredTransactions = [];
 	$: keyword = '';
 	$: sortBy = TABLE_HEADERS[0].param;
 	$: sortOrder = SortOrder.DESC;
@@ -126,11 +127,13 @@
 		setFilterBy(filterBy);
 	};
 
+	// When the component is mounted retrieve transactions with default values
 	onMount(async () => {
 		await getTransactions();
 	});
 
-	export const sortTransactionsBy = async (column: string) => {
+	// Sorts the transactions by column and asc/desc order
+	const sortTransactionsBy = async (column: string) => {
 		if (sortBy === column) {
 			sortOrder = sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC;
 		} else {
@@ -140,14 +143,14 @@
 	};
 
 	// Sum the total from all the transaction values
-	export const sumTransactions = (transactions: any[]) => {
-		// FIXME: see if we can set proper types on `transaction`
+	const sumTransactions = (transactions: any[]) => {
 		return transactions.reduce((acc, transaction) => {
 			return !transaction.isExcluded ? acc + transaction.value : acc;
 		}, 0);
 	};
 
-	export let setFilterBy = (filter?: Filter) => {
+	// Filters transactions by their amount value
+	const setFilterBy = (filter: Filter) => {
 		filterBy = filter ? filter : filterBy;
 
 		switch (filter) {
@@ -183,7 +186,7 @@
 				<FormInput
 					type="text"
 					name="keyword"
-					placeholder="Type to filter by description, amount, category or account"
+					placeholder="Search by description, amount, category or account"
 					bind:value={keyword}
 					on:change={() => getTransactions()}
 				/>
@@ -209,11 +212,13 @@
 			<table class="table">
 				<thead>
 					{#each TABLE_HEADERS as tableHeader}
-						<th class="table__th">
+						<th
+							class="table__th {tableHeader.label === TABLE_HEADERS[4].label && 'table__th--total'}"
+						>
 							<button
-								class="table__sortable {sortBy === tableHeader.param &&
-									'table__sortable--active'} {sortBy === tableHeader.param &&
-									`table__sortable--${sortOrder}`}"
+								class="table__sortable
+								{sortBy === tableHeader.param && 'table__sortable--active'}
+								{sortBy === tableHeader.param && `table__sortable--${sortOrder}`}"
 								on:click={() => sortTransactionsBy(tableHeader.param)}>{tableHeader.label}</button
 							>
 						</th>
@@ -225,14 +230,13 @@
 							{@const { date, description, transactionCategory, account, value, isExcluded } =
 								transaction}
 							<tr class="table__tr">
-								<td class="table__td table__td--date">{format(Date.parse(date), 'MMM dd, yyyy')}</td
-								>
+								<td class="table__td table__td--date">{format(date, 'MMM dd, yyyy')}</td>
 								<td class="table__td">{description}</td>
 								<td class="table__td">{transactionCategory.name}</td>
 								<td class="table__td">{account.name}</td>
 								<td class="table__td table__td--total {value > 0 && `table__td--positive`}"
 									><span
-										class={isExcluded && `table__excluded`}
+										class={isExcluded ? `table__excluded` : null}
 										title="This transaction is excluded from 'The big picture' and 'Balance sheet' totals"
 									>
 										{formatCurrency(value, 2)}
@@ -396,13 +400,5 @@
 		color: var(--color-grey40);
 		border-bottom: 1px dashed var(--color-grey10);
 		cursor: help;
-	}
-
-	fieldset.transactions__fieldset {
-		display: grid;
-		column-gap: 8px;
-		grid-template-columns: 4fr 1fr;
-		border: none;
-		padding: 0;
 	}
 </style>
