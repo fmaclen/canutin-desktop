@@ -267,7 +267,9 @@
 
 <style lang="scss">
 	div.transactions {
+		background-color: var(--color-white);
 		box-shadow: var(--box-shadow);
+		border-radius: 4px;
 	}
 
 	header.transactions__header {
@@ -294,7 +296,6 @@
 		width: 100%;
 		table-layout: auto;
 		border-collapse: collapse;
-		background-color: var(--color-white);
 		font-size: 12px;
 	}
 
@@ -369,6 +370,18 @@
 		&:nth-child(odd) {
 			td.table__td {
 				background-color: var(--color-grey3);
+			}
+		}
+
+		&:last-child {
+			border-bottom: none;
+
+			td.table__td:first-child {
+				border-bottom-left-radius: 4px;
+			}
+
+			td.table__td:last-child {
+				border-bottom-right-radius: 4px;
 			}
 		}
 	}
