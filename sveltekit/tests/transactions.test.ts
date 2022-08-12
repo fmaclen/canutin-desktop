@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { format, startOfMonth, subMonths } from 'date-fns';
+import { format, addDays, startOfMonth, subMonths } from 'date-fns';
 
 import { databaseSeed, databaseWipe } from './fixtures/helpers.js';
 
@@ -78,6 +78,13 @@ test.describe('Transactions', () => {
 		expect(await tableRows.nth(131).textContent()).toMatch('Food & drink');
 		expect(await tableRows.nth(131).textContent()).toMatch("Alice's Limited Rewards");
 		expect(await tableRows.nth(131).textContent()).toMatch('-$12.67');
+
+		// This date is set by the seed data at `src/lib/seed/seedData/transactions.ts`
+		const latestTransactionDate = addDays(startOfMonth(new Date()), 26);
+		// Check the date column is formatted correctly
+		expect(await tableRows.nth(0).textContent()).toMatch(
+			format(latestTransactionDate, 'MMM dd, yyyy')
+		);
 
 		const tableHeaders = page.locator('button.table__sortable');
 		// Reverse sort order while sorting by date

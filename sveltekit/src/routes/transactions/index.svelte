@@ -102,7 +102,7 @@
 		}
 	];
 
-	// Default values
+	// Default params
 	$: transactions = [] as EndpointTransaction[];
 	$: filteredTransactions = [] as EndpointTransaction[];
 	$: filterBy = Filter.ALL;
@@ -134,7 +134,7 @@
 		setFilterBy(filterBy);
 	};
 
-	// When the component is mounted retrieve transactions with default values
+	// When the component is mounted retrieve transactions with the default params
 	onMount(async () => {
 		await getTransactions();
 	});
