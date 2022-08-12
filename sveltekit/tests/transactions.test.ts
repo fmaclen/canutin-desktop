@@ -16,15 +16,6 @@ test.describe('Transactions', () => {
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch('$0');
 		expect(await page.locator('.table').textContent()).toMatch('No transactions found');
 
-		// Check segmented control is set to the correct default value
-		const segmentedControls = page.locator('.segmentedControl__button');
-		expect(await segmentedControls.nth(0).textContent()).toMatch('All');
-		await expect(segmentedControls.nth(0)).toHaveClass(/segmentedControl__button--active/);
-		expect(await segmentedControls.nth(1).textContent()).toMatch('Credits');
-		await expect(segmentedControls.nth(1)).not.toHaveClass(/segmentedControl__button--active/);
-		expect(await segmentedControls.nth(2).textContent()).toMatch('Debits');
-		await expect(segmentedControls.nth(2)).not.toHaveClass(/segmentedControl__button--active/);
-
 		// Check out the period filters are set to the correct default values
 		const selectOptions = page.locator('.formSelect__select option');
 		expect(await selectOptions.count()).toBe(8);
@@ -72,12 +63,10 @@ test.describe('Transactions', () => {
 		await page.locator('a', { hasText: 'Transactions' }).click();
 		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
 
-		// NOTE: have to set the locator by the value of the card and then match it to the label,
-		// otherwise the card with the label is rendered with a value of "0" and breaks the assertion.
-		expect(await page.locator('.card', { hasText: '132' }).textContent()).toMatch('Transactions');
-		expect(await page.locator('.card', { hasText: '$2,074.78' }).textContent()).toMatch(
-			'Net balance'
-		);
+		const cardTransactions = page.locator('.card', { hasText: 'Transactions' });
+		const cardNetBalance = page.locator('.card', { hasText: 'Net balance' });
+		expect(await cardTransactions.textContent()).toMatch('Transactions');
+		expect(await cardNetBalance.textContent()).toMatch('Net balance');
 
 		const tableRows = page.locator('.table__tr');
 		expect(await tableRows.count()).toBe(132);
@@ -91,14 +80,13 @@ test.describe('Transactions', () => {
 		expect(await tableRows.nth(131).textContent()).toMatch('-$12.67');
 
 		const tableHeaders = page.locator('button.table__sortable');
-
 		// Reverse sort order while sorting by date
 		await tableHeaders.nth(0).click();
 		await expect(tableHeaders.nth(0)).toHaveClass(/table__sortable--active/);
 		await expect(tableHeaders.nth(0)).toHaveClass(/table__sortable--asc/);
 		await expect(tableHeaders.nth(0)).not.toHaveClass(/table__sortable--desc/);
 		expect(await tableRows.nth(0).textContent()).toMatch("Maria's Artisanal Gelato");
-		// When the date order is reversed the first 2 transactions become the last 2
+		// When the date order is reversed the first transactions become the last ones
 		// but they are also sorted in reserve order alphabetically by description.
 		expect(await tableRows.nth(131).textContent()).toMatch('Horizon Wireless (Promotional Rebate)');
 
@@ -157,85 +145,91 @@ test.describe('Transactions', () => {
 		);
 
 		await formInput.type('transfer');
-		expect(await page.locator('.card', { hasText: '14' }).textContent()).toMatch('Transactions');
-		expect(await page.locator('.card', { hasText: '-$3,000.00' }).textContent()).toMatch(
-			'Net balance'
-		);
+		expect(await cardTransactions.textContent()).toMatch('14');
+		expect(await cardNetBalance.textContent()).toMatch('-$3,000.00');
 		expect(await tableRows.count()).toBe(14);
 
 		// Filter transactions by date range
 		const formSelect = page.locator('.formSelect__select');
-
 		// This month
 		await formSelect.selectOption('0');
 		await formSelect.dispatchEvent('change');
 		await formInput.click(); // Need to click on the input field for the change event to really fire
 		expect(await tableRows.count()).toBe(4);
-		expect(await page.locator('.card', { hasText: '-$500.00' }).textContent()).toMatch(
-			'Net balance'
-		);
+		expect(await cardNetBalance.textContent()).toMatch('-$500.00');
 
 		// Last month
 		await formSelect.selectOption('1');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
 		expect(await tableRows.count()).toBe(4);
-		expect(await page.locator('.card', { hasText: '-$1,000.00' }).textContent()).toMatch(
-			'Net balance'
-		);
+		expect(await cardNetBalance.textContent()).toMatch('-$1,000.00');
 
 		// Last 3 months
 		await formSelect.selectOption('2');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
 		expect(await tableRows.count()).toBe(14);
-		expect(await page.locator('.card', { hasText: '-$3,000.00' }).textContent()).toMatch(
-			'Net balance'
-		);
+		expect(await cardNetBalance.textContent()).toMatch('-$3,000.00');
 
 		// Last 6 months
 		await formSelect.selectOption('3');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
 		expect(await tableRows.count()).toBe(26);
-		expect(await page.locator('.card', { hasText: '-$5,500.00' }).textContent()).toMatch(
-			'Net balance'
-		);
+		expect(await cardNetBalance.textContent()).toMatch('-$5,500.00');
 
 		// Last 12 months
 		await formSelect.selectOption('4');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
 		expect(await tableRows.count()).toBe(50);
-		expect(await page.locator('.card', { hasText: '-$10,500.00' }).textContent()).toMatch(
-			'Net balance'
-		);
+		expect(await cardNetBalance.textContent()).toMatch('-$10,500.00');
 
 		// Year to date
 		await formSelect.selectOption('5');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
 		expect(await tableRows.count()).toBe(32);
-		expect(await page.locator('.card', { hasText: '-$6,500.00' }).textContent()).toMatch(
-			'Net balance'
-		);
+		expect(await cardNetBalance.textContent()).toMatch('-$6,500.00');
 
 		// Last year
 		await formSelect.selectOption('6');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
 		expect(await tableRows.count()).toBe(48);
-		expect(await page.locator('.card', { hasText: '-$10,000.00' }).textContent()).toMatch(
-			'Net balance'
-		);
+		expect(await cardNetBalance.textContent()).toMatch('-$10,000.00');
 
 		// Lifetime
 		await formSelect.selectOption('7');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
 		expect(await tableRows.count()).toBe(96);
-		expect(await page.locator('.card', { hasText: '-$20,000.00' }).textContent()).toMatch(
-			'Net balance'
-		);
+		expect(await cardNetBalance.textContent()).toMatch('-$20,000.00');
+
+		// Check "All" is the default option
+		const segmentedControls = page.locator('.segmentedControl__button');
+		expect(await segmentedControls.nth(0).textContent()).toMatch('All');
+		await expect(segmentedControls.nth(0)).toHaveClass(/segmentedControl__button--active/);
+		expect(await segmentedControls.nth(1).textContent()).toMatch('Credits');
+		await expect(segmentedControls.nth(1)).not.toHaveClass(/segmentedControl__button--active/);
+		expect(await segmentedControls.nth(2).textContent()).toMatch('Debits');
+		await expect(segmentedControls.nth(2)).not.toHaveClass(/segmentedControl__button--active/);
+
+		// Click on "Credits"
+		await segmentedControls.nth(1).click();
+		await expect(segmentedControls.nth(0)).not.toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(1)).toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(2)).not.toHaveClass(/segmentedControl__button--active/);
+		expect(await tableRows.count()).toBe(32);
+		expect(await cardNetBalance.textContent()).toMatch('$6,000.00');
+
+		// Click on "Debits"
+		await segmentedControls.nth(2).click();
+		await expect(segmentedControls.nth(0)).not.toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(1)).not.toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(2)).toHaveClass(/segmentedControl__button--active/);
+		expect(await tableRows.count()).toBe(64);
+		expect(await cardNetBalance.textContent()).toMatch('-$26,000.00');
 	});
 });
