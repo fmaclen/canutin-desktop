@@ -5,8 +5,8 @@
 	import Notice from '$lib/components/Notice.svelte';
 	import { DeveloperFunctions } from '$lib/helpers/constants';
 
-	export let title = 'Developer tools';
-	export let isSuccesful: boolean = false;
+	const title = 'Developer tools';
+	let isSuccesful: boolean = false;
 
 	const databaseSeed = async () => {
 		await fetch(`/devTools.json?functionType=${DeveloperFunctions.DB_SEED}`, {

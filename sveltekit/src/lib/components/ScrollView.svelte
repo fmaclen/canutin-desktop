@@ -23,7 +23,7 @@
 	h1.scrollView__h1 {
 		margin-top: auto;
 		margin-bottom: 0;
-		padding: 24px 64px;
+		padding: 90px 64px 24px 64px;
 		font-size: 24px;
 		letter-spacing: -0.03em;
 	}

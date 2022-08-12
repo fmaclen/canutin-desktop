@@ -1,17 +1,20 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Notice from '$lib/components/Notice.svelte';
+	import FormInput from '$lib/components/FormInput.svelte';
 	import type { ImportSummary } from './index.json';
 	import { CardAppearance } from '$lib/components/Card';
 
-	export let title = 'Import data';
-	export let isLoading: boolean = false;
-	export let noFileError: string | undefined = undefined;
-	export let importSummary: ImportSummary | undefined = undefined;
+	const title = 'Import data';
+
+	let isLoading: boolean = false;
+	let noFileError: string | undefined = undefined;
+	let importSummary: ImportSummary | undefined = undefined;
 
 	const submitForm = (event: any) => {
 		event.preventDefault();
@@ -63,7 +66,7 @@
 				<fieldset class="form__fieldset">
 					<div class="form__field">
 						<label class="form__label" for="file">CanutinFile</label>
-						<input class="form__input" type="file" name="file" accept=".json" />
+						<FormInput type="file" name="file" accept=".json" />
 					</div>
 				</fieldset>
 				<footer class="form__footer">
@@ -242,21 +245,6 @@
 		font-weight: 600;
 		letter-spacing: -0.03em;
 		color: var(--color-grey70);
-	}
-
-	input.form__input {
-		background-color: var(--color-white);
-		border: 2px solid var(--color-border);
-		border-radius: 4px;
-		padding: 6px;
-		font-family: var(--font-sansSerif);
-		font-size: 12px;
-		box-sizing: border-box;
-
-		&:active,
-		&:focus {
-			border-color: var(--color-bluePrimary);
-		}
 	}
 
 	footer.form__footer {

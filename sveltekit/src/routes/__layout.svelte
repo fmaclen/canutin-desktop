@@ -19,6 +19,10 @@
 				class="layout__a {$page.url.pathname === '/balanceSheet' && 'layout__a--active'}"
 				href="/balanceSheet">Balance sheet</a
 			>
+			<a
+				class="layout__a {$page.url.pathname === '/transactions' && 'layout__a--active'}"
+				href="/transactions">Transactions</a
+			>
 		</nav>
 
 		<nav class="layout__nav layout__nav--bottom">
@@ -47,8 +51,27 @@
 		display: flex;
 		flex-direction: column;
 		row-gap: 16px;
+		min-height: 100vh;
 		background-color: var(--color-white);
 		border-right: 1px solid var(--color-border);
+
+		> *:nth-child(1),
+		> *:nth-child(2),
+		> *:last-child {
+			position: sticky;
+		}
+
+		> *:nth-child(1) {
+			top: 0;
+		}
+
+		> *:nth-child(2) {
+			top: 161px;
+		}
+
+		> *:last-child {
+			bottom: 0;
+		}
 	}
 
 	a.layout__logo {
