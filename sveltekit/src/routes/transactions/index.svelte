@@ -44,22 +44,22 @@
 		{
 			label: 'Last 3 months',
 			dateFrom: subMonths(today, 3),
-			dateTo: endOfDay(today)
+			dateTo: thisMonthTo
 		},
 		{
 			label: 'Last 6 months',
 			dateFrom: subMonths(today, 6),
-			dateTo: endOfDay(today)
+			dateTo: thisMonthTo
 		},
 		{
 			label: 'Last 12 months',
 			dateFrom: subMonths(today, 12),
-			dateTo: endOfDay(today)
+			dateTo: thisMonthTo
 		},
 		{
 			label: 'Year to date',
 			dateFrom: thisYearFrom,
-			dateTo: endOfDay(today)
+			dateTo: thisYearTo
 		},
 		{
 			label: 'Last year',
@@ -68,8 +68,8 @@
 		},
 		{
 			label: 'Lifetime',
-			dateFrom: subYears(today, 900),
-			dateTo: endOfDay(today)
+			dateFrom: subYears(today, 900), // FIXME: should be the earliest transaction date
+			dateTo: thisYearTo // FIXME: should be the latest transaction date
 		}
 	];
 
@@ -105,11 +105,13 @@
 	// Default values
 	$: transactions = [] as EndpointTransaction[];
 	$: filteredTransactions = [] as EndpointTransaction[];
+	$: filterBy = Filter.ALL;
+
 	$: periodIndex = 2; // Last 3 months
 	$: dateFrom = format(periods[periodIndex].dateFrom, 'yyyy-MM-dd');
 	$: dateTo = format(periods[periodIndex].dateTo, 'yyyy-MM-dd');
-	$: filterBy = Filter.ALL;
-	$: sortBy = TABLE_HEADERS[0].column; // Date
+
+	$: sortBy = TABLE_HEADERS[0].column; // Date column
 	$: sortOrder = SortOrder.DESC;
 	$: keyword = '';
 
@@ -119,7 +121,6 @@
 			`dateTo=${dateTo}`,
 			`sortBy=${sortBy}`,
 			`sortOrder=${sortOrder}`,
-			`filterBy=${filterBy}`,
 			`keyword=${keyword}`
 		];
 		const response = await fetch(`/transactions.json?${params.join('&')}`, {
@@ -190,12 +191,14 @@
 					name="keyword"
 					placeholder="Type to filter by description, amount, category or account"
 					bind:value={keyword}
-					on:keyup={() => getTransactions()}
+					on:keyup={async () => await getTransactions()}
 				/>
 				<FormSelect
 					options={periods}
 					bind:value={periodIndex}
-					on:change={() => getTransactions()}
+					on:change={async () => {
+						await getTransactions();
+					}}
 				/>
 				<div class="transactions__summary">
 					<Card
@@ -222,7 +225,7 @@
 								class="table__sortable
 								{sortBy === column && 'table__sortable--active'}
 								{sortBy === column && `table__sortable--${sortOrder}`}"
-								on:click={() => sortTransactionsBy(column)}>{label}</button
+								on:click={async () => await sortTransactionsBy(column)}>{label}</button
 							>
 						</th>
 					{/each}
@@ -242,7 +245,9 @@
 								<td class="table__td table__td--total {value > 0 && `table__td--positive`}"
 									><span
 										class={isExcluded ? `table__excluded` : null}
-										title="This transaction is excluded from 'The big picture' and 'Balance sheet' totals"
+										title={isExcluded
+											? "This transaction is excluded from 'The big picture' and 'Balance sheet' totals"
+											: null}
 									>
 										{formatCurrency(value, 2)}
 									</span></td
