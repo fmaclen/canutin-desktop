@@ -1,4 +1,5 @@
 import Store from "electron-store";
+import Fs from "fs";
 
 class Vault {
   private userSettings: Store;
@@ -6,16 +7,18 @@ class Vault {
 
   constructor() {
     this.userSettings = new Store();
-
-    // FIXME:
-    // check if the vault still exists at that path
-    this.path = this.userSettings.get("vaultPath") as string | null;
+    this.path = this.getVaultPath();
   }
 
   saveToUserSettings(vaultPath: string | null) {
     this.userSettings.set({ vaultPath: vaultPath || null });
     this.path = vaultPath || null;
   }
+
+  private getVaultPath = () => {
+    const vaultPath = this.userSettings.get("vaultPath") as string | null;
+    return vaultPath && Fs.existsSync(vaultPath) ? vaultPath : null;
+  };
 }
 
 export default Vault;
