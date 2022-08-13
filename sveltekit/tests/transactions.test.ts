@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { format, addDays, startOfMonth, subMonths } from 'date-fns';
+import { format, addDays, startOfMonth } from 'date-fns';
 
 import { databaseSeed, databaseWipe } from './fixtures/helpers.js';
 

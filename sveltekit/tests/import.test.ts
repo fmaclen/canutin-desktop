@@ -107,22 +107,28 @@ test.describe('Import data', () => {
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$750');
 		expect(
-			await page.locator('.card', { hasText: "Bob's Laughable-Yield Checking" }).textContent()
+			await page
+				.locator('.balanceSheet__item', { hasText: "Bob's Laughable-Yield Checking" })
+				.textContent()
 		).toMatch('$750');
 		expect(await page.locator('.card', { hasText: 'Debt' }).textContent()).toMatch('-$150');
 		expect(
-			await page.locator('.card', { hasText: "Alice's Limited Rewards" }).textContent()
+			await page
+				.locator('.balanceSheet__item', { hasText: "Alice's Limited Rewards" })
+				.textContent()
 		).toMatch('-$150');
 		expect(await page.locator('.card', { hasText: 'Investments' }).textContent()).toMatch(
 			'$69,420'
 		);
-		expect(await page.locator('.card', { hasText: 'Bitcoin' }).textContent()).toMatch('$69,420');
+		expect(await page.locator('.balanceSheet__item', { hasText: 'Bitcoin' }).textContent()).toMatch(
+			'$69,420'
+		);
 		expect(await page.locator('.card', { hasText: 'Other assets' }).textContent()).toMatch(
 			'$6,571'
 		);
-		expect(await page.locator('.card', { hasText: '1998 Fiat Multipla' }).textContent()).toMatch(
-			'$6,571'
-		);
+		expect(
+			await page.locator('.balanceSheet__item', { hasText: '1998 Fiat Multipla' }).textContent()
+		).toMatch('$6,571');
 	});
 
 	test('CanutinFile that only contains Accounts can be imported', async ({ page }) => {
