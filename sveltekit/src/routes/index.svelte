@@ -54,13 +54,32 @@
 				appearance={CardAppearance.NET_WORTH}
 			/>
 
-			{#each summary.balanceGroups as balanceGroup}
+			{@const cashBalanceGroup = summary.balanceGroups[0]}
+			{@const debtBalanceGroup = summary.balanceGroups[1]}
+			{@const investmentsBalanceGroup = summary.balanceGroups[2]}
+			{@const otherAssetsBalanceGroup = summary.balanceGroups[3]}
+			<div class="bigPictureSummary__balanceGroups">
 				<Card
-					title={balanceGroup.label}
-					value={formatCurrency(balanceGroup.currentBalance)}
-					appearance={balanceGroupAppearance(balanceGroup.id)}
+					title={cashBalanceGroup.label}
+					value={formatCurrency(cashBalanceGroup.currentBalance)}
+					appearance={balanceGroupAppearance(cashBalanceGroup.id)}
 				/>
-			{/each}
+				<Card
+					title={investmentsBalanceGroup.label}
+					value={formatCurrency(investmentsBalanceGroup.currentBalance)}
+					appearance={balanceGroupAppearance(investmentsBalanceGroup.id)}
+				/>
+				<Card
+					title={debtBalanceGroup.label}
+					value={formatCurrency(debtBalanceGroup.currentBalance)}
+					appearance={balanceGroupAppearance(debtBalanceGroup.id)}
+				/>
+				<Card
+					title={otherAssetsBalanceGroup.label}
+					value={formatCurrency(otherAssetsBalanceGroup.currentBalance)}
+					appearance={balanceGroupAppearance(otherAssetsBalanceGroup.id)}
+				/>
+			</div>
 		</div>
 	</Section>
 
@@ -137,16 +156,18 @@
 </ScrollView>
 
 <style lang="scss">
-	div.bigPictureSummary,
-	div.bigPictureTrailingCashflow {
+	div.bigPictureSummary {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		grid-column-gap: 8px;
+		grid-template-columns: 1fr 2fr;
+		grid-column-gap: 20px;
 	}
 
-	div.bigPictureSummary {
-		grid-template-rows: repeat(2, 1fr);
-		grid-row-gap: 8px;
+	div.bigPictureSummary__balanceGroups {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 8px;
+		padding-left: 20px;
+		border-left: 1px solid var(--color-border);
 	}
 
 	div.bigPictureCashflow {
@@ -202,5 +223,11 @@
 		&--active {
 			color: var(--color-grey70);
 		}
+	}
+
+	div.bigPictureTrailingCashflow {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		grid-column-gap: 8px;
 	}
 </style>

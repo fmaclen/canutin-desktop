@@ -41,12 +41,12 @@
 
 		&--investments {
 			color: var(--color-white);
-			background-color: var(--color-purplePrimary);
+			background-color: var(--color-goldPrimary);
 		}
 
 		&--otherAssets {
 			color: var(--color-white);
-			background-color: var(--color-goldPrimary);
+			background-color: var(--color-purplePrimary);
 		}
 
 		&--netWorth {
