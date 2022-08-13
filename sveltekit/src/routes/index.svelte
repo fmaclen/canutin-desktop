@@ -7,7 +7,7 @@
 	import ChartBar from '$lib/components/ChartBar.svelte';
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
 	import { formatCurrency } from '$lib/helpers/misc';
-	import { TrailingCashflowPeriods } from '$lib/helpers/constants';
+	import { BalanceGroup, TrailingCashflowPeriods } from '$lib/helpers/constants';
 	import { balanceGroupAppearance, CardAppearance } from '$lib/components/Card';
 	import type { BigPictureSummary, Cashflow, PeriodCashflow, TrailingCashflow } from '.';
 
@@ -54,31 +54,15 @@
 				appearance={CardAppearance.NET_WORTH}
 			/>
 
-			{@const cashBalanceGroup = summary.balanceGroups[0]}
-			{@const debtBalanceGroup = summary.balanceGroups[1]}
-			{@const investmentsBalanceGroup = summary.balanceGroups[2]}
-			{@const otherAssetsBalanceGroup = summary.balanceGroups[3]}
+			{@const { balanceGroups } = summary}
 			<div class="bigPictureSummary__balanceGroups">
-				<Card
-					title={cashBalanceGroup.label}
-					value={formatCurrency(cashBalanceGroup.currentBalance)}
-					appearance={balanceGroupAppearance(cashBalanceGroup.id)}
-				/>
-				<Card
-					title={investmentsBalanceGroup.label}
-					value={formatCurrency(investmentsBalanceGroup.currentBalance)}
-					appearance={balanceGroupAppearance(investmentsBalanceGroup.id)}
-				/>
-				<Card
-					title={debtBalanceGroup.label}
-					value={formatCurrency(debtBalanceGroup.currentBalance)}
-					appearance={balanceGroupAppearance(debtBalanceGroup.id)}
-				/>
-				<Card
-					title={otherAssetsBalanceGroup.label}
-					value={formatCurrency(otherAssetsBalanceGroup.currentBalance)}
-					appearance={balanceGroupAppearance(otherAssetsBalanceGroup.id)}
-				/>
+				{#each [balanceGroups[BalanceGroup.CASH], balanceGroups[BalanceGroup.INVESTMENTS], balanceGroups[BalanceGroup.DEBT], balanceGroups[BalanceGroup.OTHER_ASSETS]] as balanceGroup}
+					<Card
+						title={balanceGroup.label}
+						value={formatCurrency(balanceGroup.currentBalance)}
+						appearance={balanceGroupAppearance(balanceGroup.id)}
+					/>
+				{/each}
 			</div>
 		</div>
 	</Section>
