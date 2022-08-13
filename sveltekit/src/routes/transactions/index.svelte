@@ -19,13 +19,13 @@
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import { CardAppearance } from '$lib/components/Card';
-	import { formatCurrency } from '$lib/helpers/misc';
+	import { dateInUTC, formatCurrency } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { EndpointTransaction } from './index.json';
 
 	const title = 'Transactions';
 
-	const today = new Date();
+	const today = dateInUTC(new Date());
 	const thisMonthFrom = startOfMonth(today);
 	const thisMonthTo = endOfMonth(today);
 	const thisYearFrom = startOfYear(today);

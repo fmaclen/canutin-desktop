@@ -36,8 +36,8 @@ test.describe('Balance sheet', () => {
 		expect(await balanceGroups.count()).toBe(5);
 		expect(await balanceGroups.nth(0).textContent()).toMatch('Net worth');
 		expect(await balanceGroups.nth(1).textContent()).toMatch('Cash');
-		expect(await balanceGroups.nth(2).textContent()).toMatch('Debt');
-		expect(await balanceGroups.nth(3).textContent()).toMatch('Investments');
+		expect(await balanceGroups.nth(2).textContent()).toMatch('Investments');
+		expect(await balanceGroups.nth(3).textContent()).toMatch('Debt');
 		expect(await balanceGroups.nth(4).textContent()).toMatch('Other assets');
 	});
 

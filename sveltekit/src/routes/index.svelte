@@ -7,7 +7,7 @@
 	import ChartBar from '$lib/components/ChartBar.svelte';
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
 	import { formatCurrency } from '$lib/helpers/misc';
-	import { TrailingCashflowPeriods } from '$lib/helpers/constants';
+	import { BalanceGroup, TrailingCashflowPeriods } from '$lib/helpers/constants';
 	import { balanceGroupAppearance, CardAppearance } from '$lib/components/Card';
 	import type { BigPictureSummary, Cashflow, PeriodCashflow, TrailingCashflow } from '.';
 
@@ -54,13 +54,16 @@
 				appearance={CardAppearance.NET_WORTH}
 			/>
 
-			{#each summary.balanceGroups as balanceGroup}
-				<Card
-					title={balanceGroup.label}
-					value={formatCurrency(balanceGroup.currentBalance)}
-					appearance={balanceGroupAppearance(balanceGroup.id)}
-				/>
-			{/each}
+			{@const { balanceGroups } = summary}
+			<div class="bigPictureSummary__balanceGroups">
+				{#each [balanceGroups[BalanceGroup.CASH], balanceGroups[BalanceGroup.INVESTMENTS], balanceGroups[BalanceGroup.DEBT], balanceGroups[BalanceGroup.OTHER_ASSETS]] as balanceGroup}
+					<Card
+						title={balanceGroup.label}
+						value={formatCurrency(balanceGroup.currentBalance)}
+						appearance={balanceGroupAppearance(balanceGroup.id)}
+					/>
+				{/each}
+			</div>
 		</div>
 	</Section>
 
@@ -137,16 +140,18 @@
 </ScrollView>
 
 <style lang="scss">
-	div.bigPictureSummary,
-	div.bigPictureTrailingCashflow {
+	div.bigPictureSummary {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		grid-column-gap: 8px;
+		grid-template-columns: 1fr 2fr;
+		grid-column-gap: 20px;
 	}
 
-	div.bigPictureSummary {
-		grid-template-rows: repeat(2, 1fr);
-		grid-row-gap: 8px;
+	div.bigPictureSummary__balanceGroups {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 8px;
+		padding-left: 20px;
+		border-left: 1px solid var(--color-border);
 	}
 
 	div.bigPictureCashflow {
@@ -202,5 +207,11 @@
 		&--active {
 			color: var(--color-grey70);
 		}
+	}
+
+	div.bigPictureTrailingCashflow {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		grid-column-gap: 8px;
 	}
 </style>
