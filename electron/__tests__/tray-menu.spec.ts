@@ -11,9 +11,11 @@ describe("TrayMenu", () => {
   // the `fakePathToImageAsset` is not found.
 
   const fakeVault = new Vault();
+  const fakePathToVault = "/fake/path/to/Canutin.vault";
+  fakeVault.path = fakePathToVault;
+
   const fakeImageAsset = "fake-image";
   const fakePathToImageAsset = `/path/to/fake/assets/${fakeImageAsset}.png`;
-  const fakePathToVault = "/fake/path/to/Canutin.vault";
 
   const spyIsPackaged = jest.spyOn(Electron.app, "isPackaged", "get");
   const spyPathJoin = jest

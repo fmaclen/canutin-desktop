@@ -1,23 +1,40 @@
 import Store from "electron-store";
+import Fs from "fs";
 
 import Vault from "../vault";
 
 describe("Vault", () => {
   let vault: Vault;
+  const fakePathToVault = "/fake/path/to/Canutin.vault";
 
   beforeEach(() => {
     jest.clearAllMocks();
-    vault = new Vault();
-    vault.saveToUserSettings(null);
   });
 
-  test("vault path can't be read from user settings", () => {
-    expect(vault["userSettings"]).toBeInstanceOf(Store);
-    expect(vault.path).toBe(null);
+  describe("With no existing path", () => {
+    beforeEach(() => {
+      vault = new Vault();
+      vault.saveToUserSettings(null);
+    });
+
+    test("vault path can't be read from user settings", () => {
+      expect(vault["userSettings"]).toBeInstanceOf(Store);
+      expect(vault.path).toBe(null);
+    });
+
+    test("vault path can be saved and read from user settings", () => {
+      vault.saveToUserSettings(fakePathToVault);
+      expect(vault.path).toBe(fakePathToVault);
+    });
   });
 
-  test("vault path can be saved and read from user settings", () => {
-    vault.saveToUserSettings("/fake/path/to/Canutin.vault");
-    expect(vault.path).toBe("/fake/path/to/Canutin.vault");
+  describe("With existing path", () => {
+    test("checks if the vault file exists at the path", () => {
+      const spyFsExistsSync = jest.spyOn(Fs, "existsSync");
+      spyFsExistsSync.mockReturnValue(true);
+      vault = new Vault();
+      vault.path = fakePathToVault;
+      expect(spyFsExistsSync).toHaveBeenCalledWith(fakePathToVault);
+    });
   });
 });
