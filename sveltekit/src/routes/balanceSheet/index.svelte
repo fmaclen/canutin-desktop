@@ -5,7 +5,6 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Section from '$lib/components/Section.svelte';
-	import SectionTitle from '$lib/components/SectionTitle.svelte';
 	import { balanceGroupAppearance } from '$lib/components/Card';
 
 	const title = 'Balance sheet';
@@ -29,21 +28,24 @@
 					/>
 
 					{#each balanceSheetItemsByBalanceGroup.balanceItemsTypeGroups as balanceSheetTypeGroup}
-						<Section title={balanceSheetTypeGroup.type}>
-							<SectionTitle
-								slot="HEADER"
-								title={formatCurrency(balanceSheetTypeGroup.currentBalance)}
-							/>
-
-							<div slot="CONTENT" class="balanceSheetTypeGroup">
+						<div class="balanceSheet__typeGroup">
+							<header class="balanceSheet__typeHeader">
+								<p class="balanceSheet__typeName">{balanceSheetTypeGroup.type}</p>
+								<p class="balanceSheet__typeValue">
+									{formatCurrency(balanceSheetTypeGroup.currentBalance)}
+								</p>
+							</header>
+							<ol class="balanceSheet__items">
 								{#each balanceSheetTypeGroup.balanceSheetItems as balanceSheetItem}
-									<Card
-										title={balanceSheetItem.name}
-										value={formatCurrency(balanceSheetItem.currentBalance)}
-									/>
+									<li class="balanceSheet__item">
+										<p class="balanceSheet__itemName">{balanceSheetItem.name}</p>
+										<p class="balanceSheet__itemValue">
+											{formatCurrency(balanceSheetItem.currentBalance)}
+										</p>
+									</li>
 								{/each}
-							</div>
-						</Section>
+							</ol>
+						</div>
 					{/each}
 				</div>
 			{/each}
@@ -54,19 +56,90 @@
 <style lang="scss">
 	div.balanceSheet {
 		display: flex;
-		column-gap: 32px;
+		column-gap: 20px;
 	}
 
 	div.balanceSheet__balanceGroup {
 		display: flex;
 		flex-direction: column;
-		row-gap: 24px;
+		row-gap: 16px;
 		width: 100%;
+		padding-left: 20px;
+		border-left: 1px solid var(--color-border);
+
+		&:first-child {
+			padding-left: unset;
+			border-left: unset;
+		}
 	}
 
-	div.balanceSheetTypeGroup {
+	div.balanceSheet__typeGroup {
+		box-shadow: var(--box-shadow);
+		background-color: var(--color-white);
+		border-radius: 4px;
+	}
+
+	header.balanceSheet__typeHeader {
+		display: grid;
+		grid-auto-flow: column;
+		grid-gap: 16px;
+		align-items: center;
+		justify-content: space-between;
+		padding: 16px;
+		border-radius: 4px 4px 0 0;
+		border-bottom: 1px dashed var(--color-border);
+	}
+
+	p.balanceSheet__typeName {
+		margin: 0;
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+	}
+
+	p.balanceSheet__typeValue {
+		font-family: var(--font-monospace);
+		margin: 0;
+		font-size: 14px;
+		line-height: 1em;
+	}
+
+	ol.balanceSheet__items {
 		display: flex;
 		flex-direction: column;
-		row-gap: 4px;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	li.balanceSheet__item {
+		display: grid;
+		grid-auto-flow: column;
+		grid-gap: 16px;
+		align-items: center;
+		justify-content: space-between;
+		padding: 12px 16px;
+		border-bottom: 1px solid var(--color-border);
+
+		&:nth-child(odd) {
+			background-color: var(--color-grey3);
+		}
+
+		&:last-child {
+			border-bottom-left-radius: 4px;
+			border-bottom-right-radius: 4px;
+		}
+	}
+
+	p.balanceSheet__itemName {
+		font-size: 12px;
+		margin: 0;
+	}
+
+	p.balanceSheet__itemValue {
+		font-family: var(--font-monospace);
+		margin: 0;
+		font-size: 12px;
+		line-height: 1em;
 	}
 </style>

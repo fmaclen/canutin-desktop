@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { importCanutinFile, databaseWipe } from './fixtures/helpers.js';
+import { databaseSeed, databaseWipe } from './fixtures/helpers.js';
 
 test.describe('Balance sheet', () => {
 	test.beforeEach(async ({ baseURL }) => {
 		await databaseWipe(baseURL!);
 	});
 
-	test('UI is rendered correctly', async ({ page, baseURL }) => {
+	test('UI is rendered correctly when no data is present', async ({ page }) => {
 		await page.goto('/');
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
@@ -24,15 +24,43 @@ test.describe('Balance sheet', () => {
 		expect(await page.locator('.card', { hasText: 'Debt' }).textContent()).toMatch('$0');
 		expect(await page.locator('.card', { hasText: 'Investments' }).textContent()).toMatch('$0');
 		expect(await page.locator('.card', { hasText: 'Other assets' }).textContent()).toMatch('$0');
+	});
 
-		// Check that the balanceGroups have the correct amounts after importing data
-		await importCanutinFile(baseURL!, 'minimum-data');
-		await page.reload();
-		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$0');
-		expect(await page.locator('.card', { hasText: 'Debt' }).textContent()).toMatch('$0');
-		expect(await page.locator('.card', { hasText: 'Investments' }).textContent()).toMatch('$0');
-		expect(await page.locator('.card', { hasText: 'Other assets' }).textContent()).toMatch(
-			'$7,571'
-		);
+	test('Check that the balanceGroups have the correct totals after importing data', async ({
+		page,
+		baseURL
+	}) => {
+		await databaseSeed(baseURL!);
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
+
+		// Cash
+		// prettier-ignore
+		expect(await page.locator('.balanceSheet__balanceGroup', { hasText: 'Cash' }).textContent()).toMatch('$10,700');
+		// prettier-ignore
+		expect(await page.locator('.balanceSheet__typeHeader', { hasText: 'Savings' }).textContent()).toMatch('$6,000');
+		// prettier-ignore
+		expect(await page.locator('.balanceSheet__typeHeader', { hasText: 'Savings' }).textContent()).toMatch('$6,000');
+		// prettier-ignore
+		expect(await page.locator('.balanceSheet__item', { hasText: 'Emergency Fund' }).textContent()).toMatch('$6,000');
+
+		// Debt
+		// prettier-ignore
+		expect(await page.locator('.balanceSheet__balanceGroup', { hasText: 'Debt' }).textContent()).toMatch('-$20,812');
+
+		// Investments
+		// prettier-ignore
+		expect(await page.locator('.balanceSheet__balanceGroup', { hasText: 'Investments' }).textContent()).toMatch('$142,831');
+		// prettier-ignore
+		expect(await page.locator('.balanceSheet__typeHeader', { hasText: 'Security' }).textContent()).toMatch('$33,125');
+		// prettier-ignore
+		expect(await page.locator('.balanceSheet__item', { hasText: 'Tesla' }).textContent()).toMatch('$30,000');
+		// prettier-ignore
+		expect(await page.locator('.balanceSheet__item', { hasText: 'GameStop' }).textContent()).toMatch('$3,125');
+
+		// Other assets
+		// prettier-ignore
+		expect(await page.locator('.balanceSheet__balanceGroup', { hasText: 'Other assets' }).textContent()).toMatch('$53,000');
 	});
 });
