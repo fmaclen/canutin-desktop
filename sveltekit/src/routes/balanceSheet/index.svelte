@@ -5,7 +5,6 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Section from '$lib/components/Section.svelte';
-	import SectionTitle from '$lib/components/SectionTitle.svelte';
 	import { balanceGroupAppearance } from '$lib/components/Card';
 
 	const title = 'Balance sheet';
@@ -142,11 +141,5 @@
 		margin: 0;
 		font-size: 12px;
 		line-height: 1em;
-	}
-
-	div.balanceSheetTypeGroup {
-		display: flex;
-		flex-direction: column;
-		row-gap: 4px;
 	}
 </style>
