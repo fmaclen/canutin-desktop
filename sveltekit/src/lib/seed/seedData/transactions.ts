@@ -8,7 +8,7 @@ export const accountCheckingTransactionSet = async () => {
 		{
 			description: 'Westside Apartments',
 			value: -2250,
-			date: addDays(startOfMonth(subMonths(new Date(), i)), 0),
+			date: addDays(startOfMonth(subMonths(new Date(), i)), 1),
 			categoryId: await getTransactionCategoryId('Rent'),
 			isExcluded: false,
 			isPending: false

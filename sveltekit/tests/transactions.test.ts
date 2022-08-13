@@ -70,29 +70,29 @@ test.describe('Transactions', () => {
 
 		const tableRows = page.locator('.table__tr');
 		expect(await tableRows.count()).toBe(132);
-		expect(await tableRows.nth(0).textContent()).toMatch('Transfer to MegaCoin Exchange');
-		expect(await tableRows.nth(0).textContent()).toMatch('Transfers');
-		expect(await tableRows.nth(0).textContent()).toMatch("Bob's Laughable-Yield Checking");
-		expect(await tableRows.nth(0).textContent()).toMatch('$0.00');
-		expect(await tableRows.nth(131).textContent()).toMatch("Maria's Artisanal Gelato");
-		expect(await tableRows.nth(131).textContent()).toMatch('Food & drink');
-		expect(await tableRows.nth(131).textContent()).toMatch("Alice's Limited Rewards");
-		expect(await tableRows.nth(131).textContent()).toMatch('-$12.67');
+		expect(await tableRows.first().textContent()).toMatch('Transfer to MegaCoin Exchange');
+		expect(await tableRows.first().textContent()).toMatch('Transfers');
+		expect(await tableRows.first().textContent()).toMatch("Bob's Laughable-Yield Checking");
+		expect(await tableRows.first().textContent()).toMatch('$0.00');
+		expect(await tableRows.last().textContent()).toMatch("Maria's Artisanal Gelato");
+		expect(await tableRows.last().textContent()).toMatch('Food & drink');
+		expect(await tableRows.last().textContent()).toMatch("Alice's Limited Rewards");
+		expect(await tableRows.last().textContent()).toMatch('-$12.67');
 
 		// This date is set by the seed data at `src/lib/seed/seedData/transactions.ts`
 		const latestTransactionDate = addDays(startOfMonth(new Date()), 26);
 		// Check the date column is formatted correctly
-		expect(await tableRows.nth(0).textContent()).toMatch(
+		expect(await tableRows.first().textContent()).toMatch(
 			format(latestTransactionDate, 'MMM dd, yyyy')
 		);
 
 		const tableHeaders = page.locator('button.table__sortable');
 		// Reverse sort order while sorting by date
-		await tableHeaders.nth(0).click();
-		await expect(tableHeaders.nth(0)).toHaveClass(/table__sortable--active/);
-		await expect(tableHeaders.nth(0)).toHaveClass(/table__sortable--asc/);
-		await expect(tableHeaders.nth(0)).not.toHaveClass(/table__sortable--desc/);
-		expect(await tableRows.nth(0).textContent()).toMatch("Maria's Artisanal Gelato");
+		await tableHeaders.first().click();
+		await expect(tableHeaders.first()).toHaveClass(/table__sortable--active/);
+		await expect(tableHeaders.first()).toHaveClass(/table__sortable--asc/);
+		await expect(tableHeaders.first()).not.toHaveClass(/table__sortable--desc/);
+		expect(await tableRows.first().textContent()).toMatch("Maria's Artisanal Gelato");
 		// When the date order is reversed the first transactions become the last ones
 		// but they are also sorted in reserve order alphabetically by description.
 		expect(await tableRows.nth(131).textContent()).toMatch('Horizon Wireless (Promotional Rebate)');
@@ -103,14 +103,14 @@ test.describe('Transactions', () => {
 		await expect(tableHeaders.nth(1)).toHaveClass(/table__sortable--active/);
 		await expect(tableHeaders.nth(1)).toHaveClass(/table__sortable--asc/);
 		await expect(tableHeaders.nth(1)).not.toHaveClass(/table__sortable--desc/);
-		expect(await tableRows.nth(0).textContent()).toMatch('9-5 Office Supplies');
+		expect(await tableRows.first().textContent()).toMatch('9-5 Office Supplies');
 
 		// Reverse sort order while sorting by description
 		await tableHeaders.nth(1).click();
 		await expect(tableHeaders.nth(1)).toHaveClass(/table__sortable--active/);
 		await expect(tableHeaders.nth(1)).not.toHaveClass(/table__sortable--asc/);
 		await expect(tableHeaders.nth(1)).toHaveClass(/table__sortable--desc/);
-		expect(await tableRows.nth(0).textContent()).toMatch('alphaStream');
+		expect(await tableRows.first().textContent()).toMatch('alphaStream');
 
 		// Sort by amount
 		await tableHeaders.nth(4).click();
@@ -118,16 +118,16 @@ test.describe('Transactions', () => {
 		await expect(tableHeaders.nth(4)).toHaveClass(/table__sortable--active/);
 		await expect(tableHeaders.nth(4)).not.toHaveClass(/table__sortable--asc/);
 		await expect(tableHeaders.nth(4)).toHaveClass(/table__sortable--desc/);
-		expect(await tableRows.nth(0).textContent()).toMatch('Initech HR * Payroll');
-		expect(await tableRows.nth(0).textContent()).toMatch('$2,800.00');
+		expect(await tableRows.first().textContent()).toMatch('Initech HR * Payroll');
+		expect(await tableRows.first().textContent()).toMatch('$2,800.00');
 
 		// Reverse sort order while sorting by amount
 		await tableHeaders.nth(4).click();
 		await expect(tableHeaders.nth(4)).toHaveClass(/table__sortable--active/);
 		await expect(tableHeaders.nth(4)).toHaveClass(/table__sortable--asc/);
 		await expect(tableHeaders.nth(4)).not.toHaveClass(/table__sortable--desc/);
-		expect(await tableRows.nth(0).textContent()).toMatch('Westside Apartments');
-		expect(await tableRows.nth(0).textContent()).toMatch('-$2,250.00');
+		expect(await tableRows.first().textContent()).toMatch('Westside Apartments');
+		expect(await tableRows.first().textContent()).toMatch('-$2,250.00');
 
 		// Check positive values have a different color than 0 and negative value
 		await expect(page.locator('.table__td', { hasText: '$2,800.00' }).first()).toHaveClass(
