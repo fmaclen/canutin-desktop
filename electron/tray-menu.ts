@@ -82,10 +82,10 @@ class TrayMenu {
       enabled: false,
     };
     this.menuOpenVault = {
-      label: "Open vault...",
+      label: "Switch vault...",
       id: TrayMenu.MENU_VAULT_OPEN,
-      accelerator: this.isMacOs ? "Command+O" : "Ctrl+O",
-      click: () => this.openVault(),
+      accelerator: this.isMacOs ? "Command+S" : "Ctrl+S",
+      click: () => this.vault.openPrompt(),
     };
     this.menuPresistentOptions = [
       {

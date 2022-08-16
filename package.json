@@ -8,8 +8,9 @@
   "scripts": {
     "start": "node scripts/start-sveltekit-dev.js",
     "dev": "electron-esbuild dev",
-    "build": "npm run build:electron && npm run build:sveltekit",
+    "build": "npm run build:electron && npm run build:vault && npm run build:sveltekit",
     "build:electron": "electron-esbuild build",
+    "build:vault": "node scripts/generate-base-vault.js",
     "build:sveltekit": "cd sveltekit && npm run build && cd .. && node scripts/generate-package-json.js",
     "test": "jest --watchAll",
     "package": "npm run build && electron-builder"
@@ -73,6 +74,13 @@
       {
         "from": "resources/assets",
         "to": "assets"
+      },
+      {
+        "from": "resources/vault",
+        "to": "vault",
+        "filter": [
+          "Canutin.base.vault"
+        ]
       },
       {
         "from": "sveltekit/build",

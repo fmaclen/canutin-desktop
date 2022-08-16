@@ -18,25 +18,46 @@ class Vault {
     this.path = vaultPath || null;
   }
 
+  openPrompt = () => {
+    const dialogOption = dialog.showMessageBoxSync({
+      type: "info",
+      buttons: ["Create new vault", "Open existing vault", "Do it later"],
+      message: "Canutin Vault",
+      detail:
+        "A vault is a file that stores all the data required to run the app",
+      cancelId: 2,
+    });
+
+    let isVaultSet = false;
+    switch (dialogOption) {
+      case 0:
+        isVaultSet = this.create();
+        break;
+      case 1:
+        isVaultSet = this.load();
+        break;
+      case 2:
+        return;
+    }
+    !isVaultSet && this.openPrompt();
+  };
+
   create = () => {
-    const vaultPath = dialog.showSaveDialogSync({
+    const newVaultPath = dialog.showSaveDialogSync({
       title: "Canutin",
       defaultPath: "~/Canutin.vault",
       filters: [{ name: "Canutin Vault", extensions: ["vault"] }],
     });
 
-    if (!vaultPath) return false;
+    if (!newVaultPath) return false;
 
-    // const currentPath = app.isPackaged
-    //   ? path.join(process.resourcesPath, `vault/Canutin.vault`)
-    //   : `./resources/vault/Canutin.vault`;
-    // Fs.copyFileSync(currentPath, vaultPath);
+    // Create a copy of `Canutin.base.vault` to the user's chosen path
+    const currentPath = app.isPackaged
+      ? path.join(process.resourcesPath, `vault/Canutin.base.vault`)
+      : `./resources/vault/Canutin.base.vault`;
+    Fs.copyFileSync(currentPath, newVaultPath);
 
-    // const databaseUrl = `DATABASE_URL="file:${vaultPath}"`;
-    // const deploy = exec(`${databaseUrl} prisma migrate deploy`);
-    // exec(`${databaseUrl} prisma db seed`);
-
-    this.saveToUserSettings(vaultPath);
+    this.saveToUserSettings(newVaultPath);
     return true;
   };
 
