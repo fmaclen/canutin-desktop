@@ -23,7 +23,7 @@ class Server {
     this.url = `http://localhost:${this.port}`;
   }
 
-  start() {
+  start(newVaultPath?: string) {
     const HOST = "127.0.0.1";
     const isAppPackaged = this.isAppPackaged;
 
@@ -37,7 +37,7 @@ class Server {
         ...process.env,
         HOST,
         PORT: this.port,
-        DATABASE_URL: `file:${this.vaultPath}`,
+        DATABASE_URL: `file:${newVaultPath ? newVaultPath : this.vaultPath}`,
       },
     });
 

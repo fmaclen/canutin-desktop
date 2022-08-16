@@ -6,16 +6,16 @@ import Store from "electron-store";
 
 class Vault {
   private userSettings: Store;
-  path: string | null;
+  path: string | undefined;
 
   constructor() {
     this.userSettings = new Store();
     this.path = this.getVaultPath();
   }
 
-  saveToUserSettings(vaultPath: string | null) {
-    this.userSettings.set({ vaultPath: vaultPath || null });
-    this.path = vaultPath || null;
+  saveToUserSettings(vaultPath: string | undefined) {
+    this.userSettings.set({ vaultPath: vaultPath || undefined });
+    this.path = vaultPath || undefined;
   }
 
   openPrompt = () => {
@@ -37,9 +37,14 @@ class Vault {
         isVaultSet = this.load();
         break;
       case 2:
-        return;
+        return false;
     }
-    !isVaultSet && this.openPrompt();
+
+    if (isVaultSet) {
+      return true;
+    } else {
+      this.openPrompt();
+    }
   };
 
   create = () => {
@@ -75,8 +80,8 @@ class Vault {
   };
 
   private getVaultPath = () => {
-    const vaultPath = this.userSettings.get("vaultPath") as string | null;
-    return vaultPath && Fs.existsSync(vaultPath) ? vaultPath : null;
+    const vaultPath = this.userSettings.get("vaultPath") as string | undefined;
+    return vaultPath && Fs.existsSync(vaultPath) ? vaultPath : undefined;
   };
 }
 

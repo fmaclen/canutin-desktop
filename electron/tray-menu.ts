@@ -85,7 +85,7 @@ class TrayMenu {
       label: "Switch vault...",
       id: TrayMenu.MENU_VAULT_OPEN,
       accelerator: this.isMacOs ? "Command+S" : "Ctrl+S",
-      click: () => this.vault.openPrompt(),
+      click: () => this.openVaultPrompt(),
     };
     this.menuPresistentOptions = [
       {
@@ -123,17 +123,12 @@ class TrayMenu {
     }
   }
 
-  private openVault = () => {
-    const userSettings = this.vault;
-    const dialogPaths = dialog.showOpenDialogSync({
-      properties: ["openFile"],
-      filters: [{ name: "Canutin Vault", extensions: ["vault"] }],
-    });
+  private openVaultPrompt = () => {
+    const { vault } = this;
+    const isVaultSet = vault.openPrompt();
 
-    if (dialogPaths && userSettings) {
-      const vaultPath = dialogPaths[0];
-      this.menuVaultPath.label = vaultPath;
-      userSettings.saveToUserSettings(vaultPath);
+    if (isVaultSet && vault.path) {
+      this.menuVaultPath.label = vault.path;
       this.updateTray();
 
       // Starting (or restarting) the server
@@ -163,7 +158,7 @@ class TrayMenu {
       this.updateTray();
     } else if (this.server) {
       // Start the server
-      this.server.start();
+      this.server.start(vaultPath);
       this.tray.setImage(this.getImagePath("canutin-tray-active"));
       this.menuServerToggle.visible = true;
       this.menuServerToggle.label = "Stop Canutin";
@@ -175,7 +170,7 @@ class TrayMenu {
 
     // FIXME:
     // It would be better to check if the server is actually running (or not)
-    // instead of blindingly reversing the vaule of `isServerRunnig`.
+    // instead of blindingly reversing the vaule of `isServerRunning`.
     this.isServerRunning = !this.isServerRunning;
   };
 
