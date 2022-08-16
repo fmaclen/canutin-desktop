@@ -14,12 +14,12 @@ describe("Vault", () => {
   describe("With no existing path", () => {
     beforeEach(() => {
       vault = new Vault();
-      vault.saveToUserSettings(null);
+      vault.saveToUserSettings(undefined);
     });
 
     test("vault path can't be read from user settings", () => {
       expect(vault["userSettings"]).toBeInstanceOf(Store);
-      expect(vault.path).toBe(null);
+      expect(vault.path).toBe(undefined);
     });
 
     test("vault path can be saved and read from user settings", () => {

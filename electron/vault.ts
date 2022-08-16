@@ -14,7 +14,7 @@ class Vault {
   }
 
   saveToUserSettings(vaultPath: string | undefined) {
-    this.userSettings.set({ vaultPath: vaultPath || undefined });
+    this.userSettings.set({ vaultPath: vaultPath || null });
     this.path = vaultPath || undefined;
   }
 

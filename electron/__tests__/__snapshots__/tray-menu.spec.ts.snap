@@ -33,10 +33,10 @@ Array [
     "label": "/fake/path/to/Canutin.vault",
   },
   Object {
-    "accelerator": "Command+O",
+    "accelerator": "Command+S",
     "click": [Function],
     "id": "menu-vault-open",
-    "label": "Open vault...",
+    "label": "Switch vault...",
   },
   Object {
     "type": "separator",

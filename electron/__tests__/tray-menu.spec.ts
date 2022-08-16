@@ -39,7 +39,7 @@ describe("TrayMenu", () => {
     );
     const spyUpdateTray = jest.spyOn(TrayMenu.prototype as any, "updateTray");
     const trayMenu = new TrayMenu(fakeVault);
-    trayMenu["openVault"];
+    trayMenu["openVaultPrompt"];
     expect(trayMenu["menuVaultPath"].label).not.toBe(fakePathToVault);
     expect(spyElectronDialogSync).toHaveBeenCalledWith({
       properties: ["openFile"],

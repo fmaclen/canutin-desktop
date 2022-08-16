@@ -9,10 +9,11 @@ let server: Server | undefined;
 
 app.whenReady().then(() => {
   const vault = new Vault();
-  const trayMenu = new TrayMenu(vault);
 
   // Prompt the user to choose a vault if they haven't
   if (!vault.path) vault.openPrompt();
+
+  const trayMenu = new TrayMenu(vault);
 
   server = trayMenu.server;
 });
