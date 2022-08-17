@@ -1,3 +1,4 @@
+import Electron from "electron";
 import Store from "electron-store";
 import Fs from "fs";
 
@@ -9,6 +10,54 @@ describe("Vault", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe("Dialog", () => {
+    let spyShowMessageBoxSync: jest.SpyInstance;
+    let spyShowSaveDialogSync: jest.SpyInstance;
+    let spyFsCopyFileSync: jest.SpyInstance;
+    let spyVaultCreate: jest.SpyInstance;
+    let spyVaultLoad: jest.SpyInstance;
+
+    beforeAll(() => {
+      vault = new Vault();
+      spyShowMessageBoxSync = jest.spyOn(Electron.dialog, "showMessageBoxSync");
+      spyShowSaveDialogSync = jest.spyOn(Electron.dialog, "showSaveDialogSync");
+      spyFsCopyFileSync = jest.spyOn(Fs, "copyFileSync");
+      spyVaultCreate = jest.spyOn(vault, "create");
+      spyVaultLoad = jest.spyOn(vault, "load");
+    });
+
+    test("Create new vault", () => {
+      spyShowMessageBoxSync.mockReturnValue(0);
+      spyFsCopyFileSync.mockReturnValue(() => {});
+      vault.dialog();
+      expect(spyVaultCreate).toHaveBeenCalled();
+      expect(spyShowSaveDialogSync).toHaveBeenCalled();
+      expect(spyFsCopyFileSync).toHaveBeenCalled();
+    });
+
+    test("Open existing vault", () => {
+      spyShowMessageBoxSync.mockReturnValue(1);
+      vault.dialog();
+      expect(spyVaultLoad).toHaveBeenCalled();
+    });
+
+    test("Cancel", () => {
+      spyShowMessageBoxSync.mockReturnValue(2);
+      vault.dialog();
+      expect(spyShowMessageBoxSync).toHaveBeenCalledWith({
+        type: "info",
+        title: "Canutin",
+        message: "Canutin Vault",
+        buttons: ["Create new vault", "Open existing vault", "Do it later"],
+        detail:
+          "A vault is a file that stores all the data required to run the app",
+        cancelId: 2,
+      });
+      expect(spyVaultCreate).not.toHaveBeenCalled();
+      expect(spyVaultLoad).not.toHaveBeenCalled();
+    });
   });
 
   describe("With no existing path", () => {

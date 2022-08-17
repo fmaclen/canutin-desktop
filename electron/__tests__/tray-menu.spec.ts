@@ -1,5 +1,5 @@
 import path from "path";
-import Electron, { Menu, app, dialog } from "electron";
+import Electron, { Menu } from "electron";
 
 import TrayMenu from "../tray-menu";
 import Vault from "../vault";
@@ -39,7 +39,7 @@ describe("TrayMenu", () => {
     );
     const spyUpdateTray = jest.spyOn(TrayMenu.prototype as any, "updateTray");
     const trayMenu = new TrayMenu(fakeVault);
-    trayMenu["openVaultPrompt"];
+    trayMenu["switchVault"];
     expect(trayMenu["menuVaultPath"].label).not.toBe(fakePathToVault);
     expect(spyElectronDialogSync).toHaveBeenCalledWith({
       properties: ["openFile"],
