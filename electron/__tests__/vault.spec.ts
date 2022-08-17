@@ -36,7 +36,10 @@ describe("Vault", () => {
       vault.dialog();
       expect(spyVaultCreate).toHaveBeenCalled();
       expect(spyShowSaveDialogSync).toHaveBeenCalled();
-      expect(spyFsCopyFileSync).toHaveBeenCalled();
+      expect(spyFsCopyFileSync).toHaveBeenCalledWith(
+        "./resources/vault/Canutin.base.vault",
+        fakePathToVault
+      );
     });
 
     test("Open existing vault", () => {
