@@ -37,7 +37,7 @@ class TrayMenu {
   private menuServerToggle: MenuItemConstructorOptions;
   private menuOpenInBrowser: MenuItemConstructorOptions;
   private menuVaultPath: MenuItemConstructorOptions;
-  private menuOpenVault: MenuItemConstructorOptions;
+  private menuSwitchVault: MenuItemConstructorOptions;
   private menuPresistentOptions: MenuItemConstructorOptions[];
   private menuSeparator: MenuItemConstructorOptions;
   private menuCurrentTemplate: MenuItemConstructorOptions[];
@@ -81,11 +81,11 @@ class TrayMenu {
       id: TrayMenu.MENU_VAULT_PATH,
       enabled: false,
     };
-    this.menuOpenVault = {
-      label: "Open vault...",
+    this.menuSwitchVault = {
+      label: "Switch vault...",
       id: TrayMenu.MENU_VAULT_OPEN,
-      accelerator: this.isMacOs ? "Command+O" : "Ctrl+O",
-      click: () => this.openVault(),
+      accelerator: this.isMacOs ? "Command+S" : "Ctrl+S",
+      click: () => this.switchVault(),
     };
     this.menuPresistentOptions = [
       {
@@ -106,7 +106,7 @@ class TrayMenu {
       this.menuOpenInBrowser,
       this.menuSeparator,
       this.menuVaultPath,
-      this.menuOpenVault,
+      this.menuSwitchVault,
       this.menuSeparator,
       ...this.menuPresistentOptions,
     ];
@@ -123,17 +123,12 @@ class TrayMenu {
     }
   }
 
-  private openVault = () => {
-    const userSettings = this.vault;
-    const dialogPaths = dialog.showOpenDialogSync({
-      properties: ["openFile"],
-      filters: [{ name: "Canutin Vault", extensions: ["vault"] }],
-    });
+  private switchVault = () => {
+    const { vault } = this;
+    const isVaultSet = vault.dialog();
 
-    if (dialogPaths && userSettings) {
-      const vaultPath = dialogPaths[0];
-      this.menuVaultPath.label = vaultPath;
-      userSettings.saveToUserSettings(vaultPath);
+    if (isVaultSet && vault.path) {
+      this.menuVaultPath.label = vault.path;
       this.updateTray();
 
       // Starting (or restarting) the server
@@ -163,7 +158,7 @@ class TrayMenu {
       this.updateTray();
     } else if (this.server) {
       // Start the server
-      this.server.start();
+      this.server.start(vaultPath);
       this.tray.setImage(this.getImagePath("canutin-tray-active"));
       this.menuServerToggle.visible = true;
       this.menuServerToggle.label = "Stop Canutin";
@@ -175,7 +170,7 @@ class TrayMenu {
 
     // FIXME:
     // It would be better to check if the server is actually running (or not)
-    // instead of blindingly reversing the vaule of `isServerRunnig`.
+    // instead of blindingly reversing the vaule of `isServerRunning`.
     this.isServerRunning = !this.isServerRunning;
   };
 
