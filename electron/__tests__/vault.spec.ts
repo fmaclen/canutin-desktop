@@ -15,6 +15,7 @@ describe("Vault", () => {
   describe("Dialog", () => {
     let spyShowMessageBoxSync: jest.SpyInstance;
     let spyShowSaveDialogSync: jest.SpyInstance;
+    let spyShowOpenDialogSync: jest.SpyInstance;
     let spyFsCopyFileSync: jest.SpyInstance;
     let spyVaultCreate: jest.SpyInstance;
     let spyVaultLoad: jest.SpyInstance;
@@ -23,6 +24,7 @@ describe("Vault", () => {
       vault = new Vault();
       spyShowMessageBoxSync = jest.spyOn(Electron.dialog, "showMessageBoxSync");
       spyShowSaveDialogSync = jest.spyOn(Electron.dialog, "showSaveDialogSync");
+      spyShowOpenDialogSync = jest.spyOn(Electron.dialog, "showOpenDialogSync");
       spyFsCopyFileSync = jest.spyOn(Fs, "copyFileSync");
       spyVaultCreate = jest.spyOn(vault, "create");
       spyVaultLoad = jest.spyOn(vault, "load");
@@ -40,6 +42,7 @@ describe("Vault", () => {
     test("Open existing vault", () => {
       spyShowMessageBoxSync.mockReturnValue(1);
       vault.dialog();
+      expect(spyShowOpenDialogSync).toHaveBeenCalled();
       expect(spyVaultLoad).toHaveBeenCalled();
     });
 
