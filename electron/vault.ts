@@ -18,11 +18,12 @@ class Vault {
     this.path = vaultPath || undefined;
   }
 
-  openPrompt = () => {
+  dialog = () => {
     const dialogOption = dialog.showMessageBoxSync({
       type: "info",
-      buttons: ["Create new vault", "Open existing vault", "Do it later"],
+      title: "Canutin",
       message: "Canutin Vault",
+      buttons: ["Create new vault", "Open existing vault", "Do it later"],
       detail:
         "A vault is a file that stores all the data required to run the app",
       cancelId: 2,
@@ -43,7 +44,7 @@ class Vault {
     if (isVaultSet) {
       return true;
     } else {
-      this.openPrompt();
+      this.dialog();
     }
   };
 

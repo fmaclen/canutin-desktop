@@ -37,7 +37,7 @@ class TrayMenu {
   private menuServerToggle: MenuItemConstructorOptions;
   private menuOpenInBrowser: MenuItemConstructorOptions;
   private menuVaultPath: MenuItemConstructorOptions;
-  private menuOpenVault: MenuItemConstructorOptions;
+  private menuSwitchVault: MenuItemConstructorOptions;
   private menuPresistentOptions: MenuItemConstructorOptions[];
   private menuSeparator: MenuItemConstructorOptions;
   private menuCurrentTemplate: MenuItemConstructorOptions[];
@@ -81,11 +81,11 @@ class TrayMenu {
       id: TrayMenu.MENU_VAULT_PATH,
       enabled: false,
     };
-    this.menuOpenVault = {
+    this.menuSwitchVault = {
       label: "Switch vault...",
       id: TrayMenu.MENU_VAULT_OPEN,
       accelerator: this.isMacOs ? "Command+S" : "Ctrl+S",
-      click: () => this.openVaultPrompt(),
+      click: () => this.switchVault(),
     };
     this.menuPresistentOptions = [
       {
@@ -106,7 +106,7 @@ class TrayMenu {
       this.menuOpenInBrowser,
       this.menuSeparator,
       this.menuVaultPath,
-      this.menuOpenVault,
+      this.menuSwitchVault,
       this.menuSeparator,
       ...this.menuPresistentOptions,
     ];
@@ -123,9 +123,9 @@ class TrayMenu {
     }
   }
 
-  private openVaultPrompt = () => {
+  private switchVault = () => {
     const { vault } = this;
-    const isVaultSet = vault.openPrompt();
+    const isVaultSet = vault.dialog();
 
     if (isVaultSet && vault.path) {
       this.menuVaultPath.label = vault.path;

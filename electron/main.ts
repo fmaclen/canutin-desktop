@@ -10,7 +10,7 @@ app.whenReady().then(() => {
   const vault = new Vault();
 
   // Prompt the user to choose a vault if one isn't set yet
-  if (!vault.path) vault.openPrompt();
+  if (!vault.path) vault.dialog();
 
   trayMenu = new TrayMenu(vault);
 });
