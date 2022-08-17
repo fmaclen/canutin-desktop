@@ -2,4 +2,5 @@
 node_modules
 dist
 *.vault
+*.vault-journal
 .vscode/settings.json

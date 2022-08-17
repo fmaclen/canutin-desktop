@@ -11,17 +11,25 @@ const { join } = require("path");
 const { unlink } = require("fs");
 
 const vaultPath = join(process.cwd(), "resources/vault/Canutin.base.vault");
-const databaseUrl = `DATABASE_URL=file:${vaultPath}`;
+const databaseUrl = `file:${vaultPath}`;
 
 // Remove the vault (if it exists)
 unlink(vaultPath, () => {});
 
 // Create the new vault
-execSync(`${databaseUrl} npx prisma migrate deploy`, {
-  stdio: "inherit",
-});
+execSync(
+  `npx prisma migrate deploy`,
+  { env: { DATABASE_URL: databaseUrl } },
+  {
+    stdio: "inherit",
+  }
+);
 
 // Seed the new vault
-execSync(`${databaseUrl} npx prisma db seed`, {
-  stdio: "inherit",
-});
+execSync(
+  `npx prisma db seed`,
+  { env: { DATABASE_URL: databaseUrl } },
+  {
+    stdio: "inherit",
+  }
+);
