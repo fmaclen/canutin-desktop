@@ -7,8 +7,8 @@
 	import Button from '$lib/components/Button.svelte';
 	import Notice from '$lib/components/Notice.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
-	import type { ImportSummary } from './index.json';
 	import { CardAppearance } from '$lib/components/Card';
+	import type { ImportSummary } from '../import.json/+server';
 
 	const title = 'Import data';
 

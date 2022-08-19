@@ -1,11 +1,6 @@
 <script lang="ts">
-	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-	// Suggestion (check code before using, and possibly convert to data.X access later):
-	// import type { PageData } from './$types';
-	// export let data: PageData;
-	// $: ({ summary, cashflow, trailingCashflow } = data);
-
 	import { format, fromUnixTime } from 'date-fns';
+	import type { PageData } from './$types';
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
@@ -15,20 +10,19 @@
 	import { formatCurrency } from '$lib/helpers/misc';
 	import { BalanceGroup, TrailingCashflowPeriods } from '$lib/helpers/constants';
 	import { balanceGroupAppearance, CardAppearance } from '$lib/components/Card';
-	import type { BigPictureSummary, Cashflow, PeriodCashflow, TrailingCashflow } from '.';
+	import type { PeriodCashflow } from './+page.server';
 
 	const title = 'The big picture';
 
-	// Summary
-	export let summary: BigPictureSummary;
+	export let data: PageData;
+	$: ({ summary, cashflow, trailingCashflow } = data);
 
 	// Cashflow
-	export let cashflow: Cashflow;
-	let currentPeriod = cashflow.periods[cashflow.periods.length - 1];
-	let activePeriod = currentPeriod.id;
-	let activeIncome = currentPeriod.income;
-	let activeExpenses = currentPeriod.expenses;
-	let activeSurplus = currentPeriod.surplus;
+	$: currentPeriod = cashflow.periods[cashflow.periods.length - 1];
+	$: activePeriod = currentPeriod.id;
+	$: activeIncome = currentPeriod.income;
+	$: activeExpenses = currentPeriod.expenses;
+	$: activeSurplus = currentPeriod.surplus;
 	let setActivePeriod = (period: PeriodCashflow) => {
 		activePeriod = period.id;
 		activeIncome = period.income;
@@ -37,7 +31,6 @@
 	};
 
 	// Trailing cashflow
-	export let trailingCashflow: TrailingCashflow;
 	let currentSegment = TrailingCashflowPeriods.LAST_6_MONTHS;
 	const toggleSegment = () => {
 		currentSegment =

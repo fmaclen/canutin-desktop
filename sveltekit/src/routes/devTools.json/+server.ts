@@ -1,5 +1,3 @@
-
-// @migration task: Check imports
 import { DeveloperFunctions } from '$lib/helpers/constants';
 import prisma from '$lib/helpers/prismaClient';
 import seedDemoData from '$lib/seed';

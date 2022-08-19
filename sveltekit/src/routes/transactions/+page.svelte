@@ -6,7 +6,6 @@
 		endOfMonth,
 		startOfYear,
 		endOfYear,
-		endOfDay,
 		format,
 		fromUnixTime
 	} from 'date-fns';
@@ -21,7 +20,7 @@
 	import { CardAppearance } from '$lib/components/Card';
 	import { dateInUTC, formatCurrency } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
-	import type { EndpointTransaction } from './index.json';
+	import type { EndpointTransaction } from '../transactions.json/+server';
 
 	const title = 'Transactions';
 

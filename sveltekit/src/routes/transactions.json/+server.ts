@@ -1,6 +1,4 @@
 import { json } from '@sveltejs/kit';
-
-// @migration task: Check imports
 import { startOfMonth, endOfMonth, sub, fromUnixTime, getUnixTime } from 'date-fns';
 
 import type { Account, Transaction, TransactionCategory } from '@prisma/client';

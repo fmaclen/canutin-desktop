@@ -1,13 +1,6 @@
 <script lang="ts">
-	throw new Error("@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)");
-	// Suggestion (check code before using, and possibly convert to data.X access later):
-	// import type { PageData } from './$types';
-	// export let data: PageData;
-	// $: ({ balanceSheetBalanceGroups } = data);
-
+	import type { PageData } from './$types';
 	import { formatCurrency } from '$lib/helpers/misc';
-	import type { BalanceSheetBalanceGroup } from '.';
-
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Section from '$lib/components/Section.svelte';
@@ -15,7 +8,7 @@
 
 	const title = 'Balance sheet';
 
-	export let balanceSheetBalanceGroups: BalanceSheetBalanceGroup[];
+	export let data: PageData;
 </script>
 
 <svelte:head>
@@ -25,7 +18,7 @@
 <ScrollView {title}>
 	<Section title="Balances">
 		<div slot="CONTENT" class="balanceSheet">
-			{#each balanceSheetBalanceGroups as balanceSheetItemsByBalanceGroup}
+			{#each data.balanceSheetBalanceGroups as balanceSheetItemsByBalanceGroup}
 				<div class="balanceSheet__balanceGroup">
 					<Card
 						title={balanceSheetItemsByBalanceGroup.label}
