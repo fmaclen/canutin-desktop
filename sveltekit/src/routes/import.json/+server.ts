@@ -1,3 +1,6 @@
+import { json as json$1 } from '@sveltejs/kit';
+
+// @migration task: Check imports
 import { fromUnixTime } from 'date-fns';
 import { Prisma } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -9,6 +12,9 @@ export const POST = async ({ request }: RequestEvent) => {
 	const canutinFile = await request.json();
 	const importResult = await importFromCanutinFile(canutinFile);
 
+	throw new Error("@migration task: Migrate this return statement (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292701)");
+	// Suggestion (check for correctness before using):
+	// return json$1(importResult);
 	return {
 		status: 200,
 		body: importResult

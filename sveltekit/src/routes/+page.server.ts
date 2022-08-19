@@ -13,17 +13,15 @@ import { getBalanceGroupLabel, SortOrder, BalanceGroup } from '$lib/helpers/cons
 import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
 import { dateInUTC, proportionBetween, sortByKey } from '$lib/helpers/misc';
 
-export const GET = async () => {
+export const load = async () => {
 	const summary = await getSummary();
 	const cashflow = await getCashflow();
 	const trailingCashflow = getTrailingCashflow(cashflow);
 
 	return {
-		body: {
-			summary,
-			cashflow,
-			trailingCashflow
-		}
+		summary,
+		cashflow,
+		trailingCashflow
 	};
 };
 

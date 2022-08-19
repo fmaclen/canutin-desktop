@@ -1,3 +1,5 @@
+
+// @migration task: Check imports
 import { DeveloperFunctions } from '$lib/helpers/constants';
 import prisma from '$lib/helpers/prismaClient';
 import seedDemoData from '$lib/seed';
@@ -16,7 +18,5 @@ export const POST = async ({ url }: { url: URL }) => {
 			break;
 	}
 
-	return {
-		status: 200
-	};
+	return new Response(undefined);
 };

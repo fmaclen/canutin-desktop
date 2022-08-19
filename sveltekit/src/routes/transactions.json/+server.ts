@@ -1,3 +1,6 @@
+import { json } from '@sveltejs/kit';
+
+// @migration task: Check imports
 import { startOfMonth, endOfMonth, sub, fromUnixTime, getUnixTime } from 'date-fns';
 
 import type { Account, Transaction, TransactionCategory } from '@prisma/client';
@@ -89,10 +92,7 @@ export const GET = async ({ url }: { url: URL }) => {
 		date: getUnixTime(transaction.date)
 	}));
 
-	return {
-		status: 200,
-		body: {
-			transactions: endpointTransactions
-		}
-	};
+	return json({
+		transactions: endpointTransactions
+	});
 };
