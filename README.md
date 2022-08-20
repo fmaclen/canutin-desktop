@@ -82,7 +82,7 @@ This command will create builds of everything and will copy all of the files tha
 % cd sveltekit && npx prisma studio
 ```
 
-**SveteKit Preview**
+**SvelteKit Preview**
 
 ```bash
 % cd sveltekit && npm run preview
