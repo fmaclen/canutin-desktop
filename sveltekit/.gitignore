@@ -3,7 +3,7 @@ node_modules
 /build
 /.svelte-kit
 /package
-.env
+#.env // Prisma generates dependencies from this file
 .env.*
 !.env.example
 /src/lib/tmp/*

@@ -1,4 +1,4 @@
-// This script is used to prepare the SvelteKit build to be packaged with Electron.
+// This script prepares the SvelteKit build to be packaged with Electron.
 
 console.info(`\n-> Packaging SvelteKit for production\n`);
 
