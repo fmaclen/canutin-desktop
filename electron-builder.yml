@@ -1,0 +1,33 @@
+productName: Canutin
+appId: com.canutin.desktop
+artifactName: ${name}_v${version}-${os}-${arch}.${ext}
+
+files:
+  - from: "dist/main"
+    to: "."
+  - package.json
+
+directories:
+  buildResources: resources
+
+extraResources:
+  - from: "resources/assets"
+    to: "assets"
+  - from: "resources/sveltekit"
+    to: "sveltekit"
+
+mac:
+  target:
+    - dmg
+
+win:
+  target:
+    - nsis
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+
+linux:
+  target:
+    - zip
