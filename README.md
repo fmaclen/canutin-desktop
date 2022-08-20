@@ -23,13 +23,13 @@ You'll need to run these commands to set up the environment before getting start
 3. Generate **Prisma's** artifacts.
 
 ```bash
-% npx prisma generate
+% cd sveltekit && npx prisma generate
 ```
 
 4. Create and seed a vault which will be seeded with the minimum required data (account/asset types, categories, etc).
 
 ```bash
-% npx prisma migrate dev
+% cd sveltekit && npx prisma migrate dev
 ```
 
 ---
@@ -38,7 +38,7 @@ You'll need to run these commands to set up the environment before getting start
 
 The **Electron** and **SvelteKit** dev environments can be run independently of one another.
 
-To run only the **SvelteKit** dev server (including **Prisma**):
+To run only the **SvelteKit** dev server:
 
 ```bash
 % npm run start
@@ -79,13 +79,7 @@ This command will create builds of everything and will copy all of the files tha
 **Prisma Studio**
 
 ```bash
-% npx prisma studio
-```
-
-**SveteKit Preview**
-
-```bash
-% cd sveltekit && npm run preview
+% cd sveltekit && npx prisma studio
 ```
 
 ---

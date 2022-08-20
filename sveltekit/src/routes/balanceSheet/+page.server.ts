@@ -24,7 +24,7 @@ export interface BalanceSheetBalanceGroup {
 	balanceItemsTypeGroups: BalanceItemsTypeGroup[];
 }
 
-export const GET = async () => {
+export const load = async () => {
 	// Get Accounts and Assets
 	const accounts = await prisma.account.findMany({
 		include: {
@@ -148,8 +148,6 @@ export const GET = async () => {
 	sortByKey(balanceSheetBalanceGroups, 'id', SortOrder.DESC);
 
 	return {
-		body: {
-			balanceSheetBalanceGroups
-		}
+		balanceSheetBalanceGroups
 	};
 };

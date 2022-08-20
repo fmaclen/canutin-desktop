@@ -16,7 +16,5 @@ export const POST = async ({ url }: { url: URL }) => {
 			break;
 	}
 
-	return {
-		status: 200
-	};
+	return new Response(undefined);
 };

@@ -46,7 +46,7 @@ class Server {
 
     // Loggin the url to the console in development so it's easier to click
     process.env.NODE_ENV == "development" &&
-      console.log(`\n-> Server started at ${this.url}\n`);
+      console.info(`\n-> Server started at ${this.url}\n`);
   }
 
   stop() {
