@@ -8,5 +8,5 @@
     "skipLibCheck": true,
     "allowJs": true
   },
-  "exclude": ["sveltekit", "dist", "scripts", "./jest.config.js"]
+  "exclude": ["sveltekit", "resources", "dist", "scripts", "./jest.config.js"]
 }

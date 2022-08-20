@@ -57,12 +57,6 @@ class Vault {
 
     if (!newVaultPath) return false;
 
-    // Create a copy of `Canutin.base.vault` to the user's chosen path
-    const currentPath = app.isPackaged
-      ? path.join(process.resourcesPath, `vault/Canutin.base.vault`)
-      : `./resources/vault/Canutin.base.vault`;
-    Fs.copyFileSync(currentPath, newVaultPath);
-
     this.saveToUserSettings(newVaultPath);
     return true;
   };
