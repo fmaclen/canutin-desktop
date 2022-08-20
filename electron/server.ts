@@ -28,15 +28,17 @@ class Server {
     const isAppPackaged = this.isAppPackaged;
 
     // Svelte's build with `@adapter-private node`
-    const serverModulePath = isAppPackaged
-      ? path.join(process.resourcesPath, "sveltekit/index.js")
-      : path.join(__dirname, "../../sveltekit/build/index.js");
+    const appPath = isAppPackaged
+      ? path.join(process.resourcesPath, "sveltekit")
+      : path.join(__dirname, "../../sveltekit/build");
+    const serverModulePath = path.join(appPath, "index.js");
 
     const { pid } = fork(serverModulePath, {
       env: {
         ...process.env,
         HOST,
         PORT: this.port,
+        ELECTRON_APP_PATH: appPath,
         DATABASE_URL: `file:${newVaultPath ? newVaultPath : this.vaultPath}`,
       },
     });
