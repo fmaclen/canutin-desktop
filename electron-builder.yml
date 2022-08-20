@@ -25,6 +25,7 @@ win:
     - nsis
 
 nsis:
+  oneClick: false
   allowToChangeInstallationDirectory: true
 
 linux:
