@@ -26,53 +26,5 @@
     "ts-jest": "^28.0.7",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
-  },
-  "build": {
-    "productName": "Canutin",
-    "appId": "com.canutin.desktop",
-    "artifactName": "${name}_v${version}-${os}-${arch}.${ext}",
-    "extraMetadata": {
-      "name": "desktop",
-      "main": "main.js"
-    },
-    "files": [
-      {
-        "from": ".",
-        "filter": [
-          "package.json"
-        ]
-      },
-      {
-        "from": "dist/main"
-      }
-    ],
-    "win": {
-      "target": [
-        "zip"
-      ]
-    },
-    "mac": {
-      "target": [
-        "zip"
-      ]
-    },
-    "linux": {
-      "target": [
-        "zip"
-      ]
-    },
-    "directories": {
-      "buildResources": "resources"
-    },
-    "extraResources": [
-      {
-        "from": "resources/assets",
-        "to": "assets"
-      },
-      {
-        "from": "resources/sveltekit",
-        "to": "sveltekit"
-      }
-    ]
   }
 }
