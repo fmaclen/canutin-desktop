@@ -7,7 +7,7 @@ import Server from "../server";
 describe("Server", () => {
   const fakePathToVault = "/fake/path/to/Canutin.vault";
   const fakePid = 123456;
-  const fakePathToSvelteKitIndex = "/fake/path/to/sveltekit/index.js";
+  const fakePathToSvelteKitIndex = "/fake/path/to/sveltekit";
 
   const spyPathJoin = jest
     .spyOn(path, "join")
@@ -35,7 +35,12 @@ describe("Server", () => {
       server.start();
       expect(spyPathJoin).toHaveBeenCalledWith(
         expect.stringContaining("/electron"),
-        "../../sveltekit/build/index.js"
+        "../../sveltekit"
+      );
+      expect(spyPathJoin).toHaveBeenCalledWith(
+        expect.stringContaining("/sveltekit"),
+        "build",
+        "index.js"
       );
       expect(spyChildProcessFork).toHaveBeenCalledWith(
         fakePathToSvelteKitIndex,
@@ -44,6 +49,7 @@ describe("Server", () => {
             ...process.env,
             HOST: "127.0.0.1",
             PORT: Server.PORT_DEVELOPMENT,
+            SVELTEKIT_PATH: fakePathToSvelteKitIndex,
             DATABASE_URL: `file:${fakePathToVault}`,
           },
         }
@@ -65,7 +71,11 @@ describe("Server", () => {
       server.start();
       expect(spyPathJoin).toHaveBeenCalledWith(
         process.resourcesPath,
-        "sveltekit/index.js"
+        "sveltekit"
+      );
+      expect(spyPathJoin).toHaveBeenCalledWith(
+        expect.stringContaining("/sveltekit"),
+        "index.js"
       );
       expect(spyChildProcessFork).toHaveBeenCalledWith(
         fakePathToSvelteKitIndex,
@@ -74,6 +84,7 @@ describe("Server", () => {
             ...process.env,
             HOST: "127.0.0.1",
             PORT: Server.PORT_PRODUCTION,
+            SVELTEKIT_PATH: fakePathToSvelteKitIndex,
             DATABASE_URL: `file:${fakePathToVault}`,
           },
         }

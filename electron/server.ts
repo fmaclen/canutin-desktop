@@ -31,18 +31,17 @@ class Server {
       ? path.join(process.resourcesPath, "sveltekit")
       : path.join(__dirname, "../../sveltekit");
 
-    const serverModulePath = isAppPackaged
+    const svelteKitModulePath = isAppPackaged
       ? path.join(svelteKitPath, "index.js")
       : path.join(svelteKitPath, "build", "index.js");
 
-    const svelteKitProcess = fork(serverModulePath, {
+    const svelteKitProcess = fork(svelteKitModulePath, {
       env: {
         ...process.env,
         HOST,
         PORT: this.port,
         SVELTEKIT_PATH: svelteKitPath,
         DATABASE_URL: `file:${newVaultPath ? newVaultPath : this.vaultPath}`,
-        IS_NEW_VAULT: newVaultPath ? "true" : "false",
       },
     });
 
