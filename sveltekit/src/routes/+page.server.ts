@@ -13,14 +13,7 @@ import { getBalanceGroupLabel, SortOrder, BalanceGroup } from '$lib/helpers/cons
 import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
 import { dateInUTC, proportionBetween, sortByKey } from '$lib/helpers/misc';
 
-import fs from 'fs';
-
 export const load = async () => {
-	const stream = fs.createWriteStream('/Users/odyssey/Desktop/pageserver.txt');
-	stream.write(
-		`\n process.cwd(): ${process.cwd()} \n ELECTRON_APP_PATH: ${process.env.ELECTRON_APP_PATH} \n`
-	);
-
 	const summary = await getSummary();
 	const cashflow = await getCashflow();
 	const trailingCashflow = getTrailingCashflow(cashflow);

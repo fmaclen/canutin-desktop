@@ -1,4 +1,3 @@
-import fs from 'fs';
 import path from 'path';
 import { fork } from 'child_process';
 import { PrismaClient } from '@prisma/client';
@@ -18,35 +17,25 @@ const platformToExecutables: any = {
 	}
 };
 
-const stream = fs.createWriteStream('/Users/odyssey/Desktop/output.txt');
-
 export const runPrismaCommand = async ({ command }: { command: string[] }): Promise<number> => {
-	const mePath = path.join(
-		process.env.ELECTRON_APP_PATH,
+	const migrationEnginePath = path.join(
+		process.env.SVELTEKIT_PATH,
 		platformToExecutables[process.platform].migrationEngine
 	);
 
-	stream.write(
-		`\n process.cwd(): ${process.cwd()} \n ELECTRON_APP_PATH: ${
-			process.env.ELECTRON_APP_PATH
-		} \n mePath: ${mePath} \n`
+	const queryEnginePath = path.join(
+		process.env.SVELTEKIT_PATH,
+		platformToExecutables[process.platform].queryEngine
 	);
 
 	try {
 		const exitCode = await new Promise((resolve, _) => {
-			const prismaPath = path.resolve(
-				process.env.ELECTRON_APP_PATH,
-				'node_modules/prisma/build/index.js'
-			);
-
-			const child = fork(prismaPath, command, {
+			const child = fork('node_modules/prisma/build/index.js', command, {
+				cwd: process.env.SVELTEKIT_PATH,
 				env: {
 					...process.env,
-					PRISMA_MIGRATION_ENGINE_BINARY: mePath,
-					PRISMA_QUERY_ENGINE_LIBRARY: path.join(
-						process.env.ELECTRON_APP_PATH,
-						platformToExecutables[process.platform].queryEngine
-					)
+					PRISMA_MIGRATION_ENGINE_BINARY: migrationEnginePath,
+					PRISMA_QUERY_ENGINE_LIBRARY: queryEnginePath
 				},
 				stdio: 'inherit'
 			});
