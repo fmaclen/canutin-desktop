@@ -3,7 +3,7 @@ import { fromUnixTime } from 'date-fns';
 import { Prisma } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
 
-import prisma from '$lib/helpers/prismaClient';
+import prisma from '$lib/helpers/prisma';
 import { getModelType, getTransactionCategoryId } from '$lib/helpers/models';
 
 export const POST = async ({ request }: RequestEvent) => {

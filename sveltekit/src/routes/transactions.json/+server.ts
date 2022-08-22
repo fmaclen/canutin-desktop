@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import { startOfMonth, endOfMonth, sub, fromUnixTime, getUnixTime } from 'date-fns';
 
 import type { Account, Transaction, TransactionCategory } from '@prisma/client';
-import prisma from '$lib/helpers/prismaClient';
+import prisma from '$lib/helpers/prisma';
 import { SortOrder } from '$lib/helpers/constants';
 
 export interface EndpointTransaction extends Omit<Transaction, 'date'> {

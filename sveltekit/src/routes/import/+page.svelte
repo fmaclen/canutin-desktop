@@ -6,6 +6,7 @@
 	import Card from '$lib/components/Card.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Notice from '$lib/components/Notice.svelte';
+	import Code from '$lib/components/Code.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
 	import { CardAppearance } from '$lib/components/Card';
 	import type { ImportSummary } from '../import.json/+server';
@@ -53,8 +54,8 @@
 	<Section title="From API">
 		<div slot="CONTENT">
 			<Notice>
-				Submit a <code class="code">POST</code> request to
-				<code class="code">{$page.url}.json</code> with a CanutinFile payload
+				Submit a <Code>POST</Code> request to
+				<Code>{$page.url}.json</Code> with a CanutinFile payload
 			</Notice>
 		</div>
 	</Section>
@@ -252,17 +253,6 @@
 		justify-content: flex-end;
 		padding: 8px 12px;
 		background-color: var(--color-border);
-	}
-
-	code.code {
-		margin-left: 6px;
-		margin-right: 6px;
-		padding: 4px;
-		border-radius: 4px;
-		font-size: 12px;
-		font-family: var(--font-monospace);
-		color: var(--color-grey70);
-		background-color: var(--color-grey7);
 	}
 
 	div.importStatus {

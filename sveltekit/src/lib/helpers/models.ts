@@ -1,4 +1,4 @@
-import prisma from '$lib/helpers/prismaClient';
+import prisma from '$lib/helpers/prisma';
 import type { Account } from '@prisma/client';
 import type { Asset } from '@prisma/client';
 import { SortOrder } from './constants';

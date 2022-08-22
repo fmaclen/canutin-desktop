@@ -1,7 +1,7 @@
 import path from 'path';
 import { fork } from 'child_process';
 import { env } from '$env/dynamic/private';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 const cwd = env.SVELTEKIT_PATH ? env.SVELTEKIT_PATH : process.cwd();
 
@@ -20,7 +20,7 @@ const platformToExecutables: any = {
 	}
 };
 
-export const runPrismaMigrate = async (): Promise<number> => {
+const runPrismaMigrate = async (): Promise<number> => {
 	const nodeModulesPath = path.join(cwd, 'node_modules');
 
 	const migrationEnginePath = path.join(
@@ -61,7 +61,32 @@ export const runPrismaMigrate = async (): Promise<number> => {
 	}
 };
 
-export const runPrismaSeed = async (): Promise<number> => {
+export const validateVaultMigration = async () => {
+	await runPrismaMigrate();
+
+	// Check all the tables are migrated correctly
+	try {
+		const uncachedPrisma = new PrismaClient();
+
+		// Get all the model names in the schema as 'camelCase'
+		const models = Prisma.dmmf.datamodel.models.map(
+			(model) =>
+				(model.name.charAt(0).toLowerCase() + model.name.slice(1)) as Uncapitalize<Prisma.ModelName>
+		);
+
+		// Query each of the models to check if they exist in the vault
+		for (const model of models) {
+			// FIXME: typings fail but line works — https://github.com/prisma/prisma/issues/5273
+			await uncachedPrisma[model].count();
+		}
+	} catch (error) {
+		console.log(error);
+		return false;
+	}
+	return true;
+};
+
+const runPrismaSeed = async (): Promise<number> => {
 	const seedModulePath = path.join(cwd, 'prisma', 'seed.js');
 
 	try {
@@ -82,6 +107,32 @@ export const runPrismaSeed = async (): Promise<number> => {
 	}
 };
 
+export const validateVaultSeed = async () => {
+	const uncachedPrisma = new PrismaClient();
+	const accountTypeCount = await uncachedPrisma.accountType.count();
+	const assetTypeCount = await uncachedPrisma.assetType.count();
+	const transactionCategoryCount = await uncachedPrisma.transactionCategory.count();
+	const transactionCategoryGroupCount = await uncachedPrisma.transactionCategoryGroup.count();
+
+	const isSeeded = ![
+		accountTypeCount,
+		assetTypeCount,
+		transactionCategoryCount,
+		transactionCategoryGroupCount
+	].includes(0);
+
+	if (!isSeeded) {
+		try {
+			await runPrismaSeed();
+			validateVaultSeed();
+		} catch {
+			return false;
+		}
+	}
+	return true;
+};
+
+// Default Prisma client
 const prisma = new PrismaClient();
 
 export default prisma;

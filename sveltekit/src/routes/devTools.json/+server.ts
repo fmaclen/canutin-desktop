@@ -1,5 +1,5 @@
 import { DeveloperFunctions } from '$lib/helpers/constants';
-import prisma from '$lib/helpers/prismaClient';
+import prisma from '$lib/helpers/prisma';
 import seedDemoData from '$lib/seed';
 
 export const POST = async ({ url }: { url: URL }) => {

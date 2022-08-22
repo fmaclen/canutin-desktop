@@ -11,8 +11,15 @@ const pathToDevVault = path.join(
   "Canutin.dev.vault"
 );
 
-console.info(`\n-> Running SvelteKit with DATABASE_URL: ${pathToDevVault}\n`);
+console.info(`-> Running SvelteKit`);
+console.info(`   DATABASE_URL: ${pathToDevVault}`);
+console.info(`   ELECTRON_SWITCHED_VAULT: "true"`);
 
-execSync(`cd sveltekit && DATABASE_URL=file:${pathToDevVault} npm run dev`, {
+execSync(`cd sveltekit && npm run dev`, {
+  env: {
+    ...process.env,
+    DATABASE_URL: `file:${pathToDevVault}`,
+    ELECTRON_SWITCHED_VAULT: "true",
+  },
   stdio: "inherit",
 });
