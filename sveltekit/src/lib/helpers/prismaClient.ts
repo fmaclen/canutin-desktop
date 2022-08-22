@@ -3,6 +3,8 @@ import { fork } from 'child_process';
 import { env } from '$env/dynamic/private';
 import { PrismaClient } from '@prisma/client';
 
+const cwd = env.SVELTEKIT_PATH ? env.SVELTEKIT_PATH : process.cwd();
+
 const platformToExecutables: any = {
 	win32: {
 		migrationEngine: '@prisma/engines/migration-engine-windows.exe',
@@ -18,9 +20,7 @@ const platformToExecutables: any = {
 	}
 };
 
-const cwd = env.SVELTEKIT_PATH ? env.SVELTEKIT_PATH : process.cwd();
-
-const runPrismaMigrate = async (): Promise<number> => {
+export const runPrismaMigrate = async (): Promise<number> => {
 	const nodeModulesPath = path.join(cwd, 'node_modules');
 
 	const migrationEnginePath = path.join(
@@ -37,7 +37,7 @@ const runPrismaMigrate = async (): Promise<number> => {
 
 	try {
 		const exitCode = await new Promise((resolve, _) => {
-			const child = fork(prismaExecModule, ['migrate', 'dev'], {
+			const child = fork(prismaExecModule, ['migrate', 'deploy'], {
 				cwd,
 				env: {
 					...env,
@@ -47,11 +47,7 @@ const runPrismaMigrate = async (): Promise<number> => {
 				stdio: 'inherit'
 			});
 
-			child.on('error', (err) => {
-				console.error('Child process got error:', err);
-			});
-
-			child.on('close', (code, signal) => {
+			child.on('close', (code) => {
 				resolve(code);
 			});
 		});
@@ -65,9 +61,25 @@ const runPrismaMigrate = async (): Promise<number> => {
 	}
 };
 
-const runPrismaSeed = () => {
+export const runPrismaSeed = async (): Promise<number> => {
 	const seedModulePath = path.join(cwd, 'prisma', 'seed.js');
-	fork(seedModulePath, { stdio: 'inherit' });
+
+	try {
+		const exitCode = await new Promise((resolve, _) => {
+			const child = fork(seedModulePath, { stdio: 'inherit' });
+
+			child.on('close', (code) => {
+				resolve(code);
+			});
+		});
+
+		if (exitCode !== 0) throw Error(`command failed with exit code ${exitCode}`);
+
+		return exitCode;
+	} catch (e) {
+		console.error(e);
+		throw e;
+	}
 };
 
 const prisma = new PrismaClient();
