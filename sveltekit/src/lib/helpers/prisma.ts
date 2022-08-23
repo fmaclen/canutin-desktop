@@ -80,7 +80,7 @@ export const validateVaultMigration = async () => {
 			await uncachedPrisma[model].count();
 		}
 	} catch (error) {
-		console.log(error);
+		console.error(error);
 		return false;
 	}
 	return true;

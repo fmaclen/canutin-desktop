@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { dev } from '$app/env';
-	import { env } from '$env/dynamic/private';
 
 	import logo from '$lib/assets/canutin-iso-logo.svg';
 	import '../app.scss';
+	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
 
-	$: isVaultReady = env.ELECTRON_SWITCHED_VAULT === 'false';
+	$: isVaultReady = $isVaultReadyStore;
 	$: pathname = $page.url.pathname;
 </script>
 

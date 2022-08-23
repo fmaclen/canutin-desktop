@@ -4,9 +4,12 @@
 	import Notice from '$lib/components/Notice.svelte';
 	import Code from '$lib/components/Code.svelte';
 	import type { PageData } from './$types';
+	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
 
 	const title = 'Vault';
+
 	export let data: PageData;
+	$isVaultReadyStore = false;
 </script>
 
 <svelte:head>
@@ -21,5 +24,5 @@
 				{data.error}
 			</Notice>
 		</div>
-	</Section></ScrollView
->
+	</Section>
+</ScrollView>
