@@ -43,7 +43,13 @@ rimraf(svelteKitProdPath, () => {
     cwd: svelteKitProdPath,
   });
 
-  // Clean up Prisma's unused dependencies
+  // Delete Prisma's unused dependencies
+  const prismaEnginesProdPath = path.join(
+    svelteKitProdPath,
+    "node_modules",
+    "@prisma",
+    "engines"
+  );
   const filesToDelete = [
     { path: path.join(svelteKitProdPath, "prisma"), pattern: /[.]vault$/ },
     {
@@ -51,15 +57,15 @@ rimraf(svelteKitProdPath, () => {
       pattern: /[.]node$/,
     },
     {
-      path: path.join(svelteKitProdPath, "node_modules", "@prisma", "engines"),
+      path: prismaEnginesProdPath,
       pattern: /[.]node$/,
     },
     {
-      path: path.join(svelteKitProdPath, "node_modules", "@prisma", "engines"),
+      path: prismaEnginesProdPath,
       pattern: /introspection-engine/,
     },
     {
-      path: path.join(svelteKitProdPath, "node_modules", "@prisma", "engines"),
+      path: prismaEnginesProdPath,
       pattern: /prisma-fmt/,
     },
   ];
@@ -70,9 +76,8 @@ rimraf(svelteKitProdPath, () => {
       .forEach((file) => unlinkSync(path.join(fileToDelete.path, file)));
   }
 
-  // In Windows Prisma generates cached versions of the engines so we need to delete those as well
-  if (process.platform ==="win32") {
-    rimraf(path.join(svelteKitProdPath, "node_modules", "@prisma", "engines", "node_modules"), () => {})
+  // Delete the cached engines Prisma generates in Windows
+  if (process.platform === "win32") {
+    rimraf(path.join(prismaEnginesProdPath, "node_modules"), () => {});
   }
 });
-
