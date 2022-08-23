@@ -5,7 +5,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 
 const cwd = env.SVELTEKIT_PATH ? env.SVELTEKIT_PATH : process.cwd();
 
-const platformToExecutables: any = {
+const platformToExecutables = {
 	win32: {
 		migrationEngine: '@prisma/engines/migration-engine-windows.exe',
 		queryEngine: '.prisma/client/query_engine-windows.dll.node'
