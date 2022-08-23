@@ -51,6 +51,7 @@ describe("Server", () => {
             PORT: Server.PORT_DEVELOPMENT,
             SVELTEKIT_PATH: fakePathToSvelteKitIndex,
             DATABASE_URL: `file:${fakePathToVault}`,
+            ELECTRON_SWITCHED_VAULT: "true",
           },
         }
       );
@@ -86,6 +87,7 @@ describe("Server", () => {
             PORT: Server.PORT_PRODUCTION,
             SVELTEKIT_PATH: fakePathToSvelteKitIndex,
             DATABASE_URL: `file:${fakePathToVault}`,
+            ELECTRON_SWITCHED_VAULT: "true",
           },
         }
       );
