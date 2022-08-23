@@ -8,32 +8,51 @@ const cwd = env.SVELTEKIT_PATH ? env.SVELTEKIT_PATH : process.cwd();
 const platformToExecutables: any = {
 	win32: {
 		migrationEngine: '@prisma/engines/migration-engine-windows.exe',
-		queryEngine: '@prisma/engines/query_engine-windows.dll.node'
+		queryEngine: '.prisma/client/query_engine-windows.dll.node'
 	},
 	linux: {
 		migrationEngine: '@prisma/engines/migration-engine-debian-openssl-1.1.x',
-		queryEngine: '@prisma/engines/libquery_engine-debian-openssl-1.1.x.so.node'
+		queryEngine: '.prisma/client/libquery_engine-debian-openssl-1.1.x.so.node'
 	},
 	darwin: {
 		migrationEngine: '@prisma/engines/migration-engine-darwin',
-		queryEngine: '@prisma/engines/libquery_engine-darwin.dylib.node'
+		queryEngine: '.prisma/client/libquery_engine-darwin.dylib.node'
+	},
+	darwinArm64: {
+		migrationEngine: '@prisma/engines/migration-engine-darwin-arm64',
+		queryEngine: '.prisma/client/libquery_engine-darwin-arm64.dylib.node'
 	}
 };
 
-const runPrismaMigrate = async (): Promise<number> => {
-	const nodeModulesPath = path.join(cwd, 'node_modules');
+const getPlatformName = () => {
+	const isDarwin = process.platform === 'darwin';
+	if (isDarwin && process.arch === 'arm64') {
+		return process.platform + 'Arm64';
+	}
 
+	return process.platform;
+};
+
+const platformName = getPlatformName();
+const nodeModulesPath = path.join(cwd, 'node_modules');
+const queryEnginePath = path.join(nodeModulesPath, platformToExecutables[platformName].queryEngine);
+
+const runPrismaMigrate = async (): Promise<number> => {
 	const migrationEnginePath = path.join(
 		nodeModulesPath,
-		platformToExecutables[process.platform].migrationEngine
-	);
-
-	const queryEnginePath = path.join(
-		nodeModulesPath,
-		platformToExecutables[process.platform].queryEngine
+		platformToExecutables[platformName].migrationEngine
 	);
 
 	const prismaExecModule = path.join(nodeModulesPath, 'prisma', 'build', 'index.js');
+
+	console.log('\n\n env:', {
+		env: {
+			...env,
+			PRISMA_MIGRATION_ENGINE_BINARY: migrationEnginePath,
+			PRISMA_QUERY_ENGINE_LIBRARY: queryEnginePath
+		}
+	});
+	console.log('\n\n prismaExecModule', prismaExecModule);
 
 	try {
 		const exitCode = await new Promise((resolve, _) => {
@@ -76,7 +95,8 @@ export const validateVaultMigration = async () => {
 
 		// Query each of the models to check if they exist in the vault
 		for (const model of models) {
-			// FIXME: typings fail but line works — https://github.com/prisma/prisma/issues/5273
+			// REF: https://github.com/prisma/prisma/issues/5273
+			// @ts-expect-error "This expression is not callable"
 			await uncachedPrisma[model].count();
 		}
 	} catch (error) {
