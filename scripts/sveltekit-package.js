@@ -69,4 +69,10 @@ rimraf(svelteKitProdPath, () => {
       .filter((filename) => fileToDelete.pattern.test(filename))
       .forEach((file) => unlinkSync(path.join(fileToDelete.path, file)));
   }
+
+  // In Windows Prisma generates cached versions of the engines so we need to delete those as well
+  if (process.platform ==="win32") {
+    rimraf(path.join(svelteKitProdPath, "node_modules", "@prisma", "engines", "node_modules"), () => {})
+  }
 });
+
