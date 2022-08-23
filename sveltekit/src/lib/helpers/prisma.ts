@@ -45,15 +45,6 @@ const runPrismaMigrate = async (): Promise<number> => {
 
 	const prismaExecModule = path.join(nodeModulesPath, 'prisma', 'build', 'index.js');
 
-	console.log('\n\n env:', {
-		env: {
-			...env,
-			PRISMA_MIGRATION_ENGINE_BINARY: migrationEnginePath,
-			PRISMA_QUERY_ENGINE_LIBRARY: queryEnginePath
-		}
-	});
-	console.log('\n\n prismaExecModule', prismaExecModule);
-
 	try {
 		const exitCode = await new Promise((resolve, _) => {
 			const child = fork(prismaExecModule, ['migrate', 'deploy'], {
