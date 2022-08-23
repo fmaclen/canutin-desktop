@@ -5,7 +5,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 
 const cwd = env.SVELTEKIT_PATH ? env.SVELTEKIT_PATH : process.cwd();
 
-const platformToExecutables = {
+const platformToExecutables: any = {
 	win32: {
 		migrationEngine: '@prisma/engines/migration-engine-windows.exe',
 		queryEngine: '.prisma/client/query_engine-windows.dll.node'
@@ -78,7 +78,7 @@ export const validateVaultMigration = async () => {
 	try {
 		const uncachedPrisma = new PrismaClient();
 
-		// Get all the model names in the schema as 'camelCase'
+		// Get all the model names in the schema in 'camelCase'
 		const models = Prisma.dmmf.datamodel.models.map(
 			(model) =>
 				(model.name.charAt(0).toLowerCase() + model.name.slice(1)) as Uncapitalize<Prisma.ModelName>
