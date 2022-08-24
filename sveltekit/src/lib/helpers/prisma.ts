@@ -118,28 +118,39 @@ const runPrismaSeed = async (): Promise<number> => {
 	}
 };
 
-export const validateVaultSeed = async () => {
+export const validateVaultSeed = async (ranTwice = false) => {
 	const uncachedPrisma = new PrismaClient();
 	const accountTypeCount = await uncachedPrisma.accountType.count();
 	const assetTypeCount = await uncachedPrisma.assetType.count();
 	const transactionCategoryCount = await uncachedPrisma.transactionCategory.count();
 	const transactionCategoryGroupCount = await uncachedPrisma.transactionCategoryGroup.count();
 
-	const isSeeded = ![
+	const isSeedable = [
 		accountTypeCount,
 		assetTypeCount,
 		transactionCategoryCount,
 		transactionCategoryGroupCount
 	].includes(0);
 
-	if (!isSeeded) {
+	// If any of these models has seeded data but others don't something is wrong
+	const isIncorrectlySeeded =
+		isSeedable &&
+		(accountTypeCount > 0 ||
+			assetTypeCount > 0 ||
+			transactionCategoryCount > 0 ||
+			transactionCategoryGroupCount > 0);
+
+	if (isIncorrectlySeeded) return false;
+
+	if (isSeedable) {
 		try {
 			await runPrismaSeed();
-			validateVaultSeed();
+			validateVaultSeed(true);
 		} catch {
-			return false;
+			if (ranTwice) return false;
 		}
 	}
+
 	return true;
 };
 

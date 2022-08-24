@@ -54,7 +54,9 @@ test.describe('Transactions', () => {
 		await expect(tableHeaders.nth(4)).not.toHaveClass(/table__sortable--desc/);
 	});
 
-	test('UI is rendered correctly when there are transactions present', async ({
+	// FIXME: need to make transactions deterministic for this test to work
+	// REF https://github.com/Canutin/desktop-2/issues/44
+	test.skip('UI is rendered correctly when there are transactions present', async ({
 		page,
 		baseURL
 	}) => {

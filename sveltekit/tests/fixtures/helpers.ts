@@ -21,6 +21,15 @@ export const databaseSeed = async (baseUrl: string) => {
 	});
 };
 
+export const databaseSetUrl = async (baseUrl: string, dbUrl: string) => {
+	await fetch(
+		`${baseUrl}/devTools.json?functionType=${DeveloperFunctions.DB_SET_URL}&dbUrl=${dbUrl}`,
+		{
+			...methodAndHeaders
+		}
+	);
+};
+
 export const importCanutinFile = async (baseUrl: string, fixtureName: string) => {
 	const canutinFile = fs.readFileSync(`./tests/fixtures/canutinFile-${fixtureName}.json`);
 	await fetch(`${baseUrl}/import.json`, {
