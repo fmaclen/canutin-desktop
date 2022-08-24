@@ -111,7 +111,13 @@ test.describe('Balance sheet', () => {
 		expect(chartPeriod.last()).toHaveClass(/chart__period--january/);
 
 		const seedCashflow = async () => {
-			const prisma = new PrismaClient();
+			const prisma = new PrismaClient({
+				datasources: {
+					db: {
+						url: 'file:../tests/tmp/Canutin.test.vault'
+					}
+				}
+			});
 			await prisma.account.create({
 				data: {
 					name: 'Cashflow Test',

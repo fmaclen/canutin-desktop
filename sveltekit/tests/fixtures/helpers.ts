@@ -10,8 +10,6 @@ const methodAndHeaders = {
 };
 
 export const databaseWipe = async (baseUrl: string) => {
-	process.env.DATABASE_URL = 'file:./Canutin.dev.vault';
-
 	await fetch(`${baseUrl}/devTools.json?functionType=${DeveloperFunctions.DB_WIPE}`, {
 		...methodAndHeaders
 	});

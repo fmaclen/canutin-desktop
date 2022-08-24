@@ -6,5 +6,5 @@ node_modules
 #.env // Prisma generates dependencies from this file
 .env.*
 !.env.example
-/src/lib/tmp/*
-test-results
+/test-results
+/tests/tmp
