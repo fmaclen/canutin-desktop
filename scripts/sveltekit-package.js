@@ -2,40 +2,82 @@
 
 console.info(`\n-> Packaging SvelteKit for production\n`);
 
-const copySync = require("fs-extra").copySync;
-const execSync = require("child_process").execSync;
 const path = require("path");
+const rimraf = require("rimraf");
+const { readdirSync, unlinkSync, copySync } = require("fs-extra");
+const execSync = require("child_process").execSync;
 
-// Copy /sveltekit/build to /resources/sveltekit
-copySync(
-  path.join(__dirname, "..", "sveltekit", "build"),
-  path.join(__dirname, "..", "resources", "sveltekit")
-);
+const svelteKitDevPath = path.join(__dirname, "..", "sveltekit");
+const svelteKitProdPath = path.join(__dirname, "..", "resources", "sveltekit");
 
-// Copy /sveltekit/package.json to /resources/sveltekit
-copySync(
-  path.join(__dirname, "..", "sveltekit", "package.json"),
-  path.join(__dirname, "..", "resources", "sveltekit", "package.json")
-);
+// Remove directory /resources/sveltekit and it's files
+rimraf(svelteKitProdPath, () => {
+  // Copy /sveltekit/build to /resources/sveltekit
+  copySync(path.join(svelteKitDevPath, "build"), svelteKitProdPath);
 
-// Copy /sveltekit/package-lock.json to /resources/sveltekit
-copySync(
-  path.join(__dirname, "..", "sveltekit", "package-lock.json"),
-  path.join(__dirname, "..", "resources", "sveltekit", "package-lock.json")
-);
+  // Copy /sveltekit/package.json to /resources/sveltekit
+  copySync(
+    path.join(svelteKitDevPath, "package.json"),
+    path.join(svelteKitProdPath, "package.json")
+  );
 
-// Install SvelteKit's production dependencies
-execSync("npm ci --prod", {
-  cwd: path.join(__dirname, "..", "resources", "sveltekit"),
-});
+  // Copy /sveltekit/package-lock.json to /resources/sveltekit
+  copySync(
+    path.join(svelteKitDevPath, "package-lock.json"),
+    path.join(svelteKitProdPath, "package-lock.json")
+  );
 
-// Copy Prisma's migrations and schema to /resources/sveltekit
-copySync(
-  path.join(__dirname, "..", "sveltekit", "prisma"),
-  path.join(__dirname, "..", "resources", "sveltekit", "prisma")
-);
+  // Install SvelteKit's production dependencies
+  execSync("npm ci --prod", {
+    cwd: svelteKitProdPath,
+  });
 
-// Install Prisma's production dependencies
-execSync("npx prisma generate", {
-  cwd: path.join(__dirname, "..", "resources", "sveltekit"),
+  // Copy Prisma's migrations and schema to /resources/sveltekit
+  copySync(
+    path.join(svelteKitDevPath, "prisma"),
+    path.join(svelteKitProdPath, "prisma")
+  );
+
+  // Install Prisma's production dependencies
+  execSync("npx prisma generate", {
+    cwd: svelteKitProdPath,
+  });
+
+  // Delete Prisma's unused dependencies
+  const prismaEnginesProdPath = path.join(
+    svelteKitProdPath,
+    "node_modules",
+    "@prisma",
+    "engines"
+  );
+  const filesToDelete = [
+    { path: path.join(svelteKitProdPath, "prisma"), pattern: /[.]vault$/ },
+    {
+      path: path.join(svelteKitProdPath, "node_modules", "prisma"),
+      pattern: /[.]node$/,
+    },
+    {
+      path: prismaEnginesProdPath,
+      pattern: /[.]node$/,
+    },
+    {
+      path: prismaEnginesProdPath,
+      pattern: /introspection-engine/,
+    },
+    {
+      path: prismaEnginesProdPath,
+      pattern: /prisma-fmt/,
+    },
+  ];
+
+  for (const fileToDelete of filesToDelete) {
+    readdirSync(fileToDelete.path)
+      .filter((filename) => fileToDelete.pattern.test(filename))
+      .forEach((file) => unlinkSync(path.join(fileToDelete.path, file)));
+  }
+
+  // Delete the cached engines Prisma generates in Windows
+  if (process.platform === "win32") {
+    rimraf(path.join(prismaEnginesProdPath, "node_modules"), () => {});
+  }
 });

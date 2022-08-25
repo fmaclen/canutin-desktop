@@ -27,22 +27,27 @@ class Server {
     const HOST = "127.0.0.1";
     const isAppPackaged = this.isAppPackaged;
 
-    // Svelte's build with `@adapter-private node`
-    const serverModulePath = isAppPackaged
-      ? path.join(process.resourcesPath, "sveltekit/index.js")
-      : path.join(__dirname, "../../sveltekit/build/index.js");
+    const svelteKitPath = isAppPackaged
+      ? path.join(process.resourcesPath, "sveltekit")
+      : path.join(__dirname, "../../sveltekit");
 
-    const { pid } = fork(serverModulePath, {
+    const svelteKitModulePath = isAppPackaged
+      ? path.join(svelteKitPath, "index.js")
+      : path.join(svelteKitPath, "build", "index.js");
+
+    const svelteKitProcess = fork(svelteKitModulePath, {
       env: {
         ...process.env,
         HOST,
         PORT: this.port,
+        SVELTEKIT_PATH: svelteKitPath,
         DATABASE_URL: `file:${newVaultPath ? newVaultPath : this.vaultPath}`,
+        ELECTRON_SWITCHED_VAULT: "true",
       },
     });
 
     this.isRunning = true;
-    this.pid = pid; // Set process id so we can kill it private later
+    this.pid = svelteKitProcess.pid; // Set process id so we can kill it private later
 
     // Loggin the url to the console in development so it's easier to click
     process.env.NODE_ENV == "development" &&

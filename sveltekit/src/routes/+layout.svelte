@@ -4,6 +4,10 @@
 
 	import logo from '$lib/assets/canutin-iso-logo.svg';
 	import '../app.scss';
+	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
+
+	$: isVaultReady = $isVaultReadyStore;
+	$: pathname = $page.url.pathname;
 </script>
 
 <div class="layout">
@@ -12,28 +16,33 @@
 			<img class="layout__img" src={logo} alt="Canutin logo" />
 		</a>
 		<nav class="layout__nav">
-			<a class="layout__a {$page.url.pathname === '/' && 'layout__a--active'}" href="/"
-				>The big picture</a
+			<a
+				class="layout__a {pathname === '/' && 'layout__a--active'} {!isVaultReady &&
+					'layout__a--disabled'}"
+				href="/">The big picture</a
 			>
 			<a
-				class="layout__a {$page.url.pathname === '/balanceSheet' && 'layout__a--active'}"
+				class="layout__a {pathname === '/balanceSheet' && 'layout__a--active'} {!isVaultReady &&
+					'layout__a--disabled'}"
 				href="/balanceSheet">Balance sheet</a
 			>
 			<a
-				class="layout__a {$page.url.pathname === '/transactions' && 'layout__a--active'}"
+				class="layout__a {pathname === '/transactions' && 'layout__a--active'} {!isVaultReady &&
+					'layout__a--disabled'}"
 				href="/transactions">Transactions</a
 			>
 		</nav>
 
 		<nav class="layout__nav layout__nav--bottom">
 			{#if dev}
-				<a
-					class="layout__a {$page.url.pathname === '/devTools' && 'layout__a--active'}"
-					href="/devTools">Developer tools</a
+				<a class="layout__a {pathname === '/devTools' && 'layout__a--active'}" href="/devTools"
+					>Developer tools</a
 				>
 			{/if}
-			<a class="layout__a {$page.url.pathname === '/import' && 'layout__a--active'}" href="/import"
-				>Import data</a
+			<a
+				class="layout__a {pathname === '/import' && 'layout__a--active'} {!isVaultReady &&
+					'layout__a--disabled'}"
+				href="/import">Import data</a
 			>
 		</nav>
 	</aside>
@@ -110,8 +119,13 @@
 			background-color: var(--color-grey3);
 		}
 
-		&--active {
+		&--active:not(.layout__a--disabled) {
 			color: var(--color-bluePrimary);
+		}
+
+		&--disabled {
+			pointer-events: none;
+			opacity: 0.5;
 		}
 	}
 </style>

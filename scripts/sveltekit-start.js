@@ -3,16 +3,19 @@
 const path = require("path");
 const execSync = require("child_process").execSync;
 
-const pathToDevVault = path.join(
-  __dirname,
-  "..",
-  "sveltekit",
-  "prisma",
-  "Canutin.dev.vault"
-);
+const svelteKitDevPath = path.join(__dirname, "..", "sveltekit");
+const vaultDevPath = path.join(svelteKitDevPath, "prisma", "Canutin.dev.vault");
 
-console.info(`\n-> Running SvelteKit with DATABASE_URL: ${pathToDevVault}\n`);
+console.info(`-> Running SvelteKit`);
+console.info(`   DATABASE_URL: ${vaultDevPath}`);
+console.info(`   ELECTRON_SWITCHED_VAULT: "true"`);
 
-execSync(`cd sveltekit && DATABASE_URL=file:${pathToDevVault} npm run dev`, {
+execSync(`npm run dev`, {
+  cwd: svelteKitDevPath,
+  env: {
+    ...process.env,
+    DATABASE_URL: `file:${vaultDevPath}`,
+    ELECTRON_SWITCHED_VAULT: "true",
+  },
   stdio: "inherit",
 });

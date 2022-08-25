@@ -1,7 +1,5 @@
-import { app, dialog } from "electron";
-import path from "path";
+import { dialog } from "electron";
 import Fs from "fs";
-import { exec } from "child_process";
 import Store from "electron-store";
 
 class Vault {
