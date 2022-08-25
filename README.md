@@ -8,7 +8,7 @@
 
 You'll need to run these commands to set up the environment before getting started.
 
-1. Install all backend dependencies (**Electron, Prisma**)
+1. Install all backend dependencies (**Electron**)
 
 ```bash
 % npm install
