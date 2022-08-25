@@ -1,10 +1,24 @@
 <script lang="ts">
+	import { formatDistance, fromUnixTime } from 'date-fns';
 	import { page } from '$app/stores';
 	import { dev } from '$app/env';
 
 	import logo from '$lib/assets/canutin-iso-logo.svg';
 	import '../app.scss';
+
+	import type { PageData } from './$types';
 	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
+	import StatusBar from '$lib/components/StatusBar.svelte';
+	import { StatusBarAppearance } from '$lib/components/StatusBar';
+
+	export let data: PageData;
+
+	console.log(new Date(data.lastDataUpdate), new Date());
+
+	const defaultStatusMessage = `Data was last updated ${formatDistance(
+		fromUnixTime(data.lastDataUpdate),
+		new Date()
+	)} ago`;
 
 	$: isVaultReady = $isVaultReadyStore;
 	$: pathname = $page.url.pathname;
@@ -19,68 +33,74 @@
 			<a
 				class="layout__a {pathname === '/' && 'layout__a--active'} {!isVaultReady &&
 					'layout__a--disabled'}"
-				href="/">The big picture</a
-			>
+				href="/"
+				>The big picture
+			</a>
 			<a
 				class="layout__a {pathname === '/balanceSheet' && 'layout__a--active'} {!isVaultReady &&
 					'layout__a--disabled'}"
-				href="/balanceSheet">Balance sheet</a
-			>
+				href="/balanceSheet"
+				>Balance sheet
+			</a>
 			<a
 				class="layout__a {pathname === '/transactions' && 'layout__a--active'} {!isVaultReady &&
 					'layout__a--disabled'}"
-				href="/transactions">Transactions</a
-			>
+				href="/transactions"
+				>Transactions
+			</a>
 		</nav>
 
 		<nav class="layout__nav layout__nav--bottom">
 			{#if dev}
 				<a class="layout__a {pathname === '/devTools' && 'layout__a--active'}" href="/devTools"
-					>Developer tools</a
-				>
+					>Developer tools
+				</a>
 			{/if}
 			<a
 				class="layout__a {pathname === '/import' && 'layout__a--active'} {!isVaultReady &&
 					'layout__a--disabled'}"
-				href="/import">Import data</a
-			>
+				href="/import"
+				>Import data
+			</a>
 		</nav>
 	</aside>
-	<slot />
+
+	<div class="layout__main">
+		<slot />
+	</div>
+
+	<footer class="layout__footer">
+		<StatusBar statusMessage={defaultStatusMessage} />
+		<div class="layout__settings">
+			<p class="layout__tag">English</p>
+			<p class="layout__tag">USD</p>
+		</div>
+	</footer>
 </div>
 
 <style lang="scss">
 	div.layout {
 		display: grid;
+		grid-template-rows: auto 48px;
 		grid-template-columns: 240px auto;
-		height: 100%;
+		grid-template-areas:
+			'side-bar body'
+			'side-bar status-bar';
+		height: 100vh;
+		overflow-y: hidden;
 	}
 
 	aside.layout__aside {
 		display: flex;
 		flex-direction: column;
 		row-gap: 16px;
-		min-height: 100vh;
 		background-color: var(--color-white);
 		border-right: 1px solid var(--color-border);
+		grid-area: side-bar;
+	}
 
-		> *:nth-child(1),
-		> *:nth-child(2),
-		> *:last-child {
-			position: sticky;
-		}
-
-		> *:nth-child(1) {
-			top: 0;
-		}
-
-		> *:nth-child(2) {
-			top: 161px;
-		}
-
-		> *:last-child {
-			bottom: 0;
-		}
+	div.layout__main {
+		grid-area: body;
 	}
 
 	a.layout__logo {
@@ -127,5 +147,35 @@
 			pointer-events: none;
 			opacity: 0.5;
 		}
+	}
+
+	footer.layout__footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		grid-area: status-bar;
+		background-color: var(--color-white);
+		border-top: 1px solid var(--color-border);
+		width: 100%;
+	}
+
+	div.layout__settings {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 16px;
+		column-gap: 4px;
+	}
+
+	p.layout__tag {
+		font-family: var(--font-monospace);
+		font-weight: 400;
+		text-transform: uppercase;
+		font-size: 11px;
+		letter-spacing: -0.025em;
+		color: var(--color-grey50);
+		background-color: var(--color-grey7);
+		padding: 6px 8px;
+		border-radius: 4px;
 	}
 </style>

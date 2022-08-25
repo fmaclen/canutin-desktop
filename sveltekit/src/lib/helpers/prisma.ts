@@ -71,6 +71,13 @@ const runPrismaMigrate = async (): Promise<number> => {
 	}
 };
 
+export const getPrismaModelNames = () => {
+	return Prisma.dmmf.datamodel.models.map(
+		(model) =>
+			(model.name.charAt(0).toLowerCase() + model.name.slice(1)) as Uncapitalize<Prisma.ModelName>
+	);
+};
+
 export const validateVaultMigration = async () => {
 	await runPrismaMigrate();
 
@@ -79,10 +86,7 @@ export const validateVaultMigration = async () => {
 		const uncachedPrisma = new PrismaClient();
 
 		// Get all the model names in the schema in 'camelCase'
-		const models = Prisma.dmmf.datamodel.models.map(
-			(model) =>
-				(model.name.charAt(0).toLowerCase() + model.name.slice(1)) as Uncapitalize<Prisma.ModelName>
-		);
+		const models = getPrismaModelNames();
 
 		// Query each of the models to check if they exist in the vault
 		for (const model of models) {
