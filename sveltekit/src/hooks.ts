@@ -8,7 +8,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	const skipRedirectPaths = [
 		'/vault', // Don't redirect when the path is already `/vault`
-		'/devTools' // We use `/devTools` for running tests and don't want to redirect there
+		'/devTools' // We use `/devTools` in tests to bypass the `/vault` logic
 	];
 	const shouldRedirect = !skipRedirectPaths.some((pathName) =>
 		event.url.pathname.includes(pathName)

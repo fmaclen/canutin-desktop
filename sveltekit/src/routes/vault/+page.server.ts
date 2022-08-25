@@ -16,7 +16,7 @@ export const load = async () => {
 
 	const isSeeded = await validateVaultSeed();
 
-	// Can't continue if the vault is not migrated
+	// Can't continue if the vault is not seeded
 	if (!isSeeded)
 		return {
 			vaultPath,
