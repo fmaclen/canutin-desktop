@@ -1,26 +1,13 @@
 <script lang="ts">
-	import { formatDistance, fromUnixTime } from 'date-fns';
 	import { page } from '$app/stores';
 	import { dev } from '$app/env';
 
 	import logo from '$lib/assets/canutin-iso-logo.svg';
 	import '../app.scss';
 
-	import type { PageData } from './$types';
 	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
 	import StatusBar from '$lib/components/StatusBar.svelte';
-	import { StatusBarAppearance } from '$lib/components/StatusBar';
 
-	export let data: PageData;
-
-	console.log(new Date(data.lastDataUpdate), new Date());
-
-	const defaultStatusMessage = `Data was last updated ${formatDistance(
-		fromUnixTime(data.lastDataUpdate),
-		new Date()
-	)} ago`;
-
-	$: isVaultReady = $isVaultReadyStore;
 	$: pathname = $page.url.pathname;
 </script>
 
@@ -31,20 +18,20 @@
 		</a>
 		<nav class="layout__nav">
 			<a
-				class="layout__a {pathname === '/' && 'layout__a--active'} {!isVaultReady &&
+				class="layout__a {pathname === '/' && 'layout__a--active'} {!$isVaultReadyStore &&
 					'layout__a--disabled'}"
 				href="/"
 				>The big picture
 			</a>
 			<a
-				class="layout__a {pathname === '/balanceSheet' && 'layout__a--active'} {!isVaultReady &&
-					'layout__a--disabled'}"
+				class="layout__a {pathname === '/balanceSheet' &&
+					'layout__a--active'} {!$isVaultReadyStore && 'layout__a--disabled'}"
 				href="/balanceSheet"
 				>Balance sheet
 			</a>
 			<a
-				class="layout__a {pathname === '/transactions' && 'layout__a--active'} {!isVaultReady &&
-					'layout__a--disabled'}"
+				class="layout__a {pathname === '/transactions' &&
+					'layout__a--active'} {!$isVaultReadyStore && 'layout__a--disabled'}"
 				href="/transactions"
 				>Transactions
 			</a>
@@ -57,7 +44,7 @@
 				</a>
 			{/if}
 			<a
-				class="layout__a {pathname === '/import' && 'layout__a--active'} {!isVaultReady &&
+				class="layout__a {pathname === '/import' && 'layout__a--active'} {!$isVaultReadyStore &&
 					'layout__a--disabled'}"
 				href="/import"
 				>Import data
@@ -70,10 +57,10 @@
 	</div>
 
 	<footer class="layout__footer">
-		<StatusBar statusMessage={defaultStatusMessage} />
+		<StatusBar />
 		<div class="layout__settings">
 			<p class="layout__tag">English</p>
-			<p class="layout__tag">USD</p>
+			<p class="layout__tag">USD $</p>
 		</div>
 	</footer>
 </div>
@@ -87,7 +74,6 @@
 			'side-bar body'
 			'side-bar status-bar';
 		height: 100vh;
-		overflow-y: hidden;
 	}
 
 	aside.layout__aside {
@@ -97,6 +83,10 @@
 		background-color: var(--color-white);
 		border-right: 1px solid var(--color-border);
 		grid-area: side-bar;
+		position: fixed;
+		height: 100vh;
+		width: 240px;
+		z-index: 2;
 	}
 
 	div.layout__main {
@@ -150,6 +140,9 @@
 	}
 
 	footer.layout__footer {
+		position: sticky;
+		bottom: 0;
+		z-index: 1;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -177,5 +170,6 @@
 		background-color: var(--color-grey7);
 		padding: 6px 8px;
 		border-radius: 4px;
+		width: max-content;
 	}
 </style>

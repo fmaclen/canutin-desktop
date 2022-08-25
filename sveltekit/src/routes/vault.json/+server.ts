@@ -1,8 +1,10 @@
-import { SortOrder } from '$lib/helpers/constants';
-import prisma, { getPrismaModelNames } from '$lib/helpers/prisma';
 import { getUnixTime } from 'date-fns';
+import { json } from '@sveltejs/kit';
 
-export const load = async () => {
+import prisma, { getPrismaModelNames } from '$lib/helpers/prisma';
+import { SortOrder } from '$lib/helpers/constants';
+
+export const GET = async () => {
 	interface ModelRecord {
 		updatedAt: Date;
 	}
@@ -24,7 +26,7 @@ export const load = async () => {
 		return b.updatedAt.getTime() - a.updatedAt.getTime();
 	});
 
-	return {
+	return json({
 		lastDataUpdate: getUnixTime(mostRecentRecords[0].updatedAt)
-	};
+	});
 };

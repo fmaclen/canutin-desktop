@@ -8,7 +8,7 @@
 		border-radius: 4px;
 		font-size: 12px;
 		font-family: var(--font-monospace);
-		background-color: var(--color-whiteSemiTransparent);
+		background-color: var(--color-white-alpha50);
 		text-align: center;
 	}
 </style>

@@ -3,7 +3,7 @@
 	import Section from '$lib/components/Section.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Notice from '$lib/components/Notice.svelte';
-	import { DeveloperFunctions } from '$lib/helpers/constants';
+	import { Appearance, DeveloperFunctions } from '$lib/helpers/constants';
 
 	const title = 'Developer tools';
 	let isSuccesful: boolean = false;
@@ -40,7 +40,7 @@
 		<div slot="CONTENT" class="database">
 			<nav class="nav">
 				<Button on:click={databaseSeed}>Seed demo data</Button>
-				<Button on:click={databaseWipe} isNegative={true}>Delete all data</Button>
+				<Button on:click={databaseWipe} appearance={Appearance.NEGATIVE}>Delete all data</Button>
 			</nav>
 
 			{#if isSuccesful}

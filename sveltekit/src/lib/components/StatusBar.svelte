@@ -1,20 +1,61 @@
 <script lang="ts">
-	import type { StatusBarAppearance } from './StatusBar';
+	import { formatDistance, fromUnixTime } from 'date-fns';
+	import { onMount } from 'svelte';
 
-	export let statusMessage: string;
-	export let appearance: StatusBarAppearance | null = null;
+	import Button from './Button.svelte';
+	import statusBarStore from '$lib/stores/statusBarStore';
+	import { Appearance } from '$lib/helpers/constants';
+
+	const getLastUpdatedDate = async () => {
+		const response = await fetch(`/vault.json`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+		const data = await response.json();
+
+		$statusBarStore = {
+			message: `Data was last updated ${formatDistance(
+				fromUnixTime(data.lastDataUpdate),
+				new Date(),
+				{ includeSeconds: true, addSuffix: true }
+			)}`,
+			appearance: null
+		};
+	};
+
+	// Update status bar message every 5 minutes (unless there was an error)
+	setTimeout(async () => {
+		if ($statusBarStore.appearance !== Appearance.NEGATIVE) {
+			await getLastUpdatedDate();
+		}
+	}, 300000);
+
+	// Set the default status bar message when layout is mounted
+	onMount(async () => {
+		await getLastUpdatedDate();
+	});
+
+	$: message = $statusBarStore.message ? $statusBarStore.message : 'Reading vault data...';
+	$: appearance = $statusBarStore.appearance;
 </script>
 
 <div class="statusBar {appearance && `statusBar--${appearance}`}">
 	<p class="statusBar__p">
-		{statusMessage}
+		{message}
 	</p>
+
+	{#if appearance}
+		<Button on:click={getLastUpdatedDate}>Dismiss</Button>
+	{/if}
 </div>
 
 <style lang="scss">
 	div.statusBar {
 		display: flex;
 		align-items: center;
+		justify-content: space-between;
 		padding: 0 16px;
 		width: 100%;
 		height: 100%;
