@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { dev } from '$app/env';
+	import type { PageData } from './$types';
 
 	import logo from '$lib/assets/canutin-iso-logo.svg';
 	import '../app.scss';
@@ -8,6 +9,7 @@
 	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
 	import StatusBar from '$lib/components/StatusBar.svelte';
 
+	export let data: PageData;
 	$: pathname = $page.url.pathname;
 </script>
 
@@ -67,7 +69,7 @@
 		<div class="layout__settings">
 			<p class="layout__tag">USD $</p>
 			<p class="layout__tag">English</p>
-			<!-- <p class="layout__tag">0.0.1</p> -->
+			<p class="layout__tag">{data.appVersion}</p>
 		</div>
 	</footer>
 </div>

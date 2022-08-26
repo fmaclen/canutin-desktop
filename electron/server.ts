@@ -26,6 +26,7 @@ class Server {
   start(newVaultPath?: string) {
     const HOST = "127.0.0.1";
     const isAppPackaged = this.isAppPackaged;
+    const isDev = process.env.NODE_ENV == "development";
 
     const svelteKitPath = isAppPackaged
       ? path.join(process.resourcesPath, "sveltekit")
@@ -43,6 +44,9 @@ class Server {
         SVELTEKIT_PATH: svelteKitPath,
         DATABASE_URL: `file:${newVaultPath ? newVaultPath : this.vaultPath}`,
         ELECTRON_SWITCHED_VAULT: "true",
+        APP_VERSION: isDev
+          ? require("../package.json").version
+          : app.getVersion(),
       },
     });
 
@@ -50,8 +54,7 @@ class Server {
     this.pid = svelteKitProcess.pid; // Set process id so we can kill it private later
 
     // Loggin the url to the console in development so it's easier to click
-    process.env.NODE_ENV == "development" &&
-      console.info(`\n-> Server started at ${this.url}\n`);
+    isDev && console.info(`\n-> Server started at ${this.url}\n`);
   }
 
   stop() {
