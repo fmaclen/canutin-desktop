@@ -29,4 +29,12 @@ test.describe('Layout', () => {
 		await expect(sidebarImportData).toHaveClass(/layout__a--active/);
 		await expect(sidebarBalanceSheet).not.toHaveClass(/layout__a--active/);
 	});
+
+	test('Default settings are rendered correctly', async ({ page }) => {
+		await page.goto('/');
+		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
+		await expect(page.locator('p.layout__tag', { hasText: 'USD $' })).toBeVisible();
+		await expect(page.locator('p.layout__tag', { hasText: 'English' })).toBeVisible();
+		await expect(page.locator('p.layout__tag', { hasText: '0.0.0' })).toBeVisible();
+	});
 });
