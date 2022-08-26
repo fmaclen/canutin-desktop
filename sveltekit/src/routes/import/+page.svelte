@@ -51,7 +51,7 @@
 			// Update the loading state
 			isLoading = false;
 			$statusBarStore = {
-				message: importSummary?.error ? importSummary.error : 'Import was succesful',
+				message: importSummary?.error ? importSummary.error : 'Import was successful',
 				appearance: importSummary?.error ? Appearance.NEGATIVE : Appearance.POSITIVE
 			};
 		};
@@ -265,6 +265,7 @@
 		display: grid;
 		grid-auto-flow: column;
 		column-gap: 64px;
+		width: 100%;
 	}
 
 	div.importStatus__model {
