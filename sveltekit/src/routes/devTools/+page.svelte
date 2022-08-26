@@ -3,10 +3,13 @@
 	import Section from '$lib/components/Section.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Notice from '$lib/components/Notice.svelte';
-	import { DeveloperFunctions } from '$lib/helpers/constants';
+	import Code from '$lib/components/Code.svelte';
+	import { Appearance, DeveloperFunctions } from '$lib/helpers/constants';
+	import type { PageData } from '.svelte-kit/types/src/routes/$types';
 
 	const title = 'Developer tools';
 	let isSuccesful: boolean = false;
+	export let data: PageData;
 
 	const databaseSeed = async () => {
 		await fetch(`/devTools.json?functionType=${DeveloperFunctions.DB_SEED}`, {
@@ -38,9 +41,11 @@
 <ScrollView {title}>
 	<Section title="Database">
 		<div slot="CONTENT" class="database">
+			<Notice><Code>{data.dbUrl}</Code></Notice>
+
 			<nav class="nav">
 				<Button on:click={databaseSeed}>Seed demo data</Button>
-				<Button on:click={databaseWipe} isNegative={true}>Delete all data</Button>
+				<Button on:click={databaseWipe} appearance={Appearance.NEGATIVE}>Delete all data</Button>
 			</nav>
 
 			{#if isSuccesful}

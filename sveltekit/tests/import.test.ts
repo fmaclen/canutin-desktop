@@ -23,7 +23,9 @@ test.describe('Import data', () => {
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
 
-		expect(await page.textContent('p.notice--error')).toBe('The CanutinFile provided is invalid');
+		expect(await page.locator('.statusBar--negative').textContent()).toMatch(
+			'The CanutinFile provided is invalid'
+		);
 		expect(await importStatus.count()).toBe(0);
 
 		// Import some data
@@ -32,7 +34,21 @@ test.describe('Import data', () => {
 			'./tests/fixtures/canutinFile-minimum-data.json'
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
-		expect(await page.$('p.notice--error')).toBeNull();
+		const statusBar = page.locator('.statusBar');
+		await expect(statusBar).not.toHaveClass(/statusBar--negative/);
+		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		expect(await statusBar.textContent()).toMatch('Import was successful');
+
+		// The successful notice can be dismissed
+		const dismissButton = page.locator('.button', { hasText: 'Dismiss' });
+		expect(dismissButton).toBeVisible();
+
+		await dismissButton.click();
+		expect(dismissButton).not.toBeVisible();
+		await expect(statusBar).not.toHaveClass(/statusBar--negative/);
+		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
+		expect(await statusBar.textContent()).not.toMatch('Import was successful');
+		expect(await statusBar.textContent()).toMatch('Data was last updated less than 5 seconds ago');
 
 		let importStatusSection = page.locator('data-test-id=accounts-import-summary');
 		expect(await importStatusSection.textContent()).toMatch('Created 1');
@@ -70,7 +86,7 @@ test.describe('Import data', () => {
 			'./tests/fixtures/canutinFile-maximum-data.json'
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
-		expect(await page.$('p.notice--error')).toBeNull();
+		await expect(statusBar).not.toHaveClass(/statusBar--negative/);
 
 		importStatusSection = page.locator('data-test-id=accounts-import-summary');
 		expect(await importStatusSection.textContent()).toMatch('Created 1');
@@ -130,7 +146,7 @@ test.describe('Import data', () => {
 			'./tests/fixtures/canutinFile-only-accounts.json'
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
-		expect(await page.$('p.notice--error')).toBeNull();
+		await expect(page.locator('.statusBar')).not.toHaveClass(/statusBar--negative/);
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
 		expect(await page.textContent('.card__value--netWorth')).toBe('$849');
@@ -141,7 +157,7 @@ test.describe('Import data', () => {
 		await page.locator('a', { hasText: 'Import data' }).click();
 		await page.setInputFiles('input[type="file"]', './tests/fixtures/canutinFile-only-assets.json');
 		await page.locator('button', { hasText: 'Upload' }).click();
-		expect(await page.$('p.notice--error')).toBeNull();
+		await expect(page.locator('.statusBar')).not.toHaveClass(/statusBar--negative/);
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
 		expect(await page.textContent('.card__value--netWorth')).toBe('$75,991');

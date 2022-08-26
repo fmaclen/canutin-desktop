@@ -33,3 +33,9 @@ export enum DeveloperFunctions {
 	DB_SEED,
 	DB_SET_URL
 }
+
+export enum Appearance {
+	ACTIVE = 'active',
+	POSITIVE = 'positive',
+	NEGATIVE = 'negative'
+}

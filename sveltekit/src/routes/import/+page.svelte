@@ -8,7 +8,9 @@
 	import Notice from '$lib/components/Notice.svelte';
 	import Code from '$lib/components/Code.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
+	import statusBarStore from '$lib/stores/statusBarStore';
 	import { CardAppearance } from '$lib/components/Card';
+	import { Appearance } from '$lib/helpers/constants';
 	import type { ImportSummary } from '../import.json/+server';
 
 	const title = 'Import data';
@@ -27,7 +29,13 @@
 			return;
 		}
 
+		// Set the loading state
 		isLoading = true;
+		$statusBarStore = {
+			message: 'Processing import...',
+			appearance: Appearance.ACTIVE
+		};
+
 		const reader = new FileReader();
 		reader.onload = async (event: ProgressEvent<FileReader>) => {
 			const canutinFile = JSON.parse(event?.target?.result as string);
@@ -39,7 +47,13 @@
 				body: JSON.stringify(canutinFile)
 			});
 			importSummary = await response.json();
+
+			// Update the loading state
 			isLoading = false;
+			$statusBarStore = {
+				message: importSummary?.error ? importSummary.error : 'Import was successful',
+				appearance: importSummary?.error ? Appearance.NEGATIVE : Appearance.POSITIVE
+			};
 		};
 
 		reader.readAsText(chosenFile);
@@ -71,17 +85,9 @@
 					</div>
 				</fieldset>
 				<footer class="form__footer">
-					<Button>Upload</Button>
+					<Button appearance={Appearance.ACTIVE}>Upload</Button>
 				</footer>
 			</form>
-
-			{#if isLoading}
-				<Notice>Processing import...</Notice>
-			{/if}
-
-			{#if error}
-				<Notice isError={true}>{error}</Notice>
-			{/if}
 		</div>
 	</Section>
 
@@ -259,6 +265,7 @@
 		display: grid;
 		grid-auto-flow: column;
 		column-gap: 64px;
+		width: 100%;
 	}
 
 	div.importStatus__model {

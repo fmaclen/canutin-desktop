@@ -16,7 +16,7 @@
 	<title>{title}</title>
 </svelte:head>
 
-<ScrollView {title}>
+<ScrollView {title} isFullscreen={true}>
 	<Section title="Error">
 		<div slot="CONTENT">
 			<Notice isError={true}>

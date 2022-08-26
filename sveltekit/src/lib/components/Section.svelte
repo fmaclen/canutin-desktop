@@ -18,6 +18,7 @@
 		display: flex;
 		flex-direction: column;
 		row-gap: 12px;
+		width: 100%;
 	}
 
 	header.section__header {

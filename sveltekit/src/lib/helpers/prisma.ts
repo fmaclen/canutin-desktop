@@ -71,18 +71,23 @@ const runPrismaMigrate = async (): Promise<number> => {
 	}
 };
 
+export const getPrismaModelNames = () => {
+	return Prisma.dmmf.datamodel.models.map(
+		(model) =>
+			(model.name.charAt(0).toLowerCase() + model.name.slice(1)) as Uncapitalize<Prisma.ModelName>
+	);
+};
+
 export const validateVaultMigration = async () => {
 	await runPrismaMigrate();
 
+	// PrismaClient seems to cache results so we need to instantiate a new client
+	const uncachedPrisma = new PrismaClient();
+
 	// Check all the tables are migrated correctly
 	try {
-		const uncachedPrisma = new PrismaClient();
-
 		// Get all the model names in the schema in 'camelCase'
-		const models = Prisma.dmmf.datamodel.models.map(
-			(model) =>
-				(model.name.charAt(0).toLowerCase() + model.name.slice(1)) as Uncapitalize<Prisma.ModelName>
-		);
+		const models = getPrismaModelNames();
 
 		// Query each of the models to check if they exist in the vault
 		for (const model of models) {
@@ -90,7 +95,9 @@ export const validateVaultMigration = async () => {
 			// @ts-expect-error "This expression is not callable"
 			await uncachedPrisma[model].count();
 		}
+		uncachedPrisma.$disconnect();
 	} catch (error) {
+		uncachedPrisma.$disconnect();
 		console.error(error);
 		return false;
 	}
@@ -124,6 +131,7 @@ export const validateVaultSeed = async (ranTwice = false) => {
 	const assetTypeCount = await uncachedPrisma.assetType.count();
 	const transactionCategoryCount = await uncachedPrisma.transactionCategory.count();
 	const transactionCategoryGroupCount = await uncachedPrisma.transactionCategoryGroup.count();
+	uncachedPrisma.$disconnect();
 
 	const isSeedable = [
 		accountTypeCount,
