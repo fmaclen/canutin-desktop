@@ -38,7 +38,7 @@
 		$isVaultReadyStore && (await getLastUpdatedDate());
 	});
 
-	$: ({ message, appearance, isDismissable } = $statusBarStore);
+	$: ({ message, appearance } = $statusBarStore);
 
 	message = message ? message : 'Reading vault data...';
 </script>
@@ -48,7 +48,7 @@
 		{message}
 	</p>
 
-	{#if appearance && isDismissable}
+	{#if appearance && appearance !== Appearance.NEGATIVE}
 		<Button on:click={getLastUpdatedDate}>Dismiss</Button>
 	{/if}
 </div>

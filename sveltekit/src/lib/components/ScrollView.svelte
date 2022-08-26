@@ -51,13 +51,6 @@
 
 		&--fullscreen {
 			height: 100%;
-			background: linear-gradient(
-				270deg,
-				#f2f2f2 0%,
-				rgba(0, 0, 0, 0) 25%,
-				rgba(0, 0, 0, 0) 75%,
-				#f2f2f2 100%
-			);
 		}
 	}
 </style>
