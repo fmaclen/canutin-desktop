@@ -2,7 +2,6 @@ import path from 'path';
 import { fork } from 'child_process';
 import { env } from '$env/dynamic/private';
 import { Prisma, PrismaClient } from '@prisma/client';
-import { dev } from '$app/env';
 
 const cwd = env.SVELTEKIT_PATH ? env.SVELTEKIT_PATH : process.cwd();
 
