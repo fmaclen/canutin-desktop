@@ -8,7 +8,7 @@
 		<h1 class="scrollView__h1">{title}</h1>
 	</header>
 
-	<div class="scrollView__container {isFullscreen && 'scrollView__container--wizard'}">
+	<div class="scrollView__container {isFullscreen && 'scrollView__container--fullscreen'}">
 		<slot />
 	</div>
 </main>
@@ -49,7 +49,7 @@
 		grid-gap: 64px;
 		place-items: center;
 
-		&--wizard {
+		&--fullscreen {
 			height: 100%;
 			background: linear-gradient(
 				270deg,
