@@ -2,6 +2,7 @@ import path from 'path';
 import { fork } from 'child_process';
 import { env } from '$env/dynamic/private';
 import { Prisma, PrismaClient } from '@prisma/client';
+import { dev } from '$app/env';
 
 const cwd = env.SVELTEKIT_PATH ? env.SVELTEKIT_PATH : process.cwd();
 
@@ -81,10 +82,11 @@ export const getPrismaModelNames = () => {
 export const validateVaultMigration = async () => {
 	await runPrismaMigrate();
 
+	// PrismaClient seems to cache results so we need to instantiate a new client
+	const uncachedPrisma = new PrismaClient();
+
 	// Check all the tables are migrated correctly
 	try {
-		const uncachedPrisma = new PrismaClient();
-
 		// Get all the model names in the schema in 'camelCase'
 		const models = getPrismaModelNames();
 
@@ -94,7 +96,9 @@ export const validateVaultMigration = async () => {
 			// @ts-expect-error "This expression is not callable"
 			await uncachedPrisma[model].count();
 		}
+		uncachedPrisma.$disconnect();
 	} catch (error) {
+		uncachedPrisma.$disconnect();
 		console.error(error);
 		return false;
 	}
@@ -128,6 +132,7 @@ export const validateVaultSeed = async (ranTwice = false) => {
 	const assetTypeCount = await uncachedPrisma.assetType.count();
 	const transactionCategoryCount = await uncachedPrisma.transactionCategory.count();
 	const transactionCategoryGroupCount = await uncachedPrisma.transactionCategoryGroup.count();
+	uncachedPrisma.$disconnect();
 
 	const isSeedable = [
 		accountTypeCount,

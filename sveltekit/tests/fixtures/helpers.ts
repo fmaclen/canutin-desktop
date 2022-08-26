@@ -1,3 +1,4 @@
+import path from 'path';
 import fs from 'fs';
 import fetch from 'node-fetch';
 import { DeveloperFunctions } from '../../src/lib/helpers/constants.js';
@@ -31,7 +32,9 @@ export const databaseSetUrl = async (baseUrl: string, dbUrl: string) => {
 };
 
 export const importCanutinFile = async (baseUrl: string, fixtureName: string) => {
-	const canutinFile = fs.readFileSync(`./tests/fixtures/canutinFile-${fixtureName}.json`);
+	const canutinFile = fs.readFileSync(
+		path.join(process.cwd(), 'tests', 'fixtures', `canutinFile-${fixtureName}.json`)
+	);
 	await fetch(`${baseUrl}/import.json`, {
 		body: canutinFile,
 		...methodAndHeaders

@@ -1,10 +1,14 @@
 import { getUnixTime } from 'date-fns';
 import { json } from '@sveltejs/kit';
 
-import prisma, { getPrismaModelNames } from '$lib/helpers/prisma';
+import { getPrismaModelNames } from '$lib/helpers/prisma';
 import { SortOrder } from '$lib/helpers/constants';
+import { PrismaClient } from '@prisma/client';
 
 export const GET = async () => {
+	// PrismaClient seems to cache results so we need to instantiate a new client
+	const uncachedPrisma = new PrismaClient();
+
 	interface ModelRecord {
 		updatedAt: Date;
 	}
@@ -12,14 +16,18 @@ export const GET = async () => {
 	const models = getPrismaModelNames();
 
 	// Query each of the models and get the most recent record
-	const mostRecentRecords: ModelRecord[] = [];
+	let mostRecentRecords: ModelRecord[] = [];
 	for (const model of models) {
 		mostRecentRecords.push(
 			// REF: https://github.com/prisma/prisma/issues/5273
 			// @ts-expect-error "This expression is not callable"
-			await prisma[model].findFirst({ orderBy: { updatedAt: SortOrder.DESC } })
+			await uncachedPrisma[model].findFirst({ orderBy: { updatedAt: SortOrder.DESC } })
 		);
 	}
+	uncachedPrisma.$disconnect();
+
+	// Some queries might return `null` so we need to remove them
+	mostRecentRecords = mostRecentRecords.filter((record) => record !== null);
 
 	// Sort mostRecentRecords by `updatedAt`
 	mostRecentRecords.sort((a, b) => {
