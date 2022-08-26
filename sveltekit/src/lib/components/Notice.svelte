@@ -6,16 +6,14 @@
 
 <style lang="scss">
 	p.notice {
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		text-align: center;
+		line-height: 1.25em;
 		font-size: 12px;
 		padding: 32px;
 		margin: 0;
 		border-radius: 4px;
 		color: var(--color-grey50);
 		background-color: var(--color-border);
-		flex-wrap: wrap;
 
 		&--error {
 			color: var(--color-redPrimary);

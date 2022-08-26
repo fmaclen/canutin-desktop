@@ -5,6 +5,7 @@
 	import Button from './Button.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import { Appearance } from '$lib/helpers/constants';
+	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
 
 	const getLastUpdatedDate = async () => {
 		const response = await fetch(`/vault.json`, {
@@ -23,22 +24,23 @@
 			)}`,
 			appearance: null
 		};
-	};
 
-	// Update status bar message every 5 minutes (unless there was an error)
-	setTimeout(async () => {
-		if ($statusBarStore.appearance !== Appearance.NEGATIVE) {
-			await getLastUpdatedDate();
-		}
-	}, 300000);
+		// Update status bar message every 5 minutes (unless there was an error)
+		setTimeout(async () => {
+			if ($statusBarStore.appearance !== Appearance.NEGATIVE) {
+				await getLastUpdatedDate();
+			}
+		}, 300000);
+	};
 
 	// Set the default status bar message when layout is mounted
 	onMount(async () => {
-		await getLastUpdatedDate();
+		$isVaultReadyStore && (await getLastUpdatedDate());
 	});
 
-	$: message = $statusBarStore.message ? $statusBarStore.message : 'Reading vault data...';
-	$: appearance = $statusBarStore.appearance;
+	$: ({ message, appearance, isDismissable } = $statusBarStore);
+
+	message = message ? message : 'Reading vault data...';
 </script>
 
 <div class="statusBar {appearance && `statusBar--${appearance}`}">
@@ -46,7 +48,7 @@
 		{message}
 	</p>
 
-	{#if appearance}
+	{#if appearance && isDismissable}
 		<Button on:click={getLastUpdatedDate}>Dismiss</Button>
 	{/if}
 </div>

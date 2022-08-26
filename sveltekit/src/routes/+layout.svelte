@@ -39,28 +39,35 @@
 
 		<nav class="layout__nav layout__nav--bottom">
 			{#if dev}
-				<a class="layout__a {pathname === '/devTools' && 'layout__a--active'}" href="/devTools"
-					>Developer tools
-				</a>
+				<nav class="layout__nav">
+					<!-- <a class="layout__a {pathname === '/settings' && 'layout__a--active'}" href="/settings"
+						>Settings
+					</a> -->
+					<a
+						class="layout__a {!$isVaultReadyStore && 'layout__a--disabled'} {pathname ===
+							'/devTools' && 'layout__a--active'}"
+						href="/devTools"
+						>Developer tools
+					</a>
+				</nav>
 			{/if}
 			<a
-				class="layout__a {pathname === '/import' && 'layout__a--active'} {!$isVaultReadyStore &&
-					'layout__a--disabled'}"
+				class="layout__a layout__a--primary {pathname === '/import' &&
+					'layout__a--active'} {!$isVaultReadyStore && 'layout__a--disabled'}"
 				href="/import"
 				>Import data
 			</a>
 		</nav>
 	</aside>
 
-	<div class="layout__main">
-		<slot />
-	</div>
+	<slot />
 
 	<footer class="layout__footer">
 		<StatusBar />
 		<div class="layout__settings">
-			<p class="layout__tag">English</p>
 			<p class="layout__tag">USD $</p>
+			<p class="layout__tag">English</p>
+			<p class="layout__tag">0.0.1</p>
 		</div>
 	</footer>
 </div>
@@ -74,6 +81,7 @@
 			'side-bar body'
 			'side-bar status-bar';
 		height: 100vh;
+		overflow-y: hidden;
 	}
 
 	aside.layout__aside {
@@ -82,15 +90,9 @@
 		row-gap: 16px;
 		background-color: var(--color-white);
 		border-right: 1px solid var(--color-border);
-		grid-area: side-bar;
-		position: fixed;
-		height: 100vh;
-		width: 240px;
-		z-index: 2;
-	}
+		height: 100%;
 
-	div.layout__main {
-		grid-area: body;
+		grid-area: side-bar;
 	}
 
 	a.layout__logo {
@@ -115,6 +117,7 @@
 
 		&--bottom {
 			margin-top: auto;
+			row-gap: 16px;
 		}
 	}
 
@@ -135,7 +138,13 @@
 
 		&--disabled {
 			pointer-events: none;
-			opacity: 0.5;
+			color: var(--color-grey20);
+		}
+
+		&--primary {
+			height: 48px;
+			box-sizing: border-box;
+			border-top: 1px solid var(--color-border);
 		}
 	}
 
@@ -146,10 +155,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		grid-area: status-bar;
 		background-color: var(--color-white);
 		border-top: 1px solid var(--color-border);
 		width: 100%;
+
+		grid-area: status-bar;
 	}
 
 	div.layout__settings {
