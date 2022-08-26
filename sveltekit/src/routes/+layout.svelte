@@ -67,7 +67,7 @@
 		<div class="layout__settings">
 			<p class="layout__tag">USD $</p>
 			<p class="layout__tag">English</p>
-			<p class="layout__tag">0.0.1</p>
+			<!-- <p class="layout__tag">0.0.1</p> -->
 		</div>
 	</footer>
 </div>
