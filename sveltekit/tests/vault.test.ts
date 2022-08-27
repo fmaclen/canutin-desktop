@@ -12,7 +12,7 @@ test.describe('Vault', () => {
 		await databaseSetUrl(baseURL!, `file:${canutinTestVaultPath}`);
 	});
 
-	test('new vault is created, migrated and seeded', async ({ page, baseURL }) => {
+	test('New vault is created, migrated and seeded', async ({ page, baseURL }) => {
 		const newVaultPath = path.join(testsPath, 'tmp', 'New.test.vault');
 
 		if (fs.existsSync(newVaultPath)) fs.unlinkSync(newVaultPath);
@@ -32,7 +32,7 @@ test.describe('Vault', () => {
 		expect(fs.existsSync(newVaultPath)).toBe(true);
 	});
 
-	test("invalid vaults can't be migrated", async ({ page, baseURL }) => {
+	test("Invalid vaults can't be migrated", async ({ page, baseURL }) => {
 		const umigratableVaultPath = path.join(testsPath, 'fixtures', 'Unmigratable.vault.test');
 
 		await databaseSetUrl(baseURL!, `file:${umigratableVaultPath}`);
@@ -45,7 +45,7 @@ test.describe('Vault', () => {
 		await expect(page.locator('.layout__a').first()).toHaveClass(/layout__a--disabled/);
 	});
 
-	test("invalid vaults can't be seeded", async ({ page, baseURL }) => {
+	test("Invalid vaults can't be seeded", async ({ page, baseURL }) => {
 		const unseedableVaultPath = path.join(testsPath, 'fixtures', 'Unseedable.vault.test');
 
 		await databaseSetUrl(baseURL!, `file:${unseedableVaultPath}`);

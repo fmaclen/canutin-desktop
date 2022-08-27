@@ -5,11 +5,26 @@
 	import Notice from '$lib/components/Notice.svelte';
 	import Code from '$lib/components/Code.svelte';
 	import { Appearance, DeveloperFunctions } from '$lib/helpers/constants';
-	import type { PageData } from '.svelte-kit/types/src/routes/$types';
+	import type { PageData } from './$types';
+	import statusBarStore from '$lib/stores/statusBarStore';
 
 	const title = 'Developer tools';
-	let isSuccesful: boolean = false;
+
 	export let data: PageData;
+
+	const setStatusSuccess = () => {
+		$statusBarStore = {
+			message: 'Database action was performed (likely without errors)',
+			appearance: Appearance.POSITIVE
+		};
+	};
+
+	const setStatusError = () => {
+		$statusBarStore = {
+			message: "Something went wrong and the action likely wasn't performed",
+			appearance: Appearance.NEGATIVE
+		};
+	};
 
 	const databaseSeed = async () => {
 		await fetch(`/devTools.json?functionType=${DeveloperFunctions.DB_SEED}`, {
@@ -18,7 +33,7 @@
 				'Content-Type': 'application/json'
 			}
 		}).then((response) => {
-			isSuccesful = response.ok;
+			response.ok ? setStatusSuccess() : setStatusError();
 		});
 	};
 
@@ -29,7 +44,7 @@
 				'Content-Type': 'application/json'
 			}
 		}).then((response) => {
-			isSuccesful = response.ok;
+			response.ok ? setStatusSuccess() : setStatusError();
 		});
 	};
 </script>
@@ -47,10 +62,6 @@
 				<Button on:click={databaseSeed}>Seed demo data</Button>
 				<Button on:click={databaseWipe} appearance={Appearance.NEGATIVE}>Delete all data</Button>
 			</nav>
-
-			{#if isSuccesful}
-				<Notice>Database action was performed (likely without errors)</Notice>
-			{/if}
 		</div>
 	</Section>
 </ScrollView>
