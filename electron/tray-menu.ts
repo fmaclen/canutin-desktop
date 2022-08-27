@@ -6,6 +6,7 @@ import {
   MenuItemConstructorOptions,
   shell,
   Tray,
+  nativeTheme,
 } from "electron";
 
 import Vault from "./vault";
@@ -20,16 +21,19 @@ class TrayMenu {
   static readonly MENU_VAULT_PATH = "menu-vault-path";
   static readonly MENU_VAULT_OPEN = "menu-vault-open";
 
+  static readonly ICON_TRAY_LOOP_DURATION = 1200;
   static readonly ICON_TRAY_IDLE = "canutin-tray-idle";
   static readonly ICON_TRAY_ACTIVE = "canutin-tray-active";
   static readonly ICON_STATUS_POSITIVE = "status-positive";
   static readonly ICON_STATUS_NEGATIVE = "status-negative";
 
   private isServerRunning: boolean;
+  private isAppBusy: boolean;
   private isAppPackaged: boolean;
   private isMacOs: boolean;
 
   private tray: Tray;
+  private trayIcon: string;
   private vault: Vault;
   server: Server | undefined;
 
@@ -45,6 +49,7 @@ class TrayMenu {
   constructor(vault: Vault) {
     this.vault = vault;
     this.isServerRunning = false;
+    this.isAppBusy = true;
     this.isAppPackaged = app.isPackaged || false;
     this.isMacOs = process.platform === "darwin";
 
@@ -117,6 +122,15 @@ class TrayMenu {
     this.tray.setToolTip("Canutin");
     this.tray.setContextMenu(Menu.buildFromTemplate(this.menuCurrentTemplate));
 
+    // Intilialize the tray icon animation
+    this.setTrayIconBusy();
+
+    // Update the tray menu if the OS color theme changes
+    nativeTheme.on("updated", () => {
+      this.setTrayIcon(this.trayIcon);
+    });
+
+    // Start the server
     if (this.vault?.path) {
       this.toggleServer();
       this.isAppPackaged && this.openBrowser(TrayMenu.OPEN_BROWSER_DELAY);
@@ -143,6 +157,7 @@ class TrayMenu {
   };
 
   private toggleServer = () => {
+    this.isAppBusy = true;
     const vaultPath = this.vault?.path;
 
     if (!this.server && vaultPath) this.server = new Server(vaultPath);
@@ -150,27 +165,46 @@ class TrayMenu {
     if (this.server && this.isServerRunning) {
       // Stop the server
       this.server.stop();
-      this.tray.setImage(this.getImagePath("canutin-tray-idle"));
       this.menuServerToggle.label = "Start Canutin";
       this.menuServerStatus.label = "Canutin is not running";
-      this.menuServerStatus.icon = this.getImagePath("status-negative");
+      this.menuServerStatus.icon = this.getImagePath(
+        TrayMenu.ICON_STATUS_NEGATIVE
+      );
       this.menuOpenInBrowser.visible = false;
       this.updateTray();
+
+      // FIXME: remove setTimeout and instead check if the server is still listening to requests
+      // REF: https://github.com/Canutin/desktop-2/issues/8
+      setTimeout(() => {
+        // Runs one loop of the tray icon animation before switching to `ICON_TRAY_IDLE`
+        this.isAppBusy = false;
+        this.setTrayIcon(TrayMenu.ICON_TRAY_IDLE);
+      }, TrayMenu.ICON_TRAY_LOOP_DURATION);
     } else if (this.server) {
       // Start the server
       this.server.start(vaultPath);
-      this.tray.setImage(this.getImagePath("canutin-tray-active"));
       this.menuServerToggle.visible = true;
       this.menuServerToggle.label = "Stop Canutin";
       this.menuServerStatus.label = "Canutin is running";
-      this.menuServerStatus.icon = this.getImagePath("status-positive");
+      this.menuServerStatus.icon = this.getImagePath(
+        TrayMenu.ICON_STATUS_POSITIVE
+      );
       this.menuOpenInBrowser.visible = true;
       this.updateTray();
+
+      // FIXME: remove setTimeout and instead check if the server is still listening to requests
+      // REF: https://github.com/Canutin/desktop-2/issues/8
+      setTimeout(() => {
+        // Runs one loop of the tray icon animation before switching to `ICON_TRAY_ACTIVE`
+        this.isAppBusy = false;
+        this.setTrayIcon(TrayMenu.ICON_TRAY_ACTIVE);
+      }, TrayMenu.ICON_TRAY_LOOP_DURATION);
     }
 
     // FIXME:
     // It would be better to check if the server is actually running (or not)
     // instead of blindingly reversing the vaule of `isServerRunning`.
+    // REF: https://github.com/Canutin/desktop-2/issues/8
     this.isServerRunning = !this.isServerRunning;
   };
 
@@ -188,10 +222,55 @@ class TrayMenu {
   }
 
   private getImagePath(fileName: string) {
+    const themeAgnosticIcons = [
+      TrayMenu.ICON_STATUS_POSITIVE,
+      TrayMenu.ICON_STATUS_NEGATIVE,
+    ];
+
+    let theme: string;
+    if (themeAgnosticIcons.includes(fileName)) {
+      theme = "";
+    } else {
+      theme = nativeTheme.shouldUseDarkColors ? "-dark" : "-light";
+    }
+
     return this.isAppPackaged
-      ? path.join(process.resourcesPath, `assets/${fileName}.png`)
-      : `./resources/assets/${fileName}.png`;
+      ? path.join(process.resourcesPath, `assets/${fileName}${theme}.png`)
+      : `./resources/assets/${fileName}${theme}.png`;
   }
+
+  private setTrayIcon = (icon: string) => {
+    this.trayIcon = icon;
+    this.tray.setImage(this.getImagePath(icon));
+  };
+
+  private setTrayIconBusy = () => {
+    // Animates the tray icon by cycling through the frames below
+    enum TrayBusyIconFrames {
+      FRAME_1 = "canutin-tray-busy-frame1",
+      FRAME_2 = "canutin-tray-busy-frame2",
+      FRAME_3 = "canutin-tray-busy-frame3",
+    }
+
+    const toggleAnimation = () => {
+      if (!this.isAppBusy) return;
+
+      setTimeout(() => {
+        this.isAppBusy && this.setTrayIcon(TrayBusyIconFrames.FRAME_2);
+      }, TrayMenu.ICON_TRAY_LOOP_DURATION * 0);
+      setTimeout(() => {
+        this.isAppBusy && this.setTrayIcon(TrayBusyIconFrames.FRAME_3);
+      }, TrayMenu.ICON_TRAY_LOOP_DURATION * 0.25);
+      setTimeout(() => {
+        this.isAppBusy && this.setTrayIcon(TrayBusyIconFrames.FRAME_2);
+      }, TrayMenu.ICON_TRAY_LOOP_DURATION * 0.5);
+      setTimeout(() => {
+        this.isAppBusy && this.setTrayIcon(TrayBusyIconFrames.FRAME_1);
+      }, TrayMenu.ICON_TRAY_LOOP_DURATION * 0.75);
+    };
+
+    setInterval(toggleAnimation, TrayMenu.ICON_TRAY_LOOP_DURATION);
+  };
 }
 
 export default TrayMenu;
