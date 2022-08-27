@@ -37,4 +37,33 @@ test.describe('Layout', () => {
 		await expect(page.locator('p.layout__tag', { hasText: 'English' })).toBeVisible();
 		await expect(page.locator('p.layout__tag', { hasText: '0.0.0' })).toBeVisible();
 	});
+
+	test('Error pages', async ({ page }) => {
+		// Error 404
+		await page.goto('/not-found');
+		await expect(page.locator('h1', { hasText: 'Not found' })).toBeVisible();
+		await expect(await page.locator('p.notice').textContent()).toMatch(
+			"No content found. Perhaps there's a typo in the address or followed a broken link"
+		);
+		await expect(await page.locator('p.errorMessage')).not.toBeVisible();
+
+		// Error 500
+		// This tests runs against the production build so we can't trigger a internal
+		// server error but in `dev` we can by visiting `/500` which intercetps what
+		// would have been a 404 and throws an intentional error.
+		//
+		// The test below is running negative assertions against a 404 to make sure
+		// an error 500 can't occur by visiting `/500` in production.
+		await page.goto('/500');
+		await expect(page.locator('h1', { hasText: 'Something went wrong' })).not.toBeVisible();
+		await expect(await page.locator('p.notice').textContent()).not.toMatch(
+			'This error is intentional and should be referenced by a test'
+		);
+		await expect(
+			await page.locator('p.errorMessage', {
+				hasText:
+					'This error is intentional and should be referenced by a test. If you see this in production god help us all!'
+			})
+		).not.toBeVisible();
+	});
 });

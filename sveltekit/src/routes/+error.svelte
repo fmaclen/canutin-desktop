@@ -1,9 +1,9 @@
 <script>
 	import { page } from '$app/stores';
+	import { dev } from '$app/env';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Notice from '$lib/components/Notice.svelte';
-	import { dev } from '$app/env';
 	import Code from '$lib/components/Code.svelte';
 
 	const title = `${$page.status === 404 ? 'Not found' : 'Something went wrong'}`;
