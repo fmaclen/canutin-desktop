@@ -57,7 +57,7 @@ test.describe('Layout', () => {
 		await page.goto('/500');
 		await expect(page.locator('h1', { hasText: 'Something went wrong' })).not.toBeVisible();
 		await expect(await page.locator('p.notice').textContent()).not.toMatch(
-			'This error is intentional and should be referenced by a test'
+			"An error ocurred and whatever was happening likely didn't finish succesfully"
 		);
 		await expect(
 			await page.locator('p.errorMessage', {
