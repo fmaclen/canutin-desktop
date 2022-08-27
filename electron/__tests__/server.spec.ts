@@ -8,6 +8,14 @@ describe("Server", () => {
   const fakePathToVault = "/fake/path/to/Canutin.vault";
   const fakePid = 123456;
   const fakePathToSvelteKitIndex = "/fake/path/to/sveltekit";
+  const svelteKitStartupEnv = {
+    ...process.env,
+    HOST: "127.0.0.1",
+    SVELTEKIT_PATH: fakePathToSvelteKitIndex,
+    DATABASE_URL: `file:${fakePathToVault}`,
+    ELECTRON_SWITCHED_VAULT: "true",
+    APP_VERSION: "",
+  };
 
   const spyPathJoin = jest
     .spyOn(path, "join")
@@ -46,12 +54,8 @@ describe("Server", () => {
         fakePathToSvelteKitIndex,
         {
           env: {
-            ...process.env,
-            HOST: "127.0.0.1",
+            ...svelteKitStartupEnv,
             PORT: Server.PORT_DEVELOPMENT,
-            SVELTEKIT_PATH: fakePathToSvelteKitIndex,
-            DATABASE_URL: `file:${fakePathToVault}`,
-            ELECTRON_SWITCHED_VAULT: "true",
           },
         }
       );
@@ -82,12 +86,8 @@ describe("Server", () => {
         fakePathToSvelteKitIndex,
         {
           env: {
-            ...process.env,
-            HOST: "127.0.0.1",
+            ...svelteKitStartupEnv,
             PORT: Server.PORT_PRODUCTION,
-            SVELTEKIT_PATH: fakePathToSvelteKitIndex,
-            DATABASE_URL: `file:${fakePathToVault}`,
-            ELECTRON_SWITCHED_VAULT: "true",
           },
         }
       );
