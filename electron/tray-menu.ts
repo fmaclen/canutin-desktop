@@ -21,7 +21,6 @@ class TrayMenu {
   static readonly MENU_VAULT_PATH = "menu-vault-path";
   static readonly MENU_VAULT_OPEN = "menu-vault-open";
 
-  static readonly ICON_TRAY_LOOP_DURATION = 1200;
   static readonly ICON_TRAY_IDLE = "canutin-tray-idle";
   static readonly ICON_TRAY_ACTIVE = "canutin-tray-active";
   static readonly ICON_STATUS_POSITIVE = "status-positive";
