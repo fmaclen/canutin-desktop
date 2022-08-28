@@ -109,10 +109,10 @@ describe("TrayMenu", () => {
   });
 
   test("tray icon is loaded with the correct theme color", () => {
-    const ICON_TRAY_IDLE = "canutin-tray-idle";
-    const ICON_TRAY_ACTIVE = "canutin-tray-active";
-    const ICON_STATUS_POSITIVE = "status-positive";
-    const ICON_STATUS_NEGATIVE = "status-negative";
+    const iconTrayIdle = TrayMenu["ICON_TRAY_IDLE"];
+    const iconTrayActive = TrayMenu["ICON_TRAY_ACTIVE"];
+    const iconStatusPositive = TrayMenu["ICON_STATUS_POSITIVE"];
+    const iconStatusNegative = TrayMenu["ICON_STATUS_NEGATIVE"];
 
     const spyShouldUseDarkColors = jest.spyOn(
       Electron.nativeTheme,
@@ -121,47 +121,47 @@ describe("TrayMenu", () => {
     );
     const trayMenu = new TrayMenu(fakeVault);
 
-    expect(trayMenu["trayIcon"]).toBe(ICON_TRAY_ACTIVE);
+    expect(trayMenu["trayIcon"]).toBe(iconTrayActive);
     expect(spyPathJoin).toHaveBeenCalledWith(
       resourcesPath,
-      `assets/${ICON_TRAY_IDLE}-light.png`
+      `assets/${iconTrayIdle}-light.png`
     );
     expect(spyPathJoin).toHaveBeenLastCalledWith(
       resourcesPath,
-      `assets/${ICON_TRAY_ACTIVE}-light.png`
+      `assets/${iconTrayActive}-light.png`
     );
 
     spyShouldUseDarkColors.mockReturnValue(true);
-    trayMenu["setTrayIcon"](ICON_TRAY_ACTIVE);
+    trayMenu["setTrayIcon"](iconTrayActive);
     expect(spyPathJoin).toHaveBeenLastCalledWith(
       resourcesPath,
-      `assets/${ICON_TRAY_ACTIVE}-dark.png`
+      `assets/${iconTrayActive}-dark.png`
     );
 
     // Positive and negative icons are theme agnostic
     expect(spyPathJoin).toHaveBeenCalledWith(
       resourcesPath,
-      `assets/${ICON_STATUS_POSITIVE}.png`
+      `assets/${iconStatusPositive}.png`
     );
     expect(spyPathJoin).not.toHaveBeenCalledWith(
       resourcesPath,
-      `assets/${ICON_STATUS_POSITIVE}-light.png`
+      `assets/${iconStatusPositive}-light.png`
     );
     expect(spyPathJoin).not.toHaveBeenCalledWith(
       resourcesPath,
-      `assets/${ICON_STATUS_POSITIVE}-dark.png`
+      `assets/${iconStatusPositive}-dark.png`
     );
     expect(spyPathJoin).toHaveBeenCalledWith(
       resourcesPath,
-      `assets/${ICON_STATUS_NEGATIVE}.png`
+      `assets/${iconStatusNegative}.png`
     );
     expect(spyPathJoin).not.toHaveBeenCalledWith(
       resourcesPath,
-      `assets/${ICON_STATUS_NEGATIVE}-light.png`
+      `assets/${iconStatusNegative}-light.png`
     );
     expect(spyPathJoin).not.toHaveBeenCalledWith(
       resourcesPath,
-      `assets/${ICON_STATUS_NEGATIVE}-dark.png`
+      `assets/${iconStatusNegative}-dark.png`
     );
 
     // TODO: add test for when the OS changes theme color `nativeTheme.on("updated"...`
