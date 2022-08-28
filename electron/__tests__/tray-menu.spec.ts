@@ -6,6 +6,7 @@ import Vault from "../vault";
 import Server from "../server";
 
 describe("TrayMenu", () => {
+  const resourcesPath = process.resourcesPath; // this is `undefined` in tests
   const fakeVault = new Vault();
   const fakePathToVault = "/fake/path/to/Canutin.vault";
   fakeVault.path = fakePathToVault;
@@ -101,15 +102,19 @@ describe("TrayMenu", () => {
       const imagePath = trayMenu["getImagePath"](fakeImageAsset);
       expect(imagePath).toBe(fakePathToImageAsset);
       expect(spyPathJoin).toHaveBeenLastCalledWith(
-        process.resourcesPath, // this is `undefined` in tests
+        resourcesPath,
         `assets/${fakeImageAsset}-light.png`
       );
     });
   });
 
-  test("tray icon changes to the right theme color", () => {
+  test("tray icon is loaded with the correct theme color", () => {
+    const ICON_TRAY_IDLE = "canutin-tray-idle";
     const ICON_TRAY_ACTIVE = "canutin-tray-active";
-    const spyNativeTheme = jest.spyOn(
+    const ICON_STATUS_POSITIVE = "status-positive";
+    const ICON_STATUS_NEGATIVE = "status-negative";
+
+    const spyShouldUseDarkColors = jest.spyOn(
       Electron.nativeTheme,
       "shouldUseDarkColors",
       "get"
@@ -117,16 +122,46 @@ describe("TrayMenu", () => {
     const trayMenu = new TrayMenu(fakeVault);
 
     expect(trayMenu["trayIcon"]).toBe(ICON_TRAY_ACTIVE);
+    expect(spyPathJoin).toHaveBeenCalledWith(
+      resourcesPath,
+      `assets/${ICON_TRAY_IDLE}-light.png`
+    );
     expect(spyPathJoin).toHaveBeenLastCalledWith(
-      process.resourcesPath, // this is `undefined` in tests
+      resourcesPath,
       `assets/${ICON_TRAY_ACTIVE}-light.png`
     );
 
-    spyNativeTheme.mockReturnValue(true);
+    spyShouldUseDarkColors.mockReturnValue(true);
     trayMenu["setTrayIcon"](ICON_TRAY_ACTIVE);
     expect(spyPathJoin).toHaveBeenLastCalledWith(
-      process.resourcesPath, // this is `undefined` in tests
+      resourcesPath,
       `assets/${ICON_TRAY_ACTIVE}-dark.png`
+    );
+
+    // Positive and negative icons are theme agnostic
+    expect(spyPathJoin).toHaveBeenCalledWith(
+      resourcesPath,
+      `assets/${ICON_STATUS_POSITIVE}.png`
+    );
+    expect(spyPathJoin).not.toHaveBeenCalledWith(
+      resourcesPath,
+      `assets/${ICON_STATUS_POSITIVE}-light.png`
+    );
+    expect(spyPathJoin).not.toHaveBeenCalledWith(
+      resourcesPath,
+      `assets/${ICON_STATUS_POSITIVE}-dark.png`
+    );
+    expect(spyPathJoin).toHaveBeenCalledWith(
+      resourcesPath,
+      `assets/${ICON_STATUS_NEGATIVE}.png`
+    );
+    expect(spyPathJoin).not.toHaveBeenCalledWith(
+      resourcesPath,
+      `assets/${ICON_STATUS_NEGATIVE}-light.png`
+    );
+    expect(spyPathJoin).not.toHaveBeenCalledWith(
+      resourcesPath,
+      `assets/${ICON_STATUS_NEGATIVE}-dark.png`
     );
 
     // TODO: add test for when the OS changes theme color `nativeTheme.on("updated"...`
