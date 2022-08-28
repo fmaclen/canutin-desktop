@@ -6,54 +6,24 @@ import Vault from "../vault";
 import Server from "../server";
 
 describe("TrayMenu", () => {
-  // FIXME:
-  // tests pass but there is an error when the test runs where
-  // the `fakePathToImageAsset` is not found.
-
   const fakeVault = new Vault();
   const fakePathToVault = "/fake/path/to/Canutin.vault";
   fakeVault.path = fakePathToVault;
 
+  // FIXME:
+  // tests pass but there is an error when the test runs where
+  // `fakePathToImageAsset` returns "MODULE_NOT_FOUND".
+  // REF https://github.com/Canutin/desktop-2/issues/6
   const fakeImageAsset = "fake-image";
   const fakePathToImageAsset = `/path/to/fake/assets/${fakeImageAsset}.png`;
 
-  const spyIsPackaged = jest.spyOn(Electron.app, "isPackaged", "get");
   const spyPathJoin = jest
     .spyOn(path, "join")
     .mockReturnValue(fakePathToImageAsset);
+  const spyIsPackaged = jest.spyOn(Electron.app, "isPackaged", "get");
 
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  test.skip("server can be toggled on/off", () => {
-    // TODO
-  });
-
-  test.skip("vault can be opened", () => {
-    // FIXME:
-    // half of the assertions in this test don't work.
-    const spyElectronDialogSync = jest.spyOn(
-      Electron.dialog,
-      "showOpenDialogSync"
-    );
-    const spyUpdateTray = jest.spyOn(TrayMenu.prototype as any, "updateTray");
-    const trayMenu = new TrayMenu(fakeVault);
-    trayMenu["switchVault"];
-    expect(trayMenu["menuVaultPath"].label).not.toBe(fakePathToVault);
-    expect(spyElectronDialogSync).toHaveBeenCalledWith({
-      properties: ["openFile"],
-      filters: [{ name: "Canutin Vault", extensions: ["vault"] }],
-    });
-    expect(spyElectronDialogSync).toHaveReturnedWith({
-      canceled: false,
-      filePaths: [fakePathToVault],
-    });
-    expect(trayMenu["menuVaultPath"].label).toBe(fakePathToVault);
-    expect(trayMenu["vault"].saveToUserSettings).toHaveBeenCalledWith(
-      fakePathToVault
-    );
-    expect(spyUpdateTray).toHaveBeenCalled();
   });
 
   test("tray is set with the correct parameters", () => {
@@ -112,7 +82,7 @@ describe("TrayMenu", () => {
     test("path to image assets", () => {
       spyPathJoin.mockClear();
       const imagePath = trayMenu["getImagePath"](fakeImageAsset);
-      expect(imagePath).toBe(`./resources/assets/${fakeImageAsset}.png`);
+      expect(imagePath).toBe(`./resources/assets/${fakeImageAsset}-light.png`);
       expect(spyPathJoin).not.toBeCalled();
     });
   });
@@ -132,8 +102,65 @@ describe("TrayMenu", () => {
       expect(imagePath).toBe(fakePathToImageAsset);
       expect(spyPathJoin).toHaveBeenLastCalledWith(
         process.resourcesPath, // this is `undefined` in tests
-        `assets/${fakeImageAsset}.png`
+        `assets/${fakeImageAsset}-light.png`
       );
     });
+  });
+
+  test("tray icon changes to the right theme color", () => {
+    const ICON_TRAY_ACTIVE = "canutin-tray-active";
+    const spyNativeTheme = jest.spyOn(
+      Electron.nativeTheme,
+      "shouldUseDarkColors",
+      "get"
+    );
+    const trayMenu = new TrayMenu(fakeVault);
+
+    expect(trayMenu["trayIcon"]).toBe(ICON_TRAY_ACTIVE);
+    expect(spyPathJoin).toHaveBeenLastCalledWith(
+      process.resourcesPath, // this is `undefined` in tests
+      `assets/${ICON_TRAY_ACTIVE}-light.png`
+    );
+
+    spyNativeTheme.mockReturnValue(true);
+    trayMenu["setTrayIcon"](ICON_TRAY_ACTIVE);
+    expect(spyPathJoin).toHaveBeenLastCalledWith(
+      process.resourcesPath, // this is `undefined` in tests
+      `assets/${ICON_TRAY_ACTIVE}-dark.png`
+    );
+
+    // TODO: add test for when the OS changes theme color `nativeTheme.on("updated"...`
+  });
+
+  // Disabled tests
+  // REF https://github.com/Canutin/desktop-2/issues/6
+  test.skip("server can be toggled on/off", () => {
+    // TODO
+  });
+
+  test.skip("vault can be opened", () => {
+    // FIXME:
+    // half of the assertions in this test don't work.
+    const spyElectronDialogSync = jest.spyOn(
+      Electron.dialog,
+      "showOpenDialogSync"
+    );
+    const spyUpdateTray = jest.spyOn(TrayMenu.prototype as any, "updateTray");
+    const trayMenu = new TrayMenu(fakeVault);
+    trayMenu["switchVault"];
+    expect(trayMenu["menuVaultPath"].label).not.toBe(fakePathToVault);
+    expect(spyElectronDialogSync).toHaveBeenCalledWith({
+      properties: ["openFile"],
+      filters: [{ name: "Canutin Vault", extensions: ["vault"] }],
+    });
+    expect(spyElectronDialogSync).toHaveReturnedWith({
+      canceled: false,
+      filePaths: [fakePathToVault],
+    });
+    expect(trayMenu["menuVaultPath"].label).toBe(fakePathToVault);
+    expect(trayMenu["vault"].saveToUserSettings).toHaveBeenCalledWith(
+      fakePathToVault
+    );
+    expect(spyUpdateTray).toHaveBeenCalled();
   });
 });

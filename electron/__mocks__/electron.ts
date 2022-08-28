@@ -26,6 +26,13 @@ const dialog = {
   })),
 };
 
+const nativeTheme = {
+  on: jest.fn(),
+  get shouldUseDarkColors() {
+    return false;
+  },
+};
+
 const Tray = jest.fn(() => ({
   on: jest.fn(),
   setContextMenu: jest.fn(),
@@ -41,7 +48,8 @@ const Menu = {
 module.exports = {
   app,
   shell,
+  dialog,
+  nativeTheme,
   Menu,
   Tray,
-  dialog,
 };

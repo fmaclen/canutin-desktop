@@ -1,6 +1,9 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-module.exports = {
+import type { Config } from "jest";
+
+const config: Config = {
   preset: "ts-jest",
   testPathIgnorePatterns: ["/sveltekit/tests"],
   extensionsToTreatAsEsm: [".ts"],
 };
+
+export default config;
