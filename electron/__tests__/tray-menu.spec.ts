@@ -109,10 +109,10 @@ describe("TrayMenu", () => {
   });
 
   test("tray icon is loaded with the correct theme color", () => {
-    const iconTrayIdle = TrayMenu["ICON_TRAY_IDLE"];
-    const iconTrayActive = TrayMenu["ICON_TRAY_ACTIVE"];
-    const iconStatusPositive = TrayMenu["ICON_STATUS_POSITIVE"];
-    const iconStatusNegative = TrayMenu["ICON_STATUS_NEGATIVE"];
+    const iconTrayIdle = TrayMenu.ICON_TRAY_IDLE;
+    const iconTrayActive = TrayMenu.ICON_TRAY_ACTIVE;
+    const iconStatusPositive = TrayMenu.ICON_STATUS_POSITIVE;
+    const iconStatusNegative = TrayMenu.ICON_STATUS_NEGATIVE;
 
     const spyShouldUseDarkColors = jest.spyOn(
       Electron.nativeTheme,
