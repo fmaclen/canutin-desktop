@@ -6,8 +6,8 @@
 		endOfMonth,
 		startOfYear,
 		endOfYear,
-		format,
-		fromUnixTime
+		fromUnixTime,
+		format
 	} from 'date-fns';
 	import { onMount } from 'svelte';
 
@@ -18,13 +18,13 @@
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import { CardAppearance } from '$lib/components/Card';
-	import { dateInUTC, formatCurrency } from '$lib/helpers/misc';
+	import { dateInUTC, formatCurrency, formatInUTC } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { EndpointTransaction } from '../transactions.json/+server';
 
 	const title = 'Transactions';
 
-	const today = dateInUTC(new Date());
+	const today = new Date();
 	const thisMonthFrom = startOfMonth(today);
 	const thisMonthTo = endOfMonth(today);
 	const thisYearFrom = startOfYear(today);
@@ -107,8 +107,8 @@
 	$: filterBy = Filter.ALL;
 
 	$: periodIndex = 2; // Last 3 months
-	$: dateFrom = format(periods[periodIndex].dateFrom, 'yyyy-MM-dd');
-	$: dateTo = format(periods[periodIndex].dateTo, 'yyyy-MM-dd');
+	$: dateFrom = format(dateInUTC(periods[periodIndex].dateFrom), 'yyyy-MM-dd');
+	$: dateTo = format(dateInUTC(periods[periodIndex].dateTo), 'yyyy-MM-dd');
 
 	$: sortBy = TABLE_HEADERS[0].column; // Date column
 	$: sortOrder = SortOrder.DESC;
@@ -236,7 +236,7 @@
 								transaction}
 							<tr class="table__tr">
 								<td class="table__td table__td--date"
-									>{format(fromUnixTime(date), 'MMM dd, yyyy')}</td
+									>{formatInUTC(fromUnixTime(date), 'MMM dd, yyyy')}</td
 								>
 								<td class="table__td">{description}</td>
 								<td class="table__td">{transactionCategory.name}</td>

@@ -1,3 +1,4 @@
+import formatInTimeZone from 'date-fns-tz/esm/formatInTimeZone';
 import { SortOrder } from '$lib/helpers/constants';
 
 // Format: $1,523.00 || -$1,523.00
@@ -23,4 +24,8 @@ export const proportionBetween = (num1: number, num2: number) => {
 // Strip timezone from date and set to UTC
 export const dateInUTC = (date: Date) => {
 	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0));
+};
+
+export const formatInUTC = (date: Date, format: string) => {
+	return formatInTimeZone(date, 'UTC', format);
 };
