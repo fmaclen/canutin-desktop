@@ -8,7 +8,7 @@ export const accountCheckingTransactionSet = async () => {
 		{
 			description: 'Westside Apartments',
 			value: -2250,
-			date: addDays(startOfMonth(subMonths(new Date(), i)), 1),
+			date: addDays(startOfMonth(subMonths(new Date(), i)), 0),
 			categoryId: await getTransactionCategoryId('Rent'),
 			isExcluded: false,
 			isPending: false
@@ -64,7 +64,7 @@ export const accountCheckingTransactionSet = async () => {
 		{
 			description: 'Toyota - TFS Payment',
 			value: -500,
-			date: addDays(startOfMonth(subMonths(new Date(), i)), 26),
+			date: addDays(startOfMonth(subMonths(new Date(), i)), 27),
 			categoryId: await getTransactionCategoryId('Automotive'),
 			isExcluded: false,
 			isPending: false
@@ -246,18 +246,18 @@ export const accountCreditCardTransactionSet = async () => {
 			isPending: false
 		},
 		{
-			description: 'Patriot Insurance',
-			value: -135.67,
+			description: 'Horizon Wireless',
+			value: -90.5,
 			date: addDays(startOfMonth(subMonths(new Date(), i)), 2),
-			categoryId: await getTransactionCategoryId('Insurance'),
+			categoryId: await getTransactionCategoryId('Internet & phone'),
 			isExcluded: false,
 			isPending: false
 		},
 		{
-			description: 'Horizon Wireless',
-			value: -90.5,
-			date: addDays(startOfMonth(subMonths(new Date(), i)), 15),
-			categoryId: await getTransactionCategoryId('Internet & phone'),
+			description: 'Patriot Insurance',
+			value: -135.67,
+			date: addDays(startOfMonth(subMonths(new Date(), i)), 27),
+			categoryId: await getTransactionCategoryId('Insurance'),
 			isExcluded: false,
 			isPending: false
 		},
@@ -307,7 +307,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description:
 				i % 11 === 0 ? 'Horizon Wireless (Promotional Rebate)' : 'Juggernaut Cash Back Redemption',
 			value: i % 11 === 0 ? 445 : 25.33,
-			date: addDays(startOfMonth(subMonths(new Date(), i)), 26),
+			date: addDays(startOfMonth(subMonths(new Date(), i)), 15),
 			categoryId: await getTransactionCategoryId(
 				i % 11 === 0 ? 'Internet & phone' : 'Financial & banking'
 			),
