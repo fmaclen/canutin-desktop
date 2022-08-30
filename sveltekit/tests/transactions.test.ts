@@ -54,9 +54,7 @@ test.describe('Transactions', () => {
 		await expect(tableHeaders.nth(4)).not.toHaveClass(/table__sortable--desc/);
 	});
 
-	// FIXME: need to make transactions deterministic for this test to work
-	// REF https://github.com/Canutin/desktop-2/issues/44
-	test.skip('UI is rendered correctly when there are transactions present', async ({
+	test('UI is rendered correctly when there are transactions present', async ({
 		page,
 		baseURL
 	}) => {
@@ -71,33 +69,37 @@ test.describe('Transactions', () => {
 		expect(await cardNetBalance.textContent()).toMatch('Net balance');
 
 		const tableRows = page.locator('.table__tr');
-		expect(await tableRows.count()).toBe(132);
-		expect(await tableRows.first().textContent()).toMatch('Transfer to MegaCoin Exchange');
-		expect(await tableRows.first().textContent()).toMatch('Transfers');
+		expect(await tableRows.count()).toBe(111);
+		expect(await tableRows.first().textContent()).toMatch('Toyota - TFS Payment');
+		expect(await tableRows.first().textContent()).toMatch('Automotive');
 		expect(await tableRows.first().textContent()).toMatch("Bob's Laughable-Yield Checking");
-		expect(await tableRows.first().textContent()).toMatch('$0.00');
-		expect(await tableRows.last().textContent()).toMatch("Maria's Artisanal Gelato");
-		expect(await tableRows.last().textContent()).toMatch('Food & drink');
-		expect(await tableRows.last().textContent()).toMatch("Alice's Limited Rewards");
-		expect(await tableRows.last().textContent()).toMatch('-$12.67');
+		expect(await tableRows.first().textContent()).toMatch('-$500.00');
+		expect(await tableRows.last().textContent()).toMatch('Westside Apartments');
+		expect(await tableRows.last().textContent()).toMatch('Rent');
+		expect(await tableRows.last().textContent()).toMatch("Bob's Laughable-Yield Checking");
+		expect(await tableRows.last().textContent()).toMatch('-$2,250.00');
 
-		// This date is set by the seed data at `src/lib/seed/seedData/transactions.ts`
-		const latestTransactionDate = addDays(startOfMonth(new Date()), 26);
+		// This date is set by the seed data at `src/lib/seed/seedData/transactions.ts`.
+		const latestTransactionDate = addDays(startOfMonth(new Date()), 27);
 		// Check the date column is formatted correctly
+		//
+		// FIXME: date it's zoned to the device's timezone so it's possible this test will fail,
+		// instead of `format(...)` we should use `formatInUTC(...)` from `src/lib/helpers/misc.ts`
+		// but Playwright "Can't find module".
 		expect(await tableRows.first().textContent()).toMatch(
 			format(latestTransactionDate, 'MMM dd, yyyy')
 		);
 
-		const tableHeaders = page.locator('button.table__sortable');
 		// Reverse sort order while sorting by date
+		const tableHeaders = page.locator('button.table__sortable');
 		await tableHeaders.first().click();
 		await expect(tableHeaders.first()).toHaveClass(/table__sortable--active/);
 		await expect(tableHeaders.first()).toHaveClass(/table__sortable--asc/);
 		await expect(tableHeaders.first()).not.toHaveClass(/table__sortable--desc/);
-		expect(await tableRows.first().textContent()).toMatch("Maria's Artisanal Gelato");
+		expect(await tableRows.first().textContent()).toMatch('Westside Apartments');
 		// When the date order is reversed the first transactions become the last ones
 		// but they are also sorted in reserve order alphabetically by description.
-		expect(await tableRows.nth(131).textContent()).toMatch('Horizon Wireless (Promotional Rebate)');
+		expect(await tableRows.nth(110).textContent()).toMatch('Patriot Insurance');
 
 		// Sort by description
 		await tableHeaders.nth(1).click();
@@ -154,9 +156,9 @@ test.describe('Transactions', () => {
 		);
 
 		await formInput.type('transfer');
-		expect(await cardTransactions.textContent()).toMatch('14');
-		expect(await cardNetBalance.textContent()).toMatch('-$3,000.00');
-		expect(await tableRows.count()).toBe(14);
+		expect(await cardTransactions.textContent()).toMatch('12');
+		expect(await cardNetBalance.textContent()).toMatch('-$2,500.00');
+		expect(await tableRows.count()).toBe(12);
 
 		// Filter transactions by date range
 		const formSelect = page.locator('.formSelect__select');
@@ -178,22 +180,22 @@ test.describe('Transactions', () => {
 		await formSelect.selectOption('2');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
-		expect(await tableRows.count()).toBe(14);
-		expect(await cardNetBalance.textContent()).toMatch('-$3,000.00');
+		expect(await tableRows.count()).toBe(12);
+		expect(await cardNetBalance.textContent()).toMatch('-$2,500.00');
 
 		// Last 6 months
 		await formSelect.selectOption('3');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
-		expect(await tableRows.count()).toBe(26);
-		expect(await cardNetBalance.textContent()).toMatch('-$5,500.00');
+		expect(await tableRows.count()).toBe(25);
+		expect(await cardNetBalance.textContent()).toMatch('-$5,000.00');
 
 		// Last 12 months
 		await formSelect.selectOption('4');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
-		expect(await tableRows.count()).toBe(50);
-		expect(await cardNetBalance.textContent()).toMatch('-$10,500.00');
+		expect(await tableRows.count()).toBe(48);
+		expect(await cardNetBalance.textContent()).toMatch('-$10,000.00');
 
 		// Year to date
 		await formSelect.selectOption('5');

@@ -93,9 +93,7 @@ export const getTransactionCategoryId = async (categoryName: string) => {
 	const findCategoryByName = async (name: string) => {
 		return await prisma.transactionCategory.findFirst({
 			where: {
-				name: {
-					contains: name
-				}
+				name
 			},
 			select: {
 				id: true
