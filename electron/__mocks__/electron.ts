@@ -2,7 +2,7 @@ const app = {
   dock: {
     hide: jest.fn(),
   },
-  getVersion: jest.fn(() => ""),
+  getVersion: jest.fn(() => require("../../package.json").version),
   getName: jest.fn(() => "test"),
   getPath: jest.fn(() => "."),
   requestSingleInstanceLock: jest.fn(),
