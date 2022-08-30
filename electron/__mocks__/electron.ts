@@ -2,7 +2,7 @@ const app = {
   dock: {
     hide: jest.fn(),
   },
-  getVersion: jest.fn(() => ""),
+  getVersion: jest.fn(() => require("../../package.json").version),
   getName: jest.fn(() => "test"),
   getPath: jest.fn(() => "."),
   requestSingleInstanceLock: jest.fn(),
@@ -26,6 +26,13 @@ const dialog = {
   })),
 };
 
+const nativeTheme = {
+  on: jest.fn(),
+  get shouldUseDarkColors() {
+    return false;
+  },
+};
+
 const Tray = jest.fn(() => ({
   on: jest.fn(),
   setContextMenu: jest.fn(),
@@ -41,7 +48,8 @@ const Menu = {
 module.exports = {
   app,
   shell,
+  dialog,
+  nativeTheme,
   Menu,
   Tray,
-  dialog,
 };

@@ -6,6 +6,7 @@ import {
   MenuItemConstructorOptions,
   shell,
   Tray,
+  nativeTheme,
 } from "electron";
 
 import Vault from "./vault";
@@ -30,6 +31,7 @@ class TrayMenu {
   private isMacOs: boolean;
 
   private tray: Tray;
+  private trayIcon: string;
   private vault: Vault;
   server: Server | undefined;
 
@@ -47,6 +49,7 @@ class TrayMenu {
     this.isServerRunning = false;
     this.isAppPackaged = app.isPackaged || false;
     this.isMacOs = process.platform === "darwin";
+    this.trayIcon = TrayMenu.ICON_TRAY_IDLE;
 
     // Menu items (not in order)
     this.menuSeparator = { type: "separator" };
@@ -117,6 +120,12 @@ class TrayMenu {
     this.tray.setToolTip("Canutin");
     this.tray.setContextMenu(Menu.buildFromTemplate(this.menuCurrentTemplate));
 
+    // Update the tray menu if the OS color theme changes
+    nativeTheme.on("updated", () => {
+      this.setTrayIcon(this.trayIcon);
+    });
+
+    // Start the server
     if (this.vault?.path) {
       this.toggleServer();
       this.isAppPackaged && this.openBrowser(TrayMenu.OPEN_BROWSER_DELAY);
@@ -150,27 +159,32 @@ class TrayMenu {
     if (this.server && this.isServerRunning) {
       // Stop the server
       this.server.stop();
-      this.tray.setImage(this.getImagePath("canutin-tray-idle"));
       this.menuServerToggle.label = "Start Canutin";
       this.menuServerStatus.label = "Canutin is not running";
-      this.menuServerStatus.icon = this.getImagePath("status-negative");
+      this.menuServerStatus.icon = this.getImagePath(
+        TrayMenu.ICON_STATUS_NEGATIVE
+      );
       this.menuOpenInBrowser.visible = false;
+      this.setTrayIcon(TrayMenu.ICON_TRAY_IDLE);
       this.updateTray();
     } else if (this.server) {
       // Start the server
       this.server.start(vaultPath);
-      this.tray.setImage(this.getImagePath("canutin-tray-active"));
       this.menuServerToggle.visible = true;
       this.menuServerToggle.label = "Stop Canutin";
       this.menuServerStatus.label = "Canutin is running";
-      this.menuServerStatus.icon = this.getImagePath("status-positive");
+      this.menuServerStatus.icon = this.getImagePath(
+        TrayMenu.ICON_STATUS_POSITIVE
+      );
       this.menuOpenInBrowser.visible = true;
+      this.setTrayIcon(TrayMenu.ICON_TRAY_ACTIVE);
       this.updateTray();
     }
 
     // FIXME:
     // It would be better to check if the server is actually running (or not)
     // instead of blindingly reversing the vaule of `isServerRunning`.
+    // REF: https://github.com/Canutin/desktop-2/issues/8
     this.isServerRunning = !this.isServerRunning;
   };
 
@@ -188,10 +202,27 @@ class TrayMenu {
   }
 
   private getImagePath(fileName: string) {
+    const themeAgnosticIcons = [
+      TrayMenu.ICON_STATUS_POSITIVE,
+      TrayMenu.ICON_STATUS_NEGATIVE,
+    ];
+
+    let theme: string;
+    if (themeAgnosticIcons.includes(fileName)) {
+      theme = "";
+    } else {
+      theme = nativeTheme.shouldUseDarkColors ? "-dark" : "-light";
+    }
+
     return this.isAppPackaged
-      ? path.join(process.resourcesPath, `assets/${fileName}.png`)
-      : `./resources/assets/${fileName}.png`;
+      ? path.join(process.resourcesPath, `assets/${fileName}${theme}.png`)
+      : `./resources/assets/${fileName}${theme}.png`;
   }
+
+  private setTrayIcon = (icon: string) => {
+    this.trayIcon = icon;
+    this.tray.setImage(this.getImagePath(icon));
+  };
 }
 
 export default TrayMenu;

@@ -8,6 +8,14 @@ describe("Server", () => {
   const fakePathToVault = "/fake/path/to/Canutin.vault";
   const fakePid = 123456;
   const fakePathToSvelteKitIndex = "/fake/path/to/sveltekit";
+  const svelteKitStartupEnv = {
+    ...process.env,
+    HOST: "127.0.0.1",
+    SVELTEKIT_PATH: fakePathToSvelteKitIndex,
+    DATABASE_URL: `file:${fakePathToVault}`,
+    ELECTRON_SWITCHED_VAULT: "true",
+    APP_VERSION: require("../../package.json").version,
+  };
 
   const spyPathJoin = jest
     .spyOn(path, "join")
@@ -46,17 +54,19 @@ describe("Server", () => {
         fakePathToSvelteKitIndex,
         {
           env: {
-            ...process.env,
-            HOST: "127.0.0.1",
+            ...svelteKitStartupEnv,
             PORT: Server.PORT_DEVELOPMENT,
-            SVELTEKIT_PATH: fakePathToSvelteKitIndex,
-            DATABASE_URL: `file:${fakePathToVault}`,
-            ELECTRON_SWITCHED_VAULT: "true",
           },
         }
       );
       expect(server.isRunning).toBe(true);
       expect(server["pid"]).toBe(fakePid);
+
+      // Check app version in `package.json` matches semantic versioning
+      // REGEX source: https://gist.github.com/jhorsman/62eeea161a13b80e39f5249281e17c39?permalink_comment_id=3034996#gistcomment-3034996
+      expect(svelteKitStartupEnv.APP_VERSION).toMatch(
+        /^([0-9]|[1-9][0-9]*)\.([0-9]|[1-9][0-9]*)\.([0-9]|[1-9][0-9]*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/gm
+      );
     });
   });
 
@@ -82,12 +92,8 @@ describe("Server", () => {
         fakePathToSvelteKitIndex,
         {
           env: {
-            ...process.env,
-            HOST: "127.0.0.1",
+            ...svelteKitStartupEnv,
             PORT: Server.PORT_PRODUCTION,
-            SVELTEKIT_PATH: fakePathToSvelteKitIndex,
-            DATABASE_URL: `file:${fakePathToVault}`,
-            ELECTRON_SWITCHED_VAULT: "true",
           },
         }
       );

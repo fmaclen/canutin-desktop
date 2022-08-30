@@ -1,4 +1,4 @@
-import { app } from "electron";
+import { app, nativeTheme } from "electron";
 
 import TrayMenu from "./tray-menu";
 import Vault from "./vault";
