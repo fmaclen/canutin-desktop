@@ -62,7 +62,7 @@ describe("Server", () => {
       expect(server.isRunning).toBe(true);
       expect(server["pid"]).toBe(fakePid);
 
-      // Check version matches semver
+      // Check app version in `package.json` matches semantic versioning
       // REGEX source: https://gist.github.com/jhorsman/62eeea161a13b80e39f5249281e17c39?permalink_comment_id=3034996#gistcomment-3034996
       expect(svelteKitStartupEnv.APP_VERSION).toMatch(
         /^([0-9]|[1-9][0-9]*)\.([0-9]|[1-9][0-9]*)\.([0-9]|[1-9][0-9]*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/gm
