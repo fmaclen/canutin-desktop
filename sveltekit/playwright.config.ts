@@ -1,4 +1,5 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
+import { pathToTestVault } from './tests/fixtures/helpers.js';
 
 const config: PlaywrightTestConfig = {
 	webServer: {
@@ -6,7 +7,7 @@ const config: PlaywrightTestConfig = {
 		port: 4173,
 		env: {
 			ELECTRON_SWITCHED_VAULT: 'true',
-			DATABASE_URL: 'file:../tests/tmp/Canutin.test.vault'
+			DATABASE_URL: `file:${pathToTestVault}`
 		}
 	},
 	use: {

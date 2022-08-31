@@ -3,6 +3,8 @@ import fs from 'fs';
 import fetch from 'node-fetch';
 import { DeveloperFunctions } from '../../src/lib/helpers/constants.js';
 
+export const pathToTestVault = path.join(process.cwd(), 'tests', 'tmp', 'Canutin.test.vault');
+
 const methodAndHeaders = {
 	method: 'POST',
 	headers: {

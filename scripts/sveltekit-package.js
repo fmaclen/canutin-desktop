@@ -4,7 +4,7 @@ console.info(`\n-> Packaging SvelteKit for production\n`);
 
 const path = require("path");
 const rimraf = require("rimraf");
-const { readdirSync, unlinkSync, copySync } = require("fs-extra");
+const { readdirSync, unlinkSync, copySync } = require("fs");
 const execSync = require("child_process").execSync;
 
 const svelteKitDevPath = path.join(__dirname, "..", "sveltekit");

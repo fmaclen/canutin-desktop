@@ -1,5 +1,5 @@
 import path from 'path';
-import fs from 'fs-extra';
+import fs from 'fs';
 import { expect, test } from '@playwright/test';
 import { databaseSetUrl } from './fixtures/helpers.js';
 
