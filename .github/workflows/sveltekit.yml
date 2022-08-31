@@ -22,9 +22,12 @@ jobs:
       - name: Install Prisma's dependencies
         working-directory: ./sveltekit
         run: npx prisma generate
+      - name: Generate default test vault
+        working-directory: ./sveltekit
+        run: DATABASE_URL=file:../tests/tmp/Canutin.vault.test npx prisma migrate dev
       - name: Install Playwright Browsers
         working-directory: ./sveltekit
         run: npx playwright install --with-deps
       - name: Run Playwright tests
         working-directory: ./sveltekit
-        run: npx playwright test
+        run: npm test

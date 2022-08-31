@@ -3,7 +3,7 @@ import fs from 'fs';
 import fetch from 'node-fetch';
 import { DeveloperFunctions } from '../../src/lib/helpers/constants.js';
 
-export const pathToTestVault = path.join(process.cwd(), 'tests', 'tmp', 'Canutin.test.vault');
+export const pathToTestVault = path.join(process.cwd(), 'tests', 'tmp', 'Canutin.vault.test');
 
 const methodAndHeaders = {
 	method: 'POST',
@@ -24,7 +24,7 @@ export const databaseSeed = async (baseUrl: string) => {
 	});
 };
 
-export const databaseSetUrl = async (baseUrl: string, dbUrl: string) => {
+export const databaseSetUrl = async (baseUrl: string, dbUrl = `file:${pathToTestVault}`) => {
 	await fetch(
 		`${baseUrl}/devTools.json?functionType=${DeveloperFunctions.DB_SET_URL}&dbUrl=${dbUrl}`,
 		{

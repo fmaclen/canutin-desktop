@@ -7,7 +7,8 @@ const config: PlaywrightTestConfig = {
 		port: 4173,
 		env: {
 			ELECTRON_SWITCHED_VAULT: 'true',
-			DATABASE_URL: `file:${pathToTestVault}`
+			DATABASE_URL: `file:${pathToTestVault}`,
+			APP_VERSION: '4.2.0-next.69'
 		}
 	},
 	use: {
