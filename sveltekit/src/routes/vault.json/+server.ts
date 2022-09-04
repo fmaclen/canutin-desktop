@@ -24,7 +24,6 @@ export const GET = async () => {
 			await uncachedPrisma[model].findFirst({ orderBy: { updatedAt: SortOrder.DESC } })
 		);
 	}
-	uncachedPrisma.$disconnect();
 
 	// Some queries might return `null` so we need to remove them
 	mostRecentRecords = mostRecentRecords.filter((record) => record !== null);

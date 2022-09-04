@@ -6,13 +6,13 @@ test.describe('Developer tools', () => {
 		await databaseWipe(baseURL!);
 	});
 
-	test('Sidebar link is not visible in production', async ({ page, baseURL }) => {
+	test('Sidebar link is not visible in production', async ({ page }) => {
 		await page.goto('/');
-		expect(await page.locator('a', { hasText: 'The big picture' })).toBeVisible();
-		expect(await page.locator('a', { hasText: 'Developer tools' })).not.toBeVisible();
+		await expect(page.locator('a', { hasText: 'The big picture' })).toBeVisible();
+		await expect(page.locator('a', { hasText: 'Developer tools' })).not.toBeVisible();
 	});
 
-	test('Vault can be seeded and wiped', async ({ page, baseURL }) => {
+	test('Vault can be seeded and wiped', async ({ page }) => {
 		await page.goto('/');
 		expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$0');
 
@@ -23,7 +23,7 @@ test.describe('Developer tools', () => {
 		await page.locator('button', { hasText: 'Seed demo data' }).click();
 		const statusBar = page.locator('.statusBar');
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
-		await expect(await statusBar.textContent()).toMatch(
+		expect(await statusBar.textContent()).toMatch(
 			'Database action was performed (likely without errors)'
 		);
 
