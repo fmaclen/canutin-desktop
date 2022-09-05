@@ -28,7 +28,7 @@ test.describe('Developer tools', () => {
 		);
 
 		await page.locator('button', { hasText: 'Dismiss' }).click();
-		await expect(await statusBar.textContent()).toMatch(
+		expect(await statusBar.textContent()).toMatch(
 			'Database action was performed (likely without errors)'
 		);
 

@@ -4,6 +4,7 @@ import { execSync } from 'child_process';
 import { expect } from '@playwright/test';
 
 const globalSetup = () => {
+	// Create a temporary vault for the tests
 	const vaultTestPath = path.join(process.cwd(), 'tests', 'tmp', 'Canutin.vault.test');
 
 	if (fs.existsSync(vaultTestPath)) fs.unlinkSync(vaultTestPath);

@@ -187,7 +187,7 @@ test.describe('Transactions', () => {
 		await formSelect.selectOption('3');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
-		expect(await tableRows.count()).toBe(25);
+		expect(await tableRows.count()).toBe(24);
 		expect(await cardNetBalance.textContent()).toMatch('-$5,000.00');
 
 		// Last 12 months
@@ -201,8 +201,8 @@ test.describe('Transactions', () => {
 		await formSelect.selectOption('5');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
-		expect(await tableRows.count()).toBe(32);
-		expect(await cardNetBalance.textContent()).toMatch('-$6,500.00');
+		expect(await tableRows.count()).toBe(36);
+		expect(await cardNetBalance.textContent()).toMatch('-$7,500.00');
 
 		// Last year
 		await formSelect.selectOption('6');
