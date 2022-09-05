@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { databaseWipe } from './fixtures/helpers.js';
+import { databaseWipe, delay } from './fixtures/helpers.js';
 
 test.describe('Developer tools', () => {
 	test.beforeEach(async ({ baseURL }) => {
@@ -22,6 +22,7 @@ test.describe('Developer tools', () => {
 		// Seed DB
 		await page.locator('button', { hasText: 'Seed demo data' }).click();
 		const statusBar = page.locator('.statusBar');
+		await delay();
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
 		expect(await statusBar.textContent()).toMatch(
 			'Database action was performed (likely without errors)'
@@ -38,6 +39,7 @@ test.describe('Developer tools', () => {
 		// Wipe DB
 		await page.goto('/devTools');
 		await page.locator('button', { hasText: 'Delete all data' }).click();
+		await delay();
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
 		expect(await statusBar.textContent()).toMatch(
 			'Database action was performed (likely without errors)'

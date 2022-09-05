@@ -42,3 +42,5 @@ export const importCanutinFile = async (baseUrl: string, fixtureName: string) =>
 		...methodAndHeaders
 	});
 };
+
+export const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));

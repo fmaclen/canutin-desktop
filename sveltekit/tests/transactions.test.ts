@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { format, addDays, startOfMonth } from 'date-fns';
 
-import { databaseSeed, databaseWipe } from './fixtures/helpers.js';
+import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
 
 test.describe('Transactions', () => {
 	test.beforeEach(async ({ baseURL }) => {
@@ -154,8 +154,6 @@ test.describe('Transactions', () => {
 			'placeholder',
 			'Type to filter by description, amount, category or account'
 		);
-
-		const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
 
 		await formInput.type('transfer');
 		await delay();
