@@ -48,8 +48,12 @@ class TrayMenu {
     this.vault = vault;
     this.isServerRunning = false;
     this.isAppPackaged = app.isPackaged || false;
-    this.isMacOs = process.platform === "darwin";
     this.trayIcon = TrayMenu.ICON_TRAY_IDLE;
+
+    // There's a snapshot test that checks the menu template and we don't want
+    // to use macOS keyboard shortcuts when generating the template.
+    this.isMacOs =
+      process.platform === "darwin" && process.env.NODE_ENV !== "test";
 
     // Menu items (not in order)
     this.menuSeparator = { type: "separator" };
