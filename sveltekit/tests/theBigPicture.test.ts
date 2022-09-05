@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import { format, startOfMonth, subMonths } from 'date-fns';
 import { PrismaClient } from '@prisma/client';
 
+import { pathToTestVault } from './fixtures/helpers.js';
 import { importCanutinFile, databaseSeed, databaseWipe } from './fixtures/helpers.js';
 
 test.describe('Balance sheet', () => {
@@ -114,7 +115,7 @@ test.describe('Balance sheet', () => {
 			const prisma = new PrismaClient({
 				datasources: {
 					db: {
-						url: 'file:../tests/tmp/Canutin.test.vault'
+						url: `file:${pathToTestVault}`
 					}
 				}
 			});

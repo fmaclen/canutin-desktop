@@ -1,12 +1,16 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
+import { pathToTestVault } from './tests/fixtures/helpers.js';
 
 const config: PlaywrightTestConfig = {
+	globalSetup: './tests/fixtures/global-setup.ts',
+	retries: 3,
 	webServer: {
 		command: 'npm run build && npm run preview',
 		port: 4173,
 		env: {
 			ELECTRON_SWITCHED_VAULT: 'true',
-			DATABASE_URL: 'file:../tests/tmp/Canutin.test.vault'
+			DATABASE_URL: `file:${pathToTestVault}`,
+			APP_VERSION: '4.2.0-next.69'
 		}
 	},
 	use: {

@@ -42,17 +42,17 @@
 		},
 		{
 			label: 'Last 3 months',
-			dateFrom: subMonths(today, 3),
+			dateFrom: subMonths(thisMonthTo, 3),
 			dateTo: thisMonthTo
 		},
 		{
 			label: 'Last 6 months',
-			dateFrom: subMonths(today, 6),
+			dateFrom: subMonths(thisMonthTo, 6),
 			dateTo: thisMonthTo
 		},
 		{
 			label: 'Last 12 months',
-			dateFrom: subMonths(today, 12),
+			dateFrom: subMonths(thisMonthTo, 12),
 			dateTo: thisMonthTo
 		},
 		{
@@ -67,7 +67,7 @@
 		},
 		{
 			label: 'Lifetime',
-			dateFrom: subYears(today, 900), // FIXME: should be the earliest transaction date
+			dateFrom: subYears(thisYearTo, 900), // FIXME: should be the earliest transaction date
 			dateTo: thisYearTo // FIXME: should be the latest transaction date
 		}
 	];

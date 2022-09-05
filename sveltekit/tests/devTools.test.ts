@@ -1,18 +1,18 @@
 import { expect, test } from '@playwright/test';
-import { databaseWipe } from './fixtures/helpers.js';
+import { databaseWipe, delay } from './fixtures/helpers.js';
 
 test.describe('Developer tools', () => {
 	test.beforeEach(async ({ baseURL }) => {
 		await databaseWipe(baseURL!);
 	});
 
-	test('Sidebar link is not visible in production', async ({ page, baseURL }) => {
+	test('Sidebar link is not visible in production', async ({ page }) => {
 		await page.goto('/');
-		expect(await page.locator('a', { hasText: 'The big picture' })).toBeVisible();
-		expect(await page.locator('a', { hasText: 'Developer tools' })).not.toBeVisible();
+		await expect(page.locator('a', { hasText: 'The big picture' })).toBeVisible();
+		await expect(page.locator('a', { hasText: 'Developer tools' })).not.toBeVisible();
 	});
 
-	test('Vault can be seeded and wiped', async ({ page, baseURL }) => {
+	test('Vault can be seeded and wiped', async ({ page }) => {
 		await page.goto('/');
 		expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$0');
 
@@ -22,13 +22,14 @@ test.describe('Developer tools', () => {
 		// Seed DB
 		await page.locator('button', { hasText: 'Seed demo data' }).click();
 		const statusBar = page.locator('.statusBar');
+		await delay();
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
-		await expect(await statusBar.textContent()).toMatch(
+		expect(await statusBar.textContent()).toMatch(
 			'Database action was performed (likely without errors)'
 		);
 
 		await page.locator('button', { hasText: 'Dismiss' }).click();
-		await expect(await statusBar.textContent()).toMatch(
+		expect(await statusBar.textContent()).toMatch(
 			'Database action was performed (likely without errors)'
 		);
 
@@ -38,6 +39,7 @@ test.describe('Developer tools', () => {
 		// Wipe DB
 		await page.goto('/devTools');
 		await page.locator('button', { hasText: 'Delete all data' }).click();
+		await delay();
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
 		expect(await statusBar.textContent()).toMatch(
 			'Database action was performed (likely without errors)'
