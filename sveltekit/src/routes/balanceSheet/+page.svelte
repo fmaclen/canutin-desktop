@@ -5,6 +5,7 @@
 	import Card from '$lib/components/Card.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import { balanceGroupAppearance } from '$lib/components/Card';
+	import Link from '$lib/components/Link.svelte';
 
 	const title = 'Balance sheet';
 
@@ -16,6 +17,10 @@
 </svelte:head>
 
 <ScrollView {title}>
+	<nav slot="NAV" class="balanceSheetNav">
+		<Link href="/account/new">New account</Link>
+		<Link href="/asset/new">New asset</Link>
+	</nav>
 	<Section title="Balances">
 		<div slot="CONTENT" class="balanceSheet">
 			{#each data.balanceSheetBalanceGroups as balanceSheetItemsByBalanceGroup}
@@ -140,5 +145,13 @@
 		margin: 0;
 		font-size: 12px;
 		line-height: 1em;
+	}
+
+	nav.balanceSheetNav {
+		display: flex;
+		column-gap: 16px;
+		align-items: center;
+		padding: 0 64px 24px 64px;
+		font-size: 13px;
 	}
 </style>

@@ -6,6 +6,7 @@
 <main class="scrollView">
 	<header class="scrollView__header">
 		<h1 class="scrollView__h1">{title}</h1>
+		<slot name="NAV" />
 	</header>
 
 	<div class="scrollView__container {isFullscreen && 'scrollView__container--fullscreen'}">
@@ -24,7 +25,8 @@
 
 	header.scrollView__header {
 		display: flex;
-		flex-direction: column;
+		align-items: flex-end;
+		justify-content: space-between;
 		background-color: var(--color-grey3);
 		border-bottom: 1px solid var(--color-border);
 	}
