@@ -2,6 +2,7 @@ import type { PlaywrightTestConfig } from '@playwright/test';
 import { pathToTestVault } from './tests/fixtures/helpers.js';
 
 const config: PlaywrightTestConfig = {
+	globalSetup: './tests/fixtures/global-setup.ts',
 	webServer: {
 		command: 'npm run build && npm run preview',
 		port: 4173,
