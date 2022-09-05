@@ -1,4 +1,4 @@
-name: Electron & SvelteKit Tests
+name: Integration Tests
 on:
   push:
     branches: [main, master]
