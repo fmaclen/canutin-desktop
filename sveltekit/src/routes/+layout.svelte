@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { dev } from '$app/env';
+	import { dev } from '$app/environment';
 	import type { PageData } from './$types';
 
 	import logo from '$lib/assets/canutin-iso-logo.svg';

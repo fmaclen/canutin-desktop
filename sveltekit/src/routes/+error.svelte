@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/stores';
-	import { dev } from '$app/env';
+	import { dev } from '$app/environment';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Notice from '$lib/components/Notice.svelte';
