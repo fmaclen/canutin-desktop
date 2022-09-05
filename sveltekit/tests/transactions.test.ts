@@ -155,7 +155,10 @@ test.describe('Transactions', () => {
 			'Type to filter by description, amount, category or account'
 		);
 
+		const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
+
 		await formInput.type('transfer');
+		await delay();
 		expect(await cardTransactions.textContent()).toMatch('12');
 		expect(await cardNetBalance.textContent()).toMatch('-$2,500.00');
 		expect(await tableRows.count()).toBe(12);
@@ -166,6 +169,7 @@ test.describe('Transactions', () => {
 		await formSelect.selectOption('0');
 		await formSelect.dispatchEvent('change');
 		await formInput.click(); // Need to click on the input field for the change event to really fire
+		await delay();
 		expect(await tableRows.count()).toBe(4);
 		expect(await cardNetBalance.textContent()).toMatch('-$500.00');
 
@@ -180,6 +184,7 @@ test.describe('Transactions', () => {
 		await formSelect.selectOption('2');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
+		await delay();
 		expect(await tableRows.count()).toBe(12);
 		expect(await cardNetBalance.textContent()).toMatch('-$2,500.00');
 
@@ -187,6 +192,7 @@ test.describe('Transactions', () => {
 		await formSelect.selectOption('3');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
+		await delay();
 		expect(await tableRows.count()).toBe(24);
 		expect(await cardNetBalance.textContent()).toMatch('-$5,000.00');
 
@@ -194,6 +200,7 @@ test.describe('Transactions', () => {
 		await formSelect.selectOption('4');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
+		await delay();
 		expect(await tableRows.count()).toBe(48);
 		expect(await cardNetBalance.textContent()).toMatch('-$10,000.00');
 
@@ -201,6 +208,7 @@ test.describe('Transactions', () => {
 		await formSelect.selectOption('5');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
+		await delay();
 		expect(await tableRows.count()).toBe(36);
 		expect(await cardNetBalance.textContent()).toMatch('-$7,500.00');
 
@@ -208,6 +216,7 @@ test.describe('Transactions', () => {
 		await formSelect.selectOption('6');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
+		await delay();
 		expect(await tableRows.count()).toBe(48);
 		expect(await cardNetBalance.textContent()).toMatch('-$10,000.00');
 
@@ -215,6 +224,7 @@ test.describe('Transactions', () => {
 		await formSelect.selectOption('7');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
+		await delay();
 		expect(await tableRows.count()).toBe(96);
 		expect(await cardNetBalance.textContent()).toMatch('-$20,000.00');
 
