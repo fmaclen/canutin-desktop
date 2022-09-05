@@ -27,7 +27,7 @@ test.describe('Vault', () => {
 		expect(fs.existsSync(newVaultPath)).toBe(true);
 	});
 
-	test.skip('Invalid vaults', () => {
+	test.describe('Invalid vaults', () => {
 		test("Can't be migrated", async ({ page, baseURL }) => {
 			const umigratableVaultPath = path.join(testsPath, 'fixtures', 'Unmigratable.vault.test');
 

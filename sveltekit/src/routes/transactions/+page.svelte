@@ -71,7 +71,6 @@
 			dateTo: thisYearTo // FIXME: should be the latest transaction date
 		}
 	];
-	console.log(periods[2]);
 
 	enum Filter {
 		ALL = 'All',
