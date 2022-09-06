@@ -18,8 +18,8 @@
 
 <ScrollView {title}>
 	<nav slot="NAV" class="balanceSheetNav">
-		<Link href="/account/new">New account</Link>
-		<Link href="/asset/new">New asset</Link>
+		<Link href="/account/add">Add account</Link>
+		<Link href="/asset/add">Add asset</Link>
 	</nav>
 	<Section title="Balances">
 		<div slot="CONTENT" class="balanceSheet">

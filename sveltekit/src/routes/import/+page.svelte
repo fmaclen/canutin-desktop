@@ -7,11 +7,15 @@
 	import Button from '$lib/components/Button.svelte';
 	import Notice from '$lib/components/Notice.svelte';
 	import Code from '$lib/components/Code.svelte';
+	import Form from '$lib/components/Form.svelte';
+	import FormFieldset from '$lib/components/FormFieldset.svelte';
+	import FormField from '$lib/components/FormField.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import { CardAppearance } from '$lib/components/Card';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { ImportSummary } from '../import.json/+server';
+	import FormFooter from '$lib/components/FormFooter.svelte';
 
 	const title = 'Import data';
 
@@ -76,18 +80,17 @@
 
 	{@const error = noFileError || importSummary?.error}
 	<Section title="Manually">
-		<div slot="CONTENT" class="importForm">
-			<form class="form" on:submit={submitForm}>
-				<fieldset class="form__fieldset">
-					<div class="form__field">
-						<label class="form__label" for="file">CanutinFile</label>
+		<div slot="CONTENT" class="import">
+			<Form on:submit={submitForm}>
+				<FormFieldset>
+					<FormField name="file" label="CanutinFile">
 						<FormInput type="file" name="file" accept=".json" />
-					</div>
-				</fieldset>
-				<footer class="form__footer">
+					</FormField>
+				</FormFieldset>
+				<FormFooter>
 					<Button appearance={Appearance.ACTIVE}>Upload</Button>
-				</footer>
-			</form>
+				</FormFooter>
+			</Form>
 		</div>
 	</Section>
 
@@ -218,47 +221,10 @@
 </ScrollView>
 
 <style lang="scss">
-	div.importForm {
+	div.import {
 		display: flex;
 		flex-direction: column;
 		row-gap: 16px;
-	}
-
-	form.form {
-		border: 1px solid var(--color-border);
-		border-radius: 4px;
-		display: grid;
-	}
-
-	fieldset.form__fieldset {
-		border: none;
-		padding: 12px 0;
-		display: grid;
-		grid-row-gap: 8px;
-		margin: 0;
-	}
-
-	div.form__field {
-		display: grid;
-		grid-template-columns: 1.25fr 2fr 0.75fr;
-		column-gap: 20px;
-	}
-
-	label.form__label {
-		display: flex;
-		margin-left: auto;
-		align-items: center;
-		font-size: 12px;
-		font-weight: 600;
-		letter-spacing: -0.03em;
-		color: var(--color-grey70);
-	}
-
-	footer.form__footer {
-		display: flex;
-		justify-content: flex-end;
-		padding: 8px 12px;
-		background-color: var(--color-border);
 	}
 
 	div.importStatus {
