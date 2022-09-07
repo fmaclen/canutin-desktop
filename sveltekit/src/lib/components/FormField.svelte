@@ -25,9 +25,9 @@
 	label.form__label {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
 		align-items: flex-end;
 		margin-left: auto;
+		margin-top: 12px;
 		font-size: 12px;
 		font-weight: 600;
 		letter-spacing: -0.03em;

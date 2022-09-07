@@ -6,26 +6,39 @@
 	export let accept: string | null = null;
 	export let required: boolean = true;
 	export let disabled: boolean = false;
+	export let error: string = '';
 
 	const setType = (node: HTMLInputElement) => {
 		node.type = type;
 	};
 </script>
 
-<input
-	class="formInput"
-	{name}
-	{placeholder}
-	{accept}
-	{required}
-	{disabled}
-	use:setType
-	bind:value
-	on:keyup
-/>
+<div class="formInput">
+	<input
+		class="formInput__input {error && 'formInput__input--error'}"
+		{name}
+		{placeholder}
+		{accept}
+		{required}
+		{disabled}
+		use:setType
+		bind:value
+		on:keyup
+	/>
+
+	{#if error}
+		<p class="formInput__error">{error}</p>
+	{/if}
+</div>
 
 <style lang="scss">
-	input.formInput {
+	div.formInput {
+		display: flex;
+		flex-direction: column;
+		row-gap: 4px;
+	}
+
+	input.formInput__input {
 		@import './Form.scss';
 		@include baseInput;
 
@@ -33,5 +46,18 @@
 			pointer-events: none;
 			background-color: var(--color-grey10);
 		}
+
+		&--error {
+			border-color: var(--color-redPrimary);
+		}
+	}
+
+	p.formInput__error {
+		font-size: 12px;
+		margin: 0;
+		color: var(--color-redPrimary);
+		background-color: var(--color-redSecondary);
+		border-radius: 4px;
+		padding: 8px;
 	}
 </style>
