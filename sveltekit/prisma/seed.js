@@ -537,7 +537,7 @@ const accountTypes = [
 
 const assetTypes = [
 	{
-		name: 'Cash'
+		name: 'Currency'
 	},
 	{
 		name: 'Security'
@@ -553,9 +553,6 @@ const assetTypes = [
 	},
 	{
 		name: 'Vehicle'
-	},
-	{
-		name: 'Cash'
 	},
 	{
 		name: 'Real state'
