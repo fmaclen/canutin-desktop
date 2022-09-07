@@ -23,8 +23,7 @@
 	let noFileError: string | undefined = undefined;
 	let importSummary: ImportSummary | undefined = undefined;
 
-	const submitForm = (event: any) => {
-		event.preventDefault();
+	const handleSubmit = (event: any) => {
 		importSummary = undefined; // Reset the previous import summary (if any)
 
 		const chosenFile = event.target.file.files[0];
@@ -81,7 +80,7 @@
 	{@const error = noFileError || importSummary?.error}
 	<Section title="Manually">
 		<div slot="CONTENT" class="import">
-			<Form on:submit={submitForm}>
+			<Form on:submit={handleSubmit}>
 				<FormFieldset>
 					<FormField name="file" label="CanutinFile">
 						<FormInput type="file" name="file" accept=".json" />

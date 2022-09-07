@@ -1,4 +1,4 @@
-<form class="form" on:submit>
+<form class="form" on:submit|preventDefault>
 	<slot />
 </form>
 

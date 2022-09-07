@@ -1,10 +1,17 @@
 <script lang="ts">
 	export let label: string;
 	export let name: string;
+	export let optional: boolean = false;
 </script>
 
 <div class="form__field">
-	<label class="form__label" for={name}>{label}</label>
+	<label class="form__label" for={name}>
+		{label}
+
+		{#if optional}
+			<span class="form__optional">Optional</span>
+		{/if}
+	</label>
 	<slot />
 </div>
 
@@ -17,11 +24,18 @@
 
 	label.form__label {
 		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: flex-end;
 		margin-left: auto;
-		align-items: center;
 		font-size: 12px;
 		font-weight: 600;
 		letter-spacing: -0.03em;
 		color: var(--color-grey70);
+	}
+
+	span.form__optional {
+		font-weight: 400;
+		color: var(--color-grey40);
 	}
 </style>
