@@ -1,10 +1,11 @@
 <script lang="ts">
 	export let value: number | string;
 	export let options: { label: string; value?: string | number }[];
+	export let name: string;
 </script>
 
 <div class="formSelect">
-	<select class="formSelect__select" type="text" bind:value on:change>
+	<select class="formSelect__select" type="text" {name} bind:value on:change>
 		{#each options as { label, value }, i}
 			<option value={value || i}>{label}</option>
 		{/each}

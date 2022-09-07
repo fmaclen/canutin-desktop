@@ -193,6 +193,7 @@
 					on:keyup={async () => await getTransactions()}
 				/>
 				<FormSelect
+					name="periods"
 					options={periods}
 					bind:value={periodIndex}
 					on:change={async () => {

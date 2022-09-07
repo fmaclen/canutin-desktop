@@ -28,16 +28,7 @@ export const POST = async ({ request }: RequestEvent) => {
 			assetTypeId: newAsset.assetTypeId,
 			symbol: newAsset.symbol,
 			balanceGroup: 1,
-			isSold: false,
-			assetBalanceStatements: {
-				create: [
-					{
-						cost: newAsset.cost,
-						quantity: newAsset.quantity,
-						value: newAsset.value
-					}
-				]
-			}
+			isSold: false
 		}
 	});
 

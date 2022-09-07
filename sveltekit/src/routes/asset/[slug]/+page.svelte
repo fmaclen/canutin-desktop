@@ -29,7 +29,7 @@
 		}
 	};
 
-	const title = 'Add asset';
+	const title = data.asset.name;
 </script>
 
 <svelte:head>
@@ -39,6 +39,7 @@
 <ScrollView {title}>
 	<AssetDetails
 		{handleSubmit}
+		asset={data.asset}
 		selectAssetTypes={data.selectAssetTypes}
 		selectBalanceGroups={data.selectBalanceGroups}
 		quantifiableAssetTypes={data.quantifiableAssetTypes}
