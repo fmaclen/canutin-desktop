@@ -6,6 +6,7 @@ import {
 } from '$lib/helpers/forms';
 import prisma from '$lib/helpers/prisma';
 import type { Asset } from '@prisma/client';
+import { SortOrder } from '$lib/helpers/constants';
 
 interface Params {
 	slug: string | null;
@@ -27,10 +28,20 @@ export const load = async ({ params }: { params: Params }) => {
 	const selectAssetTypes = await getSelectAssetTypes();
 	const quantifiableAssetTypes = await getQuantifiableAssetTypes();
 
+	const lastBalanceStatement = await prisma.assetBalanceStatement.findFirst({
+		where: {
+			assetId: asset.id
+		},
+		orderBy: {
+			createdAt: SortOrder.DESC
+		}
+	});
+
 	return {
 		asset,
 		selectAssetTypes,
 		selectBalanceGroups,
-		quantifiableAssetTypes
+		quantifiableAssetTypes,
+		lastBalanceStatement
 	};
 };

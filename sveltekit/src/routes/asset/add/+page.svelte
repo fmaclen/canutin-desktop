@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import AssetDetails from '../AssetDetails.svelte';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
-
-	$: error = '';
+	$: nameError = '';
 
 	const handleSubmit = async (event: any) => {
 		const response = await fetch('/asset.json', {
@@ -14,18 +15,20 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				name: event.target.name.value,
-				symbol: event.target.symbol?.value,
-				balanceGroup: parseInt(event.target.balanceGroup.value),
-				assetTypeId: parseInt(event.target.assetTypeId.value)
+				details: {
+					name: event.target.name.value,
+					symbol: event.target.symbol?.value,
+					balanceGroup: event.target.balanceGroup.valueAsNumber,
+					assetTypeId: event.target.assetTypeId.valueAsNumber
+				}
 			})
 		});
 		const asset = await response.json();
 
 		if (asset.error) {
-			error = asset.error;
+			nameError = asset.error.name;
 		} else {
-			alert(`Asset created! (Id: ${asset.id})`);
+			await goto(`/asset/${asset.id}`);
 		}
 	};
 
@@ -42,6 +45,6 @@
 		selectAssetTypes={data.selectAssetTypes}
 		selectBalanceGroups={data.selectBalanceGroups}
 		quantifiableAssetTypes={data.quantifiableAssetTypes}
-		nameError={error}
+		{nameError}
 	/>
 </ScrollView>

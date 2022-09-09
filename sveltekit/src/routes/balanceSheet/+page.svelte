@@ -4,8 +4,8 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Section from '$lib/components/Section.svelte';
-	import { balanceGroupAppearance } from '$lib/components/Card';
 	import Link from '$lib/components/Link.svelte';
+	import { balanceGroupAppearance } from '$lib/components/Card';
 
 	const title = 'Balance sheet';
 
@@ -42,7 +42,13 @@
 							<ol class="balanceSheet__items">
 								{#each balanceSheetTypeGroup.balanceSheetItems as balanceSheetItem}
 									<li class="balanceSheet__item">
-										<p class="balanceSheet__itemName">{balanceSheetItem.name}</p>
+										<p class="balanceSheet__itemName">
+											<Link
+												href={`/${balanceSheetItem.isAccount ? 'account' : 'asset'}/${
+													balanceSheetItem.id
+												}`}>{balanceSheetItem.name}</Link
+											>
+										</p>
 										<p class="balanceSheet__itemValue">
 											{formatCurrency(balanceSheetItem.currentBalance)}
 										</p>
