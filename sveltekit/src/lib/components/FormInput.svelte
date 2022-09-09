@@ -13,7 +13,7 @@
 	};
 </script>
 
-<div class="formInput">
+<div class="formInput {error && 'formInput--error'}">
 	<input
 		class="formInput__input {error && 'formInput__input--error'}"
 		{name}
@@ -35,7 +35,11 @@
 	div.formInput {
 		display: flex;
 		flex-direction: column;
-		row-gap: 4px;
+
+		&--error {
+			border-radius: 4px;
+			background-color: var(--color-redSecondary);
+		}
 	}
 
 	input.formInput__input {
@@ -56,7 +60,6 @@
 		font-size: 12px;
 		margin: 0;
 		color: var(--color-redPrimary);
-		background-color: var(--color-redSecondary);
 		border-radius: 4px;
 		padding: 8px;
 	}
