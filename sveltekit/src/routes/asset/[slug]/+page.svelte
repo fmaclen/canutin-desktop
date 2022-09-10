@@ -27,7 +27,7 @@
 				isSold: event.target.isSold.checked ? true : false
 			}
 		};
-		const asset = await api('asset', payload, 'PATCH');
+		const asset = await api({ endpoint: 'asset', method: 'PATCH', payload });
 
 		if (asset.error) {
 			$statusBarStore = {
@@ -52,7 +52,7 @@
 				cost: parseFloat(event.target.cost?.value)
 			}
 		};
-		const assetBalanceStatement = await api('asset', payload);
+		const assetBalanceStatement = await api({ endpoint: 'asset', method: 'POST', payload });
 
 		if (assetBalanceStatement.error) {
 			$statusBarStore = {

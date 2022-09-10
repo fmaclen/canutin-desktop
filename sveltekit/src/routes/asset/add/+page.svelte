@@ -21,7 +21,7 @@
 				isSold: false
 			}
 		};
-		const asset = await api('asset', payload, 'POST');
+		const asset = await api({ endpoint: 'asset', method: 'POST', payload });
 
 		if (asset.error) {
 			nameError = asset.error.name;

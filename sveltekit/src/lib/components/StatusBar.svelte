@@ -2,19 +2,14 @@
 	import { formatDistance, fromUnixTime } from 'date-fns';
 	import { onMount } from 'svelte';
 
+	import { api } from '$lib/helpers/misc';
 	import Button from './Button.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import { Appearance } from '$lib/helpers/constants';
 	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
 
 	const getLastUpdatedDate = async () => {
-		const response = await fetch(`/vault.json`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		});
-		const data = await response.json();
+		const data = await api({ endpoint: 'vault' });
 
 		$statusBarStore = {
 			message: `Data was last updated ${formatDistance(
