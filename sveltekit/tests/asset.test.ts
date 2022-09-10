@@ -17,7 +17,7 @@ test.describe('Asset', () => {
 		const balanceItem = page.locator('.balanceSheet__item');
 		expect(await balanceItem.count()).toBe(0);
 
-		// Add a new asset of type "Security" (which is `isQuantifiable`)
+		// Add a new asset of type "Security" (which `isQuantifiable`)
 		await page.locator('a', { hasText: 'Add asset' }).click();
 		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
 		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
@@ -116,6 +116,8 @@ test.describe('Asset', () => {
 		await page.locator('.formInput__input[name=name]').fill('GameStop');
 		await page.locator('.formSelect__select[name=assetTypeId]').selectOption({ label: 'Currency' });
 		await page.locator('.formSelect__select[name=balanceGroup]').selectOption({ label: 'Cash' });
+		await expect(page.locator('.formInput__error')).not.toBeVisible();
+
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(page.locator('.formInput__error')).toBeVisible();
 		expect(await page.locator('.formInput__error').textContent()).toMatch(
