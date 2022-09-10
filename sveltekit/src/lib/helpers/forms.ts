@@ -1,6 +1,27 @@
 import { BalanceGroup, getBalanceGroupLabel } from '$lib/helpers/constants';
 import prisma from '$lib/helpers/prisma';
 
+interface AssetForm {
+	name: string;
+	assetTypeId: number;
+	balanceGroup: number;
+	isSold: boolean;
+	symbol?: string;
+	id?: number;
+}
+
+interface AssetBalanceStatementForm {
+	assetId: number;
+	value: number;
+	quantity?: number;
+	cost?: number;
+}
+
+export interface AssetFormPayload {
+	assetForm?: AssetForm;
+	assetBalanceStatementForm?: AssetBalanceStatementForm;
+}
+
 // Get list of asset types and format it for the select field
 export const getSelectAssetTypes = async () => {
 	const assetTypes = await prisma.assetType.findMany({
@@ -30,24 +51,3 @@ export const selectBalanceGroups = [
 	{ label: getBalanceGroupLabel(BalanceGroup.INVESTMENTS) },
 	{ label: getBalanceGroupLabel(BalanceGroup.OTHER_ASSETS) }
 ];
-
-interface AssetForm {
-	name: string;
-	assetTypeId: number;
-	balanceGroup: number;
-	isSold: boolean;
-	symbol?: string;
-	id?: number;
-}
-
-interface AssetBalanceStatementForm {
-	assetId: number;
-	value: number;
-	quantity?: number;
-	cost?: number;
-}
-
-export interface AssetFormPayload {
-	assetForm?: AssetForm;
-	assetBalanceStatementForm?: AssetBalanceStatementForm;
-}

@@ -107,5 +107,19 @@ test.describe('Asset', () => {
 		await expect(isSoldCheckbox).toBeChecked();
 		await expect(page.locator('.formInput__input[name=value]')).toHaveValue('289.8');
 		await expect(page.locator('.formInput__input[name=cost]')).not.toBeVisible();
+
+		// Another asset with the same name can't be created
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		await page.locator('a', { hasText: 'Add asset' }).click();
+		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
+
+		await page.locator('.formInput__input[name=name]').fill('GameStop');
+		await page.locator('.formSelect__select[name=assetTypeId]').selectOption({ label: 'Currency' });
+		await page.locator('.formSelect__select[name=balanceGroup]').selectOption({ label: 'Cash' });
+		await page.locator('button', { hasText: 'Add' }).click();
+		await expect(page.locator('.formInput__error')).toBeVisible();
+		expect(await page.locator('.formInput__error').textContent()).toMatch(
+			'An asset with the same name already exists'
+		);
 	});
 });
