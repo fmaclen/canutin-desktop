@@ -35,7 +35,7 @@ interface AssetForm {
 	name: string;
 	assetTypeId: number;
 	balanceGroup: number;
-	isSold?: boolean;
+	isSold: boolean;
 	symbol?: string;
 	id?: number;
 }

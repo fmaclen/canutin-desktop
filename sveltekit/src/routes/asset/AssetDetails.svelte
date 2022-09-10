@@ -18,6 +18,7 @@
 	export let selectBalanceGroups: FormSelectOption[];
 	export let quantifiableAssetTypes: number[];
 	export let nameError: string | undefined;
+	export let submitButtonLabel: string;
 
 	let name = asset ? asset.name : '';
 	let assetTypeId = asset ? asset.assetTypeId : 1;
@@ -50,12 +51,12 @@
 			{#if asset}
 				<FormFieldset>
 					<FormField name="isSold" label="Mark as">
-						<FormInputCheckbox name="isSold" label="Sold" />
+						<FormInputCheckbox name="isSold" label="Sold" checked={asset?.isSold} />
 					</FormField>
 				</FormFieldset>
 			{/if}
 			<FormFooter>
-				<Button disabled={!name} appearance={Appearance.ACTIVE}>Save</Button>
+				<Button disabled={!name} appearance={Appearance.ACTIVE}>{submitButtonLabel}</Button>
 			</FormFooter>
 		</Form>
 	</div>

@@ -9,8 +9,6 @@ export const POST = async ({ request }: RequestEvent) => {
 	const payload: AssetFormPayload = await request.json();
 	const { assetForm, assetBalanceStatementForm } = payload;
 
-	console.log(payload);
-
 	// Create new Asset
 	if (assetForm) {
 		if (!assetForm.name || !assetForm.assetTypeId || !(assetForm.balanceGroup >= 0)) {
@@ -20,8 +18,7 @@ export const POST = async ({ request }: RequestEvent) => {
 		try {
 			const asset = await prisma.asset.create({
 				data: {
-					...assetForm,
-					isSold: assetForm.isSold ? assetForm.isSold : false
+					...assetForm
 				}
 			});
 			return json({ id: asset.id });

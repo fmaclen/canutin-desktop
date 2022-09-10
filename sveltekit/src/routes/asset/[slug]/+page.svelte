@@ -24,7 +24,7 @@
 				symbol: event.target.symbol?.value,
 				balanceGroup: parseInt(event.target.balanceGroup.value),
 				assetTypeId: parseInt(event.target.assetTypeId.value),
-				isSold: event.target.isSold.checked
+				isSold: event.target.isSold.checked ? true : false
 			}
 		};
 		const asset = await api('asset', payload, 'PATCH');
@@ -120,5 +120,6 @@
 		selectBalanceGroups={data.selectBalanceGroups}
 		quantifiableAssetTypes={data.quantifiableAssetTypes}
 		nameError={error}
+		submitButtonLabel="Save"
 	/>
 </ScrollView>

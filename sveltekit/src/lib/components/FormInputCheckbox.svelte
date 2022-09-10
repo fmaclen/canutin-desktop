@@ -1,12 +1,13 @@
 <script lang="ts">
 	export let name: string;
 	export let label: string;
+	export let checked: boolean;
 	export let required: boolean = false;
 	export let disabled: boolean = false;
 </script>
 
 <label class="formInputCheckbox">
-	<input class="formInputCheckbox__input" type="checkbox" {name} {required} {disabled} />
+	<input class="formInputCheckbox__input" type="checkbox" {name} {checked} {required} {disabled} />
 	<span class="formInputCheckbox__label">{label}</span>
 </label>
 

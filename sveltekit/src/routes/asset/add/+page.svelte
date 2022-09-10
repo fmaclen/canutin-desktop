@@ -17,7 +17,8 @@
 				name: event.target.name.value,
 				symbol: event.target.symbol?.value,
 				balanceGroup: parseInt(event.target.balanceGroup.value),
-				assetTypeId: parseInt(event.target.assetTypeId.value)
+				assetTypeId: parseInt(event.target.assetTypeId.value),
+				isSold: false
 			}
 		};
 		const asset = await api('asset', payload, 'POST');
@@ -47,5 +48,6 @@
 		selectBalanceGroups={data.selectBalanceGroups}
 		quantifiableAssetTypes={data.quantifiableAssetTypes}
 		{nameError}
+		submitButtonLabel="Add"
 	/>
 </ScrollView>
