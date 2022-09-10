@@ -12,6 +12,7 @@
 	import FormField from '$lib/components/FormField.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
+	import { api } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { ImportSummary } from '../import.json/+server';
@@ -42,14 +43,7 @@
 		const reader = new FileReader();
 		reader.onload = async (event: ProgressEvent<FileReader>) => {
 			const canutinFile = JSON.parse(event?.target?.result as string);
-			const response = await fetch('/import.json', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(canutinFile)
-			});
-			importSummary = await response.json();
+			importSummary = await api({ endpoint: 'import', method: 'POST', payload: canutinFile });
 
 			// Update the loading state
 			isLoading = false;
