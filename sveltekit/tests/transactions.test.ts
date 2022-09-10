@@ -149,7 +149,7 @@ test.describe('Transactions', () => {
 		);
 
 		// Filter transactions by typing a keyword
-		const formInput = page.locator('.formInput');
+		const formInput = page.locator('.formInput__input');
 		await expect(formInput).toHaveAttribute(
 			'placeholder',
 			'Type to filter by description, amount, category or account'
