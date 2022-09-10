@@ -21,6 +21,7 @@
 		{accept}
 		{required}
 		{disabled}
+		step={type === 'number' ? 'any' : null}
 		use:setType
 		bind:value
 		on:keyup

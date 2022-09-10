@@ -29,3 +29,14 @@ export const dateInUTC = (date: Date) => {
 export const formatInUTC = (date: Date, format: string) => {
 	return formatInTimeZone(date, 'UTC', format);
 };
+
+export const api = async (endpoint: string, body: any, method?: string) => {
+	const response = await fetch(`/${endpoint}.json`, {
+		method: method ? method : 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(body)
+	});
+	return await response.json();
+};

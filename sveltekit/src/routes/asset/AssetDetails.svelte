@@ -28,6 +28,9 @@
 	<div slot="CONTENT">
 		<Form on:submit={handleSubmit}>
 			<FormFieldset>
+				<FormField name="name" label="Name">
+					<FormInput type="text" name="name" bind:value={name} error={nameError} />
+				</FormField>
 				<FormField name="assetTypeId" label="Asset type">
 					<FormSelect name="assetTypeId" options={selectAssetTypes} bind:value={assetTypeId} />
 				</FormField>
@@ -38,22 +41,19 @@
 						value={asset?.balanceGroup || 0}
 					/>
 				</FormField>
-			</FormFieldset>
-			<FormFieldset>
-				<FormField name="name" label="Name">
-					<FormInput type="text" name="name" bind:value={name} error={nameError} />
-				</FormField>
 				{#if isQuantifiable}
 					<FormField name="symbol" label="Symbol" optional={true}>
 						<FormInput type="text" name="symbol" required={false} value={asset?.symbol} />
 					</FormField>
 				{/if}
-				{#if asset}
+			</FormFieldset>
+			{#if asset}
+				<FormFieldset>
 					<FormField name="isSold" label="Mark as">
 						<FormInputCheckbox name="isSold" label="Sold" />
 					</FormField>
-				{/if}
-			</FormFieldset>
+				</FormFieldset>
+			{/if}
 			<FormFooter>
 				<Button disabled={!name} appearance={Appearance.ACTIVE}>Save</Button>
 			</FormFooter>

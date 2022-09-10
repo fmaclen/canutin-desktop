@@ -9,29 +9,25 @@
 	import Button from '$lib/components/Button.svelte';
 	import AssetDetails from '../AssetDetails.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
+	import { api } from '$lib/helpers/misc';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
+	import type { AssetFormPayload } from '$lib/helpers/forms';
 
 	export let data: PageData;
 
 	const updateAsset = async (event: any) => {
-		const response = await fetch('/asset.json', {
-			method: 'PATCH',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				assetUpdateInput: {
-					id: data.asset.id,
-					name: event.target.name.value,
-					symbol: event.target.symbol?.value,
-					balanceGroup: parseInt(event.target.balanceGroup.value),
-					assetTypeId: parseInt(event.target.assetTypeId.value),
-					isSold: event.target.isSold.checked
-				}
-			})
-		});
-		const asset = await response.json();
+		const payload: AssetFormPayload = {
+			assetForm: {
+				id: data.asset.id,
+				name: event.target.name.value,
+				symbol: event.target.symbol?.value,
+				balanceGroup: parseInt(event.target.balanceGroup.value),
+				assetTypeId: parseInt(event.target.assetTypeId.value),
+				isSold: event.target.isSold.checked
+			}
+		};
+		const asset = await api('asset', payload, 'PATCH');
 
 		if (asset.error) {
 			$statusBarStore = {
@@ -43,25 +39,20 @@
 				message: 'The asset was updated successfully',
 				appearance: Appearance.POSITIVE
 			};
+			window.location.reload();
 		}
 	};
 
 	const createAssetBalanceStatement = async (event: any) => {
-		const response = await fetch('/asset.json', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				assetBalanceStatementUpdateInput: {
-					assetId: data.asset.id,
-					value: parseFloat(event.target.value?.value),
-					quantity: parseFloat(event.target.quantity?.value),
-					cost: parseFloat(event.target.cost?.value)
-				}
-			})
-		});
-		const assetBalanceStatement = await response.json();
+		const payload: AssetFormPayload = {
+			assetBalanceStatementForm: {
+				assetId: data.asset.id,
+				value: parseFloat(event.target.value?.value),
+				quantity: parseFloat(event.target.quantity?.value),
+				cost: parseFloat(event.target.cost?.value)
+			}
+		};
+		const assetBalanceStatement = await api('asset', payload);
 
 		if (assetBalanceStatement.error) {
 			$statusBarStore = {
@@ -102,12 +93,7 @@
 							<FormInput type="number" name="cost" bind:value={balanceCost} />
 						</FormField>
 						<FormField name="value" label="Value">
-							<FormInput
-								type="number"
-								name="value"
-								bind:value={balanceValue}
-								disabled={isQuantifiable}
-							/>
+							<FormInput type="number" name="value" bind:value={balanceValue} disabled={true} />
 						</FormField>
 					{/if}
 					{#if !isQuantifiable}
@@ -116,7 +102,6 @@
 								type="number"
 								name="value"
 								value={data?.lastBalanceStatement?.value?.toString() || '0'}
-								disabled={isQuantifiable}
 							/>
 						</FormField>
 					{/if}

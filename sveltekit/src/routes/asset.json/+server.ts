@@ -3,46 +3,25 @@ import { Prisma } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
 
 import prisma from '$lib/helpers/prisma';
-
-interface AssetUpdateInput {
-	name: string;
-	assetTypeId: number;
-	balanceGroup: number;
-	isSold: boolean;
-	symbol?: string;
-	id?: number;
-}
-
-interface AssetBalanceStatementUpdateInput {
-	assetId: number;
-	value: number;
-	quantity?: number;
-	cost?: number;
-}
-
-interface AssetPayload {
-	assetUpdateInput?: AssetUpdateInput;
-	assetBalanceStatementUpdateInput: AssetBalanceStatementUpdateInput;
-}
+import type { AssetFormPayload } from '$lib/helpers/forms';
 
 export const POST = async ({ request }: RequestEvent) => {
-	const payload: AssetPayload = await request.json();
-	const { assetUpdateInput, assetBalanceStatementUpdateInput } = payload;
+	const payload: AssetFormPayload = await request.json();
+	const { assetForm, assetBalanceStatementForm } = payload;
+
+	console.log(payload);
 
 	// Create new Asset
-	if (assetUpdateInput) {
-		if (
-			!assetUpdateInput.name ||
-			!assetUpdateInput.assetTypeId ||
-			!(assetUpdateInput.balanceGroup >= 0)
-		) {
+	if (assetForm) {
+		if (!assetForm.name || !assetForm.assetTypeId || !(assetForm.balanceGroup >= 0)) {
 			return json({ error: 'Insufficient data' });
 		}
 
 		try {
 			const asset = await prisma.asset.create({
 				data: {
-					...assetUpdateInput
+					...assetForm,
+					isSold: assetForm.isSold ? assetForm.isSold : false
 				}
 			});
 			return json({ id: asset.id });
@@ -58,14 +37,14 @@ export const POST = async ({ request }: RequestEvent) => {
 	}
 
 	// Create new AssetBalanceStatement
-	if (assetBalanceStatementUpdateInput) {
-		if (!assetBalanceStatementUpdateInput.assetId || !assetBalanceStatementUpdateInput.value)
+	if (assetBalanceStatementForm) {
+		if (!assetBalanceStatementForm.assetId || !assetBalanceStatementForm.value)
 			return json({ error: 'Insufficient data' });
 
 		try {
 			const assetBalanceStatement = await prisma.assetBalanceStatement.create({
 				data: {
-					...assetBalanceStatementUpdateInput
+					...assetBalanceStatementForm
 				}
 			});
 			return json({ id: assetBalanceStatement.id });
@@ -77,25 +56,25 @@ export const POST = async ({ request }: RequestEvent) => {
 
 // Update asset
 export const PATCH = async ({ request }: RequestEvent) => {
-	const payload: AssetPayload = await request.json();
+	const payload: AssetFormPayload = await request.json();
 
-	const { assetUpdateInput } = payload;
+	const { assetForm } = payload;
 
-	if (assetUpdateInput) {
+	if (assetForm) {
 		if (
-			!assetUpdateInput.id ||
-			!assetUpdateInput.name ||
-			!assetUpdateInput.assetTypeId ||
-			!(assetUpdateInput.balanceGroup >= 0)
+			!assetForm.id ||
+			!assetForm.name ||
+			!assetForm.assetTypeId ||
+			!(assetForm.balanceGroup >= 0)
 		) {
 			return json({ error: 'Insufficient data' });
 		}
 
 		try {
 			const asset = await prisma.asset.update({
-				where: { id: assetUpdateInput.id },
+				where: { id: assetForm.id },
 				data: {
-					...assetUpdateInput
+					...assetForm
 				}
 			});
 			return json({ id: asset.id });
