@@ -4,10 +4,12 @@ import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/m
 import { sortByKey } from '$lib/helpers/misc';
 
 interface BalanceSheetItem {
+	id: number;
 	name: string;
 	balanceGroup: number;
 	type: string;
 	currentBalance: number;
+	isAccount: boolean;
 }
 
 interface BalanceItemsTypeGroup {
@@ -49,23 +51,28 @@ export const load = async () => {
 	// Get the latest balances for Accounts and Assets
 	const balanceSheetItems: BalanceSheetItem[] = [];
 	for (const balanceItem of balanceItems) {
-		const { name, balanceGroup } = balanceItem;
+		const { id, name, balanceGroup } = balanceItem;
 
 		let currentBalance: number;
 		let type: string;
+		let isAccount: boolean;
 
 		if ('accountTypeId' in balanceItem) {
 			// It's an Account if has the property `accountType`
 			currentBalance = await getAccountCurrentBalance(balanceItem);
 			type = balanceItem.accountType.name;
+			isAccount = true;
 		} else {
 			// It's an Asset
 			currentBalance = await getAssetCurrentBalance(balanceItem);
 			type = balanceItem.assetType.name;
+			isAccount = false;
 		}
 
 		balanceSheetItems.push({
+			id,
 			name,
+			isAccount,
 			balanceGroup,
 			type,
 			currentBalance

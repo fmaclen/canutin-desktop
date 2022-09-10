@@ -29,3 +29,17 @@ export const dateInUTC = (date: Date) => {
 export const formatInUTC = (date: Date, format: string) => {
 	return formatInTimeZone(date, 'UTC', format);
 };
+
+// FIXME:
+// - make `body` optional so we can use this helper for GET requests
+// - `endpoint` shouldn't be limited to `name.json` since some ednpoints have additional params
+export const api = async (endpoint: string, body: any, method?: string) => {
+	const response = await fetch(`/${endpoint}.json`, {
+		method: method ? method : 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(body)
+	});
+	return await response.json();
+};

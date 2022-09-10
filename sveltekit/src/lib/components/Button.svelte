@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { Appearance } from '$lib/helpers/constants';
 
+	export let disabled: boolean = false;
 	export let appearance: Appearance | null = null;
 </script>
 
-<button class="button {appearance && `button--${appearance}`}" on:click><slot /></button>
+<button class="button {appearance && `button--${appearance}`}" {disabled} on:click><slot /></button>
 
 <style lang="scss">
 	button.button {
@@ -44,6 +45,13 @@
 			&:hover {
 				border-color: var(--color-bluePrimary);
 			}
+		}
+
+		&:disabled {
+			color: var(--color-grey30);
+			background-color: var(--color-grey20);
+			border-color: var(--color-grey20);
+			cursor: default;
 		}
 	}
 </style>
