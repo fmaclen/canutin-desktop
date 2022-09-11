@@ -26,12 +26,13 @@
 		display: flex;
 		flex-direction: column;
 		align-items: flex-end;
+		justify-content: center;
 		margin-left: auto;
-		margin-top: 12px;
 		font-size: 12px;
 		font-weight: 600;
 		letter-spacing: -0.03em;
 		color: var(--color-grey70);
+		max-height: 40px;
 	}
 
 	span.form__optional {

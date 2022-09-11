@@ -7,7 +7,14 @@
 </script>
 
 <label class="formInputCheckbox">
-	<input class="formInputCheckbox__input" type="checkbox" {name} {checked} {required} {disabled} />
+	<input
+		class="formInputCheckbox__input"
+		type="checkbox"
+		{name}
+		{required}
+		{disabled}
+		bind:checked
+	/>
 	<span class="formInputCheckbox__label">{label}</span>
 </label>
 
