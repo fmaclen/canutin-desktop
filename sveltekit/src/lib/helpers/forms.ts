@@ -1,7 +1,7 @@
 import { BalanceGroup, getBalanceGroupLabel } from '$lib/helpers/constants';
 import prisma from '$lib/helpers/prisma';
 
-export interface AddOrUpdateAPI {
+export interface AddOrUpdateAPIResponse {
 	id?: number;
 	error: any;
 }

@@ -7,12 +7,12 @@
 	import { Appearance } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { Prisma } from '@prisma/client';
-	import type { AddOrUpdateAPI } from '$lib/helpers/forms';
+	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
 
 	const title = data.account.name;
-	let account: AddOrUpdateAPI;
+	let account: AddOrUpdateAPIResponse;
 
 	const handleSubmit = async (event: any) => {
 		let payload: Prisma.AccountUncheckedCreateInput = {

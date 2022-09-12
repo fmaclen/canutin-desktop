@@ -8,10 +8,10 @@
 	import { api } from '$lib/helpers/misc';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
-	import type { AddOrUpdateAPI } from '$lib/helpers/forms';
+	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
-	let asset: AddOrUpdateAPI;
+	let asset: AddOrUpdateAPIResponse;
 
 	const handleSubmit = async (event: any) => {
 		const payload: Prisma.AssetUncheckedCreateInput = {
