@@ -38,4 +38,4 @@ jobs:
         working-directory: ./sveltekit
         run: npm test
         env:
-          NODE_ENV: ci
+          NODE_ENV: CI

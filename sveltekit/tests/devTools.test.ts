@@ -3,8 +3,7 @@ import { databaseWipe, delay } from './fixtures/helpers.js';
 
 test.describe('Developer tools', () => {
 	// FIXME: this test fails in CI, probably due to a race condition
-	console.log('///////////////////////', process.env.NODE_ENV);
-	if (process.env.NODE_ENV !== 'ci') {
+	if (process.env.NODE_ENV !== 'CI') {
 		test.beforeEach(async ({ baseURL }) => {
 			await databaseWipe(baseURL!);
 		});
