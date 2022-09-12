@@ -25,7 +25,7 @@
 					{
 						quantity: parseFloat(event.target.quantity?.value),
 						cost: parseFloat(event.target.cost?.value),
-						value: parseFloat(event.target.value.value)
+						value: parseFloat(event.target.value?.value)
 					}
 				]
 			}
