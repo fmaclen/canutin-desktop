@@ -1,6 +1,12 @@
 import { BalanceGroup, getBalanceGroupLabel } from '$lib/helpers/constants';
 import prisma from '$lib/helpers/prisma';
 
+export interface addOrUpdateAPI {
+	id?: number;
+	error: any;
+}
+
+// Assets
 interface AssetForm {
 	name: string;
 	assetTypeId: number;
@@ -42,6 +48,19 @@ export const getQuantifiableAssetTypes = async () => {
 	return quantifiableAssetTypes
 		.filter((assetType) => quantifiableAssetTypeNames.includes(assetType.label))
 		.map((assetType) => assetType.value);
+};
+
+// Accounts
+// Get list of account types and format it for the select field
+export const getSelectAccountTypes = async () => {
+	const accountTypes = await prisma.accountType.findMany({
+		select: { id: true, name: true }
+	});
+
+	return accountTypes.map((accountType) => ({
+		label: accountType.name,
+		value: accountType.id
+	}));
 };
 
 // Get list of balance groups and format it for the select field

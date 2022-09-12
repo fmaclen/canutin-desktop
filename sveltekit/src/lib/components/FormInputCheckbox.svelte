@@ -6,8 +6,15 @@
 	export let disabled: boolean = false;
 </script>
 
-<label class="formInputCheckbox">
-	<input class="formInputCheckbox__input" type="checkbox" {name} {checked} {required} {disabled} />
+<label class="formInputCheckbox {disabled && 'formInputCheckbox__disabled'}">
+	<input
+		class="formInputCheckbox__input"
+		type="checkbox"
+		{name}
+		{required}
+		{disabled}
+		bind:checked
+	/>
 	<span class="formInputCheckbox__label">{label}</span>
 </label>
 
@@ -18,10 +25,16 @@
 		display: flex;
 		column-gap: 4px;
 		background-color: transparent;
+		cursor: pointer;
 
-		&:disabled {
+		&:active,
+		&:focus {
+			outline-color: var(--color-border);
+		}
+
+		&__disabled {
 			pointer-events: none;
-			background-color: var(--color-grey10);
+			cursor: default;
 		}
 	}
 
