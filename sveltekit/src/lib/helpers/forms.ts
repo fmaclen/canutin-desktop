@@ -3,7 +3,7 @@ import prisma from '$lib/helpers/prisma';
 
 export interface AddOrUpdateAPIResponse {
 	id?: number;
-	error: any;
+	error?: any;
 }
 
 // Assets
