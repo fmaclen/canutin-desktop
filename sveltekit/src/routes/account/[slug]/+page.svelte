@@ -39,7 +39,6 @@
 				message: 'The account was updated successfully',
 				appearance: Appearance.POSITIVE
 			};
-			window.location.reload();
 		}
 	};
 </script>

@@ -98,6 +98,7 @@ test.describe('Account', () => {
 		await expect(inputError).not.toBeVisible();
 
 		await nameInput.fill('Fiat Financial Services');
+		await page.locator('button', { hasText: 'Dismiss' }).click();
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(inputError).toBeVisible();
 		expect(await inputError.textContent()).toMatch('An account with the same name already exists');

@@ -44,7 +44,6 @@
 				message: 'The asset was updated successfully',
 				appearance: Appearance.POSITIVE
 			};
-			window.location.reload();
 		}
 	};
 </script>
