@@ -51,7 +51,6 @@ export const getQuantifiableAssetTypes = async () => {
 };
 
 // Accounts
-
 // Get list of account types and format it for the select field
 export const getSelectAccountTypes = async () => {
 	const accountTypes = await prisma.accountType.findMany({
