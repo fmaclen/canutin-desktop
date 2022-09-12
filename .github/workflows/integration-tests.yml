@@ -37,3 +37,5 @@ jobs:
       - name: Run Playwright tests
         working-directory: ./sveltekit
         run: npm test
+        env:
+          NODE_ENV: ci
