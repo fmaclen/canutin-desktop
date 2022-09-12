@@ -31,14 +31,6 @@ test.describe('Account', () => {
 		await expect(isAutoCalculatedCheckbox).not.toBeChecked();
 		await expect(valueInput).not.toBeDisabled();
 
-		await isClosedCheckbox.check();
-		await expect(isAutoCalculatedCheckbox).toBeDisabled();
-		await expect(valueInput).toBeDisabled();
-
-		await isClosedCheckbox.uncheck();
-		await expect(isAutoCalculatedCheckbox).not.toBeDisabled();
-		await expect(valueInput).not.toBeDisabled();
-
 		await isAutoCalculatedCheckbox.check();
 		await expect(valueInput).toBeDisabled();
 
@@ -106,6 +98,7 @@ test.describe('Account', () => {
 		await expect(inputError).not.toBeVisible();
 
 		await nameInput.fill('Fiat Financial Services');
+		await page.locator('button', { hasText: 'Dismiss' }).click();
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(inputError).toBeVisible();
 		expect(await inputError.textContent()).toMatch('An account with the same name already exists');

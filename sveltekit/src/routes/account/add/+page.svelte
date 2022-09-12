@@ -8,20 +8,20 @@
 	import { api } from '$lib/helpers/misc';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
-	import type { addOrUpdateAPI } from '$lib/helpers/forms';
+	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
-	let account: addOrUpdateAPI;
+	let account: AddOrUpdateAPIResponse;
 
 	const handleSubmit = async (event: any) => {
 		const payload: Prisma.AccountUncheckedCreateInput = {
-			name: event.target.name.value,
+			name: event.target.name?.value,
 			institution: event.target.institution?.value,
-			balanceGroup: parseInt(event.target.balanceGroup.value),
-			accountTypeId: parseInt(event.target.accountTypeId.value),
-			isAutoCalculated: event.target.isAutoCalculated.checked ? true : false,
-			isClosed: event.target.isClosed.checked ? true : false,
-			accountBalanceStatements: { create: [{ value: parseFloat(event.target.value.value) }] }
+			balanceGroup: parseInt(event.target.balanceGroup?.value),
+			accountTypeId: parseInt(event.target.accountTypeId?.value),
+			isAutoCalculated: event.target.isAutoCalculated?.checked ? true : false,
+			isClosed: event.target.isClosed?.checked ? true : false,
+			accountBalanceStatements: { create: [{ value: parseFloat(event.target.value?.value) }] }
 		};
 		account = await api({ endpoint: 'account', method: 'POST', payload });
 

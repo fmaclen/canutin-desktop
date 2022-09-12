@@ -7,33 +7,24 @@
 	import { Appearance } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { Prisma } from '@prisma/client';
-	import type { addOrUpdateAPI } from '$lib/helpers/forms';
+	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
 
 	const title = data.account.name;
-	let account: addOrUpdateAPI;
-	let isAutoCalculated = data.account.isAutoCalculated;
+	let account: AddOrUpdateAPIResponse;
 
 	const handleSubmit = async (event: any) => {
 		let payload: Prisma.AccountUncheckedCreateInput = {
 			id: data.account.id,
-			name: event.target.name.value,
+			name: event.target.name?.value,
 			institution: event.target.institution?.value,
-			balanceGroup: parseInt(event.target.balanceGroup.value),
-			accountTypeId: parseInt(event.target.accountTypeId.value),
-			isAutoCalculated: event.target.isAutoCalculated.checked ? true : false,
-			isClosed: event.target.isClosed.checked ? true : false
+			balanceGroup: parseInt(event.target.balanceGroup?.value),
+			accountTypeId: parseInt(event.target.accountTypeId?.value),
+			isAutoCalculated: event.target.isAutoCalculated?.checked ? true : false,
+			isClosed: event.target.isClosed?.checked ? true : false,
+			accountBalanceStatements: { create: [{ value: parseFloat(event.target.value?.value) }] }
 		};
-
-		// Create a new account's balance statement
-		if (!isAutoCalculated && event.target.value?.value) {
-			payload = {
-				...payload,
-				accountBalanceStatements: { create: [{ value: parseFloat(event.target.value.value) }] }
-			};
-		}
-
 		account = await api({ endpoint: 'account', method: 'PATCH', payload });
 
 		if (account.error) {
@@ -48,7 +39,6 @@
 				message: 'The account was updated successfully',
 				appearance: Appearance.POSITIVE
 			};
-			window.location.reload();
 		}
 	};
 </script>
