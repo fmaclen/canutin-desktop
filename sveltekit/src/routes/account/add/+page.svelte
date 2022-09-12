@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import type { Prisma } from '@prisma/client';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import AccountForm from '../AccountForm.svelte';
@@ -12,7 +13,7 @@
 	$: nameError = '';
 
 	const handleSubmit = async (event: any) => {
-		const payload: AccountInput = {
+		const payload: Prisma.AccountUncheckedCreateInput = {
 			name: event.target.name.value,
 			institution: event.target.institution?.value,
 			balanceGroup: parseInt(event.target.balanceGroup.value),
