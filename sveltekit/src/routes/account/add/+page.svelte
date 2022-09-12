@@ -8,9 +8,10 @@
 	import { api } from '$lib/helpers/misc';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
+	import type { addOrUpdateAPI } from '$lib/helpers/forms';
 
 	export let data: PageData;
-	$: nameError = '';
+	let account: addOrUpdateAPI;
 
 	const handleSubmit = async (event: any) => {
 		const payload: Prisma.AccountUncheckedCreateInput = {
@@ -19,12 +20,18 @@
 			balanceGroup: parseInt(event.target.balanceGroup.value),
 			accountTypeId: parseInt(event.target.accountTypeId.value),
 			isAutoCalculated: event.target.isAutoCalculated.checked ? true : false,
-			isClosed: event.target.isClosed.checked ? true : false
+			isClosed: event.target.isClosed.checked ? true : false,
+			accountBalanceStatements: { create: [{ value: parseFloat(event.target.value.value) }] }
 		};
-		const account = await api({ endpoint: 'account', method: 'POST', payload });
+		account = await api({ endpoint: 'account', method: 'POST', payload });
 
 		if (account.error) {
-			nameError = account.error.name;
+			if (!account.error.name) {
+				$statusBarStore = {
+					message: "An error ocurred and the account likely wasn't added",
+					appearance: Appearance.NEGATIVE
+				};
+			}
 		} else {
 			$statusBarStore = {
 				message: 'The account was added successfully',
@@ -48,7 +55,7 @@
 				{handleSubmit}
 				selectAccountTypes={data.selectAccountTypes}
 				selectBalanceGroups={data.selectBalanceGroups}
-				{nameError}
+				error={account?.error}
 				submitButtonLabel="Add"
 			/>
 		</div>

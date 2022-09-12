@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Section from '$lib/components/Section.svelte';
 	import Form from '$lib/components/Form.svelte';
 	import FormField from '$lib/components/FormField.svelte';
 	import FormFieldset from '$lib/components/FormFieldset.svelte';
@@ -17,8 +16,8 @@
 	export let selectAccountTypes: FormSelectOption[];
 	export let selectBalanceGroups: FormSelectOption[];
 	export let lastBalanceStatement: AccountBalanceStatement | null = null;
-	export let nameError: string | undefined;
 	export let submitButtonLabel: string;
+	export let error: any | null = null;
 
 	let name = account ? account.name : '';
 	let accountTypeId = account ? account.accountTypeId : 1;
@@ -29,7 +28,7 @@
 <Form on:submit={handleSubmit}>
 	<FormFieldset>
 		<FormField name="name" label="Name">
-			<FormInput type="text" name="name" bind:value={name} error={nameError} />
+			<FormInput type="text" name="name" bind:value={name} error={error?.name} />
 		</FormField>
 		<FormField name="accountTypeId" label="Account type">
 			<FormSelect name="accountTypeId" options={selectAccountTypes} bind:value={accountTypeId} />
@@ -56,7 +55,7 @@
 				<FormInput
 					type="number"
 					name="value"
-					value={lastBalanceStatement?.toString() || '0'}
+					value={lastBalanceStatement?.value.toString() || '0'}
 					required={!isAutoCalculated}
 					disabled={isClosed || isAutoCalculated}
 				/>
@@ -70,7 +69,7 @@
 		</FormField>
 	</FormFieldset>
 	<FormFooter>
-		<Button disabled={false} appearance={Appearance.ACTIVE}>{submitButtonLabel}</Button>
+		<Button disabled={!name} appearance={Appearance.ACTIVE}>{submitButtonLabel}</Button>
 	</FormFooter>
 </Form>
 
