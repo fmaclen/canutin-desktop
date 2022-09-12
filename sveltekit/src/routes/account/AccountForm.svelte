@@ -57,12 +57,11 @@
 					name="value"
 					value={lastBalanceStatement?.value.toString() || '0'}
 					required={!isAutoCalculated}
-					disabled={isClosed || isAutoCalculated}
+					disabled={isAutoCalculated}
 				/>
 				<FormInputCheckbox
 					name="isAutoCalculated"
 					label="Auto-calculate from transactions"
-					disabled={isClosed}
 					bind:checked={isAutoCalculated}
 				/>
 			</div>

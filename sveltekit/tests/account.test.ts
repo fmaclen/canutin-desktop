@@ -31,14 +31,6 @@ test.describe('Account', () => {
 		await expect(isAutoCalculatedCheckbox).not.toBeChecked();
 		await expect(valueInput).not.toBeDisabled();
 
-		await isClosedCheckbox.check();
-		await expect(isAutoCalculatedCheckbox).toBeDisabled();
-		await expect(valueInput).toBeDisabled();
-
-		await isClosedCheckbox.uncheck();
-		await expect(isAutoCalculatedCheckbox).not.toBeDisabled();
-		await expect(valueInput).not.toBeDisabled();
-
 		await isAutoCalculatedCheckbox.check();
 		await expect(valueInput).toBeDisabled();
 
