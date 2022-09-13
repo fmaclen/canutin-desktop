@@ -15,7 +15,8 @@
 
 <div class="formInput {error && 'formInput--error'}">
 	<input
-		class="formInput__input {error && 'formInput__input--error'}"
+		class="formInput__input {type === 'number' && 'formInput__input--number'} {error &&
+			'formInput__input--error'}"
 		{name}
 		{placeholder}
 		{accept}
@@ -47,6 +48,7 @@
 		@import './Form.scss';
 		@include baseInput;
 		@include errorInput;
+		@include numberInput;
 
 		&:disabled {
 			@include disabledInput;
