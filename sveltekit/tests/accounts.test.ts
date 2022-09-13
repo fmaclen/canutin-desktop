@@ -171,12 +171,15 @@ test.describe('Accounts', () => {
 
 		const statusBar = page.locator('.statusBar');
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		await page.locator('button', { hasText: 'Dismiss' }).click();
+
+		const tableRows = page.locator('.table__tr');
+		expect(await tableRows.first().textContent()).toMatch('$420.69');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch(
 			'$420.69'
 		);
 
 		// Add an excluded transaction
-		await page.locator('button', { hasText: 'Dismiss' }).click();
 		await page.locator('a', { hasText: 'Add transaction' }).click();
 		await accountIdSelect.selectOption({ label: "Alice's Savings" });
 		await descriptionInput.fill('Transfer from Ransack Bank');
@@ -184,10 +187,10 @@ test.describe('Accounts', () => {
 		await isExcludedCheckbox.check();
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		expect(await tableRows.first().textContent()).toMatch('$420.69');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch(
 			'$420.69'
 		);
-
 		// Check the account balance is calculated correctly
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$421');
