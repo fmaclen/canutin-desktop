@@ -20,7 +20,6 @@
 	export let selectAccounts: FormSelectOption[];
 	export let selectTransactionCategories: FormSelectOption[];
 	export let submitButtonLabel: string;
-	// export let error: any | null = null;
 
 	let thisYear = new Date().getFullYear();
 	const years = [
@@ -55,15 +54,13 @@
 	};
 
 	let description = transaction ? transaction.description : '';
-	let accountId = transaction ? transaction.accountId : '';
-	let transactionCategoryId = transaction ? transaction.categoryId : 1;
+	let accountId = transaction ? transaction.accountId : 1;
+	let categoryId = transaction ? transaction.categoryId : 1;
 	let isPending = transaction ? transaction.isPending : false;
 	let isExcluded = transaction ? transaction.isExcluded : false;
 	let hasNoAccounts = selectAccounts.length < 1;
-	$: date = new Date(`${thisDate}-${thisMonth}-${thisYear}`).getTime() / 1000;
+	$: date = new Date(`${thisYear}-${thisMonth}-${thisDate}`).getTime() / 1000;
 	$: isSubmitDisabled = !accountId || !description;
-
-	console.log(transactionCategoryId, selectTransactionCategories);
 </script>
 
 <Form on:submit={handleSubmit}>
@@ -94,12 +91,12 @@
 		<FormField name="description" label="Description">
 			<FormInput type="text" name="description" disabled={hasNoAccounts} bind:value={description} />
 		</FormField>
-		<FormField name="transactionCategoryId" label="Category">
+		<FormField name="categoryId" label="Category">
 			<FormSelect
-				name="transactionCategoryId"
+				name="categoryId"
 				options={selectTransactionCategories}
 				disabled={hasNoAccounts}
-				bind:value={transactionCategoryId}
+				bind:value={categoryId}
 			/>
 		</FormField>
 		<FormField name="date" label="Date">

@@ -17,7 +17,7 @@
     outline-style: auto;
   }
 
-  &__disabled:not(.formSelect__select),
+  &__disabled,
   &:disabled {
     pointer-events: none;
     background-color: var(--color-grey10);

@@ -17,16 +17,17 @@
 		const payload: Prisma.TransactionUncheckedCreateInput = {
 			description: event.target.description?.value,
 			date: event.target.date?.value,
-			categoryId: parseInt(event.target.transactionCategoryId?.value),
+			categoryId: parseInt(event.target.categoryId?.value),
 			accountId: parseInt(event.target.accountId?.value),
-			value: parseInt(event.target.value?.value),
+			value: parseFloat(event.target.value?.value),
 			isExcluded: event.target.isExcluded?.checked ? true : false,
 			isPending: event.target.isPending?.checked ? true : false
 		};
-		console.log(payload);
 		transaction = await api({ endpoint: 'transaction', method: 'POST', payload });
 
 		if (transaction.error) {
+			console.log(transaction.error);
+
 			if (!transaction.error.name) {
 				$statusBarStore = {
 					message: "An error ocurred and the transaction likely wasn't added",
@@ -38,7 +39,7 @@
 				message: 'The transaction was added successfully',
 				appearance: Appearance.POSITIVE
 			};
-			await goto(`/transaction/${transaction.id}`);
+			await goto(`/transactions?highlight=${transaction.id}`);
 		}
 	};
 

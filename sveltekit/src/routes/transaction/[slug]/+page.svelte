@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
-	import AccountForm from '../AccountForm.svelte';
+	import TransactionForm from '../TransactionForm.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import { api } from '$lib/helpers/misc';
 	import { Appearance } from '$lib/helpers/constants';
@@ -11,34 +12,36 @@
 
 	export let data: PageData;
 
-	const title = data.account.name;
-	let account: AddOrUpdateAPIResponse;
+	const title = data.transaction.description;
+	let transaction: AddOrUpdateAPIResponse;
 
 	const handleSubmit = async (event: any) => {
-		let payload: Prisma.AccountUncheckedCreateInput = {
-			id: data.account.id,
-			name: event.target.name?.value,
-			institution: event.target.institution?.value,
-			balanceGroup: parseInt(event.target.balanceGroup?.value),
-			accountTypeId: parseInt(event.target.accountTypeId?.value),
-			isAutoCalculated: event.target.isAutoCalculated?.checked ? true : false,
-			isClosed: event.target.isClosed?.checked ? true : false,
-			accountBalanceStatements: { create: [{ value: parseFloat(event.target.value?.value) }] }
+		let payload: Prisma.TransactionUncheckedCreateInput = {
+			id: data.transaction.id,
+			description: event.target.description?.value,
+			date: event.target.date?.value,
+			categoryId: parseInt(event.target.categoryId?.value),
+			accountId: parseInt(event.target.accountId?.value),
+			value: parseFloat(event.target.value?.value),
+			isExcluded: event.target.isExcluded?.checked ? true : false,
+			isPending: event.target.isPending?.checked ? true : false
 		};
-		account = await api({ endpoint: 'account', method: 'PATCH', payload });
+		transaction = await api({ endpoint: 'transaction', method: 'PATCH', payload });
 
-		if (account.error) {
-			if (!account.error.name) {
+		if (transaction.error) {
+			console.log(transaction.error);
+			if (!transaction.error.name) {
 				$statusBarStore = {
-					message: "An error ocurred and the account likely wasn't updated",
+					message: "An error ocurred and the transaction likely wasn't updated",
 					appearance: Appearance.NEGATIVE
 				};
 			}
 		} else {
 			$statusBarStore = {
-				message: 'The account was updated successfully',
+				message: 'The transaction was updated successfully',
 				appearance: Appearance.POSITIVE
 			};
+			await goto(`/transactions?highlight=${data.transaction.id}`);
 		}
 	};
 </script>
@@ -48,15 +51,13 @@
 </svelte:head>
 
 <ScrollView {title}>
-	<Section title="Update account">
+	<Section title="Update transaction">
 		<div slot="CONTENT">
-			<AccountForm
+			<TransactionForm
 				{handleSubmit}
-				account={data.account}
-				selectAccountTypes={data.selectAccountTypes}
-				selectBalanceGroups={data.selectBalanceGroups}
-				lastBalanceStatement={data.lastBalanceStatement}
-				error={account?.error}
+				transaction={data.transaction}
+				selectAccounts={data.selectAccounts}
+				selectTransactionCategories={data.selectTransactionCategories}
 				submitButtonLabel="Save"
 			/>
 		</div>
