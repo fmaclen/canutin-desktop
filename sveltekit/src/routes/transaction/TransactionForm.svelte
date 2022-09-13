@@ -23,12 +23,12 @@
 
 	let thisYear = transaction?.date ? transaction.date.getFullYear() : new Date().getFullYear();
 	const years = [
-		// Past 5 years
+		// Past 15 years
 		...Array.from(Array(15).keys())
 			.map((i) => thisYear - 1 - i)
 			.reverse(),
 		thisYear,
-		// Next 5 years
+		// Next 15 years
 		...Array.from(Array(15).keys()).map((i) => thisYear + 1 + i)
 	];
 
