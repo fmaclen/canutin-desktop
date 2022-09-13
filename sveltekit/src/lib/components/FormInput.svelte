@@ -46,14 +46,10 @@
 	input.formInput__input {
 		@import './Form.scss';
 		@include baseInput;
+		@include errorInput;
 
 		&:disabled {
-			pointer-events: none;
-			background-color: var(--color-grey10);
-		}
-
-		&--error {
-			border-color: var(--color-redPrimary);
+			@include disabledInput;
 		}
 	}
 

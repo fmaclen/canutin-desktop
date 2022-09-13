@@ -17,7 +17,7 @@
 </svelte:head>
 
 <ScrollView {title}>
-	<nav slot="NAV" class="balanceSheetNav">
+	<nav slot="NAV">
 		<Link href="/account/add">Add account</Link>
 		<Link href="/asset/add">Add asset</Link>
 	</nav>
@@ -151,13 +151,5 @@
 		margin: 0;
 		font-size: 12px;
 		line-height: 1em;
-	}
-
-	nav.balanceSheetNav {
-		display: flex;
-		column-gap: 16px;
-		align-items: center;
-		padding: 0 64px 24px 64px;
-		font-size: 13px;
 	}
 </style>

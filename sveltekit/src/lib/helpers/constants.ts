@@ -37,5 +37,6 @@ export enum DeveloperFunctions {
 export enum Appearance {
 	ACTIVE = 'active',
 	POSITIVE = 'positive',
-	NEGATIVE = 'negative'
+	NEGATIVE = 'negative',
+	WARNING = 'warning'
 }

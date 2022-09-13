@@ -37,7 +37,7 @@
 				message: 'The account was added successfully',
 				appearance: Appearance.POSITIVE
 			};
-			await goto(`/account/${account.id}`);
+			await goto(`/balanceSheet`);
 		}
 	};
 

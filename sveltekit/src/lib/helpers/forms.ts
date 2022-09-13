@@ -6,38 +6,19 @@ export interface AddOrUpdateAPIResponse {
 	error?: any;
 }
 
+const selectOptionsQuery = { select: { id: true, name: true } };
+const getSelectFor = (options: { id: number; name: string }[]) => {
+	return options.map((option) => ({
+		label: option.name,
+		value: option.id
+	}));
+};
+
 // Assets
-interface AssetForm {
-	name: string;
-	assetTypeId: number;
-	balanceGroup: number;
-	isSold: boolean;
-	symbol?: string;
-	id?: number;
-}
-
-interface AssetBalanceStatementForm {
-	assetId: number;
-	value: number;
-	quantity?: number;
-	cost?: number;
-}
-
-export interface AssetFormPayload {
-	assetForm?: AssetForm;
-	assetBalanceStatementForm?: AssetBalanceStatementForm;
-}
-
 // Get list of asset types and format it for the select field
 export const getSelectAssetTypes = async () => {
-	const assetTypes = await prisma.assetType.findMany({
-		select: { id: true, name: true }
-	});
-
-	return assetTypes.map((assetType) => ({
-		label: assetType.name,
-		value: assetType.id
-	}));
+	const assetTypes = await prisma.assetType.findMany(selectOptionsQuery);
+	return getSelectFor(assetTypes);
 };
 
 // List of asset types that can be expressed by quantity/cost
@@ -53,14 +34,8 @@ export const getQuantifiableAssetTypes = async () => {
 // Accounts
 // Get list of account types and format it for the select field
 export const getSelectAccountTypes = async () => {
-	const accountTypes = await prisma.accountType.findMany({
-		select: { id: true, name: true }
-	});
-
-	return accountTypes.map((accountType) => ({
-		label: accountType.name,
-		value: accountType.id
-	}));
+	const accountTypes = await prisma.accountType.findMany(selectOptionsQuery);
+	return getSelectFor(accountTypes);
 };
 
 // Get list of balance groups and format it for the select field
@@ -70,3 +45,15 @@ export const selectBalanceGroups = [
 	{ label: getBalanceGroupLabel(BalanceGroup.INVESTMENTS) },
 	{ label: getBalanceGroupLabel(BalanceGroup.OTHER_ASSETS) }
 ];
+
+// Transactions
+// Get list of transaction categories and format it for the select field
+export const getSelectTransactionCategories = async () => {
+	const transactionCategories = await prisma.transactionCategory.findMany(selectOptionsQuery);
+	return getSelectFor(transactionCategories);
+};
+
+export const getSelectAccounts = async () => {
+	const accounts = await prisma.account.findMany(selectOptionsQuery);
+	return getSelectFor(accounts);
+};

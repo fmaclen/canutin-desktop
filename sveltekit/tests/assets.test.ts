@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { databaseWipe } from './fixtures/helpers.js';
 
-test.describe('Asset', () => {
+test.describe('Assets', () => {
 	test.beforeEach(async ({ baseURL }) => {
 		await databaseWipe(baseURL!);
 	});
@@ -48,7 +48,15 @@ test.describe('Asset', () => {
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
 		expect(await statusBar.textContent()).toMatch('The asset was added successfully');
+
+		// Check the asset was created successfully
 		await page.locator('button', { hasText: 'Dismiss' }).click();
+		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
+		expect(await balanceTypeGroup.textContent()).toMatch('GameStop');
+		expect(await balanceTypeGroup.textContent()).toMatch('$0');
+		expect(await balanceTypeGroup.count()).toBe(1);
+
+		await page.locator('a', { hasText: 'GameStop' }).click();
 		await expect(page.locator('h1', { hasText: 'GameStop' })).toBeVisible();
 		await expect(nameInput).toHaveValue('GameStop');
 		await expect(symbolInput).toHaveValue('GME');
@@ -57,14 +65,7 @@ test.describe('Asset', () => {
 		await expect(page.locator('section', { hasText: 'Update asset' })).toBeVisible();
 		await expect(page.locator('section', { hasText: 'New asset' })).not.toBeVisible();
 
-		// Check the asset was created successfully
-		await page.locator('a', { hasText: 'Balance sheet' }).click();
-		expect(await balanceTypeGroup.textContent()).toMatch('GameStop');
-		expect(await balanceTypeGroup.textContent()).toMatch('$0');
-		expect(await balanceTypeGroup.count()).toBe(1);
-
-		// Check that the asset can be updated
-		await page.locator('a', { hasText: 'GameStop' }).click();
+		// Update the asset
 		await quantityInput.fill('4.20');
 		await costInput.fill('69');
 		await expect(valueInput).toBeDisabled();
@@ -78,6 +79,7 @@ test.describe('Asset', () => {
 		// Check the account was updated successfully
 		await page.locator('button', { hasText: 'Dismiss' }).click();
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		expect(await balanceTypeGroup.count()).toBe(1);
 		expect(await balanceTypeGroup.textContent()).toMatch('Security');
 		expect(await balanceTypeGroup.textContent()).toMatch('GameStop');
 		expect(await balanceTypeGroup.textContent()).toMatch('$290');
@@ -97,13 +99,14 @@ test.describe('Asset', () => {
 
 		await isSoldCheckbox.check();
 		await page.locator('button', { hasText: 'Save' }).click();
+		await page.locator('a', { hasText: 'GameStop' }).click();
 		expect(await assetTypeSelect.textContent()).toMatch('Business');
 		expect(await balanceGroupSelect.textContent()).toMatch('Other assets');
 		await expect(isSoldCheckbox).toBeChecked();
 		await expect(valueInput).toHaveValue('289.8');
 		await expect(isSoldCheckbox).toBeChecked();
 
-		// Check the asset was updated successfully
+		// Check the asset type was updated successfully
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		expect(await balanceTypeGroup.count()).toBe(1);
@@ -130,10 +133,14 @@ test.describe('Asset', () => {
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
 		expect(await statusBar.textContent()).toMatch('The asset was added successfully');
+
+		await page.locator('a', { hasText: 'AMC Entertainment Holdings Inc' }).click();
 		await expect(page.locator('h1', { hasText: 'AMC Entertainment Holdings Inc' })).toBeVisible();
 
+		// Rename using an existing asset name
 		await nameInput.fill('GameStop');
 		await expect(inputError).not.toBeVisible();
+
 		await page.locator('button', { hasText: 'Save' }).click();
 		expect(await inputError.textContent()).toMatch('An asset with the same name already exists');
 	});

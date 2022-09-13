@@ -39,6 +39,16 @@
 		letter-spacing: -0.03em;
 	}
 
+	// Named slots can't have classes assigned to them so we rely on CSS attribute selectors
+	// REF https://github.com/sveltejs/svelte/issues/4443#issuecomment-736767893
+	:global([slot='NAV']) {
+		display: flex;
+		column-gap: 16px;
+		align-items: center;
+		padding: 0 64px 24px 64px;
+		font-size: 13px;
+	}
+
 	div.scrollView__container {
 		position: relative;
 		width: 100%;

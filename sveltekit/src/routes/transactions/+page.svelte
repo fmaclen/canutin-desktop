@@ -10,6 +10,7 @@
 		format
 	} from 'date-fns';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
@@ -17,6 +18,7 @@
 	import FormInput from '$lib/components/FormInput.svelte';
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import Card from '$lib/components/Card.svelte';
+	import Link from '$lib/components/Link.svelte';
 	import { api } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
 	import { dateInUTC, formatCurrency, formatInUTC } from '$lib/helpers/misc';
@@ -163,6 +165,10 @@
 			);
 		}
 	};
+
+	// Highlight the transaction after it's created or updated
+	const highlightParam = $page.url.searchParams.get('highlight');
+	const highlight = highlightParam ? parseInt(highlightParam) : undefined;
 </script>
 
 <svelte:head>
@@ -170,6 +176,9 @@
 </svelte:head>
 
 <ScrollView {title}>
+	<nav slot="NAV">
+		<Link href="/transaction/add">Add transaction</Link>
+	</nav>
 	<Section title="Browse transactions">
 		<div slot="HEADER">
 			<SegmentedControl
@@ -229,15 +238,17 @@
 				<tbody>
 					{#if filteredTransactions?.length > 0}
 						{#each filteredTransactions as transaction}
-							{@const { date, description, transactionCategory, account, value, isExcluded } =
+							{@const { id, date, description, transactionCategory, account, value, isExcluded } =
 								transaction}
-							<tr class="table__tr">
+							<tr class="table__tr {highlight === id && `table__tr--highlight`}">
 								<td class="table__td table__td--date"
 									>{formatInUTC(fromUnixTime(date), 'MMM dd, yyyy')}</td
 								>
-								<td class="table__td">{description}</td>
+								<td class="table__td"><Link href={`/transaction/${id}`}>{description}</Link></td>
 								<td class="table__td">{transactionCategory.name}</td>
-								<td class="table__td">{account.name}</td>
+								<td class="table__td"
+									><Link href={`/account/${transaction.accountId}`}>{account.name}</Link></td
+								>
 								<td class="table__td table__td--total {value > 0 && `table__td--positive`}"
 									><span
 										class={isExcluded ? `table__excluded` : null}
@@ -378,6 +389,15 @@
 
 			td.table__td:last-child {
 				border-bottom-right-radius: 4px;
+			}
+		}
+
+		&--highlight {
+			&:nth-child(even),
+			&:nth-child(odd) {
+				td.table__td {
+					background-color: var(--color-blueSecondary);
+				}
 			}
 		}
 	}

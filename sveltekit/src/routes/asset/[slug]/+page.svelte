@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import type { Prisma } from '@prisma/client';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
@@ -44,6 +45,7 @@
 				message: 'The asset was updated successfully',
 				appearance: Appearance.POSITIVE
 			};
+			await goto(`/balanceSheet`);
 		}
 	};
 </script>

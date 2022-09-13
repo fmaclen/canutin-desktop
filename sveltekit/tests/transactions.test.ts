@@ -251,4 +251,175 @@ test.describe('Transactions', () => {
 		expect(await tableRows.count()).toBe(64);
 		expect(await cardNetBalance.textContent()).toMatch('-$26,000.00');
 	});
+
+	test("A new transaction can't be added if the vault has no accounts", async ({ page }) => {
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+
+		// Check no accounts are present
+		const balanceTypeGroup = page.locator('.balanceSheet__typeGroup');
+		expect(await balanceTypeGroup.count()).toBe(0);
+
+		// Check no transactions are present
+		await page.locator('a', { hasText: 'Transactions' }).click();
+		await expect(
+			page.locator('.table__td--notice', { hasText: 'No transactions found' })
+		).toBeVisible();
+
+		const accountIdSelect = page.locator('.formSelect__select[name=accountId]');
+		const descriptionInput = page.locator('.formInput__input[name=description]');
+		const categoryIdSelect = page.locator('.formSelect__select[name=categoryId]');
+		const yearSelect = page.locator('.formSelect__select[name=yearSelect]');
+		const monthSelect = page.locator('.formSelect__select[name=monthSelect]');
+		const dateSelect = page.locator('.formSelect__select[name=dateSelect]');
+		const isExcluded = page.locator('.formInputCheckbox__input[name=isExcluded]');
+		const isPending = page.locator('.formInputCheckbox__input[name=isPending]');
+		const amountInput = page.locator('.formInput__input[name=value]');
+
+		// Check transaction form is disabled until an account is present
+		await page.locator('a', { hasText: 'Add transaction' }).click();
+		await expect(
+			page.locator('.formNotice__notice--warning', {
+				hasText: 'At least one account is needed to create a transaction'
+			})
+		).toBeVisible();
+		await expect(accountIdSelect).toBeDisabled();
+		await expect(descriptionInput).toBeDisabled();
+		await expect(categoryIdSelect).toBeDisabled();
+		await expect(yearSelect).toBeDisabled();
+		await expect(monthSelect).toBeDisabled();
+		await expect(dateSelect).toBeDisabled();
+		await expect(isExcluded).toBeDisabled();
+		await expect(isPending).toBeDisabled();
+		await expect(amountInput).toBeDisabled();
+		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
+
+		// Add an account
+		await page.locator('a', { hasText: 'Add a new account' }).click();
+		await expect(page.locator('h1', { hasText: 'Add account' })).toBeVisible();
+
+		const nameInput = page.locator('.formInput__input[name=name]');
+		await nameInput.fill("Bob's Laughable-Yield Checking");
+		await page.locator('button', { hasText: 'Add' }).click();
+		expect(await balanceTypeGroup.textContent()).toMatch("Bob's Laughable-Yield Checking");
+
+		await page.locator('a', { hasText: 'Transactions' }).click();
+		await page.locator('a', { hasText: 'Add transaction' }).click();
+		await expect(
+			page.locator('.formNotice__notice--warning', {
+				hasText: 'At least one account is needed to create a transaction'
+			})
+		).not.toBeVisible();
+		await expect(accountIdSelect).not.toBeDisabled();
+		await expect(descriptionInput).not.toBeDisabled();
+		await expect(categoryIdSelect).not.toBeDisabled();
+		await expect(yearSelect).not.toBeDisabled();
+		await expect(monthSelect).not.toBeDisabled();
+		await expect(dateSelect).not.toBeDisabled();
+		await expect(isExcluded).not.toBeDisabled();
+		await expect(isPending).not.toBeDisabled();
+		await expect(amountInput).not.toBeDisabled();
+		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
+	});
+
+	test('A new transaction can be added and updated', async ({ page }) => {
+		// Add a new account
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+
+		const addButton = page.locator('button', { hasText: 'Add' });
+		const balanceTypeGroup = page.locator('.balanceSheet__typeGroup');
+		const nameInput = page.locator('.formInput__input[name=name]');
+		// const isAutoCalculatedCheckbox = page.locator(
+		// 	'.formInputCheckbox__input[name=isAutoCalculated]'
+		// );
+
+		await page.locator('a', { hasText: 'Add account' }).click();
+		await nameInput.fill("Bob's Laughable-Yield Checking");
+		// await isAutoCalculatedCheckbox.check();
+		await addButton.click();
+		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
+		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$0');
+		expect(await balanceTypeGroup.textContent()).toMatch('Checking');
+		expect(await balanceTypeGroup.textContent()).toMatch("Bob's Laughable-Yield Checking");
+
+		// Check no transactions exist
+		await page.locator('a', { hasText: 'Transactions' }).click();
+		await expect(
+			page.locator('.table__td--notice', { hasText: 'No transactions found' })
+		).toBeVisible();
+
+		const accountIdSelect = page.locator('.formSelect__select[name=accountId]');
+		const descriptionInput = page.locator('.formInput__input[name=description]');
+		const categoryIdSelect = page.locator('.formSelect__select[name=categoryId]');
+		const yearSelect = page.locator('.formSelect__select[name=yearSelect]');
+		const monthSelect = page.locator('.formSelect__select[name=monthSelect]');
+		const dateSelect = page.locator('.formSelect__select[name=dateSelect]');
+		const isExcludedCheckbox = page.locator('.formInputCheckbox__input[name=isExcluded]');
+		const isPendingCheckbox = page.locator('.formInputCheckbox__input[name=isPending]');
+		const amountInput = page.locator('.formInput__input[name=value]');
+
+		// Add a transaction
+		await page.locator('a', { hasText: 'Add transaction' }).click();
+		expect(addButton).toBeDisabled();
+
+		await accountIdSelect.selectOption({ label: "Bob's Laughable-Yield Checking" });
+		expect(addButton).toBeDisabled();
+
+		await descriptionInput.fill('Toilet Paper Depot');
+		expect(addButton).not.toBeDisabled();
+
+		await categoryIdSelect.selectOption({ label: 'Groceries' });
+		await yearSelect.selectOption({ label: '2020' });
+		await monthSelect.selectOption({ label: '3 - Mar' });
+		await dateSelect.selectOption({ label: '15' });
+		await amountInput.fill('-420.69');
+		await addButton.click();
+
+		const netBalanceCard = page.locator('.card', { hasText: 'Net balance' });
+		expect(await netBalanceCard.textContent()).not.toMatch('-$420.69');
+
+		// Change date period from "Last 3 months" to "Lifetime"
+		const periodSelect = page.locator('.formSelect__select');
+		const formInput = page.locator('.formInput__input');
+		await periodSelect.selectOption('7');
+		await periodSelect.dispatchEvent('change');
+		await formInput.click();
+		await delay();
+		expect(await netBalanceCard.textContent()).toMatch('-$420.69');
+
+		// Check the transaction is visible
+		const tableRows = page.locator('.table__tr');
+		expect(await tableRows.count()).toBe(1);
+		expect(await tableRows.first().textContent()).toMatch('Mar 15, 2020');
+		expect(await tableRows.first().textContent()).toMatch('Toilet Paper Depot');
+		expect(await tableRows.first().textContent()).toMatch('Groceries');
+		expect(await tableRows.first().textContent()).toMatch("Bob's Laughable-Yield Checking");
+		expect(await tableRows.first().textContent()).toMatch('-$420.69');
+		await expect(tableRows.first()).toHaveClass(/table__tr--highlight/);
+
+		// A transaction can be updated
+		await page.locator('a', { hasText: 'Toilet Paper Depot' }).click();
+		await isExcludedCheckbox.check();
+		await isPendingCheckbox.check();
+		await page.locator('button', { hasText: 'save' }).click();
+		expect(await netBalanceCard.textContent()).not.toMatch('-$420.69');
+		await expect(page.locator('.table__excluded', { hasText: '-$420.69' })).not.toBeVisible();
+
+		// Change date period from "Last 3 months" to "Lifetime"
+		await periodSelect.selectOption('7');
+		await periodSelect.dispatchEvent('change');
+		await formInput.click();
+		await delay();
+
+		// Check the transaction is now excluded
+		expect(await netBalanceCard.textContent()).not.toMatch('-$420.69');
+		expect(await tableRows.first().textContent()).toMatch('-$420.69');
+		await expect(page.locator('.table__excluded', { hasText: '-$420.69' })).toBeVisible();
+
+		// Check the values have been updated
+		await page.locator('a', { hasText: 'Toilet Paper Depot' }).click();
+		await expect(isExcludedCheckbox).toBeChecked();
+		await expect(isPendingCheckbox).toBeChecked();
+	});
 });
