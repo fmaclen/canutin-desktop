@@ -176,12 +176,14 @@ test.describe('Accounts', () => {
 		);
 
 		// Add an excluded transaction
+		await page.locator('button', { hasText: 'Dismiss' }).click();
 		await page.locator('a', { hasText: 'Add transaction' }).click();
 		await accountIdSelect.selectOption({ label: "Alice's Savings" });
 		await descriptionInput.fill('Transfer from Ransack Bank');
 		await amountInput.fill('-420.69');
 		await isExcludedCheckbox.check();
 		await page.locator('button', { hasText: 'Add' }).click();
+		await expect(statusBar).toHaveClass(/statusBar--positive/);
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch(
 			'$420.69'
 		);
