@@ -36,7 +36,6 @@
 		@include baseInput;
 
 		&:disabled {
-			@import './FormDisabled.scss';
 			@include disabledInput;
 		}
 

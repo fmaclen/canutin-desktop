@@ -22,7 +22,6 @@
 	label.formInputCheckbox {
 		@import './Form.scss';
 		@include baseInput;
-		@import './FormError.scss';
 		@include errorInput;
 
 		display: flex;
@@ -36,7 +35,6 @@
 		}
 
 		&--disabled {
-			@import './FormDisabled.scss';
 			@include disabledInput;
 		}
 	}
