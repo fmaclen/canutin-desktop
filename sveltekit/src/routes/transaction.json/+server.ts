@@ -15,6 +15,9 @@ const handleError = (error: any) => {
 // Create new transaction
 export const POST = async ({ request }: RequestEvent) => {
 	const payload: Prisma.TransactionUncheckedCreateInput = await request.json();
+
+	// HACK: `payload.date` is actually a number but it conflicts with the type
+	// `Prisma.TransactionUncheckedCreateInput`
 	payload.date = fromUnixTime(payload.date as any);
 
 	if (
@@ -43,6 +46,9 @@ export const POST = async ({ request }: RequestEvent) => {
 // Update transaction
 export const PATCH = async ({ request }: RequestEvent) => {
 	const payload: Prisma.TransactionUncheckedCreateInput = await request.json();
+
+	// HACK: `payload.date` is actually a number but it conflicts with the type
+	// `Prisma.TransactionUncheckedCreateInput`
 	payload.date = fromUnixTime(payload.date as any);
 
 	if (!payload.id) return json({ error: 'Insufficient data' });
