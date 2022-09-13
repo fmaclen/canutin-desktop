@@ -44,7 +44,7 @@
 				message: 'The asset was added successfully',
 				appearance: Appearance.POSITIVE
 			};
-			await goto(`/asset/${asset.id}`);
+			await goto(`/balanceSheet`);
 		}
 	};
 
