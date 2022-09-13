@@ -7,6 +7,7 @@
 	import FormInput from '$lib/components/FormInput.svelte';
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import FormInputCheckbox from '$lib/components/FormInputCheckbox.svelte';
+	import FormCurrency from '$lib/components/FormCurrency.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { FormSelectOption } from '$lib/components/FormSelect';
@@ -62,19 +63,15 @@
 				<FormInput type="number" name="quantity" bind:value={balanceQuantity} />
 			</FormField>
 			<FormField name="cost" label="Cost">
-				<FormInput type="number" name="cost" bind:value={balanceCost} />
+				<FormCurrency name="cost" bind:value={balanceCost} />
 			</FormField>
 			<FormField name="value" label="Value">
-				<FormInput type="number" name="value" bind:value={balanceValue} disabled={isQuantifiable} />
+				<FormCurrency name="value" bind:value={balanceValue} disabled={isQuantifiable} />
 			</FormField>
 		{/if}
 		{#if !isQuantifiable}
 			<FormField name="value" label="Value">
-				<FormInput
-					type="number"
-					name="value"
-					value={lastBalanceStatement?.value?.toString() || '0'}
-				/>
+				<FormCurrency name="value" value={lastBalanceStatement?.value.toString() || '0'} />
 			</FormField>
 		{/if}
 	</FormFieldset>
