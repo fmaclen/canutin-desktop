@@ -6,13 +6,14 @@
 
 <style lang="scss">
 	a.a {
-		color: var(--color-grey80);
+		color: var(--color-grey70);
+		/* color: var(--color-bluePrimary); */
+		border-bottom: 1px solid var(--color-border);
 		text-decoration: none;
 		cursor: pointer;
 
 		&:hover {
 			color: var(--color-bluePrimary);
-			text-decoration: underline;
 		}
 	}
 </style>

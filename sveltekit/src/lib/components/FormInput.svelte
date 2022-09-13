@@ -46,15 +46,6 @@
 	input.formInput__input {
 		@import './Form.scss';
 		@include baseInput;
-
-		&:disabled {
-			pointer-events: none;
-			background-color: var(--color-grey10);
-		}
-
-		&--error {
-			border-color: var(--color-redPrimary);
-		}
 	}
 
 	p.formInput__error {

@@ -22,6 +22,7 @@
 	label.formInputCheckbox {
 		@import './Form.scss';
 		@include baseInput;
+
 		display: flex;
 		column-gap: 4px;
 		background-color: transparent;
@@ -30,11 +31,6 @@
 		&:active,
 		&:focus {
 			outline-color: var(--color-border);
-		}
-
-		&__disabled {
-			pointer-events: none;
-			cursor: default;
 		}
 	}
 
