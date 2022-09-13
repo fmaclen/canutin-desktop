@@ -168,6 +168,9 @@ test.describe('Accounts', () => {
 		await descriptionInput.fill('Evergreen Market');
 		await amountInput.fill('420.69');
 		await page.locator('button', { hasText: 'Add' }).click();
+
+		const statusBar = page.locator('.statusBar');
+		await expect(statusBar).toHaveClass(/statusBar--positive/);
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch(
 			'$420.69'
 		);

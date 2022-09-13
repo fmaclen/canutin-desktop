@@ -4,7 +4,7 @@
 	export let appearance: Appearance | null = null;
 </script>
 
-<div class="formNotice__notice {appearance && `formNotice--${appearance}`}">
+<div class="formNotice__notice {appearance && `formNotice__notice--${appearance}`}">
 	<slot />
 </div>
 

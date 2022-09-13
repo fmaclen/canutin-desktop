@@ -103,19 +103,19 @@
 			<div class="transactionDateField">
 				<input type="hidden" name="date" value={date} />
 				<FormSelect
-					name="date_year"
+					name="yearSelect"
 					options={getDateSelects(years)}
 					disabled={hasNoAccounts}
 					bind:value={thisYear}
 				/>
 				<FormSelect
-					name="date_month"
+					name="monthSelect"
 					options={getDateSelects(months)}
 					disabled={hasNoAccounts}
 					bind:value={thisMonth}
 				/>
 				<FormSelect
-					name="date_day"
+					name="dateSelect"
 					options={getDateSelects(days)}
 					disabled={hasNoAccounts}
 					bind:value={thisDate}
