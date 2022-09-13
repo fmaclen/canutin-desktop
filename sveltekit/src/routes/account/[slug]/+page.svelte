@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import AccountForm from '../AccountForm.svelte';
@@ -39,6 +40,7 @@
 				message: 'The account was updated successfully',
 				appearance: Appearance.POSITIVE
 			};
+			await goto(`/balanceSheet`);
 		}
 	};
 </script>
