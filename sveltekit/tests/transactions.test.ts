@@ -396,7 +396,7 @@ test.describe('Transactions', () => {
 		expect(await tableRows.first().textContent()).toMatch('Groceries');
 		expect(await tableRows.first().textContent()).toMatch("Bob's Laughable-Yield Checking");
 		expect(await tableRows.first().textContent()).toMatch('-$420.69');
-		expect(tableRows.first()).toHaveClass(/table__tr--highlight/);
+		await expect(tableRows.first()).toHaveClass(/table__tr--highlight/);
 
 		// A transaction can be updated
 		await page.locator('a', { hasText: 'Toilet Paper Depot' }).click();
@@ -419,7 +419,7 @@ test.describe('Transactions', () => {
 
 		// Check the values have been updated
 		await page.locator('a', { hasText: 'Toilet Paper Depot' }).click();
-		expect(isExcludedCheckbox).toBeChecked();
-		expect(isPendingCheckbox).toBeChecked();
+		await expect(isExcludedCheckbox).toBeChecked();
+		await expect(isPendingCheckbox).toBeChecked();
 	});
 });
