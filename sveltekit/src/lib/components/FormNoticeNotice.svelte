@@ -19,16 +19,16 @@
 		font-size: 13px;
 		border-left: 3px solid var(--color-grey20);
 
-		&.formNotice--active {
+		&--active {
 			border-left-color: var(--color-bluePrimary);
 		}
-		&.formNotice--positive {
+		&--positive {
 			border-left-color: var(--color-greenPrimary);
 		}
-		&.formNotice--negative {
+		&--negative {
 			border-left-color: var(--color-redPrimary);
 		}
-		&.formNotice--warning {
+		&--warning {
 			border-left-color: var(--color-yellowPrimary);
 		}
 	}

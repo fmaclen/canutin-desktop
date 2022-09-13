@@ -35,6 +35,11 @@
 		@import './Form.scss';
 		@include baseInput;
 
+		&:disabled {
+			@import './FormDisabled.scss';
+			@include disabledInput;
+		}
+
 		appearance: none;
 		width: 100%;
 		padding-right: 32px; // Accounts for the `▼` icon

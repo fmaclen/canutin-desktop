@@ -46,6 +46,13 @@
 	input.formInput__input {
 		@import './Form.scss';
 		@include baseInput;
+		@import './FormError.scss';
+		@include errorInput;
+
+		&:disabled {
+			@import './FormDisabled.scss';
+			@include disabledInput;
+		}
 	}
 
 	p.formInput__error {

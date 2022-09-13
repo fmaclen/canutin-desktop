@@ -6,7 +6,7 @@
 	export let disabled: boolean = false;
 </script>
 
-<label class="formInputCheckbox {disabled && 'formInputCheckbox__disabled'}">
+<label class="formInputCheckbox {disabled && 'formInputCheckbox--disabled'}">
 	<input
 		class="formInputCheckbox__input"
 		type="checkbox"
@@ -22,6 +22,8 @@
 	label.formInputCheckbox {
 		@import './Form.scss';
 		@include baseInput;
+		@import './FormError.scss';
+		@include errorInput;
 
 		display: flex;
 		column-gap: 4px;
@@ -31,6 +33,11 @@
 		&:active,
 		&:focus {
 			outline-color: var(--color-border);
+		}
+
+		&--disabled {
+			@import './FormDisabled.scss';
+			@include disabledInput;
 		}
 	}
 

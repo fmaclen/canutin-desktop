@@ -7,21 +7,9 @@
   font-size: 12px;
   box-sizing: border-box;
 
-  &--error {
-    border-color: var(--color-redPrimary);
-  }
-
   &:active,
   &:focus {
     outline-color: var(--color-bluePrimary);
     outline-style: auto;
-  }
-
-  &__disabled,
-  &:disabled {
-    pointer-events: none;
-    background-color: var(--color-grey10);
-    color: var(--color-grey40);
-    cursor: default;
   }
 }
