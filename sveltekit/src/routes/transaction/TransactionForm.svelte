@@ -21,7 +21,7 @@
 	export let selectTransactionCategories: FormSelectOption[];
 	export let submitButtonLabel: string;
 
-	let thisYear = new Date().getFullYear();
+	let thisYear = transaction?.date ? transaction.date.getFullYear() : new Date().getFullYear();
 	const years = [
 		// Past 5 years
 		...Array.from(Array(5).keys())
@@ -32,10 +32,10 @@
 		...Array.from(Array(5).keys()).map((i) => new Date().getFullYear() - 1 + i)
 	];
 
-	let thisMonth = new Date().getMonth();
+	let thisMonth = transaction?.date ? transaction.date.getMonth() + 1 : new Date().getMonth() + 1;
 	let months = Array.from(Array(12).keys()).map((i) => i + 1); // 12 years in a year
 
-	let thisDate = new Date().getDate();
+	let thisDate = transaction?.date ? transaction.date.getDate() : new Date().getDate();
 	const days = Array.from(Array(31).keys()).map((i) => i + 1); // 31 days in a month
 
 	const getDateSelects = (dates: number[]) => {

@@ -26,8 +26,6 @@
 		transaction = await api({ endpoint: 'transaction', method: 'POST', payload });
 
 		if (transaction.error) {
-			console.log(transaction.error);
-
 			if (!transaction.error.name) {
 				$statusBarStore = {
 					message: "An error ocurred and the transaction likely wasn't added",

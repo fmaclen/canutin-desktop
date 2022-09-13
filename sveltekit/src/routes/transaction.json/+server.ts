@@ -27,14 +27,12 @@ export const POST = async ({ request }: RequestEvent) => {
 		return json({ error: 'Insufficient data' });
 	}
 
-	console.log(payload);
 	try {
 		const transaction = await prisma.transaction.create({
 			data: {
 				...payload
 			}
 		});
-		console.log(transaction);
 
 		return json({ id: transaction.id });
 	} catch (error) {
