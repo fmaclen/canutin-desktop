@@ -7,27 +7,6 @@ export interface AddOrUpdateAPIResponse {
 }
 
 // Assets
-interface AssetForm {
-	name: string;
-	assetTypeId: number;
-	balanceGroup: number;
-	isSold: boolean;
-	symbol?: string;
-	id?: number;
-}
-
-interface AssetBalanceStatementForm {
-	assetId: number;
-	value: number;
-	quantity?: number;
-	cost?: number;
-}
-
-export interface AssetFormPayload {
-	assetForm?: AssetForm;
-	assetBalanceStatementForm?: AssetBalanceStatementForm;
-}
-
 // Get list of asset types and format it for the select field
 export const getSelectAssetTypes = async () => {
 	const assetTypes = await prisma.assetType.findMany({
@@ -70,3 +49,27 @@ export const selectBalanceGroups = [
 	{ label: getBalanceGroupLabel(BalanceGroup.INVESTMENTS) },
 	{ label: getBalanceGroupLabel(BalanceGroup.OTHER_ASSETS) }
 ];
+
+// Transactions
+// Get list of transaction categories and format it for the select field
+export const getSelectTransactionCategories = async () => {
+	const transactionCategories = await prisma.transactionCategory.findMany({
+		select: { id: true, name: true }
+	});
+
+	return transactionCategories.map((accountType) => ({
+		label: accountType.name,
+		value: accountType.id
+	}));
+};
+
+export const getSelectAccounts = async () => {
+	const accounts = await prisma.account.findMany({
+		select: { id: true, name: true }
+	});
+
+	return accounts.map((accountType) => ({
+		label: accountType.name,
+		value: accountType.id
+	}));
+};

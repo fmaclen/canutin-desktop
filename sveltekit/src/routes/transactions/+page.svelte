@@ -17,6 +17,7 @@
 	import FormInput from '$lib/components/FormInput.svelte';
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import Card from '$lib/components/Card.svelte';
+	import Link from '$lib/components/Link.svelte';
 	import { api } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
 	import { dateInUTC, formatCurrency, formatInUTC } from '$lib/helpers/misc';
@@ -170,6 +171,9 @@
 </svelte:head>
 
 <ScrollView {title}>
+	<nav slot="NAV">
+		<Link href="/transaction/add">Add transaction</Link>
+	</nav>
 	<Section title="Browse transactions">
 		<div slot="HEADER">
 			<SegmentedControl
