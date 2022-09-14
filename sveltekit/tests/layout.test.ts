@@ -78,12 +78,15 @@ test.describe('Layout', () => {
 		await expect(valueHiddenInput).toHaveValue('0');
 		await expect(valueInput).toHaveValue('');
 		await expect(valueInput).toHaveAttribute('placeholder', '$0.00');
+		await expect(valueInput).not.toHaveClass(/formInput__currency--positive/);
+		await expect(valueInput).not.toHaveClass(/formInput__currency--negative/);
 		await expect(valueInput).toHaveClass(/formInput__currency--zero/);
 
 		await valueInput.focus();
 		await page.keyboard.type('420.69');
 		await expect(valueInput).toHaveValue('$420.69');
 		await expect(valueHiddenInput).toHaveValue('420.69');
+		await expect(valueInput).toHaveClass(/formInput__currency--positive/);
 		await expect(valueInput).not.toHaveClass(/formInput__currency--negative/);
 		await expect(valueInput).not.toHaveClass(/formInput__currency--zero/);
 
@@ -92,6 +95,7 @@ test.describe('Layout', () => {
 		await page.keyboard.type('-');
 		await expect(valueInput).toHaveValue('-$420.69');
 		await expect(valueHiddenInput).toHaveValue('-420.69');
+		await expect(valueInput).not.toHaveClass(/formInput__currency--positive/);
 		await expect(valueInput).toHaveClass(/formInput__currency--negative/);
 		await expect(valueInput).not.toHaveClass(/formInput__currency--zero/);
 
@@ -114,5 +118,20 @@ test.describe('Layout', () => {
 
 		for (let i = 0; i < '-$69.42'.length; i++) await page.keyboard.press('Backspace');
 		await expect(valueHiddenInput).toHaveValue('0');
+
+		// Check currency fields where negative values are not allowed
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		await page.locator('a', { hasText: 'Add asset' }).click();
+		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
+
+		const costInput = page.locator('.formInput__currency[name=currencyCost]');
+		const costHiddenInput = page.locator('.formInput__input[type=hidden][name=cost]');
+		await costInput.focus();
+		await page.keyboard.type('-420.69');
+		await expect(costInput).toHaveValue('$420.69');
+		await expect(costHiddenInput).toHaveValue('420.69');
+		await expect(costInput).not.toHaveClass(/formInput__currency--positive/);
+		await expect(costInput).not.toHaveClass(/formInput__currency--negative/);
+		await expect(costInput).not.toHaveClass(/formInput__currency--zero/);
 	});
 });
