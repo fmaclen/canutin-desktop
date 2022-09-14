@@ -124,8 +124,12 @@ test.describe('Layout', () => {
 		await page.locator('a', { hasText: 'Add asset' }).click();
 		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
 
+		const assetTypeSelect = page.locator('.formSelect__select[name=assetTypeId]');
 		const costInput = page.locator('.formInput__currency[name=currencyCost]');
 		const costHiddenInput = page.locator('.formInput__input[type=hidden][name=cost]');
+		await assetTypeSelect.selectOption({ label: 'Security' });
+		await expect(costInput).toBeVisible();
+
 		await costInput.focus();
 		await page.keyboard.type('-420.69');
 		await expect(costInput).toHaveValue('$420.69');
