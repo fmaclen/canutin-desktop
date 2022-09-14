@@ -63,7 +63,7 @@
 				<FormInput type="number" name="quantity" bind:value={balanceQuantity} />
 			</FormField>
 			<FormField name="cost" label="Cost">
-				<FormCurrency name="cost" bind:value={balanceCost} />
+				<FormCurrency name="cost" bind:value={balanceCost} isNegativeAllowed={false} />
 			</FormField>
 			<FormField name="value" label="Value">
 				<FormCurrency name="value" bind:value={balanceValue} disabled={isQuantifiable} />

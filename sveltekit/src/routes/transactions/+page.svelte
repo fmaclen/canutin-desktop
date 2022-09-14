@@ -214,7 +214,7 @@
 					<Card
 						appearance={CardAppearance.SECONDARY}
 						title="Net balance"
-						value={formatCurrency(sumTransactions(filteredTransactions), 2)}
+						value={formatCurrency(sumTransactions(filteredTransactions), 2, 2)}
 					/>
 				</div>
 			</header>
@@ -256,7 +256,7 @@
 											? "This transaction is excluded from 'The big picture' and 'Balance sheet' totals"
 											: null}
 									>
-										{formatCurrency(value, 2)}
+										{formatCurrency(value, 2, 2)}
 									</span></td
 								>
 							</tr>

@@ -1,12 +1,20 @@
 import formatInTimeZone from 'date-fns-tz/esm/formatInTimeZone';
 import { SortOrder } from '$lib/helpers/constants';
 
+export const LOCALE = 'en-US';
+const CURRENCY = 'USD';
+
 // Format: $1,523.00 || -$1,523.00
-export const formatCurrency = (value: number, decimals?: number) => {
-	return new Intl.NumberFormat('en-US', {
-		currency: 'USD',
+export const formatCurrency = (
+	value: number,
+	maximumFractionDigits?: number,
+	minimumFractionDigits?: number
+) => {
+	return new Intl.NumberFormat(LOCALE, {
+		currency: CURRENCY,
 		style: 'currency',
-		maximumFractionDigits: decimals ? decimals : 0
+		maximumFractionDigits: maximumFractionDigits ? maximumFractionDigits : 0,
+		minimumFractionDigits: minimumFractionDigits ? minimumFractionDigits : 0
 	}).format(value);
 };
 
