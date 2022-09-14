@@ -66,4 +66,8 @@ test.describe('Layout', () => {
 			})
 		).not.toBeVisible();
 	});
+
+	test.skip('Currency field behavior is correct', async ({ page }) => {
+		// TODO
+	});
 });

@@ -26,16 +26,16 @@ test.describe('Accounts', () => {
 		const isAutoCalculatedCheckbox = page.locator(
 			'.formInputCheckbox__input[name=isAutoCalculated]'
 		);
-		const valueInput = page.locator('.formInput__input[name=value]');
+		const currencyInput = page.locator('.formInput__currency[name=currencyValue]');
 		await expect(isClosedCheckbox).not.toBeChecked();
 		await expect(isAutoCalculatedCheckbox).not.toBeChecked();
-		await expect(valueInput).not.toBeDisabled();
+		await expect(currencyInput).not.toBeDisabled();
 
 		await isAutoCalculatedCheckbox.check();
-		await expect(valueInput).toBeDisabled();
+		await expect(currencyInput).toBeDisabled();
 
 		await isAutoCalculatedCheckbox.uncheck();
-		await expect(valueInput).not.toBeDisabled();
+		await expect(currencyInput).not.toBeDisabled();
 
 		const nameInput = page.locator('.formInput__input[name=name]');
 		const institutionInput = page.locator('.formInput__input[name=institution]');
@@ -52,7 +52,10 @@ test.describe('Accounts', () => {
 		expect(await statusBar.textContent()).not.toMatch('The account was added successfully');
 
 		// Add a new account
-		await valueInput.fill('420.69');
+		await currencyInput.focus();
+		await page.keyboard.type('420.69');
+		await expect(currencyInput).toHaveValue('$420.69');
+
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
 		expect(await statusBar.textContent()).toMatch('The account was added successfully');
@@ -69,7 +72,7 @@ test.describe('Accounts', () => {
 		expect(await accountTypeSelect.textContent()).toMatch('Auto loan');
 		expect(await balanceGroupSelect.textContent()).toMatch('Debt');
 		await expect(institutionInput).toHaveValue('Ransack Bank Auto Loans');
-		await expect(valueInput).toHaveValue('420.69');
+		await expect(currencyInput).toHaveValue('$420.69');
 
 		// Check the account was created successfully
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
@@ -79,11 +82,11 @@ test.describe('Accounts', () => {
 		await page.locator('a', { hasText: 'Fiat Auto Loan' }).click();
 		await expect(page.locator('h1', { hasText: 'Fiat Auto Loan' })).toBeVisible();
 		await expect(isAutoCalculatedCheckbox).not.toBeChecked();
-		await expect(valueInput).not.toBeDisabled();
+		await expect(currencyInput).not.toBeDisabled();
 
 		await nameInput.fill('Fiat Financial Services');
 		await isAutoCalculatedCheckbox.check();
-		await expect(valueInput).toBeDisabled();
+		await expect(currencyInput).toBeDisabled();
 		await page.locator('button', { hasText: 'Save' }).click();
 
 		// Check the account was updated successfully
@@ -159,14 +162,15 @@ test.describe('Accounts', () => {
 
 		const descriptionInput = page.locator('.formInput__input[name=description]');
 		const accountIdSelect = page.locator('.formSelect__select[name=accountId]');
-		const amountInput = page.locator('.formInput__input[name=value]');
+		const currencyInput = page.locator('.formInput__currency[name=currencyValue]');
 		const isExcludedCheckbox = page.locator('.formInputCheckbox__input[name=isExcluded]');
 
 		// Add a transaction
 		await page.locator('a', { hasText: 'Add transaction' }).click();
 		await accountIdSelect.selectOption({ label: "Alice's Savings" });
 		await descriptionInput.fill('Evergreen Market');
-		await amountInput.fill('420.69');
+		await currencyInput.focus();
+		await page.keyboard.type('420.69');
 		await page.locator('button', { hasText: 'Add' }).click();
 
 		const statusBar = page.locator('.statusBar');
@@ -183,7 +187,8 @@ test.describe('Accounts', () => {
 		await page.locator('a', { hasText: 'Add transaction' }).click();
 		await accountIdSelect.selectOption({ label: "Alice's Savings" });
 		await descriptionInput.fill('Transfer from Ransack Bank');
-		await amountInput.fill('-420.69');
+		await currencyInput.focus();
+		await page.keyboard.type('-420.69');
 		await isExcludedCheckbox.check();
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(statusBar).toHaveClass(/statusBar--positive/);

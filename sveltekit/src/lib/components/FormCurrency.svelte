@@ -7,6 +7,7 @@
 	const LOCALE = 'en-US';
 	const CURRENCY = 'USD';
 
+	const currenctInputName = `currency${name.replace(/^./g, ($1) => $1.toUpperCase())}`;
 	const currencyDecimal = new Intl.NumberFormat(LOCALE).format(1.1).charAt(1);
 	const placeholder = new Intl.NumberFormat(LOCALE, {
 		style: 'currency',
@@ -18,12 +19,19 @@
 	let formattedValue = placeholder;
 	$: isZero = value === 0;
 	$: isNegative = value < 0;
+	$: value, applyFormatting();
+
+	const valueAsNumber = (value: string | number) => {
+		if (typeof value === 'string') {
+			return Number.isNaN(parseFloat(value)) ? 0 : parseFloat(value);
+		} else {
+			return value;
+		}
+	};
 
 	const formatValue = (event?: KeyboardEvent) => {
 		// Don't format if the user is typing a currencyDecimal point
 		if (event?.key === currencyDecimal) return;
-		// Make sure the value is a number at this point
-		if (typeof value === 'string') value = parseFloat(value);
 
 		// Remove currency formatting from `formattedValue` so we can assign it to `value`
 		if (formattedValue !== placeholder) {
@@ -42,11 +50,23 @@
 			}
 		}
 
+		// FIXME: when pressing minus where cursor is at the first character it cancels the reverse
 		// Revert sign when "minus" is pressed
-		if (event?.key === '-') value = value * -1;
+		if (event?.key === '-') {
+			value = valueAsNumber(value) * -1;
+		}
 
+		// Get the value trend
 		isZero = value === 0;
 		isNegative = value < 0;
+
+		// Currency-format the input field
+		applyFormatting();
+	};
+
+	const applyFormatting = () => {
+		// Make sure the value is a number at this point
+		value = valueAsNumber(value);
 
 		formattedValue = new Intl.NumberFormat(LOCALE, {
 			style: 'currency',
@@ -55,17 +75,16 @@
 			minimumFractionDigits: 0
 		}).format(value);
 	};
-
-	formatValue();
 </script>
 
 <div class="formInput">
-	<input type="hidden" {name} bind:value />
+	<input type="hidden" {name} {disabled} bind:value />
 	<input
 		class="formInput__currency {isZero && 'formInput__currency--zero'} {isNegative &&
 			'formInput__currency--negative'}"
 		type="text"
 		inputmode="numeric"
+		name={currenctInputName}
 		{placeholder}
 		{required}
 		{disabled}
