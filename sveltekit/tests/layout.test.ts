@@ -19,14 +19,14 @@ test.describe('Layout', () => {
 		await expect(sidebarBigPicture).not.toHaveClass(/layout__a--active/);
 		await expect(sidebarBalanceSheet).toHaveClass(/layout__a--active/);
 
-		const sidebarImportData = page.locator('a', { hasText: 'Import data' });
-		await expect(sidebarImportData).toHaveAttribute('href', '/import');
-		await expect(sidebarImportData).toHaveClass(/layout__a/);
-		await expect(sidebarImportData).not.toHaveClass(/layout__a--active/);
+		const sidebarAddOrUpdateData = page.locator('a', { hasText: 'Add or update data' });
+		await expect(sidebarAddOrUpdateData).toHaveAttribute('href', '/data');
+		await expect(sidebarAddOrUpdateData).toHaveClass(/layout__a/);
+		await expect(sidebarAddOrUpdateData).not.toHaveClass(/layout__a--active/);
 
-		await sidebarImportData.click();
-		await expect(page.locator('h1', { hasText: 'Import data' })).toBeVisible();
-		await expect(sidebarImportData).toHaveClass(/layout__a--active/);
+		await sidebarAddOrUpdateData.click();
+		await expect(page.locator('h1', { hasText: 'Add or update data' })).toBeVisible();
+		await expect(sidebarAddOrUpdateData).toHaveClass(/layout__a--active/);
 		await expect(sidebarBalanceSheet).not.toHaveClass(/layout__a--active/);
 	});
 
@@ -137,5 +137,50 @@ test.describe('Layout', () => {
 		await expect(costInput).not.toHaveClass(/formInput__currency--positive/);
 		await expect(costInput).not.toHaveClass(/formInput__currency--negative/);
 		await expect(costInput).not.toHaveClass(/formInput__currency--zero/);
+	});
+
+	test('Add or update data section is rendered correctly', async ({ page }) => {
+		const sidebarAddOrUpdateData = page.locator('a', { hasText: 'Add or update data' });
+		await page.goto('/');
+		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
+
+		// Add or update data
+		await sidebarAddOrUpdateData.click();
+		await expect(page.locator('h1', { hasText: 'Add or update data' })).toBeVisible();
+
+		// Import CanutinFile
+		await page.locator('a', { hasText: 'Import CanutinFile' }).click();
+		await expect(sidebarAddOrUpdateData).toHaveAttribute('href', '/data');
+		await expect(page.locator('h1', { hasText: 'Import CanutinFile' })).toBeVisible();
+
+		// Add account
+		await sidebarAddOrUpdateData.click();
+		await expect(page.locator('h1', { hasText: 'Add account' })).not.toBeVisible();
+		await expect(page.locator('a', { hasText: 'Add account' })).toHaveAttribute(
+			'href',
+			'/account/add'
+		);
+
+		await page.locator('a', { hasText: 'Add account' }).click();
+		await expect(page.locator('h1', { hasText: 'Add account' })).toBeVisible();
+
+		// Add asset
+		await sidebarAddOrUpdateData.click();
+		await expect(page.locator('h1', { hasText: 'Add asset' })).not.toBeVisible();
+		await expect(page.locator('a', { hasText: 'Add asset' })).toHaveAttribute('href', '/asset/add');
+
+		await page.locator('a', { hasText: 'Add asset' }).click();
+		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
+
+		// Add transaction
+		await sidebarAddOrUpdateData.click();
+		await expect(page.locator('h1', { hasText: 'Add transaction' })).not.toBeVisible();
+		await expect(page.locator('a', { hasText: 'Add transaction' })).toHaveAttribute(
+			'href',
+			'/transaction/add'
+		);
+
+		await page.locator('a', { hasText: 'Add transaction' }).click();
+		await expect(page.locator('h1', { hasText: 'Add transaction' })).toBeVisible();
 	});
 });

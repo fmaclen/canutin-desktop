@@ -3,16 +3,18 @@ import fetch from 'node-fetch';
 import { expect, test } from '@playwright/test';
 import { databaseWipe } from './fixtures/helpers.js';
 
-test.describe('Import data', () => {
+test.describe('Import CanutinFile', () => {
 	test.beforeEach(async ({ baseURL }) => {
 		await databaseWipe(baseURL!);
 	});
 
 	test('CanutinFile at different levels of provided data', async ({ page }) => {
 		await page.goto('/');
-		const sidebarImportData = page.locator('a', { hasText: 'Import data' });
-		await sidebarImportData.click();
-		await expect(page.locator('h1', { hasText: 'Import data' })).toBeVisible();
+		await expect(page.locator('a', { hasText: 'Import CanutinFile' })).not.toBeVisible();
+
+		await page.locator('a', { hasText: 'Add or update data' }).click();
+		await page.locator('a', { hasText: 'Import CanutinFile' }).click();
+		await expect(page.locator('h1', { hasText: 'Import CanutinFile' })).toBeVisible();
 
 		// Try to import invalid CanutinFile
 		const importStatus = page.locator('.importStatus');
@@ -80,7 +82,10 @@ test.describe('Import data', () => {
 		expect(await page.textContent('.card__value--netWorth')).toBe('$7,571');
 
 		// Import CanutinFile with new and duplicated data
-		await sidebarImportData.click();
+		await expect(page.locator('a', { hasText: 'Import' })).not.toBeVisible();
+
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		await page.locator('a', { hasText: 'Import' }).click();
 		await page.setInputFiles(
 			'input[type="file"]',
 			'./tests/fixtures/canutinFile-maximum-data.json'
@@ -140,7 +145,8 @@ test.describe('Import data', () => {
 
 	test('CanutinFile that only contains Accounts can be imported', async ({ page }) => {
 		await page.goto('/');
-		await page.locator('a', { hasText: 'Import data' }).click();
+		await page.locator('a', { hasText: 'Add or update data' }).click();
+		await page.locator('a', { hasText: 'Import CanutinFile' }).click();
 		await page.setInputFiles(
 			'input[type="file"]',
 			'./tests/fixtures/canutinFile-only-accounts.json'
@@ -154,7 +160,8 @@ test.describe('Import data', () => {
 
 	test('CanutinFile that only contains Assets can be imported', async ({ page }) => {
 		await page.goto('/');
-		await page.locator('a', { hasText: 'Import data' }).click();
+		await page.locator('a', { hasText: 'Add or update data' }).click();
+		await page.locator('a', { hasText: 'Import CanutinFile' }).click();
 		await page.setInputFiles('input[type="file"]', './tests/fixtures/canutinFile-only-assets.json');
 		await page.locator('button', { hasText: 'Upload' }).click();
 		await expect(page.locator('.statusBar')).not.toHaveClass(/statusBar--negative/);
@@ -165,7 +172,8 @@ test.describe('Import data', () => {
 
 	test('UI is rendered correctly', async ({ page, baseURL }) => {
 		await page.goto('/');
-		await page.locator('a', { hasText: 'Import data' }).click();
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		await page.locator('a', { hasText: 'Import' }).click();
 		expect(await page.locator('section', { hasText: 'From api' }).textContent()).toMatch(
 			`Submit a POST request to`
 		);
