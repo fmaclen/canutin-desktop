@@ -54,10 +54,10 @@
 				</nav>
 			{/if}
 			<a
-				class="layout__a layout__a--primary {pathname === '/import' &&
+				class="layout__a layout__a--primary {pathname === '/dataIngest' &&
 					'layout__a--active'} {!$isVaultReadyStore && 'layout__a--disabled'}"
-				href="/import"
-				>Import data
+				href="/dataIngest"
+				>Add or update data
 			</a>
 		</nav>
 	</aside>
