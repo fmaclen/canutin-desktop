@@ -43,13 +43,16 @@
 	// REF https://github.com/sveltejs/svelte/issues/4443#issuecomment-736767893
 	:global([slot='NAV']) {
 		display: flex;
-		column-gap: 16px;
+		column-gap: 24px;
 		align-items: center;
 		padding: 0 64px 24px 64px;
 		font-size: 13px;
 	}
 
 	div.scrollView__container {
+		display: grid;
+		grid-gap: 64px;
+		place-items: center;
 		position: relative;
 		width: 100%;
 		height: max-content;
@@ -57,12 +60,10 @@
 		margin-right: auto;
 		box-sizing: border-box;
 		padding: 64px;
-		display: grid;
-		grid-gap: 64px;
-		place-items: center;
 
 		&--fullscreen {
 			height: 100%;
+			align-content: center;
 		}
 	}
 </style>
