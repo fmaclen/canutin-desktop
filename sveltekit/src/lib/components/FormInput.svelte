@@ -2,7 +2,7 @@
 	export let type: string = 'text';
 	export let name: string;
 	export let placeholder: string | null = null;
-	export let value: string | null = null;
+	export let value: string | number | null = null;
 	export let accept: string | null = null;
 	export let required: boolean = true;
 	export let disabled: boolean = false;

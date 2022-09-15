@@ -145,11 +145,7 @@
 	</FormFieldset>
 	<FormFieldset>
 		<FormField name="value" label="Amount">
-			<FormCurrency
-				name="value"
-				value={transaction?.value.toString() || '0'}
-				disabled={hasNoAccounts}
-			/>
+			<FormCurrency name="value" value={transaction?.value || 0} disabled={hasNoAccounts} />
 		</FormField>
 	</FormFieldset>
 	<FormFooter>

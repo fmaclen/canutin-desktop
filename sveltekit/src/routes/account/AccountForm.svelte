@@ -55,7 +55,7 @@
 			<div class="accountBalanceField">
 				<FormCurrency
 					name="value"
-					value={lastBalanceStatement?.value.toString() || '0'}
+					value={lastBalanceStatement?.value || 0}
 					required={!isAutoCalculated}
 					disabled={isAutoCalculated}
 				/>

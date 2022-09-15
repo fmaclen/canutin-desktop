@@ -25,10 +25,10 @@
 	let name = asset ? asset.name : '';
 	let assetTypeId = asset ? asset.assetTypeId : 1;
 	let isSold = asset ? asset.isSold : false;
-	let balanceQuantity = lastBalanceStatement?.quantity?.toString() || '0';
-	let balanceCost = lastBalanceStatement?.cost?.toString() || '0';
+	let balanceQuantity = lastBalanceStatement?.quantity || 0;
+	let balanceCost = lastBalanceStatement?.cost || 0;
 	$: isQuantifiable = quantifiableAssetTypes.includes(assetTypeId);
-	$: balanceValue = `${parseFloat(balanceQuantity) * parseFloat(balanceCost)}`;
+	$: balanceValue = balanceQuantity * balanceCost;
 </script>
 
 <Form on:submit={handleSubmit}>
@@ -71,7 +71,7 @@
 		{/if}
 		{#if !isQuantifiable}
 			<FormField name="value" label="Value">
-				<FormCurrency name="value" value={lastBalanceStatement?.value.toString() || '0'} />
+				<FormCurrency name="value" value={lastBalanceStatement?.value || 0} />
 			</FormField>
 		{/if}
 	</FormFieldset>

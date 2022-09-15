@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { formatCurrency, LOCALE } from '$lib/helpers/misc';
 
-	export let value: number | string;
+	export let value: number;
 	export let name: string;
 	export let required: boolean = false;
 	export let disabled: boolean = false;
@@ -13,18 +13,9 @@
 	const currenctInputName = `currency${name.replace(/^./g, ($1) => $1.toUpperCase())}`;
 
 	let formattedValue = '';
-	$: isZero = valueAsNumber(value) === 0;
-	$: isNegative = valueAsNumber(value) < 0;
+	$: isZero = value === 0;
+	$: isNegative = value < 0;
 	$: value, applyFormatting();
-
-	// The `value` is first set to the value of the hidden input which is a string
-	const valueAsNumber = (value: string | number) => {
-		if (typeof value === 'string') {
-			return Number.isNaN(parseFloat(value)) ? 0 : parseFloat(value);
-		} else {
-			return value;
-		}
-	};
 
 	// Updates `value` by stripping away the currency formatting
 	const setValue = (event?: KeyboardEvent) => {
@@ -42,7 +33,7 @@
 			: formattedValue.replace(/[^0-9,.]/g, '');
 
 		// Reverse the value when minus is pressed
-		if (isNegativeAllowed && event?.key === '-') value = valueAsNumber(value) * -1;
+		if (isNegativeAllowed && event?.key === '-') value = value * -1;
 
 		// Finally set the value
 		if (Number.isNaN(parseFloat(unformattedValue))) {
@@ -56,7 +47,7 @@
 	};
 
 	const applyFormatting = () => {
-		formattedValue = isZero ? '' : formatCurrency(valueAsNumber(value), 2, 0);
+		formattedValue = isZero ? '' : formatCurrency(value, 2, 0);
 	};
 </script>
 
