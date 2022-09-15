@@ -20,7 +20,7 @@ test.describe('Layout', () => {
 		await expect(sidebarBalanceSheet).toHaveClass(/layout__a--active/);
 
 		const sidebarAddOrUpdateData = page.locator('a', { hasText: 'Add or update data' });
-		await expect(sidebarAddOrUpdateData).toHaveAttribute('href', '/dataIngest');
+		await expect(sidebarAddOrUpdateData).toHaveAttribute('href', '/data');
 		await expect(sidebarAddOrUpdateData).toHaveClass(/layout__a/);
 		await expect(sidebarAddOrUpdateData).not.toHaveClass(/layout__a--active/);
 
@@ -150,7 +150,7 @@ test.describe('Layout', () => {
 
 		// Import CanutinFile
 		await page.locator('a', { hasText: 'Import CanutinFile' }).click();
-		await expect(sidebarAddOrUpdateData).toHaveAttribute('href', '/dataIngest');
+		await expect(sidebarAddOrUpdateData).toHaveAttribute('href', '/data');
 		await expect(page.locator('h1', { hasText: 'Import CanutinFile' })).toBeVisible();
 
 		// Add account

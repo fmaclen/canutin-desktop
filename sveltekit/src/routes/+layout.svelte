@@ -54,9 +54,9 @@
 				</nav>
 			{/if}
 			<a
-				class="layout__a layout__a--primary {pathname === '/dataIngest' &&
+				class="layout__a layout__a--primary {pathname === '/data' &&
 					'layout__a--active'} {!$isVaultReadyStore && 'layout__a--disabled'}"
-				href="/dataIngest"
+				href="/data"
 				>Add or update data
 			</a>
 		</nav>
