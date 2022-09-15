@@ -20,6 +20,7 @@
 	<nav slot="NAV">
 		<Link href="/account/add">Add account</Link>
 		<Link href="/asset/add">Add asset</Link>
+		<Link href="/import">Import</Link>
 	</nav>
 	<Section title="Balances">
 		<div slot="CONTENT" class="balanceSheet">
