@@ -7,13 +7,15 @@
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import FormInputCheckbox from '$lib/components/FormInputCheckbox.svelte';
 	import FormNotice from '$lib/components/FormNotice.svelte';
+	import FormNoticeNotice from '$lib/components/FormNoticeNotice.svelte';
+	import FormNoticeP from '$lib/components/FormNoticeP.svelte';
+	import FormCurrency from '$lib/components/FormCurrency.svelte';
 	import Button from '$lib/components/Button.svelte';
+	import Link from '$lib/components/Link.svelte';
+	import { LOCALE } from '$lib/helpers/misc';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { FormSelectOption } from '$lib/components/FormSelect';
 	import type { Transaction } from '@prisma/client';
-	import Link from '$lib/components/Link.svelte';
-	import FormNoticeNotice from '$lib/components/FormNoticeNotice.svelte';
-	import FormNoticeP from '$lib/components/FormNoticeP.svelte';
 
 	export let handleSubmit: (e: SubmitEvent) => void;
 	export let transaction: Transaction | null = null;
@@ -44,7 +46,7 @@
 		return dates.map((date, i) => {
 			return {
 				label: isMonth
-					? `${date} - ${new Date(`${date}-${thisDate}-${thisYear}`).toLocaleString('en-US', {
+					? `${date} - ${new Date(`${date}-${thisDate}-${thisYear}`).toLocaleString(LOCALE, {
 							month: 'short'
 					  })}` // e.g. "9 - Sep"
 					: date.toString(),
@@ -143,12 +145,7 @@
 	</FormFieldset>
 	<FormFieldset>
 		<FormField name="value" label="Amount">
-			<FormInput
-				type="number"
-				name="value"
-				value={transaction?.value.toString() || '0'}
-				disabled={hasNoAccounts}
-			/>
+			<FormCurrency name="value" value={transaction?.value || 0} disabled={hasNoAccounts} />
 		</FormField>
 	</FormFieldset>
 	<FormFooter>

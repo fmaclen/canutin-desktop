@@ -274,7 +274,7 @@ test.describe('Transactions', () => {
 		const dateSelect = page.locator('.formSelect__select[name=dateSelect]');
 		const isExcluded = page.locator('.formInputCheckbox__input[name=isExcluded]');
 		const isPending = page.locator('.formInputCheckbox__input[name=isPending]');
-		const amountInput = page.locator('.formInput__input[name=value]');
+		const amountInput = page.locator('.formInput__currency[name=currencyValue]');
 
 		// Check transaction form is disabled until an account is present
 		await page.locator('a', { hasText: 'Add transaction' }).click();
@@ -330,9 +330,6 @@ test.describe('Transactions', () => {
 		const addButton = page.locator('button', { hasText: 'Add' });
 		const balanceTypeGroup = page.locator('.balanceSheet__typeGroup');
 		const nameInput = page.locator('.formInput__input[name=name]');
-		// const isAutoCalculatedCheckbox = page.locator(
-		// 	'.formInputCheckbox__input[name=isAutoCalculated]'
-		// );
 
 		await page.locator('a', { hasText: 'Add account' }).click();
 		await nameInput.fill("Bob's Laughable-Yield Checking");
@@ -357,7 +354,7 @@ test.describe('Transactions', () => {
 		const dateSelect = page.locator('.formSelect__select[name=dateSelect]');
 		const isExcludedCheckbox = page.locator('.formInputCheckbox__input[name=isExcluded]');
 		const isPendingCheckbox = page.locator('.formInputCheckbox__input[name=isPending]');
-		const amountInput = page.locator('.formInput__input[name=value]');
+		const amountInput = page.locator('.formInput__currency[name=currencyValue]');
 
 		// Add a transaction
 		await page.locator('a', { hasText: 'Add transaction' }).click();
@@ -373,7 +370,8 @@ test.describe('Transactions', () => {
 		await yearSelect.selectOption({ label: '2020' });
 		await monthSelect.selectOption({ label: '3 - Mar' });
 		await dateSelect.selectOption({ label: '15' });
-		await amountInput.fill('-420.69');
+		await amountInput.focus();
+		await page.keyboard.type('-420.69');
 		await addButton.click();
 
 		const netBalanceCard = page.locator('.card', { hasText: 'Net balance' });

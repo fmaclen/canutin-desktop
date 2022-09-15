@@ -7,6 +7,7 @@
 	import FormInput from '$lib/components/FormInput.svelte';
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import FormInputCheckbox from '$lib/components/FormInputCheckbox.svelte';
+	import FormCurrency from '$lib/components/FormCurrency.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { FormSelectOption } from '$lib/components/FormSelect';
@@ -24,10 +25,10 @@
 	let name = asset ? asset.name : '';
 	let assetTypeId = asset ? asset.assetTypeId : 1;
 	let isSold = asset ? asset.isSold : false;
-	let balanceQuantity = lastBalanceStatement?.quantity?.toString() || '0';
-	let balanceCost = lastBalanceStatement?.cost?.toString() || '0';
+	let balanceQuantity = lastBalanceStatement?.quantity || 0;
+	let balanceCost = lastBalanceStatement?.cost || 0;
 	$: isQuantifiable = quantifiableAssetTypes.includes(assetTypeId);
-	$: balanceValue = `${parseFloat(balanceQuantity) * parseFloat(balanceCost)}`;
+	$: balanceValue = balanceQuantity * balanceCost;
 </script>
 
 <Form on:submit={handleSubmit}>
@@ -62,19 +63,15 @@
 				<FormInput type="number" name="quantity" bind:value={balanceQuantity} />
 			</FormField>
 			<FormField name="cost" label="Cost">
-				<FormInput type="number" name="cost" bind:value={balanceCost} />
+				<FormCurrency name="cost" bind:value={balanceCost} isNegativeAllowed={false} />
 			</FormField>
 			<FormField name="value" label="Value">
-				<FormInput type="number" name="value" bind:value={balanceValue} disabled={isQuantifiable} />
+				<FormCurrency name="value" bind:value={balanceValue} disabled={isQuantifiable} />
 			</FormField>
 		{/if}
 		{#if !isQuantifiable}
 			<FormField name="value" label="Value">
-				<FormInput
-					type="number"
-					name="value"
-					value={lastBalanceStatement?.value?.toString() || '0'}
-				/>
+				<FormCurrency name="value" value={lastBalanceStatement?.value || 0} />
 			</FormField>
 		{/if}
 	</FormFieldset>

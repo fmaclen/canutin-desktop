@@ -21,8 +21,8 @@ test.describe('Assets', () => {
 		const nameInput = page.locator('.formInput__input[name=name]');
 		const symbolInput = page.locator('.formInput__input[name=symbol]');
 		const quantityInput = page.locator('.formInput__input[name=quantity]');
-		const costInput = page.locator('.formInput__input[name=cost]');
-		const valueInput = page.locator('.formInput__input[name=value]');
+		const costInput = page.locator('.formInput__currency[name=currencyCost]');
+		const valueInput = page.locator('.formInput__currency[name=currencyValue]');
 		const assetTypeSelect = page.locator('.formSelect__select[name=assetTypeId]');
 		const balanceGroupSelect = page.locator('.formSelect__select[name=balanceGroup]');
 
@@ -30,9 +30,10 @@ test.describe('Assets', () => {
 		await page.locator('a', { hasText: 'Add asset' }).click();
 		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
 		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
-		await expect(symbolInput).not.toBeVisible();
 
 		await nameInput.fill('GameStop');
+		await expect(symbolInput).not.toBeVisible();
+
 		await assetTypeSelect.selectOption({ label: 'Security' });
 		await balanceGroupSelect.selectOption({ label: 'Investments' });
 		await expect(symbolInput).toBeVisible();
@@ -67,9 +68,10 @@ test.describe('Assets', () => {
 
 		// Update the asset
 		await quantityInput.fill('4.20');
-		await costInput.fill('69');
+		await costInput.focus();
+		await page.keyboard.type('69');
 		await expect(valueInput).toBeDisabled();
-		await expect(valueInput).toHaveValue('289.8');
+		await expect(valueInput).toHaveValue('$289.8');
 		expect(await statusBar.textContent()).not.toMatch('The asset was updated successfully');
 
 		await page.locator('button', { hasText: 'Save' }).click();
@@ -103,7 +105,7 @@ test.describe('Assets', () => {
 		expect(await assetTypeSelect.textContent()).toMatch('Business');
 		expect(await balanceGroupSelect.textContent()).toMatch('Other assets');
 		await expect(isSoldCheckbox).toBeChecked();
-		await expect(valueInput).toHaveValue('289.8');
+		await expect(valueInput).toHaveValue('$289.8');
 		await expect(isSoldCheckbox).toBeChecked();
 
 		// Check the asset type was updated successfully

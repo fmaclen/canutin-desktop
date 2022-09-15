@@ -6,6 +6,7 @@
 	import FormInput from '$lib/components/FormInput.svelte';
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import FormInputCheckbox from '$lib/components/FormInputCheckbox.svelte';
+	import FormCurrency from '$lib/components/FormCurrency.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { FormSelectOption } from '$lib/components/FormSelect';
@@ -52,10 +53,9 @@
 	<FormFieldset>
 		<FormField name="value" label="Balance">
 			<div class="accountBalanceField">
-				<FormInput
-					type="number"
+				<FormCurrency
 					name="value"
-					value={lastBalanceStatement?.value.toString() || '0'}
+					value={lastBalanceStatement?.value || 0}
 					required={!isAutoCalculated}
 					disabled={isAutoCalculated}
 				/>
