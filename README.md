@@ -1,6 +1,6 @@
-# Canutin: desktop-2
+# Canutin: desktop
 
-#### A leaner version of [`https://github.com/canutin/desktop`](https://github.com/canutin/desktop)
+<img width="1418" alt="image" src="https://user-images.githubusercontent.com/1434675/190489288-e32e5c69-f567-4883-8b23-413253e8150a.png">
 
 ---
 
