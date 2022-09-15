@@ -18,7 +18,7 @@
 	import type { ImportSummary } from '../import.json/+server';
 	import FormFooter from '$lib/components/FormFooter.svelte';
 
-	const title = 'Import data';
+	const title = 'Import CanutinFile';
 
 	let isLoading: boolean = false;
 	let noFileError: string | undefined = undefined;

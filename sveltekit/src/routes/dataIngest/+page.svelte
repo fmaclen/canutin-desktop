@@ -78,11 +78,6 @@
 		width: 100%;
 		height: 100%;
 		gap: 8px;
-
-		&--row {
-			display: flex;
-			flex-direction: column;
-		}
 	}
 
 	a.wizard__a {

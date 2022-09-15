@@ -19,14 +19,14 @@ test.describe('Layout', () => {
 		await expect(sidebarBigPicture).not.toHaveClass(/layout__a--active/);
 		await expect(sidebarBalanceSheet).toHaveClass(/layout__a--active/);
 
-		const sidebarImportData = page.locator('a', { hasText: 'Import data' });
-		await expect(sidebarImportData).toHaveAttribute('href', '/import');
-		await expect(sidebarImportData).toHaveClass(/layout__a/);
-		await expect(sidebarImportData).not.toHaveClass(/layout__a--active/);
+		const sidebarAddOrUpdateData = page.locator('a', { hasText: 'Add or update data' });
+		await expect(sidebarAddOrUpdateData).toHaveAttribute('href', '/dataIngest');
+		await expect(sidebarAddOrUpdateData).toHaveClass(/layout__a/);
+		await expect(sidebarAddOrUpdateData).not.toHaveClass(/layout__a--active/);
 
-		await sidebarImportData.click();
-		await expect(page.locator('h1', { hasText: 'Import data' })).toBeVisible();
-		await expect(sidebarImportData).toHaveClass(/layout__a--active/);
+		await sidebarAddOrUpdateData.click();
+		await expect(page.locator('h1', { hasText: 'Add or update data' })).toBeVisible();
+		await expect(sidebarAddOrUpdateData).toHaveClass(/layout__a--active/);
 		await expect(sidebarBalanceSheet).not.toHaveClass(/layout__a--active/);
 	});
 
