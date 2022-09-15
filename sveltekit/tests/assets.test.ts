@@ -30,9 +30,10 @@ test.describe('Assets', () => {
 		await page.locator('a', { hasText: 'Add asset' }).click();
 		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
 		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
-		await expect(symbolInput).not.toBeVisible();
 
 		await nameInput.fill('GameStop');
+		await expect(symbolInput).not.toBeVisible();
+
 		await assetTypeSelect.selectOption({ label: 'Security' });
 		await balanceGroupSelect.selectOption({ label: 'Investments' });
 		await expect(symbolInput).toBeVisible();
