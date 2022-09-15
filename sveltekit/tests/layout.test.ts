@@ -138,4 +138,49 @@ test.describe('Layout', () => {
 		await expect(costInput).not.toHaveClass(/formInput__currency--negative/);
 		await expect(costInput).not.toHaveClass(/formInput__currency--zero/);
 	});
+
+	test('Add or update data section is rendered correctly', async ({ page }) => {
+		const sidebarAddOrUpdateData = page.locator('a', { hasText: 'Add or update data' });
+		await page.goto('/');
+		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
+
+		// Add or update data
+		await sidebarAddOrUpdateData.click();
+		await expect(page.locator('h1', { hasText: 'Add or update data' })).toBeVisible();
+
+		// Import CanutinFile
+		await page.locator('a', { hasText: 'Import CanutinFile' }).click();
+		await expect(sidebarAddOrUpdateData).toHaveAttribute('href', '/dataIngest');
+		await expect(page.locator('h1', { hasText: 'Import CanutinFile' })).toBeVisible();
+
+		// Add account
+		await sidebarAddOrUpdateData.click();
+		await expect(page.locator('h1', { hasText: 'Add account' })).not.toBeVisible();
+		await expect(page.locator('a', { hasText: 'Add account' })).toHaveAttribute(
+			'href',
+			'/account/add'
+		);
+
+		await page.locator('a', { hasText: 'Add account' }).click();
+		await expect(page.locator('h1', { hasText: 'Add account' })).toBeVisible();
+
+		// Add asset
+		await sidebarAddOrUpdateData.click();
+		await expect(page.locator('h1', { hasText: 'Add asset' })).not.toBeVisible();
+		await expect(page.locator('a', { hasText: 'Add asset' })).toHaveAttribute('href', '/asset/add');
+
+		await page.locator('a', { hasText: 'Add asset' }).click();
+		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
+
+		// Add transaction
+		await sidebarAddOrUpdateData.click();
+		await expect(page.locator('h1', { hasText: 'Add transaction' })).not.toBeVisible();
+		await expect(page.locator('a', { hasText: 'Add transaction' })).toHaveAttribute(
+			'href',
+			'/transaction/add'
+		);
+
+		await page.locator('a', { hasText: 'Add transaction' }).click();
+		await expect(page.locator('h1', { hasText: 'Add transaction' })).toBeVisible();
+	});
 });
