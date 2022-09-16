@@ -21,8 +21,8 @@ test.describe('Assets', () => {
 		const nameInput = page.locator('.formInput__input[name=name]');
 		const symbolInput = page.locator('.formInput__input[name=symbol]');
 		const quantityInput = page.locator('.formInput__input[name=quantity]');
-		const costInput = page.locator('.formInput__currency[name=currencyCost]');
-		const valueInput = page.locator('.formInput__currency[name=currencyValue]');
+		const costInput = page.locator('.formCurrencyInput input[name="formatted-cost"]');
+		const valueInput = page.locator('.formCurrencyInput input[name="formatted-value"]');
 		const assetTypeSelect = page.locator('.formSelect__select[name=assetTypeId]');
 		const balanceGroupSelect = page.locator('.formSelect__select[name=balanceGroup]');
 

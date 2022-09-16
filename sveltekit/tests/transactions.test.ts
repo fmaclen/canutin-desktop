@@ -274,7 +274,7 @@ test.describe('Transactions', () => {
 		const dateSelect = page.locator('.formSelect__select[name=dateSelect]');
 		const isExcluded = page.locator('.formInputCheckbox__input[name=isExcluded]');
 		const isPending = page.locator('.formInputCheckbox__input[name=isPending]');
-		const amountInput = page.locator('.formInput__currency[name=currencyValue]');
+		const amountInput = page.locator('.formCurrencyInput input[name="formatted-value"]');
 
 		// Check transaction form is disabled until an account is present
 		await page.locator('a', { hasText: 'Add transaction' }).click();
@@ -354,7 +354,7 @@ test.describe('Transactions', () => {
 		const dateSelect = page.locator('.formSelect__select[name=dateSelect]');
 		const isExcludedCheckbox = page.locator('.formInputCheckbox__input[name=isExcluded]');
 		const isPendingCheckbox = page.locator('.formInputCheckbox__input[name=isPending]');
-		const amountInput = page.locator('.formInput__currency[name=currencyValue]');
+		const amountInput = page.locator('.formCurrencyInput input[name="formatted-value"]');
 
 		// Add a transaction
 		await page.locator('a', { hasText: 'Add transaction' }).click();

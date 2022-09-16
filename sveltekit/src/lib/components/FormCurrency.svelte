@@ -9,7 +9,7 @@
 </script>
 
 <div class="formCurrencyInput">
-	<CurrencyInput {value} {name} {required} {disabled} {isNegativeAllowed} />
+	<CurrencyInput {name} {required} {disabled} {isNegativeAllowed} bind:value />
 </div>
 
 <style lang="scss">
