@@ -43,6 +43,7 @@ jobs:
           BROWSER: chromium
 
   SvelteKit-Firefox:
+    needs: SvelteKit-Chromium
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
@@ -67,6 +68,7 @@ jobs:
           BROWSER: firefox
 
   SvelteKit-Webkit:
+    needs: SvelteKit-Firefox
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
