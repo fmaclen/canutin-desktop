@@ -26,7 +26,7 @@ test.describe('Accounts', () => {
 		const isAutoCalculatedCheckbox = page.locator(
 			'.formInputCheckbox__input[name=isAutoCalculated]'
 		);
-		const currencyInput = page.locator('.formInput__currency[name=currencyValue]');
+		const currencyInput = page.locator('.formCurrencyInput input[name="formatted-value"]');
 		await expect(isClosedCheckbox).not.toBeChecked();
 		await expect(isAutoCalculatedCheckbox).not.toBeChecked();
 		await expect(currencyInput).not.toBeDisabled();
@@ -162,7 +162,7 @@ test.describe('Accounts', () => {
 
 		const descriptionInput = page.locator('.formInput__input[name=description]');
 		const accountIdSelect = page.locator('.formSelect__select[name=accountId]');
-		const currencyInput = page.locator('.formInput__currency[name=currencyValue]');
+		const currencyInput = page.locator('.formCurrencyInput input[name="formatted-value"]');
 		const isExcludedCheckbox = page.locator('.formInputCheckbox__input[name=isExcluded]');
 
 		// Add a transaction
