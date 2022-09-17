@@ -1,7 +1,14 @@
-import type { PlaywrightTestConfig } from '@playwright/test';
+import { type PlaywrightTestConfig, devices } from '@playwright/test';
 import { pathToTestVault } from './tests/fixtures/helpers.js';
 
 const isEnvCI = process.env.NODE_ENV === 'CI';
+const browser = process.env.BROWSER;
+const projectBrowser = [
+	{
+		name: browser,
+		use: { ...devices[`Desktop ${browser}`] }
+	}
+];
 
 const config: PlaywrightTestConfig = {
 	globalSetup: './tests/fixtures/global-setup.ts',
@@ -19,6 +26,8 @@ const config: PlaywrightTestConfig = {
 		trace: isEnvCI ? 'off' : 'retain-on-failure',
 		screenshot: isEnvCI ? 'off' : 'only-on-failure'
 	},
+	timeout: 15000,
+	projects: isEnvCI ? projectBrowser : undefined,
 	// Can't have more than 1 worker because the tests read/write to the same DB at the same time
 	workers: 1
 };

@@ -358,13 +358,13 @@ test.describe('Transactions', () => {
 
 		// Add a transaction
 		await page.locator('a', { hasText: 'Add transaction' }).click();
-		expect(addButton).toBeDisabled();
+		await expect(addButton).toBeDisabled();
 
 		await accountIdSelect.selectOption({ label: "Bob's Laughable-Yield Checking" });
-		expect(addButton).toBeDisabled();
+		await expect(addButton).toBeDisabled();
 
 		await descriptionInput.fill('Toilet Paper Depot');
-		expect(addButton).not.toBeDisabled();
+		await expect(addButton).not.toBeDisabled();
 
 		await categoryIdSelect.selectOption({ label: 'Groceries' });
 		await yearSelect.selectOption({ label: '2020' });
