@@ -34,7 +34,7 @@ jobs:
         run: npx prisma generate
       - name: Install Playwright Browsers
         working-directory: ./sveltekit
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps
       - name: Run Playwright tests
         working-directory: ./sveltekit
         run: npm test
@@ -59,7 +59,7 @@ jobs:
         run: npx prisma generate
       - name: Install Playwright Browsers
         working-directory: ./sveltekit
-        run: npx playwright install --with-deps firefox
+        run: npx playwright install --with-deps
       - name: Run Playwright tests
         working-directory: ./sveltekit
         run: npm test
@@ -84,7 +84,7 @@ jobs:
         run: npx prisma generate
       - name: Install Playwright Browsers
         working-directory: ./sveltekit
-        run: npx playwright install --with-deps webkit
+        run: npx playwright install --with-deps
       - name: Run Playwright tests
         working-directory: ./sveltekit
         run: npm test
