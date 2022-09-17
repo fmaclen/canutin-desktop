@@ -2,19 +2,11 @@ import { type PlaywrightTestConfig, devices } from '@playwright/test';
 import { pathToTestVault } from './tests/fixtures/helpers.js';
 
 const isEnvCI = process.env.NODE_ENV === 'CI';
-
-const enableMultipleBrowsers = [
+const browser = process.env.BROWSER;
+const projectBrowser = [
 	{
-		name: 'chromium',
-		use: { ...devices['Desktop Chrome'] }
-	},
-	{
-		name: 'firefox',
-		use: { ...devices['Desktop Firefox'] }
-	},
-	{
-		name: 'webkit',
-		use: { ...devices['Desktop Safari'] }
+		name: browser,
+		use: { ...devices[`Desktop ${browser}`] }
 	}
 ];
 
@@ -34,7 +26,8 @@ const config: PlaywrightTestConfig = {
 		trace: isEnvCI ? 'off' : 'retain-on-failure',
 		screenshot: isEnvCI ? 'off' : 'only-on-failure'
 	},
-	projects: isEnvCI ? enableMultipleBrowsers : undefined,
+	timeout: 5000,
+	projects: isEnvCI ? projectBrowser : undefined,
 	// Can't have more than 1 worker because the tests read/write to the same DB at the same time
 	workers: 1
 };
