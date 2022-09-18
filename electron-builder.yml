@@ -1,6 +1,6 @@
 productName: Canutin
 appId: com.canutin.desktop
-artifactName: ${name}_v${version}-${os}-${arch}.${ext}
+artifactName: canutin-${name}_v${version}-${os}-${arch}.${ext}
 
 files:
   - from: "dist/main"
