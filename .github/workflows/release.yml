@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: "16.x"
 
-      - name: Install dependencies
+      - name: Install SvelteKit dependencies
         working-directory: ./sveltekit
         run: npm ci
 
@@ -40,8 +40,11 @@ jobs:
           NODE_ENV: CI
           BROWSER: chromium
 
-      - name: Build SvelteKit
-        run: npm run build:sveltekit
+      - name: Install Electron dependencies
+        run: npm ci
+
+      - name: Prepare app for distribution
+        run: npm run build:all
 
       # - name: Run semantic release
       #   run: npx semantic-release
