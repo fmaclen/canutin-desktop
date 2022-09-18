@@ -31,3 +31,7 @@ nsis:
 linux:
   target:
     - zip
+
+publish:
+  provider: github
+  releaseType: release
