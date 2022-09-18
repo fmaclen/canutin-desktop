@@ -27,31 +27,31 @@ jobs:
         working-directory: ./sveltekit
         run: npx prisma generate
 
-      - name: Install Playwright Browsers
-        working-directory: ./sveltekit
-        run: npx playwright install --with-deps
+      # - name: Install Playwright Browsers
+      #   working-directory: ./sveltekit
+      #   run: npx playwright install --with-deps
 
-      - name: Run Playwright tests
-        working-directory: ./sveltekit
-        run: npm test
-        env:
-          NODE_ENV: CI
-          BROWSER: chromium
+      # - name: Run Playwright tests
+      #   working-directory: ./sveltekit
+      #   run: npm test
+      #   env:
+      #     NODE_ENV: CI
+      #     BROWSER: chromium
 
       - name: Install Electron dependencies
         run: npm ci
-
-      - name: Prepare app for distribution
-        run: npm run build:all
 
       - name: Run semantic release
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Prepare package.json for release
+        run: npm run package:github
+
       - name: Build & release Electron app
         uses: samuelmeuli/action-electron-builder@v1.6.0
         with:
           github_token: ${{ secrets.github_token }}
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-          build_script_name: "build:github"
+          build_script_name: "build:all"

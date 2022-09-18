@@ -12,7 +12,8 @@
     "build:electron": "electron-esbuild build",
     "build:sveltekit": "cd sveltekit && npm run build && cd .. && node scripts/sveltekit-package.js",
     "test": "jest --watchAll",
-    "package": "npm run build:all && electron-builder"
+    "package": "npm run build:all && electron-builder",
+    "package:github": "node scripts/package-github.js"
   },
   "devDependencies": {
     "@types/jest": "^28.1.6",
