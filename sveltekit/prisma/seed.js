@@ -577,7 +577,7 @@ async function main() {
 				}
 			}
 		});
-		console.info(res);
+		console.info(`-> Seeded ${res.length} transaction categories`);
 	});
 
 	accountTypes.map(async (accountType) => {
@@ -586,7 +586,7 @@ async function main() {
 				name: accountType.name
 			}
 		});
-		console.info(res);
+		console.info(`-> Seeded ${res.length} account types`);
 	});
 
 	assetTypes.map(async (assetType) => {
@@ -595,7 +595,7 @@ async function main() {
 				name: assetType.name
 			}
 		});
-		console.info(res);
+		console.info(`-> Seeded ${res.length} asset types`);
 	});
 }
 

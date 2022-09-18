@@ -3,8 +3,6 @@ name: Test, build & release
 on:
   push:
     branches: [main, master]
-  pull_request:
-    branches: [main, master]
 
 jobs:
   release:
@@ -46,10 +44,10 @@ jobs:
       - name: Prepare app for distribution
         run: npm run build:all
 
-      # - name: Run semantic release
-      #   run: npx semantic-release
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run semantic release
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build & release Electron app
         uses: samuelmeuli/action-electron-builder@v1.6.0
