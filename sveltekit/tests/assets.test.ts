@@ -32,7 +32,7 @@ test.describe('Assets', () => {
 		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
 
 		await nameInput.fill('GameStop');
-		await expect(symbolInput).not.toBeVisible();
+		await expect(symbolInput).not.toBeVisible(); // FIXME: flaky assertion
 
 		await assetTypeSelect.selectOption({ label: 'Security' });
 		await balanceGroupSelect.selectOption({ label: 'Investments' });
