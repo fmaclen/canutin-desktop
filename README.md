@@ -6,7 +6,7 @@
   💻 <strong>Download the <a href="https://github.com/Canutin/desktop/releases">latest release</a></strong> (Windows, macOS & Linux)
 </p>
 <p align="center">
-  <small>🐝 Bugs? 🤑 Feature requests? Check out <a href="#contributing" target="_blank">ways to contribute</a></small>
+  🐝 Bugs? 🤑 Feature requests? Check out <a href="#contributing" target="_blank">ways to contribute</a>
 </p>
 
 ---
@@ -18,7 +18,7 @@
 The repository is split into two semi-independent codebases:
 
 - A [SvelteKit](https://kit.svelte.dev/) SSR app that serves a front-end on `localhost` and handles 95% of the functionality. Code lives in `<root>/sveltekit`
-- An [Electron](https://www.electronjs.org/) setup that starts/stops the SvelteKit process through a tray menu interface. It relies on native OS interface components only and doesn't use [`BrowserWindow`](https://www.electronjs.org/docs/latest/api/browser-window). Code lives in `<root>/electron`
+- An [Electron](https://www.electronjs.org/) setup that starts/stops the SvelteKit process through a tray menu interface. Doesn't make use of a [`BrowserWindow`](https://www.electronjs.org/docs/latest/api/browser-window) and instead relies on native OS interface components. Code lives in `<root>/electron`
 
 ### Environment setup
 
