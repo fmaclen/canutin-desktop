@@ -1,9 +1,9 @@
-name: Integration tests
+name: Test only
+
 on:
-  push:
-    branches: [main, master]
   pull_request:
     branches: [main, master]
+
 jobs:
   Electron:
     timeout-minutes: 60
