@@ -16,7 +16,7 @@ execSync(`npm run dev`, {
     ...process.env,
     DATABASE_URL: `file:${vaultDevPath}`,
     ELECTRON_SWITCHED_VAULT: "true",
-    APP_VERSION: "0.0.0",
+    APP_VERSION: "0.0.0-development",
   },
   stdio: "inherit",
 });
