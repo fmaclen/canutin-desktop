@@ -18,7 +18,7 @@
 The repository is split into two semi-independent codebases:
 
 - A [SvelteKit](https://kit.svelte.dev/) SSR app that serves a front-end on `localhost` and handles 95% of the functionality. Code lives in `<root>/sveltekit`
-- An [Electron](https://www.electronjs.org/) setup that starts/stops the SvelteKit process through a tray menu interface. Doesn't make use of a [`BrowserWindow`](https://www.electronjs.org/docs/latest/api/browser-window) and instead relies on native OS interface components. Code lives in `<root>/electron`
+- A minimal [Electron](https://www.electronjs.org/) implementation that starts/stops the SvelteKit process through a tray menu interface. Doesn't make use of a [`BrowserWindow`](https://www.electronjs.org/docs/latest/api/browser-window) and instead relies on native OS interface components. Code lives in `<root>/electron`
 
 ### Environment setup
 
