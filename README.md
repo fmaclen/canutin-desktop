@@ -2,19 +2,33 @@
 
 <img width="1418" alt="image" src="https://user-images.githubusercontent.com/1434675/190489288-e32e5c69-f567-4883-8b23-413253e8150a.png">
 
+<p align="center">
+  💻 <strong>Download the <a href="https://github.com/Canutin/desktop/releases">latest release</a></strong> (Windows, macOS & Linux)
+</p>
+<p align="center">
+  <small>🐝 Bugs? 🤑 Feature requests? Check out <a href="#contributing" target="_blank">ways to contribute</a></small>
+</p>
+
 ---
 
-## Setup
+## Develoment
 
-You'll need to run these commands to set up the environment before getting started.
+### Overview
 
-1. Install all backend dependencies (**Electron**)
+The repository is split into two semi-independent codebases:
+
+- A [SvelteKit](https://kit.svelte.dev/) SSR app that serves a front-end on `localhost` and handles 95% of the functionality. Code lives in `<root>/sveltekit`
+- An [Electron](https://www.electronjs.org/) setup that starts/stops the SvelteKit process through a tray menu interface. It relies on native OS interface components only and doesn't use [`BrowserWindow`](https://www.electronjs.org/docs/latest/api/browser-window). Code lives in `<root>/electron`
+
+### Environment setup
+
+1. Install **Electron** dependencies
 
 ```bash
 % npm install
 ```
 
-2. Install all frontend dependencies (**SvelteKit**)
+2. Install **SvelteKit** dependencies
 
 ```bash
 % cd sveltekit && npm install
@@ -32,9 +46,7 @@ You'll need to run these commands to set up the environment before getting start
 % cd sveltekit && npx prisma migrate dev
 ```
 
----
-
-## Usage
+### Running the app
 
 The **Electron** and **SvelteKit** dev environments can be run independently of one another.
 
@@ -62,13 +74,13 @@ This command will create builds of everything and will copy all of the files tha
 
 ### Testing
 
-**Electron unit tests**
+**Electron** (Jest)
 
 ```bash
 % npm test
 ```
 
-**SvelteKit integration tests**
+**SvelteKit** (Playwright)
 
 ```javascript
 % cd sveltekit && npm test
@@ -82,8 +94,6 @@ This command will create builds of everything and will copy all of the files tha
 % cd sveltekit && npx prisma studio
 ```
 
----
-
 ### Current Stack
 
 - Electron
@@ -91,3 +101,15 @@ This command will create builds of everything and will copy all of the files tha
 - Prisma + SQLite
 - SvelteKit
 - TypeScript
+
+---
+
+## Contributing
+
+Here's ways in which you can contribute:
+
+- Found a **bug** or have a **feature request**?
+  1. Search for it in the [existing issues](https://github.com/canutin/desktop/issues)
+  2. Open a [new issue](https://github.com/canutin/desktop/issues/new) if it doesn't yet exist
+- Comment or upvote [existing issues](https://github.com/canutin/desktop/issues) _(active issues will likely be prioritized)_
+- Submit a [pull request](https://github.com/canutin/desktop/pulls) _(please discuss in an issue first)_
