@@ -6,7 +6,7 @@
   💻 <strong>Download the <a href="https://github.com/Canutin/desktop/releases">latest release</a></strong> (Windows, macOS & Linux)
 </p>
 <p align="center">
-  🐝 Bugs? 🤑 Feature requests? Check out <a href="#contributing" target="_blank">ways to contribute</a>
+  🐝 Bugs? 🤑 Feature requests? Check out <a href="https://github.com/Canutin/desktop/#contributing">ways to contribute</a>
 </p>
 
 ---
