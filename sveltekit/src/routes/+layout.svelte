@@ -18,46 +18,64 @@
 	export let data: PageData;
 	$: pathname = $page.url.pathname;
 
-	const getAppLastestVersion = async () => {
+	const getAppLastestVersion = async (userRequested: boolean = false) => {
+		if ($statusBarStore.isError) return;
+
 		const THREE_DAYS_IN_SECONDS = 259200;
+		const currentTime = getUnixTime(new Date());
+		const threeDaysAgoInSeconds = getUnixTime(new Date()) - THREE_DAYS_IN_SECONDS;
 
-		// If there is an error present in the statusBarStore, don't update the message
-		if ($statusBarStore.appearance === Appearance.NEGATIVE) return;
-
-		// Recursively check for updates every 3 days
-		setTimeout(async () => {
-			await getAppLastestVersion();
-		}, THREE_DAYS_IN_SECONDS * 1000);
-
-		if ($lastUpdateCheckStore && typeof $lastUpdateCheckStore !== 'number') {
-			const threeDaysAgoInSeconds = getUnixTime(new Date()) - THREE_DAYS_IN_SECONDS;
-
-			// Check if `$lastUpdateCheckStore` is at least 3 days old
-			if ($lastUpdateCheckStore < threeDaysAgoInSeconds) {
-				try {
-					// Get the latest version from GitHub
-					const response = await fetch('https://api.github.com/repos/canutin/desktop/releases');
-					const result = await response.json();
-					const latestVersion = result[0]?.tag_name?.replace('v', '');
-
-					// Update status bar with latest version
-					if (latestVersion && semver.lt(data.appVersion, latestVersion)) {
-						$statusBarStore = {
-							message: `An updated version is available (v${latestVersion})`,
-							appearance: Appearance.ACTIVE
-						};
-					}
-				} catch (_e) {}
-			}
+		// Set it to 3 days ago to trigger an update check under these conditions
+		if (!$lastUpdateCheckStore || userRequested) {
+			$lastUpdateCheckStore = threeDaysAgoInSeconds - 1;
 		}
 
-		// Set the last updated date
-		$lastUpdateCheckStore = getUnixTime(new Date());
+		// Check if `$lastUpdateCheckStore` is at least 3 days old
+		if ($lastUpdateCheckStore < threeDaysAgoInSeconds) {
+			try {
+				// Get the latest version from GitHub
+				const response = await fetch('https://api.github.com/repos/canutin/desktop/releases');
+				const result = await response.json();
+				const latestVersion = result[0]?.tag_name?.replace('v', '');
+
+				// Update status bar with latest version
+				if (latestVersion && semver.lt(data.appVersion, latestVersion)) {
+					$statusBarStore = {
+						message: `A newer version is available (v${latestVersion})`,
+						appearance: Appearance.ACTIVE,
+						secondaryActions: [
+							{
+								label: 'Download',
+								href: 'https://github.com/canutin/desktop/releases',
+								target: '_blank'
+							}
+						]
+					};
+				} else {
+					$statusBarStore = {
+						message: `The current version is the latest (v${data.appVersion})`,
+						appearance: Appearance.POSITIVE
+					};
+				}
+			} catch (_e) {
+				$statusBarStore = {
+					message: `There was a problem checking for updates, try again later`,
+					appearance: Appearance.WARNING
+				};
+			}
+			$lastUpdateCheckStore = currentTime; // Set the last updated date
+		}
+
+		// Recursively check for updates every 3 days
+		!userRequested &&
+			setTimeout(async () => {
+				await getAppLastestVersion();
+			}, THREE_DAYS_IN_SECONDS * 1000);
 	};
 
 	// Set the default status bar message when layout is mounted (except on development)
 	onMount(async () => {
-		!dev && (await getAppLastestVersion());
+		await getAppLastestVersion();
 	});
 </script>
 
@@ -117,7 +135,9 @@
 		<div class="layout__settings">
 			<p class="layout__tag">USD $</p>
 			<p class="layout__tag">English</p>
-			<p class="layout__tag">{data.appVersion}</p>
+			<button class="layout__tag" type="button" on:click={() => getAppLastestVersion(true)}>
+				{data.appVersion}
+			</button>
 		</div>
 	</footer>
 </div>
@@ -220,6 +240,7 @@
 		column-gap: 4px;
 	}
 
+	button.layout__tag,
 	p.layout__tag {
 		font-family: var(--font-monospace);
 		font-weight: 400;
@@ -231,5 +252,14 @@
 		padding: 6px 8px;
 		border-radius: 4px;
 		width: max-content;
+	}
+
+	button.layout__tag {
+		border: none;
+		cursor: pointer;
+
+		&:hover {
+			color: var(--color-grey70);
+		}
 	}
 </style>

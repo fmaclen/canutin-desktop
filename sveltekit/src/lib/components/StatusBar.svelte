@@ -3,15 +3,14 @@
 	import { onMount } from 'svelte';
 
 	import Button from './Button.svelte';
+	import Link from './Link.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
 	import { api } from '$lib/helpers/misc';
-	import { Appearance } from '$lib/helpers/constants';
 
 	// Set how long ago the vault was updated in the status bar
 	const getVaultLastUpdate = async () => {
-		// If there is an error present in the statusBarStore, don't update the message
-		if ($statusBarStore.appearance === Appearance.NEGATIVE) return;
+		if ($statusBarStore.isError) return;
 
 		const data = await api({ endpoint: 'vault' });
 
@@ -20,8 +19,7 @@
 				fromUnixTime(data.lastDataUpdate),
 				new Date(),
 				{ includeSeconds: true, addSuffix: true }
-			)}`,
-			appearance: null
+			)}`
 		};
 
 		// Recursively update status bar message every 5 minutes
@@ -35,7 +33,7 @@
 		$isVaultReadyStore && (await getVaultLastUpdate());
 	});
 
-	$: ({ message, appearance } = $statusBarStore);
+	$: ({ message, appearance, isError, secondaryActions } = $statusBarStore);
 
 	message = message ? message : 'Reading vault data...';
 </script>
@@ -43,9 +41,15 @@
 <div class="statusBar {appearance && `statusBar--${appearance}`}">
 	<p class="statusBar__p">
 		{message}
+
+		{#if secondaryActions}
+			{#each secondaryActions as action}
+				<Link href={action.href} target={action.target}>{action.label}</Link>
+			{/each}
+		{/if}
 	</p>
 
-	{#if appearance && appearance !== Appearance.NEGATIVE}
+	{#if appearance && !isError}
 		<Button on:click={getVaultLastUpdate}>Dismiss</Button>
 	{/if}
 </div>
@@ -63,7 +67,8 @@
 
 		&--active,
 		&--positive,
-		&--negative {
+		&--negative,
+		&--warning {
 			border-right: 1px solid var(--color-border);
 		}
 
@@ -81,9 +86,16 @@
 			color: var(--color-redPrimary);
 			background-color: var(--color-redSecondary);
 		}
+
+		&--warning {
+			color: var(--color-yellowPrimary);
+			background-color: var(--color-yellowSecondary);
+		}
 	}
 
 	p.statusBar__p {
+		display: flex;
+		column-gap: 8px;
 		font-size: 12px;
 		margin: 0;
 	}
