@@ -2,17 +2,21 @@
 	import { formatDistance, fromUnixTime } from 'date-fns';
 	import { onMount } from 'svelte';
 
-	import { api } from '$lib/helpers/misc';
 	import Button from './Button.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
-	import { Appearance } from '$lib/helpers/constants';
 	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
+	import { api } from '$lib/helpers/misc';
+	import { Appearance } from '$lib/helpers/constants';
 
-	const getLastUpdatedDate = async () => {
+	// Set how long ago the vault was updated in the status bar
+	const getVaultLastUpdate = async () => {
+		// If there is an error present in the statusBarStore, don't update the message
+		if ($statusBarStore.appearance === Appearance.NEGATIVE) return;
+
 		const data = await api({ endpoint: 'vault' });
 
 		$statusBarStore = {
-			message: `Data was last updated ${formatDistance(
+			message: `Vault data was last updated ${formatDistance(
 				fromUnixTime(data.lastDataUpdate),
 				new Date(),
 				{ includeSeconds: true, addSuffix: true }
@@ -20,17 +24,15 @@
 			appearance: null
 		};
 
-		// Update status bar message every 5 minutes (unless there was an error)
+		// Recursively update status bar message every 5 minutes
 		setTimeout(async () => {
-			if ($statusBarStore.appearance !== Appearance.NEGATIVE) {
-				await getLastUpdatedDate();
-			}
+			await getVaultLastUpdate();
 		}, 300000);
 	};
 
 	// Set the default status bar message when layout is mounted
 	onMount(async () => {
-		$isVaultReadyStore && (await getLastUpdatedDate());
+		$isVaultReadyStore && (await getVaultLastUpdate());
 	});
 
 	$: ({ message, appearance } = $statusBarStore);
@@ -44,7 +46,7 @@
 	</p>
 
 	{#if appearance && appearance !== Appearance.NEGATIVE}
-		<Button on:click={getLastUpdatedDate}>Dismiss</Button>
+		<Button on:click={getVaultLastUpdate}>Dismiss</Button>
 	{/if}
 </div>
 

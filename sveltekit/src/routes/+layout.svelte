@@ -1,16 +1,64 @@
 <script lang="ts">
+	import semver from 'semver';
+	import { getUnixTime } from 'date-fns';
+	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { dev } from '$app/environment';
-	import type { PageData } from './$types';
 
 	import logo from '$lib/assets/canutin-iso-logo.svg';
 	import '../app.scss';
 
-	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
 	import StatusBar from '$lib/components/StatusBar.svelte';
+	import statusBarStore from '$lib/stores/statusBarStore';
+	import lastUpdateCheckStore from '$lib/stores/lastUpdateCheckStore';
+	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
+	import { Appearance } from '$lib/helpers/constants';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
 	$: pathname = $page.url.pathname;
+
+	const getAppLastestVersion = async () => {
+		const THREE_DAYS_IN_SECONDS = 259200;
+
+		// If there is an error present in the statusBarStore, don't update the message
+		if ($statusBarStore.appearance === Appearance.NEGATIVE) return;
+
+		// Recursively check for updates every 3 days
+		setTimeout(async () => {
+			await getAppLastestVersion();
+		}, THREE_DAYS_IN_SECONDS * 1000);
+
+		if ($lastUpdateCheckStore && typeof $lastUpdateCheckStore !== 'number') {
+			const threeDaysAgoInSeconds = getUnixTime(new Date()) - THREE_DAYS_IN_SECONDS;
+
+			// Check if `$lastUpdateCheckStore` is at least 3 days old
+			if ($lastUpdateCheckStore < threeDaysAgoInSeconds) {
+				try {
+					// Get the latest version from GitHub
+					const response = await fetch('https://api.github.com/repos/canutin/desktop/releases');
+					const result = await response.json();
+					const latestVersion = result[0]?.tag_name?.replace('v', '');
+
+					// Update status bar with latest version
+					if (latestVersion && semver.lt(data.appVersion, latestVersion)) {
+						$statusBarStore = {
+							message: `An updated version is available (v${latestVersion})`,
+							appearance: Appearance.ACTIVE
+						};
+					}
+				} catch (_e) {}
+			}
+		}
+
+		// Set the last updated date
+		$lastUpdateCheckStore = getUnixTime(new Date());
+	};
+
+	// Set the default status bar message when layout is mounted (except on development)
+	onMount(async () => {
+		!dev && (await getAppLastestVersion());
+	});
 </script>
 
 <div class="layout">
