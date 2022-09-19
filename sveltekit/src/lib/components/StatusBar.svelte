@@ -23,9 +23,10 @@
 		};
 
 		// Recursively update status bar message every 5 minutes
+		const FIVE_MINUTES_IN_MILLISECONDS = 300000;
 		setTimeout(async () => {
 			await getVaultLastUpdate();
-		}, 300000);
+		}, FIVE_MINUTES_IN_MILLISECONDS);
 	};
 
 	// Set the default status bar message when layout is mounted

@@ -35,7 +35,7 @@ test.describe('Layout', () => {
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 		await expect(page.locator('p.layout__tag', { hasText: 'USD $' })).toBeVisible();
 		await expect(page.locator('p.layout__tag', { hasText: 'English' })).toBeVisible();
-		await expect(page.locator('p.layout__tag', { hasText: '4.2.0-next.69' })).toBeVisible(); // `APP_VERSION` is set in `playwright.config.ts`
+		await expect(page.locator('button.layout__tag', { hasText: '4.2.0-next.69' })).toBeVisible(); // `APP_VERSION` is set in `playwright.config.ts`
 	});
 
 	test('Error pages', async ({ page }) => {

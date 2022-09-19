@@ -52,16 +52,20 @@
 						]
 					};
 				} else {
-					$statusBarStore = {
-						message: `The current version is the latest (v${data.appVersion})`,
-						appearance: Appearance.POSITIVE
-					};
+					if (userRequested) {
+						$statusBarStore = {
+							message: `The current version is the latest (v${data.appVersion})`,
+							appearance: Appearance.POSITIVE
+						};
+					}
 				}
 			} catch (_e) {
-				$statusBarStore = {
-					message: `There was a problem checking for updates, try again later`,
-					appearance: Appearance.WARNING
-				};
+				if (userRequested) {
+					$statusBarStore = {
+						message: `There was a problem checking for updates, try again later`,
+						appearance: Appearance.WARNING
+					};
+				}
 			}
 			$lastUpdateCheckStore = currentTime; // Set the last updated date
 		}
@@ -75,7 +79,7 @@
 
 	// Set the default status bar message when layout is mounted (except on development)
 	onMount(async () => {
-		await getAppLastestVersion();
+		!dev && (await getAppLastestVersion());
 	});
 </script>
 
