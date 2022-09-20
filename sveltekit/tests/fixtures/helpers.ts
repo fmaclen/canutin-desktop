@@ -33,6 +33,19 @@ export const databaseSetUrl = async (baseUrl: string, dbUrl = `file:${pathToTest
 	);
 };
 
+export const setEnvironmentVariable = async (
+	baseUrl: string,
+	envVariableName: string,
+	envVariableValue: string
+) => {
+	await fetch(
+		`${baseUrl}/devTools.json?functionType=${DeveloperFunctions.SET_ENV_VARIABLE}&envVariableName=${envVariableName}&envVariableValue=${envVariableValue}`,
+		{
+			...methodAndHeaders
+		}
+	);
+};
+
 export const importCanutinFile = async (baseUrl: string, fixtureName: string) => {
 	const canutinFile = fs.readFileSync(
 		path.join(process.cwd(), 'tests', 'fixtures', `canutinFile-${fixtureName}.json`)

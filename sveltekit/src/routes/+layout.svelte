@@ -77,7 +77,8 @@
 			}, THREE_DAYS_IN_SECONDS * 1000);
 	};
 
-	// Set the default status bar message when layout is mounted (except on development)
+	// Set the default status bar message when layout is mounted
+	// `!dev` because we don't want to constantly hit Github's API when developing
 	onMount(async () => {
 		!dev && (await getAppLastestVersion());
 	});
