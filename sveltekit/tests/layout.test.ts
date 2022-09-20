@@ -196,7 +196,7 @@ test.describe('Layout', () => {
 		});
 	});
 
-	test("When it's offline", async ({ baseURL, page, context }) => {
+	test.skip("When it's offline", async ({ baseURL, page, context }) => {
 		await setLastUpdateCheck(baseURL!, context);
 		await page.goto('/');
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
