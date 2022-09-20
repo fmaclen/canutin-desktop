@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import fetch from 'node-fetch';
 import { DeveloperFunctions } from '../../src/lib/helpers/constants.js';
+import { expect, type BrowserContext } from '@playwright/test';
 
 export const pathToTestVault = path.join(process.cwd(), 'tests', 'tmp', 'Canutin.vault.test');
 
@@ -44,6 +45,32 @@ export const setEnvironmentVariable = async (
 			...methodAndHeaders
 		}
 	);
+};
+
+export const setLastUpdateCheck = async (
+	baseUrl: string,
+	context: BrowserContext,
+	time?: string
+) => {
+	const storage = await context.storageState();
+
+	// If `time` is not provided, it defaults to the current time
+	const setTime = time ? time : (Date.now() / 1000).toString();
+
+	// Set localStorage as if updates were recently checked for
+	storage.origins.push({
+		origin: baseUrl,
+		localStorage: [
+			{
+				name: 'lastUpdateCheck',
+				value: setTime
+			}
+		]
+	});
+	const currentLocalStorage = storage.origins[0]?.localStorage[0];
+	expect(currentLocalStorage).not.toBeUndefined();
+	expect(JSON.stringify(currentLocalStorage)).toMatch('lastUpdateCheck');
+	expect(JSON.stringify(currentLocalStorage)).toMatch(setTime);
 };
 
 export const importCanutinFile = async (baseUrl: string, fixtureName: string) => {

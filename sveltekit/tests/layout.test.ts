@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { delay, setEnvironmentVariable } from './fixtures/helpers.js';
+import { delay, setEnvironmentVariable, setLastUpdateCheck } from './fixtures/helpers.js';
 
 test.describe('Layout', () => {
 	test('Sidebar renders correctly', async ({ page }) => {
@@ -118,36 +118,14 @@ test.describe('Layout', () => {
 			await setEnvironmentVariable(baseURL!, 'APP_VERSION', '0.0.0-test');
 		});
 
-		test('Every 3 days', async ({ baseURL, page }) => {
-			const context = page.context();
+		test('Every 3 days', async ({ baseURL, page, context }) => {
 			let storage = await context.storageState();
 			expect(storage.origins[0]?.localStorage[0]).toBeUndefined();
 
 			// Set `lastUpdateCheck` to 4 days ago as a number of seconds
 			const FOUR_DAYS_IN_SECONDS = 345600;
-			const lastUpdateCheck = (Math.floor(Date.now() / 1000) - FOUR_DAYS_IN_SECONDS).toString();
-
-			// Update localStorage
-			storage.origins.push({
-				origin: baseURL!,
-				localStorage: [
-					{
-						name: 'lastUpdateCheck',
-						value: lastUpdateCheck
-					}
-				]
-			});
-
-			// Check the initial `lastUpdateCheck` is set correctly
-			let currentLocalStorage = storage.origins[0]?.localStorage[0];
-			expect(currentLocalStorage).toStrictEqual({
-				name: 'lastUpdateCheck',
-				value: lastUpdateCheck
-			});
-			expect(currentLocalStorage).not.toBeUndefined();
-			expect(JSON.stringify(currentLocalStorage)).toMatch('lastUpdateCheck');
-			expect(JSON.stringify(currentLocalStorage)).toMatch(lastUpdateCheck);
-
+			const fourDaysAgo = (Math.floor(Date.now() / 1000) - FOUR_DAYS_IN_SECONDS).toString();
+			await setLastUpdateCheck(baseURL!, context, fourDaysAgo);
 			await page.goto('/');
 			await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
@@ -156,7 +134,7 @@ test.describe('Layout', () => {
 
 			// It should have checked for updates
 			storage = await page.context().storageState();
-			currentLocalStorage = storage.origins[0]?.localStorage[0];
+			let currentLocalStorage = storage.origins[0]?.localStorage[0];
 			const statusBar = page.locator('.statusBar');
 			await expect(statusBar).toHaveClass(/statusBar--active/);
 			expect(await statusBar.textContent()).toMatch('A newer version is available');
@@ -166,31 +144,15 @@ test.describe('Layout', () => {
 			currentLocalStorage = storage.origins[0]?.localStorage[0];
 			expect(currentLocalStorage).not.toBeUndefined();
 			expect(JSON.stringify(currentLocalStorage)).toMatch('lastUpdateCheck');
-			expect(JSON.stringify(currentLocalStorage)).not.toMatch(lastUpdateCheck);
+			expect(JSON.stringify(currentLocalStorage)).not.toMatch(fourDaysAgo);
 			expect(parseInt(currentLocalStorage.value)).toBeGreaterThanOrEqual(
-				parseInt(lastUpdateCheck) + FOUR_DAYS_IN_SECONDS
+				parseInt(fourDaysAgo) + FOUR_DAYS_IN_SECONDS
 			);
 		});
 
-		test('On user request', async ({ baseURL, page }) => {
-			const context = page.context();
-			let storage = await context.storageState();
+		test('On user request', async ({ baseURL, page, context }) => {
 			const currentTime = (Date.now() / 1000).toString();
-
-			// Set localStorage as if updates were recently checked for
-			storage.origins.push({
-				origin: baseURL!,
-				localStorage: [
-					{
-						name: 'lastUpdateCheck',
-						value: currentTime
-					}
-				]
-			});
-			let currentLocalStorage = storage.origins[0]?.localStorage[0];
-			expect(currentLocalStorage).not.toBeUndefined();
-			expect(currentLocalStorage.value).toBe(currentTime);
-
+			await setLastUpdateCheck(baseURL!, context, currentTime);
 			await page.goto('/');
 			await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
@@ -205,8 +167,8 @@ test.describe('Layout', () => {
 			await expect(statusBar).toHaveClass(/statusBar--active/);
 			expect(await statusBar.textContent()).toMatch('A newer version is available');
 
-			storage = await context.storageState();
-			currentLocalStorage = storage.origins[0]?.localStorage[0];
+			const storage = await context.storageState();
+			const currentLocalStorage = storage.origins[0]?.localStorage[0];
 			expect(currentLocalStorage).not.toBeUndefined();
 			expect(JSON.stringify(currentLocalStorage)).toMatch('lastUpdateCheck');
 			expect(currentLocalStorage.value).not.toBe(currentTime);
@@ -234,25 +196,8 @@ test.describe('Layout', () => {
 		});
 	});
 
-	test("When it's offline", async ({ baseURL, page }) => {
-		const context = page.context();
-		let storage = await context.storageState();
-		const currentTime = (Date.now() / 1000).toString();
-
-		// Set localStorage as if updates were recently checked for
-		storage.origins.push({
-			origin: baseURL!,
-			localStorage: [
-				{
-					name: 'lastUpdateCheck',
-					value: currentTime
-				}
-			]
-		});
-		let currentLocalStorage = storage.origins[0]?.localStorage[0];
-		expect(currentLocalStorage).not.toBeUndefined();
-		expect(currentLocalStorage.value).toBe(currentTime);
-
+	test("When it's offline", async ({ baseURL, page, context }) => {
+		await setLastUpdateCheck(baseURL!, context);
 		await page.goto('/');
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
@@ -278,8 +223,8 @@ test.describe('Layout', () => {
 			'There was a problem checking for updates, try again later'
 		);
 
-		storage = await context.storageState();
-		currentLocalStorage = storage.origins[0]?.localStorage[0];
+		const storage = await context.storageState();
+		const currentLocalStorage = storage.origins[0]?.localStorage[0];
 		expect(currentLocalStorage).not.toBeUndefined();
 		expect(JSON.stringify(currentLocalStorage)).toMatch('lastUpdateCheck');
 	});
