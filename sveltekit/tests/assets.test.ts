@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { databaseWipe } from './fixtures/helpers.js';
+import { databaseWipe, delay } from './fixtures/helpers.js';
 
 test.describe('Assets', () => {
 	test.beforeEach(async ({ baseURL }) => {
@@ -31,9 +31,11 @@ test.describe('Assets', () => {
 		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
 		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
 
-		await nameInput.fill('GameStop');
-		await expect(symbolInput).not.toBeVisible(); // FIXME: flaky assertion
+		await delay(50);
+		await expect(assetTypeSelect).toHaveValue('1');
+		await expect(symbolInput).not.toBeVisible();
 
+		await nameInput.fill('GameStop');
 		await assetTypeSelect.selectOption({ label: 'Security' });
 		await balanceGroupSelect.selectOption({ label: 'Investments' });
 		await expect(symbolInput).toBeVisible();
@@ -61,8 +63,12 @@ test.describe('Assets', () => {
 		await expect(page.locator('h1', { hasText: 'GameStop' })).toBeVisible();
 		await expect(nameInput).toHaveValue('GameStop');
 		await expect(symbolInput).toHaveValue('GME');
+
+		// FIXME: these assertions are only testing that "Security" or "Investments"
+		// are one of the options but NOT that is the selected option
 		expect(await assetTypeSelect.textContent()).toMatch('Security');
 		expect(await balanceGroupSelect.textContent()).toMatch('Investments');
+
 		await expect(page.locator('section', { hasText: 'Update asset' })).toBeVisible();
 		await expect(page.locator('section', { hasText: 'New asset' })).not.toBeVisible();
 
@@ -102,8 +108,12 @@ test.describe('Assets', () => {
 		await isSoldCheckbox.check();
 		await page.locator('button', { hasText: 'Save' }).click();
 		await page.locator('a', { hasText: 'GameStop' }).click();
+
+		// FIXME: these assertions are only testing that "Business" or "Other assets"
+		// are one of the options but NOT that is the selected option
 		expect(await assetTypeSelect.textContent()).toMatch('Business');
 		expect(await balanceGroupSelect.textContent()).toMatch('Other assets');
+
 		await expect(isSoldCheckbox).toBeChecked();
 		await expect(valueInput).toHaveValue('$289.8');
 		await expect(isSoldCheckbox).toBeChecked();
