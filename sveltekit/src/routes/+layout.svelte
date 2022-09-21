@@ -18,7 +18,8 @@
 	export let data: PageData;
 	$: pathname = $page.url.pathname;
 
-	const getAppLastestVersion = async (userRequested: boolean = false) => {
+	const getAppLastestVersion = async (isUserRequested: boolean = false) => {
+		// Don't check for updates if the app is in an error state
 		if ($statusBarStore.isError) return;
 
 		const THREE_DAYS_IN_SECONDS = 259200;
@@ -26,7 +27,7 @@
 		const threeDaysAgoInSeconds = getUnixTime(new Date()) - THREE_DAYS_IN_SECONDS;
 
 		// Set it to 3 days ago to trigger an update check under these conditions
-		if (!$lastUpdateCheckStore || userRequested) {
+		if (!$lastUpdateCheckStore || isUserRequested) {
 			$lastUpdateCheckStore = threeDaysAgoInSeconds - 1;
 		}
 
@@ -34,9 +35,10 @@
 		if ($lastUpdateCheckStore < threeDaysAgoInSeconds) {
 			try {
 				// Get the latest version from GitHub
-				const response = await fetch('https://api.github.com/repos/canutin/desktop/releases');
-				const result = await response.json();
-				const latestVersion = result[0]?.tag_name?.replace('v', '');
+				const response = await (
+					await fetch('https://api.github.com/repos/canutin/desktop/releases')
+				).json();
+				const latestVersion = response[0]?.tag_name?.replace('v', '');
 
 				// Update status bar with latest version
 				if (latestVersion && semver.lt(data.appVersion, latestVersion)) {
@@ -52,7 +54,7 @@
 						]
 					};
 				} else {
-					if (userRequested) {
+					if (isUserRequested) {
 						$statusBarStore = {
 							message: `The current version is the latest (v${data.appVersion})`,
 							appearance: Appearance.POSITIVE
@@ -60,7 +62,7 @@
 					}
 				}
 			} catch (_e) {
-				if (userRequested) {
+				if (isUserRequested) {
 					$statusBarStore = {
 						message: `There was a problem checking for updates, try again later`,
 						appearance: Appearance.WARNING
@@ -71,7 +73,7 @@
 		}
 
 		// Recursively check for updates every 3 days
-		!userRequested &&
+		!isUserRequested &&
 			setTimeout(async () => {
 				await getAppLastestVersion();
 			}, THREE_DAYS_IN_SECONDS * 1000);
