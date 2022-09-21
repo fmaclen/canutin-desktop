@@ -81,5 +81,8 @@ test.describe('Balance sheet', () => {
 		// Other assets
 		// prettier-ignore
 		expect(await page.locator('.balanceSheet__balanceGroup', { hasText: 'Other assets' }).textContent()).toMatch('$53,000');
+
+		// Check empty notice is not visible
+		await expect(page.locator('p.notice')).not.toBeVisible();
 	});
 });
