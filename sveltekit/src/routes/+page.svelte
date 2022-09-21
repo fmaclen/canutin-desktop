@@ -5,6 +5,7 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Card from '$lib/components/Card.svelte';
+	import Link from '$lib/components/Link.svelte';
 	import ChartBar from '$lib/components/ChartBar.svelte';
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
 	import { formatCurrency } from '$lib/helpers/misc';
@@ -45,6 +46,9 @@
 </svelte:head>
 
 <ScrollView {title}>
+	<nav slot="NAV">
+		<Link href="/data">Add or update data</Link>
+	</nav>
 	<Section title="Summary">
 		<div class="bigPictureSummary" slot="CONTENT">
 			<Card

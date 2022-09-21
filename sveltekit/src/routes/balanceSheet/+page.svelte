@@ -1,15 +1,20 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-	import { formatCurrency } from '$lib/helpers/misc';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Link from '$lib/components/Link.svelte';
+	import Notice from '$lib/components/Notice.svelte';
 	import { balanceGroupAppearance } from '$lib/components/Card';
+	import { formatCurrency } from '$lib/helpers/misc';
+	import type { PageData } from './$types';
 
 	const title = 'Balance sheet';
 
 	export let data: PageData;
+
+	const isVaultEmpty =
+		data.balanceSheetBalanceGroups.filter((groups) => groups.balanceItemsTypeGroups.length !== 0)
+			.length === 0;
 </script>
 
 <svelte:head>
@@ -24,50 +29,66 @@
 	</nav>
 	<Section title="Balances">
 		<div slot="CONTENT" class="balanceSheet">
-			{#each data.balanceSheetBalanceGroups as balanceSheetItemsByBalanceGroup}
-				<div class="balanceSheet__balanceGroup">
-					<Card
-						title={balanceSheetItemsByBalanceGroup.label}
-						value={formatCurrency(balanceSheetItemsByBalanceGroup.currentBalance)}
-						appearance={balanceGroupAppearance(balanceSheetItemsByBalanceGroup.id)}
-					/>
+			<div class="balanceSheet__groups">
+				{#each data.balanceSheetBalanceGroups as balanceSheetItemsByBalanceGroup}
+					<div class="balanceSheet__balanceGroup">
+						<Card
+							title={balanceSheetItemsByBalanceGroup.label}
+							value={formatCurrency(balanceSheetItemsByBalanceGroup.currentBalance)}
+							appearance={balanceGroupAppearance(balanceSheetItemsByBalanceGroup.id)}
+						/>
 
-					{#each balanceSheetItemsByBalanceGroup.balanceItemsTypeGroups as balanceSheetTypeGroup}
-						<div class="balanceSheet__typeGroup">
-							<header class="balanceSheet__typeHeader">
-								<p class="balanceSheet__typeName">{balanceSheetTypeGroup.type}</p>
-								<p class="balanceSheet__typeValue">
-									{formatCurrency(balanceSheetTypeGroup.currentBalance)}
-								</p>
-							</header>
-							<ol class="balanceSheet__items">
-								{#each balanceSheetTypeGroup.balanceSheetItems as balanceSheetItem}
-									<li class="balanceSheet__item">
-										<p class="balanceSheet__itemName">
-											<Link
-												href={`/${balanceSheetItem.isAccount ? 'account' : 'asset'}/${
-													balanceSheetItem.id
-												}`}>{balanceSheetItem.name}</Link
-											>
-										</p>
-										<p class="balanceSheet__itemValue">
-											{formatCurrency(balanceSheetItem.currentBalance)}
-										</p>
-									</li>
-								{/each}
-							</ol>
-						</div>
-					{/each}
-				</div>
-			{/each}
+						{#each balanceSheetItemsByBalanceGroup.balanceItemsTypeGroups as balanceSheetTypeGroup}
+							<div class="balanceSheet__typeGroup">
+								<header class="balanceSheet__typeHeader">
+									<p class="balanceSheet__typeName">{balanceSheetTypeGroup.type}</p>
+									<p class="balanceSheet__typeValue">
+										{formatCurrency(balanceSheetTypeGroup.currentBalance)}
+									</p>
+								</header>
+								<ol class="balanceSheet__items">
+									{#each balanceSheetTypeGroup.balanceSheetItems as balanceSheetItem}
+										<li class="balanceSheet__item">
+											<p class="balanceSheet__itemName">
+												<Link
+													href={`/${balanceSheetItem.isAccount ? 'account' : 'asset'}/${
+														balanceSheetItem.id
+													}`}>{balanceSheetItem.name}</Link
+												>
+											</p>
+											<p class="balanceSheet__itemValue">
+												{formatCurrency(balanceSheetItem.currentBalance)}
+											</p>
+										</li>
+									{/each}
+								</ol>
+							</div>
+						{/each}
+					</div>
+				{/each}
+			</div>
+
+			{#if isVaultEmpty}
+				<Notice>
+					You can add accounts and assets to your balance sheet by clicking the links above
+				</Notice>
+			{/if}
 		</div>
 	</Section>
 </ScrollView>
 
 <style lang="scss">
 	div.balanceSheet {
+		--gap: 20px;
+
 		display: flex;
-		column-gap: 20px;
+		flex-direction: column;
+		gap: var(--gap);
+	}
+
+	div.balanceSheet__groups {
+		display: flex;
+		column-gap: var(--gap);
 	}
 
 	div.balanceSheet__balanceGroup {
@@ -75,7 +96,7 @@
 		flex-direction: column;
 		row-gap: 16px;
 		width: 100%;
-		padding-left: 20px;
+		padding-left: var(--gap);
 		border-left: 1px solid var(--color-border);
 
 		&:first-child {

@@ -6,11 +6,11 @@ test.describe('Layout', () => {
 		await page.goto('/');
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
-		const sidebarBigPicture = page.locator('a', { hasText: 'The big picture' });
+		const sidebarBigPicture = page.locator('.layout__aside a', { hasText: 'The big picture' });
 		await expect(sidebarBigPicture).toHaveAttribute('href', '/');
 		await expect(sidebarBigPicture).toHaveClass(/layout__a--active/);
 
-		const sidebarBalanceSheet = page.locator('a:has-text("Balance sheet")');
+		const sidebarBalanceSheet = page.locator('.layout__aside a:has-text("Balance sheet")');
 		await expect(sidebarBalanceSheet).toHaveAttribute('href', '/balanceSheet');
 		await expect(sidebarBalanceSheet).toHaveClass(/layout__a/);
 		await expect(sidebarBalanceSheet).not.toHaveClass(/layout__a--active/);
@@ -20,7 +20,9 @@ test.describe('Layout', () => {
 		await expect(sidebarBigPicture).not.toHaveClass(/layout__a--active/);
 		await expect(sidebarBalanceSheet).toHaveClass(/layout__a--active/);
 
-		const sidebarAddOrUpdateData = page.locator('a', { hasText: 'Add or update data' });
+		const sidebarAddOrUpdateData = page.locator('.layout__aside a', {
+			hasText: 'Add or update data'
+		});
 		await expect(sidebarAddOrUpdateData).toHaveAttribute('href', '/data');
 		await expect(sidebarAddOrUpdateData).toHaveClass(/layout__a/);
 		await expect(sidebarAddOrUpdateData).not.toHaveClass(/layout__a--active/);
@@ -69,7 +71,9 @@ test.describe('Layout', () => {
 	});
 
 	test('Add or update data section is rendered correctly', async ({ page }) => {
-		const sidebarAddOrUpdateData = page.locator('a', { hasText: 'Add or update data' });
+		const sidebarAddOrUpdateData = page.locator('.layout__aside a', {
+			hasText: 'Add or update data'
+		});
 		await page.goto('/');
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 

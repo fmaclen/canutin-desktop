@@ -24,6 +24,25 @@ test.describe('Balance sheet', () => {
 		expect(await page.locator('.card', { hasText: 'Debt' }).textContent()).toMatch('$0');
 		expect(await page.locator('.card', { hasText: 'Investments' }).textContent()).toMatch('$0');
 		expect(await page.locator('.card', { hasText: 'Other assets' }).textContent()).toMatch('$0');
+		expect(await page.locator('p.notice').textContent()).toMatch(
+			'You can add accounts and assets to your balance sheet by clicking the links above'
+		);
+
+		// Check the top navigation is present
+		await page.locator('.scrollView__header a', { hasText: 'Add account' }).click();
+		await expect(page.locator('h1', { hasText: 'Add account' })).toBeVisible();
+
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
+
+		await page.locator('.scrollView__header a', { hasText: 'Add asset' }).click();
+		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
+
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
+
+		await page.locator('.scrollView__header a', { hasText: 'Import' }).click();
+		await expect(page.locator('h1', { hasText: 'Import CanutinFile' })).toBeVisible();
 	});
 
 	test('Check that the balanceGroups have the correct totals after importing data', async ({

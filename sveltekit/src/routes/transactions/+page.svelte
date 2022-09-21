@@ -178,6 +178,7 @@
 <ScrollView {title}>
 	<nav slot="NAV">
 		<Link href="/transaction/add">Add transaction</Link>
+		<Link href="/import">Import</Link>
 	</nav>
 	<Section title="Browse transactions">
 		<div slot="HEADER">
