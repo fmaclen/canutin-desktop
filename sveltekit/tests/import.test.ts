@@ -50,7 +50,9 @@ test.describe('Import CanutinFile', () => {
 		await expect(statusBar).not.toHaveClass(/statusBar--negative/);
 		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
 		expect(await statusBar.textContent()).not.toMatch('Import was successful');
-		expect(await statusBar.textContent()).toMatch('Data was last updated less than 5 seconds ago');
+		expect(await statusBar.textContent()).toMatch(
+			'Vault data was last updated less than 5 seconds ago'
+		);
 
 		let importStatusSection = page.locator('data-test-id=accounts-import-summary');
 		expect(await importStatusSection.textContent()).toMatch('Created 1');

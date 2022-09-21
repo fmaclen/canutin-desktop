@@ -27,12 +27,12 @@ test.describe('Developer tools', () => {
 			await delay();
 			await expect(statusBar).toHaveClass(/statusBar--positive/);
 			expect(await statusBar.textContent()).toMatch(
-				'Database action was performed (likely without errors)'
+				'Database action was performed, likely without errors'
 			);
 
 			await page.locator('button', { hasText: 'Dismiss' }).click();
 			expect(await statusBar.textContent()).toMatch(
-				'Database action was performed (likely without errors)'
+				'Database action was performed, likely without errors'
 			);
 
 			await page.goto('/');
@@ -46,7 +46,7 @@ test.describe('Developer tools', () => {
 			await delay();
 			await expect(statusBar).toHaveClass(/statusBar--positive/);
 			expect(await statusBar.textContent()).toMatch(
-				'Database action was performed (likely without errors)'
+				'Database action was performed, likely without errors'
 			);
 
 			await page.goto('/');

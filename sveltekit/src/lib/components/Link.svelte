@@ -3,9 +3,17 @@
 
 	export let href: string = '#';
 	export let appearance: Appearance | undefined = undefined;
+	export let target: string | undefined = undefined;
 </script>
 
-<a class="a {appearance && `a--${appearance}`}" {href}><slot /></a>
+<a
+	{href}
+	{target}
+	class="a {appearance && `a--${appearance}`}"
+	rel={target === '_blank' ? 'noopener' : ''}
+>
+	<slot />
+</a>
 
 <style lang="scss">
 	a.a {

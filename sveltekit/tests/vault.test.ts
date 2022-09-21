@@ -22,7 +22,7 @@ test.describe('Vault', () => {
 
 		await page.reload();
 		await expect(
-			page.locator('.statusBar', { hasText: 'Data was last updated less than 5 seconds ago' })
+			page.locator('.statusBar', { hasText: 'Vault data was last updated less than 5 seconds ago' })
 		).toBeVisible();
 		expect(fs.existsSync(newVaultPath)).toBe(true);
 	});

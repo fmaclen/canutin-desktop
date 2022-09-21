@@ -31,7 +31,8 @@ export enum TrailingCashflowPeriods {
 export enum DeveloperFunctions {
 	DB_WIPE,
 	DB_SEED,
-	DB_SET_URL
+	DB_SET_URL,
+	SET_ENV_VARIABLE
 }
 
 export enum Appearance {

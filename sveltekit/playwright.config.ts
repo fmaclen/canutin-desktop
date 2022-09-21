@@ -1,3 +1,4 @@
+import { getUnixTime } from 'date-fns';
 import { type PlaywrightTestConfig, devices } from '@playwright/test';
 import { pathToTestVault } from './tests/fixtures/helpers.js';
 
@@ -19,12 +20,26 @@ const config: PlaywrightTestConfig = {
 		env: {
 			ELECTRON_SWITCHED_VAULT: 'true',
 			DATABASE_URL: `file:${pathToTestVault}`,
-			APP_VERSION: '4.2.0-next.69'
+			APP_VERSION: '0.0.0-test'
 		}
 	},
 	use: {
 		trace: isEnvCI ? 'off' : 'retain-on-failure',
-		screenshot: isEnvCI ? 'off' : 'only-on-failure'
+		screenshot: isEnvCI ? 'off' : 'only-on-failure',
+		storageState: {
+			cookies: [],
+			origins: [
+				{
+					origin: 'http://localhost:4173',
+					localStorage: [
+						{
+							name: 'lastUpdateCheck',
+							value: getUnixTime(new Date()).toString()
+						}
+					]
+				}
+			]
+		}
 	},
 	timeout: 15000,
 	projects: isEnvCI ? projectBrowser : undefined,

@@ -14,14 +14,14 @@
 
 	const setStatusSuccess = () => {
 		$statusBarStore = {
-			message: 'Database action was performed (likely without errors)',
+			message: 'Database action was performed, likely without errors',
 			appearance: Appearance.POSITIVE
 		};
 	};
 
 	const setStatusError = () => {
 		$statusBarStore = {
-			message: "Something went wrong and the action likely wasn't performed",
+			message: "Something went wrong and it's likely the action wasn't performed",
 			appearance: Appearance.NEGATIVE
 		};
 	};

@@ -2,38 +2,39 @@
 	import { formatDistance, fromUnixTime } from 'date-fns';
 	import { onMount } from 'svelte';
 
-	import { api } from '$lib/helpers/misc';
 	import Button from './Button.svelte';
+	import Link from './Link.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
-	import { Appearance } from '$lib/helpers/constants';
 	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
+	import { api } from '$lib/helpers/misc';
 
-	const getLastUpdatedDate = async () => {
+	// Set how long ago the vault was updated in the status bar
+	const getVaultLastUpdate = async () => {
+		if ($statusBarStore.isError) return;
+
 		const data = await api({ endpoint: 'vault' });
 
 		$statusBarStore = {
-			message: `Data was last updated ${formatDistance(
+			message: `Vault data was last updated ${formatDistance(
 				fromUnixTime(data.lastDataUpdate),
 				new Date(),
 				{ includeSeconds: true, addSuffix: true }
-			)}`,
-			appearance: null
+			)}`
 		};
 
-		// Update status bar message every 5 minutes (unless there was an error)
+		// Recursively update status bar message every 5 minutes
+		const FIVE_MINUTES_IN_MILLISECONDS = 300000;
 		setTimeout(async () => {
-			if ($statusBarStore.appearance !== Appearance.NEGATIVE) {
-				await getLastUpdatedDate();
-			}
-		}, 300000);
+			await getVaultLastUpdate();
+		}, FIVE_MINUTES_IN_MILLISECONDS);
 	};
 
 	// Set the default status bar message when layout is mounted
 	onMount(async () => {
-		$isVaultReadyStore && (await getLastUpdatedDate());
+		$isVaultReadyStore && (await getVaultLastUpdate());
 	});
 
-	$: ({ message, appearance } = $statusBarStore);
+	$: ({ message, appearance, isError, secondaryActions } = $statusBarStore);
 
 	message = message ? message : 'Reading vault data...';
 </script>
@@ -41,10 +42,16 @@
 <div class="statusBar {appearance && `statusBar--${appearance}`}">
 	<p class="statusBar__p">
 		{message}
+
+		{#if secondaryActions}
+			{#each secondaryActions as action}
+				<Link href={action.href} target={action.target}>{action.label}</Link>
+			{/each}
+		{/if}
 	</p>
 
-	{#if appearance && appearance !== Appearance.NEGATIVE}
-		<Button on:click={getLastUpdatedDate}>Dismiss</Button>
+	{#if appearance && !isError}
+		<Button on:click={getVaultLastUpdate}>Dismiss</Button>
 	{/if}
 </div>
 
@@ -61,7 +68,8 @@
 
 		&--active,
 		&--positive,
-		&--negative {
+		&--negative,
+		&--warning {
 			border-right: 1px solid var(--color-border);
 		}
 
@@ -79,9 +87,16 @@
 			color: var(--color-redPrimary);
 			background-color: var(--color-redSecondary);
 		}
+
+		&--warning {
+			color: var(--color-yellowPrimary);
+			background-color: var(--color-yellowSecondary);
+		}
 	}
 
 	p.statusBar__p {
+		display: flex;
+		column-gap: 8px;
 		font-size: 12px;
 		margin: 0;
 	}

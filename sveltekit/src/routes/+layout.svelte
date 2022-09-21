@@ -1,16 +1,89 @@
 <script lang="ts">
+	import semver from 'semver';
+	import { getUnixTime } from 'date-fns';
+	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { dev } from '$app/environment';
-	import type { PageData } from './$types';
 
 	import logo from '$lib/assets/canutin-iso-logo.svg';
 	import '../app.scss';
 
-	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
 	import StatusBar from '$lib/components/StatusBar.svelte';
+	import statusBarStore from '$lib/stores/statusBarStore';
+	import lastUpdateCheckStore from '$lib/stores/lastUpdateCheckStore';
+	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
+	import { Appearance } from '$lib/helpers/constants';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
 	$: pathname = $page.url.pathname;
+
+	const getAppLastestVersion = async (isUserRequested: boolean = false) => {
+		// Don't check for updates if the app is in an error state
+		if ($statusBarStore.isError) return;
+
+		const THREE_DAYS_IN_SECONDS = 259200;
+		const currentTime = getUnixTime(new Date());
+		const threeDaysAgoInSeconds = getUnixTime(new Date()) - THREE_DAYS_IN_SECONDS;
+
+		// Set it to 3 days ago to trigger an update check under these conditions
+		if (!$lastUpdateCheckStore || isUserRequested) {
+			$lastUpdateCheckStore = threeDaysAgoInSeconds - 1;
+		}
+
+		// Check if `$lastUpdateCheckStore` is at least 3 days old
+		if ($lastUpdateCheckStore < threeDaysAgoInSeconds) {
+			try {
+				// Get the latest version from GitHub
+				const response = await (
+					await fetch('https://api.github.com/repos/canutin/desktop/releases')
+				).json();
+				const latestVersion = response[0]?.tag_name?.replace('v', '');
+
+				// Update status bar with latest version
+				if (latestVersion && semver.lt(data.appVersion, latestVersion)) {
+					$statusBarStore = {
+						message: `A newer version is available (v${latestVersion})`,
+						appearance: Appearance.ACTIVE,
+						secondaryActions: [
+							{
+								label: 'Download',
+								href: 'https://github.com/canutin/desktop/releases',
+								target: '_blank'
+							}
+						]
+					};
+				} else {
+					if (isUserRequested) {
+						$statusBarStore = {
+							message: `The current version is the latest (v${data.appVersion})`,
+							appearance: Appearance.POSITIVE
+						};
+					}
+				}
+			} catch (_e) {
+				if (isUserRequested) {
+					$statusBarStore = {
+						message: `There was a problem checking for updates, try again later`,
+						appearance: Appearance.WARNING
+					};
+				}
+			}
+			$lastUpdateCheckStore = currentTime; // Set the last updated date
+		}
+
+		// Recursively check for updates every 3 days
+		!isUserRequested &&
+			setTimeout(async () => {
+				await getAppLastestVersion();
+			}, THREE_DAYS_IN_SECONDS * 1000);
+	};
+
+	// Set the default status bar message when layout is mounted
+	// `!dev` because we don't want to constantly hit Github's API when developing
+	onMount(async () => {
+		!dev && (await getAppLastestVersion());
+	});
 </script>
 
 <div class="layout">
@@ -69,7 +142,9 @@
 		<div class="layout__settings">
 			<p class="layout__tag">USD $</p>
 			<p class="layout__tag">English</p>
-			<p class="layout__tag">{data.appVersion}</p>
+			<button class="layout__tag" type="button" on:click={() => getAppLastestVersion(true)}>
+				{data.appVersion}
+			</button>
 		</div>
 	</footer>
 </div>
@@ -172,6 +247,7 @@
 		column-gap: 4px;
 	}
 
+	button.layout__tag,
 	p.layout__tag {
 		font-family: var(--font-monospace);
 		font-weight: 400;
@@ -183,5 +259,14 @@
 		padding: 6px 8px;
 		border-radius: 4px;
 		width: max-content;
+	}
+
+	button.layout__tag {
+		border: none;
+		cursor: pointer;
+
+		&:hover {
+			color: var(--color-grey70);
+		}
 	}
 </style>
