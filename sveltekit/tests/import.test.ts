@@ -1,7 +1,7 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import { expect, test } from '@playwright/test';
-import { databaseWipe } from './fixtures/helpers.js';
+import { databaseWipe, delay } from './fixtures/helpers.js';
 
 test.describe('Import CanutinFile', () => {
 	test.beforeEach(async ({ baseURL }) => {
@@ -50,6 +50,8 @@ test.describe('Import CanutinFile', () => {
 		await expect(statusBar).not.toHaveClass(/statusBar--negative/);
 		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
 		expect(await statusBar.textContent()).not.toMatch('Import was successful');
+
+		await delay();
 		expect(await statusBar.textContent()).toMatch(
 			'Vault data was last updated less than 5 seconds ago'
 		);
