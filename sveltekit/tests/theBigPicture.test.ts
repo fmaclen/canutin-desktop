@@ -21,9 +21,13 @@ test.describe('Balance sheet', () => {
 		expect(await page.locator('.card', { hasText: 'Investments' }).textContent()).toMatch('$0');
 		expect(await page.locator('.card', { hasText: 'Other assets' }).textContent()).toMatch('$0');
 
+		// Check the top navigation is present
+		await page.locator('.scrollView__header a', { hasText: 'Add or update data' }).click();
+		await expect(page.locator('h1', { hasText: 'Add or update data' })).toBeVisible();
+
 		// Check that the balanceGroups have the correct amounts after importing data
 		await importCanutinFile(baseURL!, 'minimum-data');
-		await page.reload();
+		await page.locator('a', { hasText: 'The big picture' }).click();
 		expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$7,571');
 		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$0');
 		expect(await page.locator('.card', { hasText: 'Debt' }).textContent()).toMatch('$0');

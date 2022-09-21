@@ -52,6 +52,16 @@ test.describe('Transactions', () => {
 		await expect(tableHeaders.nth(4)).not.toHaveClass(/table__sortable--active/);
 		await expect(tableHeaders.nth(4)).not.toHaveClass(/table__sortable--asc/);
 		await expect(tableHeaders.nth(4)).not.toHaveClass(/table__sortable--desc/);
+
+		// Check the top navigation is present
+		await page.locator('.scrollView__header a', { hasText: 'Add transaction' }).click();
+		await expect(page.locator('h1', { hasText: 'Add transaction' })).toBeVisible();
+
+		await page.locator('a', { hasText: 'Transactions' }).click();
+		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
+
+		await page.locator('.scrollView__header a', { hasText: 'Import' }).click();
+		await expect(page.locator('h1', { hasText: 'Import CanutinFile' })).toBeVisible();
 	});
 
 	test('UI is rendered correctly when there are transactions present', async ({

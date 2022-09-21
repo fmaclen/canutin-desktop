@@ -1,7 +1,7 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import { expect, test } from '@playwright/test';
-import { databaseWipe } from './fixtures/helpers.js';
+import { databaseWipe, delay } from './fixtures/helpers.js';
 
 test.describe('Import CanutinFile', () => {
 	test.beforeEach(async ({ baseURL }) => {
@@ -12,7 +12,7 @@ test.describe('Import CanutinFile', () => {
 		await page.goto('/');
 		await expect(page.locator('a', { hasText: 'Import CanutinFile' })).not.toBeVisible();
 
-		await page.locator('a', { hasText: 'Add or update data' }).click();
+		await page.locator('.layout__aside a', { hasText: 'Add or update data' }).click();
 		await page.locator('a', { hasText: 'Import CanutinFile' }).click();
 		await expect(page.locator('h1', { hasText: 'Import CanutinFile' })).toBeVisible();
 
@@ -50,6 +50,8 @@ test.describe('Import CanutinFile', () => {
 		await expect(statusBar).not.toHaveClass(/statusBar--negative/);
 		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
 		expect(await statusBar.textContent()).not.toMatch('Import was successful');
+
+		await delay();
 		expect(await statusBar.textContent()).toMatch(
 			'Vault data was last updated less than 5 seconds ago'
 		);
@@ -147,7 +149,7 @@ test.describe('Import CanutinFile', () => {
 
 	test('CanutinFile that only contains Accounts can be imported', async ({ page }) => {
 		await page.goto('/');
-		await page.locator('a', { hasText: 'Add or update data' }).click();
+		await page.locator('.layout__aside a', { hasText: 'Add or update data' }).click();
 		await page.locator('a', { hasText: 'Import CanutinFile' }).click();
 		await page.setInputFiles(
 			'input[type="file"]',
@@ -162,7 +164,7 @@ test.describe('Import CanutinFile', () => {
 
 	test('CanutinFile that only contains Assets can be imported', async ({ page }) => {
 		await page.goto('/');
-		await page.locator('a', { hasText: 'Add or update data' }).click();
+		await page.locator('.layout__aside a', { hasText: 'Add or update data' }).click();
 		await page.locator('a', { hasText: 'Import CanutinFile' }).click();
 		await page.setInputFiles('input[type="file"]', './tests/fixtures/canutinFile-only-assets.json');
 		await page.locator('button', { hasText: 'Upload' }).click();
@@ -185,7 +187,7 @@ test.describe('Import CanutinFile', () => {
 		expect(await page.locator('section', { hasText: 'Manually' }).textContent()).toMatch('Upload');
 	});
 
-	test('submitting a CanutinFile via import json endpoint', async ({ page, baseURL }) => {
+	test('Submitting a CanutinFile via import json endpoint', async ({ page, baseURL }) => {
 		await page.goto('/');
 		const importEndpoint = `${baseURL}/import.json`;
 		expect(await page.textContent('h1')).toBe('The big picture');

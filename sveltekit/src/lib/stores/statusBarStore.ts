@@ -9,8 +9,7 @@ interface StatusBarStore {
 }
 
 const statusBarStore = writable<StatusBarStore>({
-	message: 'Canutin',
-	isError: false
+	message: 'Canutin'
 });
 
 statusBarStore.subscribe((value) => {

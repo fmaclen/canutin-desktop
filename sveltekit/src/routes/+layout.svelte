@@ -43,7 +43,7 @@
 				// Update status bar with latest version
 				if (latestVersion && semver.lt(data.appVersion, latestVersion)) {
 					$statusBarStore = {
-						message: `A newer version is available (v${latestVersion})`,
+						message: `A newer version is available (${latestVersion})`,
 						appearance: Appearance.ACTIVE,
 						secondaryActions: [
 							{
@@ -56,7 +56,7 @@
 				} else {
 					if (isUserRequested) {
 						$statusBarStore = {
-							message: `The current version is the latest (v${data.appVersion})`,
+							message: `The current version is the latest (${data.appVersion})`,
 							appearance: Appearance.POSITIVE
 						};
 					}

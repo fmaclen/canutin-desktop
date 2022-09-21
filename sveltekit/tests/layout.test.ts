@@ -6,11 +6,11 @@ test.describe('Layout', () => {
 		await page.goto('/');
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
-		const sidebarBigPicture = page.locator('a', { hasText: 'The big picture' });
+		const sidebarBigPicture = page.locator('.layout__aside a', { hasText: 'The big picture' });
 		await expect(sidebarBigPicture).toHaveAttribute('href', '/');
 		await expect(sidebarBigPicture).toHaveClass(/layout__a--active/);
 
-		const sidebarBalanceSheet = page.locator('a:has-text("Balance sheet")');
+		const sidebarBalanceSheet = page.locator('.layout__aside a', { hasText: 'Balance sheet' });
 		await expect(sidebarBalanceSheet).toHaveAttribute('href', '/balanceSheet');
 		await expect(sidebarBalanceSheet).toHaveClass(/layout__a/);
 		await expect(sidebarBalanceSheet).not.toHaveClass(/layout__a--active/);
@@ -20,7 +20,9 @@ test.describe('Layout', () => {
 		await expect(sidebarBigPicture).not.toHaveClass(/layout__a--active/);
 		await expect(sidebarBalanceSheet).toHaveClass(/layout__a--active/);
 
-		const sidebarAddOrUpdateData = page.locator('a', { hasText: 'Add or update data' });
+		const sidebarAddOrUpdateData = page.locator('.layout__aside a', {
+			hasText: 'Add or update data'
+		});
 		await expect(sidebarAddOrUpdateData).toHaveAttribute('href', '/data');
 		await expect(sidebarAddOrUpdateData).toHaveClass(/layout__a/);
 		await expect(sidebarAddOrUpdateData).not.toHaveClass(/layout__a--active/);
@@ -36,7 +38,7 @@ test.describe('Layout', () => {
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 		await expect(page.locator('p.layout__tag', { hasText: 'USD $' })).toBeVisible();
 		await expect(page.locator('p.layout__tag', { hasText: 'English' })).toBeVisible();
-		await expect(page.locator('button.layout__tag', { hasText: '0.0.0-test' })).toBeVisible();
+		await expect(page.locator('button.layout__tag', { hasText: 'v0.0.0-test' })).toBeVisible();
 	});
 
 	test('Error pages', async ({ page }) => {
@@ -69,7 +71,9 @@ test.describe('Layout', () => {
 	});
 
 	test('Add or update data section is rendered correctly', async ({ page }) => {
-		const sidebarAddOrUpdateData = page.locator('a', { hasText: 'Add or update data' });
+		const sidebarAddOrUpdateData = page.locator('.layout__aside a', {
+			hasText: 'Add or update data'
+		});
 		await page.goto('/');
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
@@ -113,10 +117,33 @@ test.describe('Layout', () => {
 		await expect(page.locator('h1', { hasText: 'Add transaction' })).toBeVisible();
 	});
 
+	test('Status bar with positive notices auto-dismiss', async ({ page }) => {
+		await page.goto('/');
+		await page
+			.locator('.layout__aside a', {
+				hasText: 'Add or update data'
+			})
+			.click();
+		await page.locator('a', { hasText: 'Add account' }).click();
+
+		const statusBar = page.locator('.statusBar');
+		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
+
+		await page.locator('.formInput__input[name=name]').fill("Bob's Test Account");
+		await page.locator('button', { hasText: 'Add' }).click();
+		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		expect(await statusBar.textContent()).toMatch('The account was added successfully');
+
+		// Wait for 7 seconds to make sure the notice auto-dismisses
+		await delay(7000);
+		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
+		expect(await statusBar.textContent()).not.toMatch('The account was added successfully');
+	});
+
 	test.describe('Checks for app updates', () => {
 		test.afterEach(async ({ baseURL }) => {
 			// Reset APP_VERSION to the default value
-			await setEnvironmentVariable(baseURL!, 'APP_VERSION', '0.0.0-test');
+			await setEnvironmentVariable(baseURL!, 'APP_VERSION', 'v0.0.0-test');
 		});
 
 		test('Automatically every 3 days', async ({ baseURL, browser }) => {
@@ -149,7 +176,7 @@ test.describe('Layout', () => {
 			await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
 			const currentVersionTag = page.locator('button.layout__tag');
-			expect(await currentVersionTag.textContent()).toMatch('0.0.0-test');
+			expect(await currentVersionTag.textContent()).toMatch('v0.0.0-test');
 
 			// It should have checked for updates
 			const statusBar = page.locator('.statusBar');
@@ -174,7 +201,7 @@ test.describe('Layout', () => {
 			const currentVersionTag = page.locator('button.layout__tag');
 			await expect(statusBar).not.toHaveClass(/statusBar--active/);
 			expect(await statusBar.textContent()).not.toMatch('A newer version is available');
-			expect(await currentVersionTag.textContent()).toMatch('0.0.0-test');
+			expect(await currentVersionTag.textContent()).toMatch('v0.0.0-test');
 
 			// Check for updates
 			let storage = await context.storageState();
@@ -190,9 +217,9 @@ test.describe('Layout', () => {
 			expect(lastUpdateCheck.value).not.toBe(originalLastUpdateCheck);
 
 			// Set a new version that's higher than the latest one on GitHub
-			await setEnvironmentVariable(baseURL!, 'APP_VERSION', '4.2.0-next.69');
+			await setEnvironmentVariable(baseURL!, 'APP_VERSION', 'v4.2.0-next.69');
 			await page.reload();
-			expect(await currentVersionTag.textContent()).toMatch('4.2.0-next.69');
+			expect(await currentVersionTag.textContent()).toMatch('v4.2.0-next.69');
 
 			await currentVersionTag.click();
 			// This may break if the latest version is ever above 4.2.0 :)
@@ -217,7 +244,7 @@ test.describe('Layout', () => {
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
 		const currentVersionTag = page.locator('button.layout__tag');
-		expect(await currentVersionTag.textContent()).toMatch('0.0.0-test');
+		expect(await currentVersionTag.textContent()).toMatch('v0.0.0-test');
 
 		// Set the app offline and trigger an update check
 		await context.setOffline(true);
