@@ -20,7 +20,7 @@ const config: PlaywrightTestConfig = {
 		env: {
 			ELECTRON_SWITCHED_VAULT: 'true',
 			DATABASE_URL: `file:${pathToTestVault}`,
-			APP_VERSION: '0.0.0-test'
+			APP_VERSION: 'v0.0.0-test'
 		}
 	},
 	use: {
