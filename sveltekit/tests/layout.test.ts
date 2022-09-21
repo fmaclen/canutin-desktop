@@ -10,7 +10,7 @@ test.describe('Layout', () => {
 		await expect(sidebarBigPicture).toHaveAttribute('href', '/');
 		await expect(sidebarBigPicture).toHaveClass(/layout__a--active/);
 
-		const sidebarBalanceSheet = page.locator('.layout__aside a:has-text("Balance sheet")');
+		const sidebarBalanceSheet = page.locator('.layout__aside a', { hasText: 'Balance sheet' });
 		await expect(sidebarBalanceSheet).toHaveAttribute('href', '/balanceSheet');
 		await expect(sidebarBalanceSheet).toHaveClass(/layout__a/);
 		await expect(sidebarBalanceSheet).not.toHaveClass(/layout__a--active/);
