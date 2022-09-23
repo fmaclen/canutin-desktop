@@ -1,7 +1,6 @@
 import path from "path";
 import {
   app,
-  dialog,
   Menu,
   MenuItemConstructorOptions,
   shell,
@@ -220,7 +219,9 @@ class TrayMenu {
 
     return this.isAppPackaged
       ? path.join(process.resourcesPath, `assets/${fileName}${theme}.png`)
-      : `./resources/assets/${fileName}${theme}.png`;
+      : `./resources/assets/${
+          process.env.NODE_ENV !== "test" && theme ? "dev-" : ""
+        }${fileName}${theme}.png`;
   }
 
   private setTrayIcon = (icon: string) => {
