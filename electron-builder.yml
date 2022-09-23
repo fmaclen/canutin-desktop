@@ -13,6 +13,7 @@ directories:
 extraResources:
   - from: "resources/assets"
     to: "assets"
+    filter: "!dev/*" # Don't package dev assets
   - from: "resources/sveltekit"
     to: "sveltekit"
 

@@ -219,8 +219,10 @@ class TrayMenu {
 
     return this.isAppPackaged
       ? path.join(process.resourcesPath, `assets/${fileName}${theme}.png`)
-      : `./resources/assets/${
-          process.env.NODE_ENV !== "test" && theme ? "dev-" : ""
+      : `./resources/${
+          process.env.NODE_ENV !== "test" && theme
+            ? "assets/dev/dev-"
+            : "assets/"
         }${fileName}${theme}.png`;
   }
 

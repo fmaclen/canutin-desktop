@@ -568,7 +568,7 @@ const assetTypes = [
 const prisma = new PrismaClient();
 
 async function main() {
-	transactionCategories.categoryGroups.map(async (categoryGroup) => {
+	for (const categoryGroup of transactionCategories.categoryGroups) {
 		const res = await prisma.transactionCategoryGroup.create({
 			data: {
 				name: categoryGroup.name,
@@ -578,25 +578,25 @@ async function main() {
 			}
 		});
 		console.info(res);
-	});
+	}
 
-	accountTypes.map(async (accountType) => {
+	for (const accountType of accountTypes) {
 		const res = await prisma.accountType.create({
 			data: {
 				name: accountType.name
 			}
 		});
 		console.info(res);
-	});
+	}
 
-	assetTypes.map(async (assetType) => {
+	for (const assetType of assetTypes) {
 		const res = await prisma.assetType.create({
 			data: {
 				name: assetType.name
 			}
 		});
 		console.info(res);
-	});
+	}
 }
 
 main()

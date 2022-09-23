@@ -30,10 +30,7 @@ test.describe('Assets', () => {
 		await page.locator('a', { hasText: 'Add asset' }).click();
 		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
 		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
-
-		await delay();
-		await expect(assetTypeSelect).toHaveValue('1');
-		await expect(symbolInput).not.toBeVisible(); // FIXME: flaky assertion
+		await expect(symbolInput).not.toBeVisible();
 
 		await nameInput.fill('GameStop');
 		await assetTypeSelect.selectOption({ label: 'Security' });
