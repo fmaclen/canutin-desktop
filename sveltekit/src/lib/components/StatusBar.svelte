@@ -72,7 +72,7 @@
 		{/if}
 	</p>
 
-	{#if appearance && !isError}
+	{#if appearance}
 		<Button on:click={dismissStatus}>Dismiss</Button>
 	{/if}
 </div>

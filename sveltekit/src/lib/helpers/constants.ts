@@ -53,3 +53,11 @@ export enum DeveloperFunctions {
 	DB_SET_URL,
 	SET_ENV_VARIABLE
 }
+
+export enum SyncSettings {
+	SYNC_ENABLED = 'SYNC_ENABLED',
+	SYNC_URL = 'SYNC_URL',
+	SYNC_FREQUENCY = 'SYNC_FREQUENCY',
+	SYNC_COOKIE = 'SYNC_COOKIE',
+	SYNC_JWT = 'SYNC_JWT'
+}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import semver from 'semver';
-	import { getUnixTime } from 'date-fns';
+	import { getUnixTime, subSeconds } from 'date-fns';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { dev } from '$app/environment';
@@ -14,6 +14,7 @@
 	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
+	import { api } from '$lib/helpers/misc';
 
 	export let data: PageData;
 	$: pathname = $page.url.pathname;
@@ -79,10 +80,31 @@
 			}, THREE_DAYS_IN_SECONDS * 1000);
 	};
 
+	// Try to sync the vault with a server that returns a CanutinFile
+	$: isSyncEnabled = false;
+
+	const sync = async () => {
+		const data = await api({ endpoint: 'sync' });
+		isSyncEnabled = data?.isSyncEnabled || false;
+
+		if (data.warning) {
+			$statusBarStore = {
+				message: data.warning,
+				appearance: Appearance.WARNING
+			};
+		} else {
+			$statusBarStore = {
+				message: `Sync updated ${data?.importedAccounts?.updated?.length} accounts and ${data?.importedAssets?.updated?.length} assets`,
+				appearance: Appearance.POSITIVE
+			};
+		}
+	};
+
 	// Set the default status bar message when layout is mounted
 	// `!dev` because we don't want to constantly hit Github's API when developing
 	onMount(async () => {
 		!dev && (await getAppLastestVersion());
+		await sync();
 	});
 </script>
 
@@ -126,11 +148,12 @@
 					</a>
 				</nav>
 			{/if}
-			<a
+			<button
 				class="layout__a layout__a--primary {!$isVaultReadyStore && 'layout__a--disabled'}"
-				href="/import"
+				on:click={() => sync()}
+				disabled={!isSyncEnabled}
 				>Sync
-			</a>
+			</button>
 		</nav>
 	</aside>
 
@@ -197,6 +220,7 @@
 		}
 	}
 
+	button.layout__a,
 	a.layout__a {
 		font-size: 13px;
 		font-weight: 600;
@@ -212,6 +236,7 @@
 			color: var(--color-bluePrimary);
 		}
 
+		&:disabled,
 		&--disabled {
 			pointer-events: none;
 			color: var(--color-grey20);
@@ -222,6 +247,16 @@
 			box-sizing: border-box;
 			border-top: 1px solid var(--color-border);
 		}
+	}
+
+	// FIXME: should be called `button.layout__button`, maybe
+	button.layout__a {
+		border-left: none;
+		border-right: none;
+		border-bottom: none;
+		background-color: transparent;
+		text-align: left;
+		cursor: pointer;
 	}
 
 	footer.layout__footer {

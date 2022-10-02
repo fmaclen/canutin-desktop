@@ -79,6 +79,13 @@ export interface ImportSummary {
 	importedAssets?: ImportedAssets;
 }
 
+export interface ImportSync {
+	canutinFileUrl: string;
+	frequency: number;
+	cookie?: string;
+	jwt?: string;
+}
+
 export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 	const importSessionDate = new Date();
 

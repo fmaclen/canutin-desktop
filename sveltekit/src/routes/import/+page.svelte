@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import type { PageData } from './$types';
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
@@ -19,13 +21,30 @@
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import { api } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
-	import { Appearance, EventFrequency } from '$lib/helpers/constants';
-	import type { ImportSummary } from '../import.json/+server';
-	import type { ImportSync } from '../importSync.json/+server';
+	import { SyncSettings, Appearance, EventFrequency } from '$lib/helpers/constants';
+	import type { ImportSummary, ImportSync } from '$lib/helpers/import';
 
 	const title = 'Import CanutinFile';
 
-	let isLoading: boolean = false;
+	// Set the loading state
+	const setLoadingStatus = (message: string) => {
+		isImportLoading = true;
+		$statusBarStore = {
+			message,
+			appearance: Appearance.ACTIVE
+		};
+	};
+
+	const setResultStatus = (message: string, appearance: Appearance) => {
+		isImportLoading = false;
+		$statusBarStore = {
+			message,
+			appearance
+		};
+	};
+
+	// File form
+	let isImportLoading: boolean = false;
 	let noFileError: string | undefined = undefined;
 	let importSummary: ImportSummary | undefined = undefined;
 
@@ -38,30 +57,33 @@
 			return;
 		}
 
-		// Set the loading state
-		isLoading = true;
-		$statusBarStore = {
-			message: 'Processing import...',
-			appearance: Appearance.ACTIVE
-		};
+		setLoadingStatus('Processing import...');
 
 		const reader = new FileReader();
 		reader.onload = async (event: ProgressEvent<FileReader>) => {
 			const canutinFile = JSON.parse(event?.target?.result as string);
 			importSummary = await api({ endpoint: 'import', method: 'POST', payload: canutinFile });
 
-			// Update the loading state
-			isLoading = false;
-			$statusBarStore = {
-				message: importSummary?.error ? importSummary.error : 'Import was successful',
-				appearance: importSummary?.error ? Appearance.NEGATIVE : Appearance.POSITIVE
-			};
+			// Update the status bar
+			setResultStatus(
+				importSummary?.error ? importSummary.error : 'Import was successful',
+				importSummary?.error ? Appearance.NEGATIVE : Appearance.POSITIVE
+			);
 		};
 
 		reader.readAsText(chosenFile);
 	};
 
-	// Sync
+	// Sync form
+	export let data: PageData;
+	$: ({ settings } = data);
+
+	$: isSyncEnabled = false;
+	$: canutinFileUrlValue = '';
+	$: frequencyValue = 0;
+	$: cookieValue = '';
+	$: jwtValue = '';
+
 	const handleSyncForm = async (event: any) => {
 		const canutinFileUrl = event.target.canutinFileUrl?.value;
 		const frequency = event.target.frequency?.value;
@@ -77,18 +99,57 @@
 			jwt
 		};
 
+		!isSyncEnabled && setLoadingStatus('Checking the CanutinFile URL...');
+
 		const response = await api({
-			endpoint: 'importSync',
+			endpoint: 'sync',
 			method: 'POST',
 			payload: payload
 		});
+
+		// Update the status bar
+		setResultStatus(
+			response?.error
+				? response?.error
+				: response?.warning
+				? response.warning
+				: 'Sync was enabled succesfully',
+			response?.error
+				? Appearance.NEGATIVE
+				: response?.warning
+				? Appearance.WARNING
+				: Appearance.POSITIVE
+		);
+
+		isSyncEnabled = response.isSyncEnabled;
 	};
 
 	const frequencyOptions = Object.values(EventFrequency).map((value) => ({
 		label: value
 	}));
 
-	$: frequencyValue = 0; // "0" == Never
+	onMount(async () => {
+		settings.forEach((setting) => {
+			if (!setting) return;
+			switch (setting.name) {
+				case SyncSettings.SYNC_ENABLED:
+					isSyncEnabled = setting.value === '1' ? true : false;
+					break;
+				case SyncSettings.SYNC_URL:
+					canutinFileUrlValue = setting.value;
+					break;
+				case SyncSettings.SYNC_FREQUENCY:
+					frequencyValue = parseInt(setting.value);
+					break;
+				case SyncSettings.SYNC_COOKIE:
+					cookieValue = setting.value;
+					break;
+				case SyncSettings.SYNC_JWT:
+					jwtValue = setting.value;
+					break;
+			}
+		});
+	});
 </script>
 
 <svelte:head>
@@ -96,36 +157,54 @@
 </svelte:head>
 
 <ScrollView {title}>
-	<Section title="Sync">
+	<Section title="Sync settings">
 		<div slot="CONTENT" class="import">
 			<Form on:submit={handleSyncForm}>
 				<FormFieldset>
-					<FormField name="canutinFileUrl" label="CanutinFile URL">
+					<FormField name="status" label="Sync status">
 						<FormNotice>
-							<FormInput
-								name="canutinFileUrl"
-								placeholder="https://example.com/my-scraper/canutinFile.json"
-							/>
-							<FormNoticeNotice appearance={Appearance.WARNING}>
+							<FormNoticeNotice
+								appearance={isSyncEnabled ? Appearance.POSITIVE : Appearance.WARNING}
+							>
 								<FormNoticeP>
-									<strong>Sync is disabled</strong>
+									<strong>Sync is {isSyncEnabled ? 'enabled' : 'disabled'}</strong>
 								</FormNoticeP>
-								<FormNoticeP>
-									Enable syncing by providing a URL that can be fetched as a CanutinFile JSON
-									payload. The vault will be updated with any new data found on every sync
-								</FormNoticeP>
+								{#if !isSyncEnabled}
+									<FormNoticeP>
+										Enable syncing by providing a URL that can be fetched as a CanutinFile JSON
+										payload. On every sync the vault will be updated with any new data found,
+										duplicates will be ignored.
+									</FormNoticeP>
+								{/if}
 							</FormNoticeNotice>
 						</FormNotice>
+					</FormField>
+				</FormFieldset>
+				<FormFieldset>
+					<FormField name="canutinFileUrl" label="CanutinFile URL">
+						<FormInput
+							name="canutinFileUrl"
+							placeholder="https://example.com/my-scraper/canutinFile.json"
+							bind:value={canutinFileUrlValue}
+						/>
 					</FormField>
 					<FormField name="cookie" label="Cookie" optional={true}>
 						<FormInput
 							required={false}
 							name="cookie"
-							placeholder="accessToken=1234abc; userId=1234"
+							type="password"
+							placeholder="accessToken=1234abc; userId=1234; Path=/; HttpOnly;"
+							value={cookieValue}
 						/>
 					</FormField>
 					<FormField name="jwt" label="JSON Web Token" optional={true}>
-						<FormInput type="password" required={false} name="jwt" />
+						<FormInput
+							type="password"
+							required={false}
+							name="jwt"
+							value={jwtValue}
+							placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+						/>
 					</FormField>
 				</FormFieldset>
 				<FormFieldset>
@@ -134,7 +213,9 @@
 					</FormField>
 				</FormFieldset>
 				<FormFooter>
-					<Button appearance={Appearance.ACTIVE}>Apply</Button>
+					<Button appearance={Appearance.ACTIVE} disabled={!canutinFileUrlValue}
+						>{isSyncEnabled ? 'Update' : 'Enable'}</Button
+					>
 				</FormFooter>
 			</Form>
 		</div>
@@ -165,7 +246,7 @@
 		</div>
 	</Section>
 
-	{#if !isLoading && !error && importSummary}
+	{#if !isImportLoading && !error && importSummary}
 		<div class="importStatus">
 			<div class="importStatus__model">
 				<Section title="Accounts">
