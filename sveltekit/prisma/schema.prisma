@@ -108,3 +108,11 @@ model TransactionCategoryGroup {
   name                  String                @unique(map: "sqlite_autoindex_TransactionCategoryGroup_1")
   transactionCategories TransactionCategory[]
 }
+
+model Setting {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @unique(map: "sqlite_autoindex_Setting_1")
+  value     String
+}

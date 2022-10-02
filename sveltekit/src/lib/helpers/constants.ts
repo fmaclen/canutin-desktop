@@ -53,8 +53,3 @@ export enum DeveloperFunctions {
 	DB_SET_URL,
 	SET_ENV_VARIABLE
 }
-
-export enum ImportFunctions {
-	SYNC_URL,
-	LOCAL_FILE
-}

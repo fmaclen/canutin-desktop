@@ -46,7 +46,7 @@ interface Api {
 }
 
 export const api = async ({ endpoint, method, payload, params }: Api) => {
-	const response = await fetch(`/${endpoint}.json?${params}`, {
+	const response = await fetch(`/${endpoint}.json${params ? `?${params}` : ''}`, {
 		method: method ? method : 'GET',
 		headers: {
 			'Content-Type': 'application/json'

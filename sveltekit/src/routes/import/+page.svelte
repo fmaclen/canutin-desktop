@@ -19,8 +19,9 @@
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import { api } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
-	import { Appearance, EventFrequency, ImportFunctions } from '$lib/helpers/constants';
+	import { Appearance, EventFrequency } from '$lib/helpers/constants';
 	import type { ImportSummary } from '../import.json/+server';
+	import type { ImportSync } from '../importSync.json/+server';
 
 	const title = 'Import CanutinFile';
 
@@ -67,18 +68,17 @@
 		const cookie = event.target.cookie?.value;
 		const jwt = event.target.jwt?.value;
 
-		const payload: ImportPayload = {
-			function: ImportFunctions.SYNC_URL,
-			urlSync: {
-				canutinFileUrl,
-				frequency,
-				cookie,
-				jwt
-			}
+		if (!canutinFileUrl) return;
+
+		const payload: ImportSync = {
+			canutinFileUrl,
+			frequency,
+			cookie,
+			jwt
 		};
 
 		const response = await api({
-			endpoint: 'import',
+			endpoint: 'importSync',
 			method: 'POST',
 			payload: payload
 		});
