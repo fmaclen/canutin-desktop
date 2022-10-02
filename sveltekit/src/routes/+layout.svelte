@@ -82,8 +82,15 @@
 
 	// Try to sync the vault with a server that returns a CanutinFile
 	$: isSyncEnabled = false;
+	$: isSyncing = false;
 
 	const sync = async () => {
+		isSyncing = true;
+		$statusBarStore = {
+			message: 'Syncing...',
+			appearance: Appearance.ACTIVE
+		};
+
 		const data = await api({ endpoint: 'sync' });
 		isSyncEnabled = data?.isSyncEnabled || false;
 
@@ -98,6 +105,7 @@
 				appearance: Appearance.POSITIVE
 			};
 		}
+		isSyncing = false;
 	};
 
 	// Set the default status bar message when layout is mounted
@@ -151,7 +159,7 @@
 			<button
 				class="layout__a layout__a--primary {!$isVaultReadyStore && 'layout__a--disabled'}"
 				on:click={() => sync()}
-				disabled={!isSyncEnabled}
+				disabled={!isSyncEnabled || isSyncing}
 				>Sync
 			</button>
 		</nav>
