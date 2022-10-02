@@ -20,7 +20,7 @@
 	import { api } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
 	import { Appearance, EventFrequency, ImportFunctions } from '$lib/helpers/constants';
-	import type { ImportSummary, ImportPayload } from '../import.json/+server';
+	import type { ImportSummary } from '../import.json/+server';
 
 	const title = 'Import CanutinFile';
 
@@ -44,21 +44,10 @@
 			appearance: Appearance.ACTIVE
 		};
 
-		const payload: ImportPayload = {
-			function: ImportFunctions.LOCAL_FILE
-		};
-
 		const reader = new FileReader();
 		reader.onload = async (event: ProgressEvent<FileReader>) => {
 			const canutinFile = JSON.parse(event?.target?.result as string);
-			importSummary = await api({
-				endpoint: 'import',
-				method: 'POST',
-				payload: {
-					...payload,
-					canutinFile
-				}
-			});
+			importSummary = await api({ endpoint: 'import', method: 'POST', payload: canutinFile });
 
 			// Update the loading state
 			isLoading = false;
@@ -93,8 +82,6 @@
 			method: 'POST',
 			payload: payload
 		});
-
-		console.log(response);
 	};
 
 	const frequencyOptions = Object.values(EventFrequency).map((value) => ({
