@@ -12,11 +12,15 @@
 	import FormField from '$lib/components/FormField.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
+	import FormFooter from '$lib/components/FormFooter.svelte';
+	import FormNotice from '$lib/components/FormNotice.svelte';
+	import FormNoticeNotice from '$lib/components/FormNoticeNotice.svelte';
+	import FormNoticeP from '$lib/components/FormNoticeP.svelte';
+	import FormSelect from '$lib/components/FormSelect.svelte';
 	import { api } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
-	import { Appearance } from '$lib/helpers/constants';
-	import type { ImportSummary } from '../import.json/+server';
-	import FormFooter from '$lib/components/FormFooter.svelte';
+	import { Appearance, EventFrequency, ImportFunctions } from '$lib/helpers/constants';
+	import type { ImportSummary, ImportPayload } from '../import.json/+server';
 
 	const title = 'Import CanutinFile';
 
@@ -24,7 +28,7 @@
 	let noFileError: string | undefined = undefined;
 	let importSummary: ImportSummary | undefined = undefined;
 
-	const handleSubmit = (event: any) => {
+	const handleFileForm = (event: any) => {
 		importSummary = undefined; // Reset the previous import summary (if any)
 
 		const chosenFile = event.target.file.files[0];
@@ -40,10 +44,21 @@
 			appearance: Appearance.ACTIVE
 		};
 
+		const payload: ImportPayload = {
+			function: ImportFunctions.LOCAL_FILE
+		};
+
 		const reader = new FileReader();
 		reader.onload = async (event: ProgressEvent<FileReader>) => {
 			const canutinFile = JSON.parse(event?.target?.result as string);
-			importSummary = await api({ endpoint: 'import', method: 'POST', payload: canutinFile });
+			importSummary = await api({
+				endpoint: 'import',
+				method: 'POST',
+				payload: {
+					...payload,
+					canutinFile
+				}
+			});
 
 			// Update the loading state
 			isLoading = false;
@@ -55,6 +70,38 @@
 
 		reader.readAsText(chosenFile);
 	};
+
+	// Sync
+	const handleSyncForm = async (event: any) => {
+		const canutinFileUrl = event.target.canutinFileUrl?.value;
+		const frequency = event.target.frequency?.value;
+		const cookie = event.target.cookie?.value;
+		const jwt = event.target.jwt?.value;
+
+		const payload: ImportPayload = {
+			function: ImportFunctions.SYNC_URL,
+			urlSync: {
+				canutinFileUrl,
+				frequency,
+				cookie,
+				jwt
+			}
+		};
+
+		const response = await api({
+			endpoint: 'import',
+			method: 'POST',
+			payload: payload
+		});
+
+		console.log(response);
+	};
+
+	const frequencyOptions = Object.values(EventFrequency).map((value) => ({
+		label: value
+	}));
+
+	$: frequencyValue = 0; // "0" == Never
 </script>
 
 <svelte:head>
@@ -62,6 +109,50 @@
 </svelte:head>
 
 <ScrollView {title}>
+	<Section title="Sync">
+		<div slot="CONTENT" class="import">
+			<Form on:submit={handleSyncForm}>
+				<FormFieldset>
+					<FormField name="canutinFileUrl" label="CanutinFile URL">
+						<FormNotice>
+							<FormInput
+								name="canutinFileUrl"
+								placeholder="https://example.com/my-scraper/canutinFile.json"
+							/>
+							<FormNoticeNotice appearance={Appearance.WARNING}>
+								<FormNoticeP>
+									<strong>Sync is disabled</strong>
+								</FormNoticeP>
+								<FormNoticeP>
+									Enable syncing by providing a URL that can be fetched as a CanutinFile JSON
+									payload. The vault will be updated with any new data found on every sync
+								</FormNoticeP>
+							</FormNoticeNotice>
+						</FormNotice>
+					</FormField>
+					<FormField name="cookie" label="Cookie" optional={true}>
+						<FormInput
+							required={false}
+							name="cookie"
+							placeholder="accessToken=1234abc; userId=1234"
+						/>
+					</FormField>
+					<FormField name="jwt" label="JSON Web Token" optional={true}>
+						<FormInput type="password" required={false} name="jwt" />
+					</FormField>
+				</FormFieldset>
+				<FormFieldset>
+					<FormField name="frequency" label="Auto-sync">
+						<FormSelect name="frequency" options={frequencyOptions} bind:value={frequencyValue} />
+					</FormField>
+				</FormFieldset>
+				<FormFooter>
+					<Button appearance={Appearance.ACTIVE}>Apply</Button>
+				</FormFooter>
+			</Form>
+		</div>
+	</Section>
+
 	<Section title="From API">
 		<div slot="CONTENT">
 			<Notice>
@@ -72,9 +163,9 @@
 	</Section>
 
 	{@const error = noFileError || importSummary?.error}
-	<Section title="Manually">
+	<Section title="From file">
 		<div slot="CONTENT" class="import">
-			<Form on:submit={handleSubmit}>
+			<Form on:submit={handleFileForm}>
 				<FormFieldset>
 					<FormField name="file" label="CanutinFile">
 						<FormInput type="file" name="file" accept=".json" />

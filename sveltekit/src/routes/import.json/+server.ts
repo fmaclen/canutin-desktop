@@ -5,13 +5,44 @@ import type { RequestEvent } from '@sveltejs/kit';
 
 import prisma from '$lib/helpers/prisma';
 import { getModelType, getTransactionCategoryId } from '$lib/helpers/models';
+import { ImportFunctions } from '$lib/helpers/constants';
 
 export const POST = async ({ request }: RequestEvent) => {
-	const canutinFile = await request.json();
-	const importResult = await importFromCanutinFile(canutinFile);
+	const payload = (await request.json()) as ImportPayload;
+	console.log(payload);
 
-	return json(importResult);
+	let result: any;
+	switch (payload.function) {
+		case ImportFunctions.SYNC_URL:
+			result = await fetch(payload.urlSync?.canutinFileUrl, {
+				headers: {
+					'Content-Type': 'application/json',
+					accept: '*/*',
+					cookie: payload.urlSync?.cookie
+				},
+				method: 'GET'
+			});
+			result = await result.json();
+			return json(result);
+
+		case ImportFunctions.LOCAL_FILE:
+			result = payload?.canutinFile && (await importFromCanutinFile(payload.canutinFile));
+			return json(result);
+	}
 };
+
+export interface UrlSync {
+	canutinFileUrl: string;
+	frequency: number;
+	cookie?: string;
+	jwt?: string;
+}
+
+export interface ImportPayload {
+	function: ImportFunctions;
+	urlSync?: UrlSync;
+	canutinFile?: CanutinFile;
+}
 
 interface CanutinFileAccountBalanceStatement {
 	createdAt: number;

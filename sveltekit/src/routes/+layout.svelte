@@ -115,22 +115,21 @@
 		<nav class="layout__nav layout__nav--bottom">
 			{#if dev}
 				<nav class="layout__nav">
-					<!-- <a class="layout__a {pathname === '/settings' && 'layout__a--active'}" href="/settings"
-						>Settings
-					</a> -->
 					<a
 						class="layout__a {!$isVaultReadyStore && 'layout__a--disabled'} {pathname ===
 							'/devTools' && 'layout__a--active'}"
 						href="/devTools"
 						>Developer tools
 					</a>
+					<a class="layout__a {pathname === '/data' && 'layout__a--active'}" href="/data"
+						>Add or update data
+					</a>
 				</nav>
 			{/if}
 			<a
-				class="layout__a layout__a--primary {pathname === '/data' &&
-					'layout__a--active'} {!$isVaultReadyStore && 'layout__a--disabled'}"
-				href="/data"
-				>Add or update data
+				class="layout__a layout__a--primary {!$isVaultReadyStore && 'layout__a--disabled'}"
+				href="/import"
+				>Sync
 			</a>
 		</nav>
 	</aside>
