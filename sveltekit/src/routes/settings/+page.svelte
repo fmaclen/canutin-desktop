@@ -184,21 +184,3 @@
 		</div>
 	</Section>
 </ScrollView>
-
-<style lang="scss">
-	div.database {
-		display: flex;
-		flex-direction: column;
-		row-gap: 16px;
-	}
-
-	nav.nav {
-		display: flex;
-		flex-direction: row;
-		column-gap: 12px;
-		border: 1px solid var(--color-border);
-		border-radius: 4px;
-		display: flex;
-		padding: 12px;
-	}
-</style>
