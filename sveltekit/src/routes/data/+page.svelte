@@ -1,6 +1,7 @@
 <script>
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
+	import iconSync from '$lib/assets/icon-sync.svg';
 	import iconImport from '$lib/assets/icon-import.svg';
 	import iconAccount from '$lib/assets/icon-account.svg';
 	import iconAsset from '$lib/assets/icon-asset.svg';
@@ -19,7 +20,7 @@
 			<div slot="CONTENT" class="wizard__container">
 				<a href="/settings" class="wizard__a">
 					<span class="wizard__icon">
-						<img src={iconImport} class="wizard__icon" alt="Import icon" />
+						<img src={iconSync} class="wizard__icon" alt="Import icon" />
 					</span>
 					<div class="wizard__text">
 						<p class="wizard__title">Sync</p>
