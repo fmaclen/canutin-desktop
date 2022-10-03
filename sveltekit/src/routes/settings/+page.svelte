@@ -176,9 +176,9 @@
 					</FormField>
 				</FormFieldset>
 				<FormFooter>
-					<Button appearance={Appearance.ACTIVE} disabled={!canutinFileUrlValue}
-						>{isSyncEnabled ? 'Update' : 'Enable'}</Button
-					>
+					<Button appearance={Appearance.ACTIVE} disabled={!canutinFileUrlValue}>
+						{isSyncEnabled ? 'Update' : 'Enable'}
+					</Button>
 				</FormFooter>
 			</Form>
 		</div>
