@@ -125,7 +125,7 @@
 		<div slot="CONTENT" class="import">
 			<Form on:submit={handleSyncForm}>
 				<FormFieldset>
-					<FormField name="status" label="Sync status">
+					<FormField name="status" label="Status">
 						<FormNotice>
 							<FormNoticeNotice
 								appearance={isSyncEnabled ? Appearance.POSITIVE : Appearance.WARNING}

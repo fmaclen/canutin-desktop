@@ -142,28 +142,41 @@
 		</nav>
 
 		<nav class="layout__nav layout__nav--bottom">
-			{#if dev}
-				<nav class="layout__nav">
+			<nav class="layout__nav">
+				{#if dev}
 					<a
 						class="layout__a {!$isVaultReadyStore && 'layout__a--disabled'} {pathname ===
 							'/devTools' && 'layout__a--active'}"
 						href="/devTools"
 						>Developer tools
 					</a>
-					<a class="layout__a {pathname === '/settings' && 'layout__a--active'}" href="/settings"
-						>Settings
-					</a>
+				{/if}
+				<a class="layout__a {pathname === '/settings' && 'layout__a--active'}" href="/settings"
+					>Settings
+				</a>
+				{#if isSyncEnabled}
 					<a class="layout__a {pathname === '/data' && 'layout__a--active'}" href="/data"
 						>Add or update data
 					</a>
-				</nav>
+				{/if}
+			</nav>
+
+			{#if !isSyncEnabled}
+				<a
+					class="layout__a layout__a--primary {pathname === '/data' && 'layout__a--active'}"
+					href="/data"
+					>Add or update data
+				</a>
 			{/if}
-			<button
-				class="layout__a layout__a--primary {!$isVaultReadyStore && 'layout__a--disabled'}"
-				on:click={() => sync()}
-				disabled={!isSyncEnabled || isSyncing}
-				>Sync
-			</button>
+
+			{#if isSyncEnabled}
+				<button
+					class="layout__a layout__a--primary {!$isVaultReadyStore && 'layout__a--disabled'}"
+					on:click={() => sync()}
+					disabled={isSyncing}
+					>Sync
+				</button>
+			{/if}
 		</nav>
 	</aside>
 

@@ -184,7 +184,7 @@ test.describe('Import CanutinFile', () => {
 		expect(await page.locator('section', { hasText: 'From api' }).textContent()).toMatch(
 			`${baseURL}/import.json with a CanutinFile payload`
 		);
-		expect(await page.locator('section', { hasText: 'Manually' }).textContent()).toMatch('Upload');
+		expect(await page.locator('section', { hasText: 'From file' }).textContent()).toMatch('Upload');
 	});
 
 	test('Submitting a CanutinFile via import json endpoint', async ({ page, baseURL }) => {
