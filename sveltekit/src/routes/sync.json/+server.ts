@@ -10,7 +10,6 @@ const fetchCanutinFile = async (syncUrl: string, syncCookie?: string, syncJwt?: 
 		const response = await fetch(syncUrl, {
 			headers: {
 				'Content-Type': 'application/json',
-				accept: '*/*',
 				cookie: (syncCookie && syncCookie) || '',
 				authorization: `Bearer ${syncJwt && syncJwt}` || ''
 			},
