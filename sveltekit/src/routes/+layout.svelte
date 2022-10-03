@@ -81,7 +81,7 @@
 	};
 
 	// Try to sync the vault with a server that returns a CanutinFile
-	$: isSyncEnabled = false;
+	$: isSyncEnabled = data?.isSyncEnabled;
 	$: isSyncing = false;
 
 	const sync = async () => {
@@ -109,10 +109,9 @@
 	};
 
 	// Set the default status bar message when layout is mounted
-	// `!dev` because we don't want to constantly hit Github's API when developing
 	onMount(async () => {
+		// `!dev` because we don't want to constantly hit Github's API when developing
 		!dev && (await getAppLastestVersion());
-		await sync();
 	});
 </script>
 
@@ -150,6 +149,9 @@
 							'/devTools' && 'layout__a--active'}"
 						href="/devTools"
 						>Developer tools
+					</a>
+					<a class="layout__a {pathname === '/settings' && 'layout__a--active'}" href="/settings"
+						>Settings
 					</a>
 					<a class="layout__a {pathname === '/data' && 'layout__a--active'}" href="/data"
 						>Add or update data
