@@ -3,7 +3,12 @@ import type { RequestEvent } from '@sveltejs/kit';
 
 import prisma from '$lib/helpers/prisma';
 import { SyncSettings } from '$lib/helpers/constants';
-import { importFromCanutinFile, type ImportSummary, type ImportSync } from '$lib/helpers/import';
+import {
+	importFromCanutinFile,
+	getIsSyncEnabled,
+	type ImportSummary,
+	type ImportSync
+} from '$lib/helpers/import';
 
 const fetchCanutinFile = async (syncUrl: string, syncCookie?: string, syncJwt?: string) => {
 	try {
@@ -22,12 +27,8 @@ const fetchCanutinFile = async (syncUrl: string, syncCookie?: string, syncJwt?: 
 };
 
 export const GET = async () => {
-	// Check if syncing is enabled
-	const syncEnabled = await prisma.setting.findFirst({
-		where: { name: SyncSettings.SYNC_ENABLED }
-	});
-	const isSyncEnabled = syncEnabled?.value === '1' ? true : false;
-	if (!syncEnabled) return json({ isSyncEnabled });
+	const isSyncEnabled = await getIsSyncEnabled();
+	if (!isSyncEnabled) return json({ isSyncEnabled });
 
 	// Check that an URL was provided
 	const syncUrl = await prisma.setting.findUnique({ where: { name: SyncSettings.SYNC_URL } });

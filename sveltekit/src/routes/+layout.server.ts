@@ -1,12 +1,12 @@
 import { env } from '$env/dynamic/private';
-import prisma from '$lib/helpers/prisma';
-import { SyncSettings } from '$lib/helpers/constants';
+
+import { getIsSyncEnabled } from '$lib/helpers/import';
 
 export const load = async () => {
-	const syncEnabled = await prisma.setting.findFirst({
-		where: { name: SyncSettings.SYNC_ENABLED }
-	});
-	const isSyncEnabled = syncEnabled?.value === '1' ? true : false;
+	const isSyncEnabled = await getIsSyncEnabled();
 
-	return { appVersion: env.APP_VERSION, isSyncEnabled };
+	return {
+		appVersion: env.APP_VERSION,
+		isSyncEnabled
+	};
 };
