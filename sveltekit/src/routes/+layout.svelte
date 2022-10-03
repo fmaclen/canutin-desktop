@@ -1,6 +1,6 @@
 <script lang="ts">
 	import semver from 'semver';
-	import { getUnixTime, subSeconds } from 'date-fns';
+	import { getUnixTime } from 'date-fns';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { dev } from '$app/environment';
