@@ -1,10 +1,11 @@
 import type { Setting } from '@prisma/client';
 import { SyncSettings } from '$lib/helpers/constants';
 import prisma from '$lib/helpers/prisma';
+import { getSyncStatus } from '$lib/helpers/import';
 
 export const load = async () => {
-	const settings = [
-		(await prisma.setting.findUnique({ where: { name: SyncSettings.SYNC_ENABLED } })) as Setting,
+	const syncStatus = await getSyncStatus();
+	const syncSettings = [
 		(await prisma.setting.findUnique({ where: { name: SyncSettings.SYNC_URL } })) as Setting,
 		(await prisma.setting.findUnique({ where: { name: SyncSettings.SYNC_FREQUENCY } })) as Setting,
 		(await prisma.setting.findUnique({ where: { name: SyncSettings.SYNC_COOKIE } })) as Setting,
@@ -12,6 +13,7 @@ export const load = async () => {
 	];
 
 	return {
-		settings
+		syncStatus,
+		syncSettings
 	};
 };

@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 import prisma from '$lib/helpers/prisma';
 import { getModelType, getTransactionCategoryId } from '$lib/helpers/models';
 import { SyncSettings } from './constants';
+import type { SyncStatusStore } from '$lib/stores/syncStatusStore';
 
 interface CanutinFileAccountBalanceStatement {
 	createdAt: number;
@@ -272,9 +273,13 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 	}
 };
 
-export const getIsSyncEnabled = async () => {
+export const getSyncStatus = async (): Promise<SyncStatusStore> => {
 	const syncEnabled = await prisma.setting.findFirst({
 		where: { name: SyncSettings.SYNC_ENABLED }
 	});
-	return syncEnabled?.value === '1' ? true : false;
+
+	return {
+		isSyncSetup: syncEnabled !== null ? true : false,
+		isSyncEnabled: syncEnabled?.value === '1' ? true : false
+	};
 };

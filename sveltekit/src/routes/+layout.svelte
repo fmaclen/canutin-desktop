@@ -11,6 +11,7 @@
 	import StatusBar from '$lib/components/StatusBar.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import lastUpdateCheckStore from '$lib/stores/lastUpdateCheckStore';
+	import syncStatusStore from '$lib/stores/syncStatusStore';
 	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
@@ -81,7 +82,9 @@
 	};
 
 	// Try to sync the vault with a server that returns a CanutinFile
-	$: isSyncEnabled = data?.isSyncEnabled;
+	$syncStatusStore = data?.syncStatus || $syncStatusStore;
+	$: isSyncSetup = $syncStatusStore.isSyncSetup;
+	$: isSyncEnabled = $syncStatusStore.isSyncEnabled;
 	$: isSyncing = false;
 
 	const sync = async () => {
@@ -91,19 +94,19 @@
 			appearance: Appearance.ACTIVE
 		};
 
-		const data = await api({ endpoint: 'sync' });
-		isSyncEnabled = data?.isSyncEnabled || false;
+		const response = await api({ endpoint: 'sync' });
+		$syncStatusStore = response?.syncStatus || $syncStatusStore;
 
-		if (data.warning) {
+		if (response.warning) {
 			$statusBarStore = {
-				message: data.warning,
+				message: response.warning,
 				appearance: Appearance.WARNING
 			};
 		} else {
 			const accountsCreatedOrUpdated =
-				data?.importedAccounts?.created?.length + data?.importedAccounts?.updated?.length;
+				response?.importedAccounts?.created?.length + response?.importedAccounts?.updated?.length;
 			const assetsCreatedOrUpdated =
-				data?.importedAssets?.created?.length + data?.importedAssets?.updated?.length;
+				response?.importedAssets?.created?.length + response?.importedAssets?.updated?.length;
 
 			$statusBarStore = {
 				message: `Sync updated ${accountsCreatedOrUpdated} accounts and ${assetsCreatedOrUpdated} assets`,
@@ -159,14 +162,14 @@
 				<a class="layout__a {pathname === '/settings' && 'layout__a--active'}" href="/settings"
 					>Settings
 				</a>
-				{#if isSyncEnabled}
+				{#if isSyncSetup}
 					<a class="layout__a {pathname === '/data' && 'layout__a--active'}" href="/data"
 						>Add or update data
 					</a>
 				{/if}
 			</nav>
 
-			{#if !isSyncEnabled}
+			{#if !isSyncSetup}
 				<a
 					class="layout__a layout__a--primary {pathname === '/data' && 'layout__a--active'}"
 					href="/data"
@@ -174,11 +177,11 @@
 				</a>
 			{/if}
 
-			{#if isSyncEnabled}
+			{#if isSyncSetup}
 				<button
 					class="layout__a layout__a--primary {!$isVaultReadyStore && 'layout__a--disabled'}"
 					on:click={() => sync()}
-					disabled={isSyncing}
+					disabled={!isSyncEnabled || isSyncing}
 					>Sync
 				</button>
 			{/if}

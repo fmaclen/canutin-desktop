@@ -5,7 +5,7 @@ import prisma from '$lib/helpers/prisma';
 import { SyncSettings } from '$lib/helpers/constants';
 import {
 	importFromCanutinFile,
-	getIsSyncEnabled,
+	getSyncStatus,
 	type ImportSummary,
 	type ImportSync
 } from '$lib/helpers/import';
@@ -27,8 +27,10 @@ const fetchCanutinFile = async (syncUrl: string, syncCookie?: string, syncJwt?: 
 };
 
 export const GET = async () => {
-	const isSyncEnabled = await getIsSyncEnabled();
-	if (!isSyncEnabled) return json({ isSyncEnabled });
+	const syncStatus = await getSyncStatus();
+	const { isSyncEnabled } = syncStatus;
+
+	if (!isSyncEnabled) return json(syncStatus);
 
 	// Check that an URL was provided
 	const syncUrl = await prisma.setting.findUnique({ where: { name: SyncSettings.SYNC_URL } });
@@ -46,7 +48,7 @@ export const GET = async () => {
 
 	// Import data and return the result
 	const importSummary: ImportSummary = await importFromCanutinFile(canutinFile);
-	return json({ isSyncEnabled, ...importSummary });
+	return json({ syncStatus, ...importSummary });
 };
 
 export const POST = async ({ request }: RequestEvent) => {
@@ -75,9 +77,10 @@ export const POST = async ({ request }: RequestEvent) => {
 		if (!canutinFile?.accounts || !canutinFile?.assets) {
 			// Disable sync because there were no `accounts` or `assets` returned from the server
 			await setSyncDisabled();
+			const syncStatus = await getSyncStatus();
 			return json({
 				warning: "Coudn't fetch a CanutinFile JSON from the provided URL",
-				isSyncEnabled: false
+				syncStatus
 			});
 		} else {
 			const settings = [];
@@ -105,13 +108,15 @@ export const POST = async ({ request }: RequestEvent) => {
 					}
 				});
 			}
-			return json({ isSyncEnabled: true });
+			const syncStatus = await getSyncStatus();
+			return json({ syncStatus });
 		}
 	} catch (_e) {
 		await setSyncDisabled();
+		const syncStatus = await getSyncStatus();
 		return json({
 			error: "Couldnl't connect to the provided URL",
-			isSyncEnabled: false
+			syncStatus
 		});
 	}
 };

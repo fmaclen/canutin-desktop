@@ -14,6 +14,7 @@
 	import FormNoticeNotice from '$lib/components/FormNoticeNotice.svelte';
 	import FormNoticeP from '$lib/components/FormNoticeP.svelte';
 	import FormSelect from '$lib/components/FormSelect.svelte';
+	import syncStatusStore from '$lib/stores/syncStatusStore';
 	import { SyncSettings, Appearance, EventFrequency } from '$lib/helpers/constants';
 	import type { ImportSync } from '$lib/helpers/import';
 	import { api } from '$lib/helpers/misc';
@@ -24,9 +25,10 @@
 	let isLoading: boolean = false;
 
 	export let data: PageData;
-	$: ({ settings } = data);
+	$: ({ syncStatus, syncSettings } = data);
 
-	$: isSyncEnabled = false;
+	$syncStatusStore = syncStatus || $syncStatusStore;
+	$: isSyncEnabled = $syncStatusStore.isSyncEnabled;
 	$: canutinFileUrlValue = '';
 	$: frequencyValue = 0;
 	$: cookieValue = '';
@@ -63,7 +65,7 @@
 			jwt
 		};
 
-		!isSyncEnabled && setLoadingStatus('Checking the CanutinFile URL...');
+		setLoadingStatus('Checking the CanutinFile URL...');
 
 		const response = await api({
 			endpoint: 'sync',
@@ -85,7 +87,7 @@
 				: Appearance.POSITIVE
 		);
 
-		isSyncEnabled = response.isSyncEnabled;
+		$syncStatusStore = response?.syncStatus || $syncStatusStore;
 	};
 
 	const frequencyOptions = Object.values(EventFrequency).map((value) => ({
@@ -93,12 +95,9 @@
 	}));
 
 	onMount(async () => {
-		settings.forEach((setting) => {
+		syncSettings.forEach((setting) => {
 			if (!setting) return;
 			switch (setting.name) {
-				case SyncSettings.SYNC_ENABLED:
-					isSyncEnabled = setting.value === '1' ? true : false;
-					break;
 				case SyncSettings.SYNC_URL:
 					canutinFileUrlValue = setting.value;
 					break;
