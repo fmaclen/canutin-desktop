@@ -21,10 +21,19 @@ export const POST = async ({ url }: { url: URL }) => {
 		env[`${name}`] = value;
 	};
 
+	const wipeAccountsAssets = async () => {
+		await prisma.account.deleteMany();
+		await prisma.asset.deleteMany();
+	};
+
 	switch (functionType) {
+		case DeveloperFunctions.DB_WIPE_ACCOUNTS_ASSETS:
+			await wipeAccountsAssets();
+			break;
+
 		case DeveloperFunctions.DB_WIPE:
-			await prisma.account.deleteMany({});
-			await prisma.asset.deleteMany({});
+			await wipeAccountsAssets();
+			await prisma.setting.deleteMany();
 			break;
 
 		case DeveloperFunctions.DB_SEED:

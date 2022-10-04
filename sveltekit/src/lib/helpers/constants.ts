@@ -49,6 +49,7 @@ export enum EventFrequency {
 
 export enum DeveloperFunctions {
 	DB_WIPE,
+	DB_WIPE_ACCOUNTS_ASSETS,
 	DB_SEED,
 	DB_SET_URL,
 	SET_ENV_VARIABLE
