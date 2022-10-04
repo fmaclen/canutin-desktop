@@ -100,8 +100,13 @@
 				appearance: Appearance.WARNING
 			};
 		} else {
+			const accountsCreatedOrUpdated =
+				data?.importedAccounts?.created?.length + data?.importedAccounts?.updated?.length;
+			const assetsCreatedOrUpdated =
+				data?.importedAssets?.created?.length + data?.importedAssets?.updated?.length;
+
 			$statusBarStore = {
-				message: `Sync updated ${data?.importedAccounts?.updated?.length} accounts and ${data?.importedAssets?.updated?.length} assets`,
+				message: `Sync updated ${accountsCreatedOrUpdated} accounts and ${assetsCreatedOrUpdated} assets`,
 				appearance: Appearance.POSITIVE
 			};
 		}
