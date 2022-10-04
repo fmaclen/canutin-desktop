@@ -4,9 +4,10 @@
 	import Button from '$lib/components/Button.svelte';
 	import Notice from '$lib/components/Notice.svelte';
 	import Code from '$lib/components/Code.svelte';
+	import statusBarStore from '$lib/stores/statusBarStore';
+	import syncStatusStore from '$lib/stores/syncStatusStore';
 	import { Appearance, DeveloperFunctions } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
-	import statusBarStore from '$lib/stores/statusBarStore';
 
 	const title = 'Developer tools';
 
@@ -62,6 +63,10 @@
 			}
 		}).then((response) => {
 			response.ok ? setStatusSuccess() : setStatusError();
+			$syncStatusStore = {
+				isSyncSetup: false,
+				isSyncEnabled: false
+			};
 		});
 	};
 </script>

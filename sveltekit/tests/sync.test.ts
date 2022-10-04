@@ -1,8 +1,6 @@
-import fs from 'fs';
-import fetch from 'node-fetch';
 import { DeveloperFunctions } from '../src/lib/helpers/constants.js';
 import { expect, test } from '@playwright/test';
-import { databaseWipe, delay } from './fixtures/helpers.js';
+import { databaseWipe } from './fixtures/helpers.js';
 
 test.describe('Sync CanutinFile', () => {
 	test.beforeEach(async ({ baseURL }) => {
