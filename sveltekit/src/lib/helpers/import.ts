@@ -47,7 +47,7 @@ interface CanutinFileAsset {
 	balanceStatements: CanutinFileAssetBalanceStatement[];
 }
 
-interface CanutinFile {
+export interface CanutinFile {
 	accounts: CanutinFileAccount[];
 	assets: CanutinFileAsset[];
 }

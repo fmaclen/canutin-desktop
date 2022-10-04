@@ -52,7 +52,8 @@ export enum DeveloperFunctions {
 	DB_WIPE_ACCOUNTS_ASSETS,
 	DB_SEED,
 	DB_SET_URL,
-	SET_ENV_VARIABLE
+	SET_ENV_VARIABLE,
+	CANUTIN_FILE_SYNC_TEST
 }
 
 export enum SyncSettings {

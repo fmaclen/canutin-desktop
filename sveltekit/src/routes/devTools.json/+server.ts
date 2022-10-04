@@ -1,17 +1,20 @@
+import { json } from '@sveltejs/kit';
+
+import canutinFileFixture from '../../../tests/fixtures/canutinFile-maximum-data.json';
+
 import prisma from '$lib/helpers/prisma';
 import seedDemoData from '$lib/seed';
-import { DeveloperFunctions } from '$lib/helpers/constants';
 import { env } from '$env/dynamic/private';
+import { DeveloperFunctions } from '$lib/helpers/constants';
+import type { CanutinFile } from '$lib/helpers/import';
+
+const getFunctionType = (url: URL) => {
+	const functionTypeParam = url.searchParams.get('functionType');
+	return functionTypeParam && parseInt(functionTypeParam);
+};
 
 export const POST = async ({ url }: { url: URL }) => {
-	const functionTypeParam = url.searchParams.get('functionType');
-	const functionType = functionTypeParam && parseInt(functionTypeParam);
-
-	const dbUrlParam = url.searchParams.get('dbUrl');
-	const dbUrl = dbUrlParam ? dbUrlParam : env.DATABASE_URL;
-
-	const envVariableNameParam = url.searchParams.get('envVariableName');
-	const envVariableValueParam = url.searchParams.get('envVariableValue');
+	const functionType = getFunctionType(url);
 
 	const setEnvironmentVariable = (name: string, value: string) => {
 		// Don't allow setting environment variables unless it's part of a test
@@ -40,17 +43,46 @@ export const POST = async ({ url }: { url: URL }) => {
 			await seedDemoData();
 			break;
 
-		case DeveloperFunctions.DB_SET_URL:
+		case DeveloperFunctions.DB_SET_URL: {
+			const dbUrlParam = url.searchParams.get('dbUrl');
+			const dbUrl = dbUrlParam ? dbUrlParam : env.DATABASE_URL;
+
 			setEnvironmentVariable('ELECTRON_SWITCHED_VAULT', 'true');
 			dbUrl && setEnvironmentVariable('DATABASE_URL', dbUrl);
 			break;
+		}
 
-		case DeveloperFunctions.SET_ENV_VARIABLE:
-			envVariableNameParam &&
-				envVariableValueParam &&
+		case DeveloperFunctions.SET_ENV_VARIABLE: {
+			const envVariableNameParam = url.searchParams.get('envVariableName');
+			const envVariableValueParam = url.searchParams.get('envVariableValue');
+
+			if (envVariableNameParam && envVariableValueParam)
 				setEnvironmentVariable(envVariableNameParam, envVariableValueParam);
 			break;
+		}
 	}
 
 	return new Response(undefined);
+};
+
+// This endpoint returns a fake CanutinFile response and it's meant to be used in tests
+export const GET = async ({ request, url }: { request: Request; url: URL }) => {
+	// Check if the request is coming from a test
+	const functionType = getFunctionType(url);
+	const isTestRequest = functionType === DeveloperFunctions.CANUTIN_FILE_SYNC_TEST;
+
+	// Check if the request has cookies and authorization headers set
+	const cookieHeader = request.headers.get('cookie');
+	const hasCookies = cookieHeader !== null && cookieHeader !== '';
+	const authorizationHeader = request.headers.get('authorization');
+	const hasJwtBearer =
+		authorizationHeader !== null &&
+		authorizationHeader !== '' &&
+		authorizationHeader.includes('Bearer');
+
+	if (!isTestRequest || !hasCookies || !hasJwtBearer)
+		return json({ error: 'Not authorized' }, { status: 401 });
+
+	// Return a valid CanutinFile response
+	return json(canutinFileFixture as CanutinFile);
 };
