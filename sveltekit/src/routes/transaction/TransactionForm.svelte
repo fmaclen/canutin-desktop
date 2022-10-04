@@ -35,7 +35,7 @@
 	];
 
 	let thisMonth = transaction?.date ? transaction.date.getMonth() + 1 : new Date().getMonth() + 1;
-	let months = Array.from(Array(12).keys()).map((i) => i + 1); // 12 years in a year
+	let months = Array.from(Array(12).keys()).map((i) => i + 1); // 12 months in a year
 
 	let thisDate = transaction?.date ? transaction.date.getDate() : new Date().getDate();
 	const days = Array.from(Array(31).keys()).map((i) => i + 1); // 31 days in a month
@@ -46,7 +46,7 @@
 		return dates.map((date, i) => {
 			return {
 				label: isMonth
-					? `${date} - ${new Date(Date.UTC(thisYear, i + 1, date)).toLocaleString(LOCALE, {
+					? `${date} - ${new Date(Date.UTC(thisYear, dates[i], 1)).toLocaleString(LOCALE, {
 							month: 'short'
 					  })}` // e.g. "9 - Sep"
 					: date.toString(),
