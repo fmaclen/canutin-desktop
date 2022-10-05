@@ -43,6 +43,17 @@ test.describe('Layout', () => {
 		await expect(page.locator('h1', { hasText: 'Settings' })).toBeVisible();
 		await expect(sidebarSettings).toHaveClass(/layout__a--active/);
 		await expect(sidebarAddOrUpdateData).not.toHaveClass(/layout__a--active/);
+
+		const titleBar = page.locator('.layout__title-bar');
+		const calendarClock = (await titleBar.textContent()) || '';
+		const todayFormatted = new Date().toLocaleDateString('en-US', {
+			month: 'long',
+			day: 'numeric',
+			year: 'numeric'
+		});
+		expect(calendarClock).toMatch(todayFormatted);
+		await delay(1000);
+		expect(await titleBar.textContent()).not.toMatch(calendarClock);
 	});
 
 	test('Default settings are rendered correctly', async ({ page }) => {
