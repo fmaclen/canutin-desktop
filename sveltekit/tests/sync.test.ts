@@ -21,7 +21,7 @@ test.describe('Sync CanutinFile', () => {
 
 		await urlInput.fill('http://myscraper.example.com/canutinFile.json');
 		await expect(page.locator('button', { hasText: 'Enable' })).not.toBeDisabled();
-		await expect(page.locator('a', { hasText: 'Sync' })).not.toBeVisible();
+		await expect(page.locator('button', { hasText: 'Sync' })).not.toBeVisible();
 	});
 
 	test('Fetching a CanutinFile from a url', async ({ page, baseURL }) => {
