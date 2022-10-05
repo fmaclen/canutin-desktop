@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@types/jest": "^28.1.6",
-    "electron": "^20.0.0",
+    "electron": "^21.0.1",
     "electron-builder": "^23.3.3",
     "electron-esbuild": "^5.0.2",
     "electron-store": "^8.1.0",
