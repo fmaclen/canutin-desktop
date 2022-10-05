@@ -43,7 +43,7 @@
 	const getDateSelects = (dates: number[]) => {
 		const isMonth = dates.length === 12;
 
-		return dates.map((date, i) => {
+		return dates.map((date) => {
 			return {
 				label: isMonth
 					? `${date} - ${new Date(thisYear, date - 1, 1).toLocaleString(LOCALE, {
