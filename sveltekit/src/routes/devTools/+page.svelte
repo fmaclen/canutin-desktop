@@ -4,19 +4,22 @@
 	import Button from '$lib/components/Button.svelte';
 	import Notice from '$lib/components/Notice.svelte';
 	import Code from '$lib/components/Code.svelte';
+	import statusBarStore from '$lib/stores/statusBarStore';
+	import syncStatusStore from '$lib/stores/syncStatusStore';
 	import { Appearance, DeveloperFunctions } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
-	import statusBarStore from '$lib/stores/statusBarStore';
 
 	const title = 'Developer tools';
 
 	export let data: PageData;
+	let isLoading = false;
 
 	const setStatusSuccess = () => {
 		$statusBarStore = {
 			message: 'Database action was performed, likely without errors',
 			appearance: Appearance.POSITIVE
 		};
+		isLoading = false;
 	};
 
 	const setStatusError = () => {
@@ -24,9 +27,11 @@
 			message: "Something went wrong and it's likely the action wasn't performed",
 			appearance: Appearance.NEGATIVE
 		};
+		isLoading = false;
 	};
 
 	const databaseSeed = async () => {
+		isLoading = true;
 		await fetch(`/devTools.json?functionType=${DeveloperFunctions.DB_SEED}`, {
 			method: 'POST',
 			headers: {
@@ -37,7 +42,20 @@
 		});
 	};
 
+	const databaseWipeAccountsAssets = async () => {
+		isLoading = true;
+		await fetch(`/devTools.json?functionType=${DeveloperFunctions.DB_WIPE_ACCOUNTS_ASSETS}`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then((response) => {
+			response.ok ? setStatusSuccess() : setStatusError();
+		});
+	};
+
 	const databaseWipe = async () => {
+		isLoading = true;
 		await fetch(`/devTools.json?functionType=${DeveloperFunctions.DB_WIPE}`, {
 			method: 'POST',
 			headers: {
@@ -45,6 +63,10 @@
 			}
 		}).then((response) => {
 			response.ok ? setStatusSuccess() : setStatusError();
+			$syncStatusStore = {
+				isSyncSetup: false,
+				isSyncEnabled: false
+			};
 		});
 	};
 </script>
@@ -59,8 +81,17 @@
 			<Notice><Code>{data.dbUrl}</Code></Notice>
 
 			<nav class="nav">
-				<Button on:click={databaseSeed}>Seed demo data</Button>
-				<Button on:click={databaseWipe} appearance={Appearance.NEGATIVE}>Delete all data</Button>
+				<Button on:click={databaseSeed} disabled={isLoading}>Seed demo data</Button>
+				<Button
+					on:click={databaseWipeAccountsAssets}
+					appearance={Appearance.NEGATIVE}
+					disabled={isLoading}
+				>
+					Delete accounts & assets
+				</Button>
+				<Button on:click={databaseWipe} appearance={Appearance.NEGATIVE} disabled={isLoading}>
+					Delete all data
+				</Button>
 			</nav>
 		</div>
 	</Section>

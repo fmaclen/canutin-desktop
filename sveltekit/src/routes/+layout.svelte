@@ -11,9 +11,11 @@
 	import StatusBar from '$lib/components/StatusBar.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import lastUpdateCheckStore from '$lib/stores/lastUpdateCheckStore';
+	import syncStatusStore from '$lib/stores/syncStatusStore';
 	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
+	import { api } from '$lib/helpers/misc';
 
 	export let data: PageData;
 	$: pathname = $page.url.pathname;
@@ -79,9 +81,44 @@
 			}, THREE_DAYS_IN_SECONDS * 1000);
 	};
 
+	// Try to sync the vault with a server that returns a CanutinFile
+	$syncStatusStore = data?.syncStatus || $syncStatusStore;
+	$: isSyncSetup = $syncStatusStore.isSyncSetup;
+	$: isSyncEnabled = $syncStatusStore.isSyncEnabled;
+	$: isSyncing = false;
+
+	const sync = async () => {
+		isSyncing = true;
+		$statusBarStore = {
+			message: 'Syncing...',
+			appearance: Appearance.ACTIVE
+		};
+
+		const response = await api({ endpoint: 'sync' });
+		$syncStatusStore = response?.syncStatus || $syncStatusStore;
+
+		if (response.warning) {
+			$statusBarStore = {
+				message: response.warning,
+				appearance: Appearance.WARNING
+			};
+		} else {
+			const accountsCreatedOrUpdated =
+				response?.importedAccounts?.created?.length + response?.importedAccounts?.updated?.length;
+			const assetsCreatedOrUpdated =
+				response?.importedAssets?.created?.length + response?.importedAssets?.updated?.length;
+
+			$statusBarStore = {
+				message: `Sync updated ${accountsCreatedOrUpdated} accounts and ${assetsCreatedOrUpdated} assets`,
+				appearance: Appearance.POSITIVE
+			};
+		}
+		isSyncing = false;
+	};
+
 	// Set the default status bar message when layout is mounted
-	// `!dev` because we don't want to constantly hit Github's API when developing
 	onMount(async () => {
+		// `!dev` because we don't want to constantly hit Github's API when developing
 		!dev && (await getAppLastestVersion());
 	});
 </script>
@@ -113,25 +150,41 @@
 		</nav>
 
 		<nav class="layout__nav layout__nav--bottom">
-			{#if dev}
-				<nav class="layout__nav">
-					<!-- <a class="layout__a {pathname === '/settings' && 'layout__a--active'}" href="/settings"
-						>Settings
-					</a> -->
+			<nav class="layout__nav">
+				{#if dev}
 					<a
 						class="layout__a {!$isVaultReadyStore && 'layout__a--disabled'} {pathname ===
 							'/devTools' && 'layout__a--active'}"
 						href="/devTools"
 						>Developer tools
 					</a>
-				</nav>
+				{/if}
+				<a class="layout__a {pathname === '/settings' && 'layout__a--active'}" href="/settings"
+					>Settings
+				</a>
+				{#if isSyncSetup}
+					<a class="layout__a {pathname === '/data' && 'layout__a--active'}" href="/data"
+						>Add or update data
+					</a>
+				{/if}
+			</nav>
+
+			{#if !isSyncSetup}
+				<a
+					class="layout__a layout__a--primary {pathname === '/data' && 'layout__a--active'}"
+					href="/data"
+					>Add or update data
+				</a>
 			{/if}
-			<a
-				class="layout__a layout__a--primary {pathname === '/data' &&
-					'layout__a--active'} {!$isVaultReadyStore && 'layout__a--disabled'}"
-				href="/data"
-				>Add or update data
-			</a>
+
+			{#if isSyncSetup}
+				<button
+					class="layout__a layout__a--primary {!$isVaultReadyStore && 'layout__a--disabled'}"
+					on:click={() => sync()}
+					disabled={!isSyncEnabled || isSyncing}
+					>Sync
+				</button>
+			{/if}
 		</nav>
 	</aside>
 
@@ -198,6 +251,7 @@
 		}
 	}
 
+	button.layout__a,
 	a.layout__a {
 		font-size: 13px;
 		font-weight: 600;
@@ -213,6 +267,7 @@
 			color: var(--color-bluePrimary);
 		}
 
+		&:disabled,
 		&--disabled {
 			pointer-events: none;
 			color: var(--color-grey20);
@@ -223,6 +278,16 @@
 			box-sizing: border-box;
 			border-top: 1px solid var(--color-border);
 		}
+	}
+
+	// FIXME: should be called `button.layout__button`, maybe
+	button.layout__a {
+		border-left: none;
+		border-right: none;
+		border-bottom: none;
+		background-color: transparent;
+		text-align: left;
+		cursor: pointer;
 	}
 
 	footer.layout__footer {

@@ -18,6 +18,13 @@ export const getBalanceGroupLabel = (balanceGroup: BalanceGroup) => {
 	}
 };
 
+export enum Appearance {
+	ACTIVE = 'active',
+	POSITIVE = 'positive',
+	NEGATIVE = 'negative',
+	WARNING = 'warning'
+}
+
 export enum SortOrder {
 	DESC = 'desc',
 	ASC = 'asc'
@@ -28,16 +35,31 @@ export enum TrailingCashflowPeriods {
 	LAST_12_MONTHS = 'Last 12 months'
 }
 
-export enum DeveloperFunctions {
-	DB_WIPE,
-	DB_SEED,
-	DB_SET_URL,
-	SET_ENV_VARIABLE
+export enum EventFrequency {
+	NEVER = 'Never',
+	ONCE_AN_HOUR = 'Once an hour',
+	ONCE_A_DAY = 'Once a day',
+	ONCE_A_WEEK = 'Once a week',
+	ONCE_A_MONTH = 'Once a month',
+	TWICE_AN_HOUR = 'Twice a hour',
+	TWICE_A_DAY = 'Twice a day',
+	TWICE_A_WEEK = 'Twice a week',
+	TWICE_A_MONTH = 'Twice a month'
 }
 
-export enum Appearance {
-	ACTIVE = 'active',
-	POSITIVE = 'positive',
-	NEGATIVE = 'negative',
-	WARNING = 'warning'
+export enum DeveloperFunctions {
+	DB_WIPE,
+	DB_WIPE_ACCOUNTS_ASSETS,
+	DB_SEED,
+	DB_SET_URL,
+	SET_ENV_VARIABLE,
+	CANUTIN_FILE_SYNC_TEST
+}
+
+export enum SyncSettings {
+	SYNC_ENABLED = 'SYNC_ENABLED',
+	SYNC_URL = 'SYNC_URL',
+	SYNC_FREQUENCY = 'SYNC_FREQUENCY',
+	SYNC_COOKIE = 'SYNC_COOKIE',
+	SYNC_JWT = 'SYNC_JWT'
 }

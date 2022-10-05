@@ -13,7 +13,7 @@ test.describe('Import CanutinFile', () => {
 		await expect(page.locator('a', { hasText: 'Import CanutinFile' })).not.toBeVisible();
 
 		await page.locator('.layout__aside a', { hasText: 'Add or update data' }).click();
-		await page.locator('a', { hasText: 'Import CanutinFile' }).click();
+		await page.locator('a', { hasText: 'Import file' }).click();
 		await expect(page.locator('h1', { hasText: 'Import CanutinFile' })).toBeVisible();
 
 		// Try to import invalid CanutinFile
@@ -150,7 +150,7 @@ test.describe('Import CanutinFile', () => {
 	test('CanutinFile that only contains Accounts can be imported', async ({ page }) => {
 		await page.goto('/');
 		await page.locator('.layout__aside a', { hasText: 'Add or update data' }).click();
-		await page.locator('a', { hasText: 'Import CanutinFile' }).click();
+		await page.locator('a', { hasText: 'Import file' }).click();
 		await page.setInputFiles(
 			'input[type="file"]',
 			'./tests/fixtures/canutinFile-only-accounts.json'
@@ -165,7 +165,7 @@ test.describe('Import CanutinFile', () => {
 	test('CanutinFile that only contains Assets can be imported', async ({ page }) => {
 		await page.goto('/');
 		await page.locator('.layout__aside a', { hasText: 'Add or update data' }).click();
-		await page.locator('a', { hasText: 'Import CanutinFile' }).click();
+		await page.locator('a', { hasText: 'Import file' }).click();
 		await page.setInputFiles('input[type="file"]', './tests/fixtures/canutinFile-only-assets.json');
 		await page.locator('button', { hasText: 'Upload' }).click();
 		await expect(page.locator('.statusBar')).not.toHaveClass(/statusBar--negative/);
@@ -184,7 +184,7 @@ test.describe('Import CanutinFile', () => {
 		expect(await page.locator('section', { hasText: 'From api' }).textContent()).toMatch(
 			`${baseURL}/import.json with a CanutinFile payload`
 		);
-		expect(await page.locator('section', { hasText: 'Manually' }).textContent()).toMatch('Upload');
+		expect(await page.locator('section', { hasText: 'From file' }).textContent()).toMatch('Upload');
 	});
 
 	test('Submitting a CanutinFile via import json endpoint', async ({ page, baseURL }) => {

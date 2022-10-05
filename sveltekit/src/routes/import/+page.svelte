@@ -12,19 +12,20 @@
 	import FormField from '$lib/components/FormField.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
+	import FormFooter from '$lib/components/FormFooter.svelte';
 	import { api } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
 	import { Appearance } from '$lib/helpers/constants';
-	import type { ImportSummary } from '../import.json/+server';
-	import FormFooter from '$lib/components/FormFooter.svelte';
+	import type { ImportSummary } from '$lib/helpers/import';
 
 	const title = 'Import CanutinFile';
 
+	// File form
 	let isLoading: boolean = false;
 	let noFileError: string | undefined = undefined;
 	let importSummary: ImportSummary | undefined = undefined;
 
-	const handleSubmit = (event: any) => {
+	const handleFileForm = (event: any) => {
 		importSummary = undefined; // Reset the previous import summary (if any)
 
 		const chosenFile = event.target.file.files[0];
@@ -45,7 +46,7 @@
 			const canutinFile = JSON.parse(event?.target?.result as string);
 			importSummary = await api({ endpoint: 'import', method: 'POST', payload: canutinFile });
 
-			// Update the loading state
+			// Update the status bar
 			isLoading = false;
 			$statusBarStore = {
 				message: importSummary?.error ? importSummary.error : 'Import was successful',
@@ -72,9 +73,9 @@
 	</Section>
 
 	{@const error = noFileError || importSummary?.error}
-	<Section title="Manually">
+	<Section title="From file">
 		<div slot="CONTENT" class="import">
-			<Form on:submit={handleSubmit}>
+			<Form on:submit={handleFileForm}>
 				<FormFieldset>
 					<FormField name="file" label="CanutinFile">
 						<FormInput type="file" name="file" accept=".json" />

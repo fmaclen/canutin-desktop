@@ -31,6 +31,18 @@ test.describe('Layout', () => {
 		await expect(page.locator('h1', { hasText: 'Add or update data' })).toBeVisible();
 		await expect(sidebarAddOrUpdateData).toHaveClass(/layout__a--active/);
 		await expect(sidebarBalanceSheet).not.toHaveClass(/layout__a--active/);
+
+		const sidebarSettings = page.locator('.layout__aside a', {
+			hasText: 'Settings'
+		});
+		await expect(sidebarSettings).toHaveAttribute('href', '/settings');
+		await expect(sidebarSettings).toHaveClass(/layout__a/);
+		await expect(sidebarSettings).not.toHaveClass(/layout__a--active/);
+
+		await sidebarSettings.click();
+		await expect(page.locator('h1', { hasText: 'Settings' })).toBeVisible();
+		await expect(sidebarSettings).toHaveClass(/layout__a--active/);
+		await expect(sidebarAddOrUpdateData).not.toHaveClass(/layout__a--active/);
 	});
 
 	test('Default settings are rendered correctly', async ({ page }) => {
@@ -81,9 +93,19 @@ test.describe('Layout', () => {
 		await sidebarAddOrUpdateData.click();
 		await expect(page.locator('h1', { hasText: 'Add or update data' })).toBeVisible();
 
+		// Sync CanutinFile
+		const linkSyncSettings = page.locator('a', { hasText: 'Sync' });
+		await expect(linkSyncSettings).toHaveAttribute('href', '/settings');
+
+		await linkSyncSettings.click();
+		await expect(page.locator('h1', { hasText: 'Settings' })).toBeVisible();
+
 		// Import CanutinFile
-		await page.locator('a', { hasText: 'Import CanutinFile' }).click();
-		await expect(sidebarAddOrUpdateData).toHaveAttribute('href', '/data');
+		await sidebarAddOrUpdateData.click();
+		const linkImportFile = page.locator('a', { hasText: 'Import file' });
+		await expect(linkImportFile).toHaveAttribute('href', '/import');
+
+		await linkImportFile.click();
 		await expect(page.locator('h1', { hasText: 'Import CanutinFile' })).toBeVisible();
 
 		// Add account

@@ -1,6 +1,7 @@
 <script>
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
+	import iconSync from '$lib/assets/icon-sync.svg';
 	import iconImport from '$lib/assets/icon-import.svg';
 	import iconAccount from '$lib/assets/icon-account.svg';
 	import iconAsset from '$lib/assets/icon-asset.svg';
@@ -15,18 +16,24 @@
 
 <ScrollView {title} isFullscreen={true}>
 	<nav class="wizard">
-		<Section title="Import JSON">
+		<Section title="Import CanutinFile">
 			<div slot="CONTENT" class="wizard__container">
+				<a href="/settings" class="wizard__a">
+					<span class="wizard__icon">
+						<img src={iconSync} class="wizard__icon" alt="Import icon" />
+					</span>
+					<div class="wizard__text">
+						<p class="wizard__title">Sync</p>
+						<p class="wizard__help">Fetch a CanutinFile-formatted JSON from a remote server</p>
+					</div>
+				</a>
 				<a href="/import" class="wizard__a">
 					<span class="wizard__icon">
 						<img src={iconImport} class="wizard__icon" alt="Import icon" />
 					</span>
 					<div class="wizard__text">
-						<p class="wizard__title">Import CanutinFile</p>
-						<p class="wizard__help">
-							A CanutinFile is a JSON formatted file that can import or update multiple data types
-							at once
-						</p>
+						<p class="wizard__title">Import file</p>
+						<p class="wizard__help">Import a CanutinFile-formatted JSON from a local file</p>
 					</div>
 				</a>
 			</div>
@@ -68,7 +75,7 @@
 <style lang="scss">
 	nav.wizard {
 		display: grid;
-		grid-template-columns: 2fr 4fr;
+		grid-template-columns: 2fr 3fr;
 		column-gap: 32px;
 		width: 100%;
 	}

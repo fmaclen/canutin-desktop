@@ -1,5 +1,10 @@
 import { env } from '$env/dynamic/private';
 
-export const load = () => {
-	return { appVersion: env.APP_VERSION };
+import { getSyncStatus } from '$lib/helpers/import';
+
+export const load = async () => {
+	return {
+		appVersion: env.APP_VERSION,
+		syncStatus: await getSyncStatus()
+	};
 };

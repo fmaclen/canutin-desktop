@@ -9,7 +9,7 @@
 	import { api } from '$lib/helpers/misc';
 	import { Appearance } from '$lib/helpers/constants';
 
-	$: ({ message, appearance, isError, secondaryActions } = $statusBarStore);
+	$: ({ message, appearance, secondaryActions } = $statusBarStore);
 
 	// Set how long ago the vault was updated in the status bar
 	const getVaultLastUpdate = async (onMount: boolean = false) => {
@@ -72,7 +72,7 @@
 		{/if}
 	</p>
 
-	{#if appearance && !isError}
+	{#if appearance}
 		<Button on:click={dismissStatus}>Dismiss</Button>
 	{/if}
 </div>
