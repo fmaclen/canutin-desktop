@@ -5,11 +5,19 @@
 
 <main class="scrollView">
 	<header class="scrollView__header">
-		<h1 class="scrollView__h1">{title}</h1>
-		<slot name="NAV" />
+		<div class="scrollView__container scrollView__container--header">
+			<h1 class="scrollView__h1">{title}</h1>
+			<slot name="NAV" />
+		</div>
 	</header>
 
-	<div class="scrollView__container {isFullscreen && 'scrollView__container--fullscreen'}">
+	<div
+		class="
+			scrollView__container
+			scrollView__container--main
+			{isFullscreen && 'scrollView__container--fullscreen'}
+		"
+	>
 		<slot />
 	</div>
 </main>
@@ -31,6 +39,38 @@
 		border-bottom: 1px solid var(--color-border);
 	}
 
+	div.scrollView__container {
+		max-width: 1366px;
+		min-width: 960px;
+
+		&--header {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-end;
+			margin: 0 auto;
+			width: 100%;
+		}
+
+		&--main {
+			display: grid;
+			grid-gap: 64px;
+			place-items: center;
+			position: relative;
+			width: 100%;
+			height: max-content;
+			margin-left: auto;
+			margin-right: auto;
+			box-sizing: border-box;
+			padding: 64px;
+			max-width: 1366px;
+		}
+
+		&--fullscreen {
+			height: 100%;
+			align-content: center;
+		}
+	}
+
 	h1.scrollView__h1 {
 		margin-top: auto;
 		margin-bottom: 0;
@@ -47,23 +87,5 @@
 		align-items: center;
 		padding: 0 64px 24px 64px;
 		font-size: 13px;
-	}
-
-	div.scrollView__container {
-		display: grid;
-		grid-gap: 64px;
-		place-items: center;
-		position: relative;
-		width: 100%;
-		height: max-content;
-		margin-left: auto;
-		margin-right: auto;
-		box-sizing: border-box;
-		padding: 64px;
-
-		&--fullscreen {
-			height: 100%;
-			align-content: center;
-		}
 	}
 </style>

@@ -142,5 +142,8 @@
 		column-gap: 8px;
 		font-size: 12px;
 		margin: 0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 </style>
