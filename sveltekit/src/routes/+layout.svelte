@@ -116,18 +116,39 @@
 		isSyncing = false;
 	};
 
+	$: calendar = refreshCalendar();
+
+	const refreshCalendar = () => {
+		return `${new Date().toLocaleDateString('en-US', {
+			month: 'long',
+			day: 'numeric',
+			year: 'numeric'
+		})} · ${new Date().toLocaleTimeString('en-US', {
+			hour: 'numeric',
+			minute: 'numeric',
+			second: 'numeric',
+			hour12: true
+		})}`;
+	};
+
 	// Set the default status bar message when layout is mounted
 	onMount(async () => {
 		// `!dev` because we don't want to constantly hit Github's API when developing
 		!dev && (await getAppLastestVersion());
+
+		setInterval(() => {
+			calendar = refreshCalendar();
+		}, 1000);
 	});
 </script>
 
 <div class="layout">
+	<a class="layout__logo" href="/">
+		<img class="layout__img" src={logo} alt="Canutin logo" />
+	</a>
+	<div class="layout__title-bar">{calendar}</div>
+
 	<aside class="layout__aside">
-		<a class="layout__logo" href="/">
-			<img class="layout__img" src={logo} alt="Canutin logo" />
-		</a>
 		<nav class="layout__nav">
 			<a
 				class="layout__a {pathname === '/' && 'layout__a--active'} {!$isVaultReadyStore &&
@@ -149,26 +170,26 @@
 			</a>
 		</nav>
 
-		<nav class="layout__nav layout__nav--bottom">
-			<nav class="layout__nav">
-				{#if dev}
-					<a
-						class="layout__a {!$isVaultReadyStore && 'layout__a--disabled'} {pathname ===
-							'/devTools' && 'layout__a--active'}"
-						href="/devTools"
-						>Developer tools
-					</a>
-				{/if}
-				<a class="layout__a {pathname === '/settings' && 'layout__a--active'}" href="/settings"
-					>Settings
+		<nav class="layout__nav layout__nav--secondary">
+			{#if dev}
+				<a
+					class="layout__a {!$isVaultReadyStore && 'layout__a--disabled'} {pathname ===
+						'/devTools' && 'layout__a--active'}"
+					href="/devTools"
+					>Developer tools
 				</a>
-				{#if isSyncSetup}
-					<a class="layout__a {pathname === '/data' && 'layout__a--active'}" href="/data"
-						>Add or update data
-					</a>
-				{/if}
-			</nav>
+			{/if}
+			<a class="layout__a {pathname === '/settings' && 'layout__a--active'}" href="/settings"
+				>Settings
+			</a>
+			{#if isSyncSetup}
+				<a class="layout__a {pathname === '/data' && 'layout__a--active'}" href="/data"
+					>Add or update data
+				</a>
+			{/if}
+		</nav>
 
+		<nav class="layout__nav layout__nav--primary">
 			{#if !isSyncSetup}
 				<a
 					class="layout__a layout__a--primary {pathname === '/data' && 'layout__a--active'}"
@@ -176,7 +197,6 @@
 					>Add or update data
 				</a>
 			{/if}
-
 			{#if isSyncSetup}
 				<button
 					class="layout__a layout__a--primary {!$isVaultReadyStore && 'layout__a--disabled'}"
@@ -205,49 +225,83 @@
 <style lang="scss">
 	div.layout {
 		display: grid;
-		grid-template-rows: auto 48px;
+		grid-template-rows: 48px auto 48px;
 		grid-template-columns: 240px auto;
 		grid-template-areas:
+			'logo title-bar'
 			'side-bar body'
 			'side-bar status-bar';
 		height: 100vh;
 		overflow-y: hidden;
 	}
 
-	aside.layout__aside {
+	div.layout__title-bar {
 		display: flex;
-		flex-direction: column;
-		row-gap: 16px;
+		align-items: center;
+		justify-content: center;
+		font-size: 12px;
+		color: var(--color-grey30);
 		background-color: var(--color-white);
-		border-right: 1px solid var(--color-border);
-		height: 100%;
+		border-bottom: 1px solid var(--color-border);
+		padding: 0 16px;
+		text-align: right;
+		font-family: var(--font-monospace);
+		text-transform: uppercase;
+		transition: color 0.2s ease-in-out;
 
-		grid-area: side-bar;
+		grid-area: title-bar;
+
+		&:hover {
+			color: var(--color-grey80);
+		}
 	}
 
 	a.layout__logo {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		padding: 48px;
-		border-bottom: 1px solid var(--color-border);
+		width: 240px;
+		height: 100%;
+		padding-left: 32px;
+		padding-right: 32px;
+		box-sizing: border-box;
+		border-right: 1px solid;
+		border-bottom: 1px solid;
+		border-color: var(--color-border);
+		background-color: var(--color-white);
+
+		grid-area: logo;
 
 		&:hover {
 			background-color: var(--color-grey3);
 		}
 	}
 
+	aside.layout__aside {
+		display: flex;
+		flex-direction: column;
+		background-color: var(--color-white);
+		border-right: 1px solid var(--color-border);
+		height: 100%;
+		box-sizing: border-box;
+
+		grid-area: side-bar;
+	}
+
 	img.layout__img {
-		width: 48px;
+		width: 20px;
 	}
 
 	nav.layout__nav {
 		display: flex;
 		flex-direction: column;
 
-		&--bottom {
+		&:first-child {
+			padding-top: 16px;
+		}
+
+		&--secondary {
 			margin-top: auto;
-			row-gap: 16px;
+			padding-bottom: 16px;
 		}
 	}
 
