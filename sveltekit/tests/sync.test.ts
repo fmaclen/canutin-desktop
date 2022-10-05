@@ -41,7 +41,6 @@ test.describe('Sync CanutinFile', () => {
 		const urlInput = page.locator('.formInput__input[name=canutinFileUrl]');
 		const cookieInput = page.locator('.formInput__input[name=cookie]');
 		const jwtInput = page.locator('.formInput__input[name=jwt]');
-		const dismissButton = page.locator('.button', { hasText: 'Dismiss' });
 		let submitButton = page.locator('button', { hasText: 'Enable' });
 
 		// This endpoint will return `tests/fixtures/canutinFile-maximum-data.json` as a response
@@ -57,7 +56,6 @@ test.describe('Sync CanutinFile', () => {
 		);
 
 		// Submit form with only a cookie
-		await dismissButton.click();
 		await cookieInput.fill('accessToken=1234abc; userId=1234; Path=/; HttpOnly;');
 		await submitButton.click();
 		expect(await page.locator('.statusBar--warning').textContent()).toMatch(
@@ -65,7 +63,6 @@ test.describe('Sync CanutinFile', () => {
 		);
 
 		// Submit form with a JWT
-		await dismissButton.click();
 		await jwtInput.fill(
 			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
 		);
