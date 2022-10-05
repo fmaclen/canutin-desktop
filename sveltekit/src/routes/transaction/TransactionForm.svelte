@@ -46,7 +46,7 @@
 		return dates.map((date, i) => {
 			return {
 				label: isMonth
-					? `${date} - ${new Date(Date.UTC(thisYear, dates[i], 1)).toLocaleString(LOCALE, {
+					? `${date} - ${new Date(thisYear, date - 1, 1).toLocaleString(LOCALE, {
 							month: 'short'
 					  })}` // e.g. "9 - Sep"
 					: date.toString(),
