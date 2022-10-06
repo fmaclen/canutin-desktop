@@ -372,7 +372,7 @@
 	}
 
 	tr.table__tr {
-		border-bottom: 1px solid var(--color-grey5);
+		border-bottom: 1px dashed var(--color-border);
 		vertical-align: top;
 
 		&:nth-child(odd) {

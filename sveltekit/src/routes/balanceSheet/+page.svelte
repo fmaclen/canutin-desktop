@@ -119,7 +119,7 @@
 		justify-content: space-between;
 		padding: 16px;
 		border-radius: 4px 4px 0 0;
-		border-bottom: 1px dashed var(--color-border);
+		border-bottom: 1px solid var(--color-border);
 	}
 
 	p.balanceSheet__typeName {
@@ -151,7 +151,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 12px 16px;
-		border-bottom: 1px solid var(--color-border);
+		border-bottom: 1px dashed var(--color-border);
 
 		&:nth-child(odd) {
 			background-color: var(--color-grey3);
@@ -160,6 +160,7 @@
 		&:last-child {
 			border-bottom-left-radius: 4px;
 			border-bottom-right-radius: 4px;
+			border-bottom: none;
 		}
 	}
 
