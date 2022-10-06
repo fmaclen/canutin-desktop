@@ -186,6 +186,10 @@
 		border-left: 1px solid var(--color-border);
 		border-bottom: 1px solid var(--color-border);
 
+		&:first-child {
+			border-left: none;
+		}
+
 		&--active {
 			background-color: var(--color-grey3);
 			border-bottom-color: var(--color-grey3);
