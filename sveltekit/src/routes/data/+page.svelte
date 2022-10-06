@@ -45,7 +45,7 @@
 						<img src={iconAccount} class="wizard__icon" alt="Add account icon" />
 					</span>
 					<div class="wizard__text">
-						<p class="wizard__title">Add account</p>
+						<p class="wizard__title">Account</p>
 						<p class="wizard__help">Add a new account by entering data manually</p>
 					</div>
 				</a>
@@ -54,7 +54,7 @@
 						<img src={iconAsset} class="wizard__icon" alt="Add asset icon" />
 					</span>
 					<div class="wizard__text">
-						<p class="wizard__title">Add asset</p>
+						<p class="wizard__title">Asset</p>
 						<p class="wizard__help">Add a new asset by entering data manually</p>
 					</div>
 				</a>
@@ -63,7 +63,7 @@
 						<img src={iconTransaction} class="wizard__icon" alt="Add transaction icon" />
 					</span>
 					<div class="wizard__text">
-						<p class="wizard__title">Add transaction</p>
+						<p class="wizard__title">Transaction</p>
 						<p class="wizard__help">Add a new transaction by entering data manually</p>
 					</div>
 				</a>

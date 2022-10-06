@@ -121,33 +121,36 @@ test.describe('Layout', () => {
 
 		// Add account
 		await sidebarAddOrUpdateData.click();
-		await expect(page.locator('h1', { hasText: 'Add account' })).not.toBeVisible();
-		await expect(page.locator('a', { hasText: 'Add account' })).toHaveAttribute(
+		await expect(page.locator('h1', { hasText: 'Account' })).not.toBeVisible();
+		await expect(page.locator('a.wizard__a', { hasText: 'Account' })).toHaveAttribute(
 			'href',
 			'/account/add'
 		);
 
-		await page.locator('a', { hasText: 'Add account' }).click();
-		await expect(page.locator('h1', { hasText: 'Add account' })).toBeVisible();
+		await page.locator('a', { hasText: 'Account' }).click();
+		await expect(page.locator('h1', { hasText: 'Account' })).toBeVisible();
 
-		// Add asset
+		// Add Asset
 		await sidebarAddOrUpdateData.click();
-		await expect(page.locator('h1', { hasText: 'Add asset' })).not.toBeVisible();
-		await expect(page.locator('a', { hasText: 'Add asset' })).toHaveAttribute('href', '/asset/add');
+		await expect(page.locator('h1', { hasText: 'Asset' })).not.toBeVisible();
+		await expect(page.locator('a.wizard__a', { hasText: 'Asset' })).toHaveAttribute(
+			'href',
+			'/asset/add'
+		);
 
-		await page.locator('a', { hasText: 'Add asset' }).click();
-		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
+		await page.locator('a', { hasText: 'Asset' }).click();
+		await expect(page.locator('h1', { hasText: 'Asset' })).toBeVisible();
 
 		// Add transaction
 		await sidebarAddOrUpdateData.click();
-		await expect(page.locator('h1', { hasText: 'Add transaction' })).not.toBeVisible();
-		await expect(page.locator('a', { hasText: 'Add transaction' })).toHaveAttribute(
+		await expect(page.locator('h1', { hasText: 'Transaction' })).not.toBeVisible();
+		await expect(page.locator('a.wizard__a', { hasText: 'Transaction' })).toHaveAttribute(
 			'href',
 			'/transaction/add'
 		);
 
-		await page.locator('a', { hasText: 'Add transaction' }).click();
-		await expect(page.locator('h1', { hasText: 'Add transaction' })).toBeVisible();
+		await page.locator('a.wizard__a', { hasText: 'Transaction' }).click();
+		await expect(page.locator('h1', { hasText: 'Transaction' })).toBeVisible();
 	});
 
 	test('Status bar with positive notices auto-dismiss', async ({ page }) => {
@@ -157,7 +160,7 @@ test.describe('Layout', () => {
 				hasText: 'Add or update data'
 			})
 			.click();
-		await page.locator('a', { hasText: 'Add account' }).click();
+		await page.locator('a', { hasText: 'Account' }).click();
 
 		const statusBar = page.locator('.statusBar');
 		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
