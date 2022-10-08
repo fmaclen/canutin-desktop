@@ -202,7 +202,7 @@ test.describe('Import CanutinFile', () => {
 			},
 			body: canutinFile
 		}).then(async (response) => {
-			expect(response.status).toBe(200);
+			expect(response.status).toBe(400);
 
 			const importSummary: any = await response.json();
 			expect(importSummary.error).toBe('The CanutinFile provided is invalid');
