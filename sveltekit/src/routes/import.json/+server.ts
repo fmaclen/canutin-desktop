@@ -7,5 +7,9 @@ export const POST = async ({ request }: RequestEvent) => {
 	const canutinFile = await request.json();
 	const importResult = await importFromCanutinFile(canutinFile);
 
-	return json(importResult);
+	if (!importResult.error) {
+		return json(importResult);
+	} else {
+		return new Response(JSON.stringify(importResult), { status: 400 });
+	}
 };
