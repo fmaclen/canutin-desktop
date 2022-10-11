@@ -29,7 +29,15 @@ export const POST = async ({ url }: { url: URL }) => {
 		await prisma.asset.deleteMany();
 	};
 
+	const wipeTransactions = async () => {
+		await prisma.transaction.deleteMany();
+	};
+
 	switch (functionType) {
+		case DeveloperFunctions.DB_WIPE_TRANSACTIONS:
+			await wipeTransactions();
+			break;
+
 		case DeveloperFunctions.DB_WIPE_ACCOUNTS_ASSETS:
 			await wipeAccountsAssets();
 			break;

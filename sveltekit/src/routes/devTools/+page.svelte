@@ -53,6 +53,17 @@
 			response.ok ? setStatusSuccess() : setStatusError();
 		});
 	};
+	const databaseWipeTransactions = async () => {
+		isLoading = true;
+		await fetch(`/devTools.json?functionType=${DeveloperFunctions.DB_WIPE_TRANSACTIONS}`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then((response) => {
+			response.ok ? setStatusSuccess() : setStatusError();
+		});
+	};
 
 	const databaseWipe = async () => {
 		isLoading = true;
@@ -82,12 +93,21 @@
 
 			<nav class="nav">
 				<Button on:click={databaseSeed} disabled={isLoading}>Seed demo data</Button>
+			</nav>
+			<nav class="nav">
 				<Button
 					on:click={databaseWipeAccountsAssets}
 					appearance={Appearance.NEGATIVE}
 					disabled={isLoading}
 				>
 					Delete accounts & assets
+				</Button>
+				<Button
+					on:click={databaseWipeTransactions}
+					appearance={Appearance.NEGATIVE}
+					disabled={isLoading}
+				>
+					Delete transactions
 				</Button>
 				<Button on:click={databaseWipe} appearance={Appearance.NEGATIVE} disabled={isLoading}>
 					Delete all data
@@ -101,7 +121,7 @@
 	div.database {
 		display: flex;
 		flex-direction: column;
-		row-gap: 16px;
+		gap: 16px;
 	}
 
 	nav.nav {
