@@ -69,7 +69,7 @@
 				message: `The account "${data.account.name}" was deleted successfully`,
 				appearance: Appearance.ACTIVE
 			};
-			await goto('/accounts');
+			await goto('/balanceSheet');
 		}
 	};
 </script>

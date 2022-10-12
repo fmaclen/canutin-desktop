@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/components/Button.svelte';
+	import { UNDOABLE_ACTION } from '$lib/helpers/constants';
 
 	export let handleDelete: (e: Event) => void;
 </script>
@@ -9,7 +10,7 @@
 		<p class="danger-zone__p">
 			<slot />
 		</p>
-		<p class="danger-zone__p danger-zone__p--negative">This action can't be undone</p>
+		<p class="danger-zone__p danger-zone__p--negative">{UNDOABLE_ACTION.split('🚩')[1]}</p>
 	</div>
 	<nav>
 		<Button on:click={handleDelete}>Delete</Button>
