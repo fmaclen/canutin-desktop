@@ -234,9 +234,7 @@ test.describe('Import CanutinFile', () => {
 		});
 	});
 
-	test('Importing the same transactions multiple times are only imported once', async ({
-		page
-	}) => {
+	test('Importing the same transactions multiple times are not duplicated', async ({ page }) => {
 		// Import accounts and transactions
 		await page.goto('/');
 		await page.locator('a.layout__a', { hasText: 'Add or update data' }).click();
@@ -262,11 +260,11 @@ test.describe('Import CanutinFile', () => {
 		await formSelect.selectOption('7'); // Lifetime
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
-		await delay();
+		await expect(tableRows.nth(4)).toBeVisible();
 		expect(await tableRows.count()).toBe(5);
 		expect(await cardNetBalance.textContent()).toMatch('$599.71');
 
-		// Edit every field to make sure the Transaction is
+		// Editing imported transactions should not create duplicates
 		await page.locator('a', { hasText: 'Initech Payroll' }).click();
 		await page.locator('.formInput__input[name="description"]').fill('Not Initech Payroll');
 		await page
@@ -278,14 +276,13 @@ test.describe('Import CanutinFile', () => {
 		for (let i = 1; i < '3,500.25'.length; i++) await page.keyboard.press('Backspace');
 		await page.keyboard.type('9999');
 		await page.locator('button', { hasText: 'Save' }).click();
-		await delay();
 		await dismissButton.click();
 		expect(await tableRows.count()).toBe(1);
 
 		await formSelect.selectOption('7'); // Lifetime
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
-		await delay();
+		await expect(tableRows.nth(4)).toBeVisible();
 		expect(await tableRows.count()).toBe(5);
 		expect(await tableRows.nth(4).textContent()).toMatch('Not Initech Payroll');
 		expect(await tableRows.nth(4).textContent()).toMatch('2019');
@@ -307,13 +304,12 @@ test.describe('Import CanutinFile', () => {
 
 		// Check that the transactions are not duplicated
 		await page.locator('a', { hasText: 'Transactions' }).click();
-		await delay();
 		expect(await tableRows.count()).toBe(1);
 
 		await formSelect.selectOption('7'); // Lifetime
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
-		await delay();
+		await expect(tableRows.nth(4)).toBeVisible();
 		expect(await tableRows.count()).toBe(5);
 		expect(await tableRows.nth(4).textContent()).toMatch('Not Initech Payroll');
 		expect(await tableRows.nth(4).textContent()).toMatch('2019');

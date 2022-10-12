@@ -15,7 +15,7 @@ test.describe('Developer tools', () => {
 			await expect(page.locator('a', { hasText: 'Developer tools' })).not.toBeVisible();
 		});
 
-		test('Seed, then delete accounts, transactions & assets', async ({ page }) => {
+		test('Seed data, then delete accounts, transactions & assets', async ({ page }) => {
 			await page.goto('/');
 			expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$0');
 
