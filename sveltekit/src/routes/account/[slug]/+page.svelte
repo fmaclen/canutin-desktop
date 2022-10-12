@@ -66,7 +66,7 @@
 			};
 		} else {
 			$statusBarStore = {
-				message: `The account "${data.account.name}" was deleted successfully`,
+				message: `The account —${data.account.name}— was deleted successfully`,
 				appearance: Appearance.ACTIVE
 			};
 			await goto('/balanceSheet');

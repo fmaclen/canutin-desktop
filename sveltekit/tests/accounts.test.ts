@@ -228,7 +228,7 @@ test.describe('Accounts', () => {
 		const statusBar = page.locator('.statusBar');
 		await expect(statusBar).not.toHaveClass(/statusBar--active/);
 		expect(await statusBar.textContent()).not.toMatch(
-			'The account "Bob\'s Laughable-Yield Checking" was deleted successfully'
+			"The account —Bob's Laughable-Yield Checking— was deleted successfully"
 		);
 
 		// Prepare to confirm the dialog prompt
@@ -246,7 +246,7 @@ test.describe('Accounts', () => {
 		// Check status message confirms account deletion
 		await expect(statusBar).toHaveClass(/statusBar--active/);
 		expect(await statusBar.textContent()).toMatch(
-			'The account "Bob\'s Laughable-Yield Checking" was deleted successfully'
+			"The account —Bob's Laughable-Yield Checking— was deleted successfully"
 		);
 
 		// Check the account is no longer present in Balance sheeet

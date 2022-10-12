@@ -66,7 +66,7 @@
 			};
 		} else {
 			$statusBarStore = {
-				message: `The transaction "${data.transaction.description}" was deleted successfully`,
+				message: `The transaction —${data.transaction.description}— was deleted successfully`,
 				appearance: Appearance.ACTIVE
 			};
 			await goto('/transactions');

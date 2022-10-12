@@ -71,7 +71,7 @@
 			};
 		} else {
 			$statusBarStore = {
-				message: `The asset "${data.asset.name}" was deleted successfully`,
+				message: `The asset —${data.asset.name}— was deleted successfully`,
 				appearance: Appearance.ACTIVE
 			};
 			await goto('/balanceSheet');

@@ -432,4 +432,46 @@ test.describe('Transactions', () => {
 		await expect(isExcludedCheckbox).toBeChecked();
 		await expect(isPendingCheckbox).toBeChecked();
 	});
+
+	test('Transaction can be deleted', async ({ baseURL, page }) => {
+		await databaseSeed(baseURL!);
+
+		// Check the transaction exists
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Transactions' }).click();
+		const transactionLink = page.locator('a', { hasText: 'Hølm Home' });
+		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
+		await expect(transactionLink).toBeVisible();
+
+		await transactionLink.click();
+		expect(await page.locator('p.danger-zone__p').first().textContent()).toBe(
+			'Permanently delete transaction Hølm Home'
+		);
+
+		const statusBar = page.locator('.statusBar');
+		await expect(statusBar).not.toHaveClass(/statusBar--active/);
+		expect(await statusBar.textContent()).not.toMatch(
+			'The transaction "Hølm Home" was deleted successfully'
+		);
+
+		// Prepare to confirm the dialog prompt
+		page.on('dialog', (dialog) => {
+			expect(dialog.message()).toMatch('Are you sure you want to delete the transaction?');
+
+			dialog.accept();
+		});
+
+		// Proceed to delete transaction
+		await page.locator('button', { hasText: 'Delete' }).click();
+
+		// Check status message confirms transaction deletion
+		await expect(statusBar).toHaveClass(/statusBar--active/);
+		expect(await statusBar.textContent()).toMatch(
+			'The transaction —Hølm Home— was deleted successfully'
+		);
+
+		// Check the transaction is no longer present in Balance sheeet
+		await page.locator('a', { hasText: 'Transactions' }).click();
+		await expect(transactionLink).not.toBeVisible();
+	});
 });

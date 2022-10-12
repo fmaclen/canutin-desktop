@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { databaseWipe, delay } from './fixtures/helpers.js';
+import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
 
 test.describe('Assets', () => {
 	test.beforeEach(async ({ baseURL }) => {
@@ -152,5 +152,47 @@ test.describe('Assets', () => {
 
 		await page.locator('button', { hasText: 'Save' }).click();
 		expect(await inputError.textContent()).toMatch('An asset with the same name already exists');
+	});
+
+	test('Asset can be deleted', async ({ baseURL, page }) => {
+		await databaseSeed(baseURL!);
+
+		// Check the asset exists
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		const assetLink = page.locator('a', { hasText: '1998 Fiat Multipla' });
+		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
+		await expect(assetLink).toBeVisible();
+
+		await assetLink.click();
+		expect(await page.locator('p.danger-zone__p').first().textContent()).toBe(
+			'Permanently delete asset 1998 Fiat Multipla'
+		);
+
+		const statusBar = page.locator('.statusBar');
+		await expect(statusBar).not.toHaveClass(/statusBar--active/);
+		expect(await statusBar.textContent()).not.toMatch(
+			'The asset "1998 Fiat Multipla" was deleted successfully'
+		);
+
+		// Prepare to confirm the dialog prompt
+		page.on('dialog', (dialog) => {
+			expect(dialog.message()).toMatch('Are you sure you want to delete the asset?');
+
+			dialog.accept();
+		});
+
+		// Proceed to delete asset
+		await page.locator('button', { hasText: 'Delete' }).click();
+
+		// Check status message confirms asset deletion
+		await expect(statusBar).toHaveClass(/statusBar--active/);
+		expect(await statusBar.textContent()).toMatch(
+			'The asset —1998 Fiat Multipla— was deleted successfully'
+		);
+
+		// Check the asset is no longer present in Balance sheeet
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		await expect(assetLink).not.toBeVisible();
 	});
 });
