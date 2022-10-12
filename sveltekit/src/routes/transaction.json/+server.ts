@@ -1,14 +1,18 @@
 import { json } from '@sveltejs/kit';
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
 import prisma from '$lib/helpers/prisma';
 import { fromUnixTime } from 'date-fns';
 
 const handleError = (error: any) => {
-	if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-		return json({ error: { name: 'An transaction with the same name already exists' } });
-	} else {
-		return json({ error });
+	console.log(error.code);
+	switch (error.code) {
+		case 'P2002':
+			return json({ error: { name: 'A transaction with the same name already exists' } });
+		case 'P2025':
+			return json({ error: { name: "The transaction doesn't exist" } });
+		default:
+			return json({ error });
 	}
 };
 
@@ -62,6 +66,19 @@ export const PATCH = async ({ request }: RequestEvent) => {
 			create: {
 				...payload
 			}
+		});
+		return json({ id: transaction.id });
+	} catch (error) {
+		return handleError(error);
+	}
+};
+
+export const DELETE = async ({ request }: RequestEvent) => {
+	const payload: number = await request.json();
+
+	try {
+		const transaction = await prisma.transaction.delete({
+			where: { id: payload }
 		});
 		return json({ id: transaction.id });
 	} catch (error) {
