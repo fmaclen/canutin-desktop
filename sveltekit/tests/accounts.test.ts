@@ -249,13 +249,24 @@ test.describe('Accounts', () => {
 			"The account —Bob's Laughable-Yield Checking— was deleted successfully"
 		);
 
-		// Check the account is no longer present in Balance sheeet
-		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		// Check it redirects to Balance sheeet and the account is no longer listed
+		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		await expect(accountLink).not.toBeVisible();
 
 		// Check the account is no longer present in Transactions
 		await page.locator('a', { hasText: 'Transactions' }).click();
 		await expect(accountLink).not.toBeVisible();
 		expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('87');
+
+		await page.locator('a', { hasText: "Alice's Limited Rewards" }).first().click();
+		await expect(page.locator('h1', { hasText: "Alice's Limited Rewards" })).toBeVisible();
+
+		// Deleting an account that doesn't exist should fail
+		await databaseWipe(baseURL!);
+		await page.locator('button', { hasText: 'Delete' }).click();
+
+		// Check status message shows an error
+		await expect(statusBar).toHaveClass(/statusBar--negative/);
+		expect(await statusBar.textContent()).toMatch("The account doesn't exist");
 	});
 });

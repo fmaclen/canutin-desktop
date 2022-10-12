@@ -469,9 +469,21 @@ test.describe('Transactions', () => {
 		expect(await statusBar.textContent()).toMatch(
 			'The transaction —Hølm Home— was deleted successfully'
 		);
+		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
 
 		// Check the transaction is no longer present in Balance sheeet
 		await page.locator('a', { hasText: 'Transactions' }).click();
 		await expect(transactionLink).not.toBeVisible();
+
+		await page.locator('a', { hasText: 'Patriot Insurance' }).first().click();
+		await expect(page.locator('h1', { hasText: 'Patriot Insurance' })).toBeVisible();
+
+		// Deleting an account that doesn't exist should fail
+		await databaseWipe(baseURL!);
+		await page.locator('button', { hasText: 'Delete' }).click();
+
+		// Check status message shows an error
+		await expect(statusBar).toHaveClass(/statusBar--negative/);
+		expect(await statusBar.textContent()).toMatch("The transaction doesn't exist");
 	});
 });

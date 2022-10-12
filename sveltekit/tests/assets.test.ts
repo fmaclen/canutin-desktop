@@ -191,8 +191,19 @@ test.describe('Assets', () => {
 			'The asset —1998 Fiat Multipla— was deleted successfully'
 		);
 
-		// Check the asset is no longer present in Balance sheeet
+		// Check it redirects to Balance sheeet and the asset is no longer listed
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 		await expect(assetLink).not.toBeVisible();
+
+		await page.locator('a', { hasText: 'Manchild Card Collection' }).first().click();
+		await expect(page.locator('h1', { hasText: 'Manchild Card Collection' })).toBeVisible();
+
+		// Deleting an account that doesn't exist should fail
+		await databaseWipe(baseURL!);
+		await page.locator('button', { hasText: 'Delete' }).click();
+
+		// Check status message shows an error
+		await expect(statusBar).toHaveClass(/statusBar--negative/);
+		expect(await statusBar.textContent()).toMatch("The asset doesn't exist");
 	});
 });
