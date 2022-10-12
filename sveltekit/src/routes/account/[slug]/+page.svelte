@@ -3,9 +3,10 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import AccountForm from '../AccountForm.svelte';
+	import DangerZone from '$lib/components/DangerZone.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import { api } from '$lib/helpers/misc';
-	import { Appearance } from '$lib/helpers/constants';
+	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { Prisma } from '@prisma/client';
 	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
@@ -43,6 +44,34 @@
 			await goto(`/balanceSheet`);
 		}
 	};
+
+	const handleDelete = async () => {
+		const confirmDeletion = window.confirm(
+			`${UNDOABLE_ACTION}Are you sure you want to delete the account and all of it's associated transactions?`
+		);
+		if (!confirmDeletion) return;
+
+		const deletedAccount = await api({
+			endpoint: 'account',
+			method: 'DELETE',
+			payload: data.account.id
+		});
+
+		if (deletedAccount.error) {
+			$statusBarStore = {
+				message: deletedAccount.error?.name
+					? deletedAccount.error.name
+					: "An error ocurred and the account likely wasn't deleted",
+				appearance: Appearance.NEGATIVE
+			};
+		} else {
+			$statusBarStore = {
+				message: `The account —${data.account.name}— was deleted successfully`,
+				appearance: Appearance.ACTIVE
+			};
+			await goto('/balanceSheet');
+		}
+	};
 </script>
 
 <svelte:head>
@@ -61,6 +90,14 @@
 				error={account?.error}
 				submitButtonLabel="Save"
 			/>
+		</div>
+	</Section>
+
+	<Section title="Danger zone">
+		<div slot="CONTENT">
+			<DangerZone {handleDelete}>
+				Permanently delete account <strong>{data.account.name}</strong> (including transactions)
+			</DangerZone>
 		</div>
 	</Section>
 </ScrollView>

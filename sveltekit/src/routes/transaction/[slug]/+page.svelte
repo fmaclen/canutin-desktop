@@ -3,9 +3,10 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import TransactionForm from '../TransactionForm.svelte';
+	import DangerZone from '$lib/components/DangerZone.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import { api } from '$lib/helpers/misc';
-	import { Appearance } from '$lib/helpers/constants';
+	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { Prisma } from '@prisma/client';
 	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
@@ -43,6 +44,34 @@
 			await goto(`/transactions?highlight=${data.transaction.id}`);
 		}
 	};
+
+	const handleDelete = async () => {
+		const confirmDeletion = window.confirm(
+			`${UNDOABLE_ACTION}Are you sure you want to delete the transaction?`
+		);
+		if (!confirmDeletion) return;
+
+		const deletedTransaction = await api({
+			endpoint: 'transaction',
+			method: 'DELETE',
+			payload: data.transaction.id
+		});
+
+		if (deletedTransaction.error) {
+			$statusBarStore = {
+				message: deletedTransaction.error?.name
+					? deletedTransaction.error.name
+					: "An error ocurred and the transaction likely wasn't deleted",
+				appearance: Appearance.NEGATIVE
+			};
+		} else {
+			$statusBarStore = {
+				message: `The transaction —${data.transaction.description}— was deleted successfully`,
+				appearance: Appearance.ACTIVE
+			};
+			await goto('/transactions');
+		}
+	};
 </script>
 
 <svelte:head>
@@ -59,6 +88,14 @@
 				selectTransactionCategories={data.selectTransactionCategories}
 				submitButtonLabel="Save"
 			/>
+		</div>
+	</Section>
+
+	<Section title="Danger zone">
+		<div slot="CONTENT">
+			<DangerZone {handleDelete}>
+				Permanently delete transaction <strong>{data.transaction.description}</strong>
+			</DangerZone>
 		</div>
 	</Section>
 </ScrollView>

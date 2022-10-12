@@ -64,3 +64,5 @@ export enum SyncSettings {
 	SYNC_COOKIE = 'SYNC_COOKIE',
 	SYNC_JWT = 'SYNC_JWT'
 }
+
+export const UNDOABLE_ACTION = "🚩 This action can't be undone\n";

@@ -4,9 +4,10 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import AssetForm from '../AssetForm.svelte';
+	import DangerZone from '$lib/components/DangerZone.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import { api } from '$lib/helpers/misc';
-	import { Appearance } from '$lib/helpers/constants';
+	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
 
@@ -48,6 +49,34 @@
 			await goto(`/balanceSheet`);
 		}
 	};
+
+	const handleDelete = async () => {
+		const confirmDeletion = window.confirm(
+			`${UNDOABLE_ACTION}Are you sure you want to delete the asset?`
+		);
+		if (!confirmDeletion) return;
+
+		const deletedAsset = await api({
+			endpoint: 'asset',
+			method: 'DELETE',
+			payload: data.asset.id
+		});
+
+		if (deletedAsset.error) {
+			$statusBarStore = {
+				message: deletedAsset.error?.name
+					? deletedAsset.error.name
+					: "An error ocurred and the asset likely wasn't deleted",
+				appearance: Appearance.NEGATIVE
+			};
+		} else {
+			$statusBarStore = {
+				message: `The asset —${data.asset.name}— was deleted successfully`,
+				appearance: Appearance.ACTIVE
+			};
+			await goto('/balanceSheet');
+		}
+	};
 </script>
 
 <svelte:head>
@@ -67,6 +96,14 @@
 				error={asset?.error}
 				submitButtonLabel="Save"
 			/>
+		</div>
+	</Section>
+
+	<Section title="Danger zone">
+		<div slot="CONTENT">
+			<DangerZone {handleDelete}>
+				Permanently delete asset <strong>{data.asset.name}</strong>
+			</DangerZone>
 		</div>
 	</Section>
 </ScrollView>
