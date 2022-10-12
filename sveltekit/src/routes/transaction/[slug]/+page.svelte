@@ -6,7 +6,7 @@
 	import DangerZone from '$lib/components/DangerZone.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import { api } from '$lib/helpers/misc';
-	import { Appearance } from '$lib/helpers/constants';
+	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { Prisma } from '@prisma/client';
 	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
@@ -47,30 +47,29 @@
 
 	const handleDelete = async () => {
 		const confirmDeletion = window.confirm(
-			'Are you sure you want to remove the transaction?\nThis action cannot be undone.'
+			`${UNDOABLE_ACTION}Are you sure you want to delete the transaction?`
 		);
+		if (!confirmDeletion) return;
 
-		if (confirmDeletion) {
-			const deletedTransaction = await api({
-				endpoint: 'transaction',
-				method: 'DELETE',
-				payload: data.transaction.id
-			});
+		const deletedTransaction = await api({
+			endpoint: 'transaction',
+			method: 'DELETE',
+			payload: data.transaction.id
+		});
 
-			if (deletedTransaction.error) {
-				$statusBarStore = {
-					message: deletedTransaction.error?.name
-						? deletedTransaction.error.name
-						: "An error ocurred and the transaction likely wasn't deleted",
-					appearance: Appearance.NEGATIVE
-				};
-			} else {
-				$statusBarStore = {
-					message: `The transaction "${data.transaction.description}" was deleted successfully`,
-					appearance: Appearance.ACTIVE
-				};
-				await goto('/transactions');
-			}
+		if (deletedTransaction.error) {
+			$statusBarStore = {
+				message: deletedTransaction.error?.name
+					? deletedTransaction.error.name
+					: "An error ocurred and the transaction likely wasn't deleted",
+				appearance: Appearance.NEGATIVE
+			};
+		} else {
+			$statusBarStore = {
+				message: `The transaction "${data.transaction.description}" was deleted successfully`,
+				appearance: Appearance.ACTIVE
+			};
+			await goto('/transactions');
 		}
 	};
 </script>
@@ -95,7 +94,7 @@
 	<Section title="Danger zone">
 		<div slot="CONTENT">
 			<DangerZone {handleDelete}>
-				Delete transaction <strong>{data.transaction.description}</strong>
+				Permanently delete transaction <strong>{data.transaction.description}</strong>
 			</DangerZone>
 		</div>
 	</Section>

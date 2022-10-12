@@ -1,15 +1,7 @@
 import { json } from '@sveltejs/kit';
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
-import prisma from '$lib/helpers/prisma';
-
-const handleError = (error: any) => {
-	if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-		return json({ error: { name: 'An asset with the same name already exists' } });
-	} else {
-		return json({ error: true });
-	}
-};
+import prisma, { handleError } from '$lib/helpers/prisma';
 
 // Create new asset
 export const POST = async ({ request }: RequestEvent) => {
@@ -26,7 +18,7 @@ export const POST = async ({ request }: RequestEvent) => {
 		});
 		return json({ id: asset.id });
 	} catch (error) {
-		return handleError(error);
+		return json(handleError(error, 'asset'));
 	}
 };
 
@@ -47,6 +39,19 @@ export const PATCH = async ({ request }: RequestEvent) => {
 		});
 		return json({ id: asset.id });
 	} catch (error) {
-		return handleError(error);
+		return json(handleError(error, 'asset'));
+	}
+};
+
+export const DELETE = async ({ request }: RequestEvent) => {
+	const payload: number = await request.json();
+
+	try {
+		const asset = await prisma.asset.delete({
+			where: { id: payload }
+		});
+		return json({ id: asset.id });
+	} catch (error) {
+		return json(handleError(error, 'asset'));
 	}
 };

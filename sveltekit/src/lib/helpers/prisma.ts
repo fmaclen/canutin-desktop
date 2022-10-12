@@ -162,6 +162,17 @@ export const validateVaultSeed = async (ranTwice = false) => {
 	return true;
 };
 
+export const handleError = (error: any, modelName: string) => {
+	switch (error.code) {
+		case 'P2002':
+			return { error: { name: `An ${modelName} with the same name already exists` } };
+		case 'P2025':
+			return { error: { name: `The ${modelName} doesn't exist` } };
+		default:
+			return { error };
+	}
+};
+
 // Default Prisma client
 const prisma = new PrismaClient();
 

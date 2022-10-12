@@ -1,20 +1,8 @@
 import { json } from '@sveltejs/kit';
 import type { Prisma } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
-import prisma from '$lib/helpers/prisma';
+import prisma, { handleError } from '$lib/helpers/prisma';
 import { fromUnixTime } from 'date-fns';
-
-const handleError = (error: any) => {
-	console.log(error.code);
-	switch (error.code) {
-		case 'P2002':
-			return json({ error: { name: 'A transaction with the same name already exists' } });
-		case 'P2025':
-			return json({ error: { name: "The transaction doesn't exist" } });
-		default:
-			return json({ error });
-	}
-};
 
 // Create new transaction
 export const POST = async ({ request }: RequestEvent) => {
@@ -43,7 +31,7 @@ export const POST = async ({ request }: RequestEvent) => {
 
 		return json({ id: transaction.id });
 	} catch (error) {
-		return handleError(error);
+		return json(handleError(error, 'transaction'));
 	}
 };
 
@@ -69,7 +57,7 @@ export const PATCH = async ({ request }: RequestEvent) => {
 		});
 		return json({ id: transaction.id });
 	} catch (error) {
-		return handleError(error);
+		return json(handleError(error, 'transaction'));
 	}
 };
 
@@ -82,6 +70,6 @@ export const DELETE = async ({ request }: RequestEvent) => {
 		});
 		return json({ id: transaction.id });
 	} catch (error) {
-		return handleError(error);
+		return json(handleError(error, 'transaction'));
 	}
 };
