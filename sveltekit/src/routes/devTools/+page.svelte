@@ -14,6 +14,18 @@
 	export let data: PageData;
 	let isLoading = false;
 
+	const submitFunction = async (functionType: DeveloperFunctions) => {
+		isLoading = true;
+		const response = await fetch(`/devTools.json?functionType=${functionType}`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+		response.ok ? setStatusSuccess() : setStatusError();
+		return response;
+	};
+
 	const setStatusSuccess = () => {
 		$statusBarStore = {
 			message: 'Database action was performed, likely without errors',
@@ -30,55 +42,14 @@
 		isLoading = false;
 	};
 
-	const databaseSeed = async () => {
-		isLoading = true;
-		await fetch(`/devTools.json?functionType=${DeveloperFunctions.DB_SEED}`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).then((response) => {
-			response.ok ? setStatusSuccess() : setStatusError();
-		});
-	};
-
-	const databaseWipeAccountsAssets = async () => {
-		isLoading = true;
-		await fetch(`/devTools.json?functionType=${DeveloperFunctions.DB_WIPE_ACCOUNTS_ASSETS}`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).then((response) => {
-			response.ok ? setStatusSuccess() : setStatusError();
-		});
-	};
-	const databaseWipeTransactions = async () => {
-		isLoading = true;
-		await fetch(`/devTools.json?functionType=${DeveloperFunctions.DB_WIPE_TRANSACTIONS}`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).then((response) => {
-			response.ok ? setStatusSuccess() : setStatusError();
-		});
-	};
-
 	const databaseWipe = async () => {
-		isLoading = true;
-		await fetch(`/devTools.json?functionType=${DeveloperFunctions.DB_WIPE}`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).then((response) => {
-			response.ok ? setStatusSuccess() : setStatusError();
+		const response = await submitFunction(DeveloperFunctions.DB_WIPE);
+		if (response.ok) {
 			$syncStatusStore = {
 				isSyncSetup: false,
 				isSyncEnabled: false
 			};
-		});
+		}
 	};
 </script>
 
@@ -92,18 +63,21 @@
 			<Notice><Code>{data.dbUrl}</Code></Notice>
 
 			<nav class="nav">
-				<Button on:click={databaseSeed} disabled={isLoading}>Seed demo data</Button>
+				<Button on:click={() => submitFunction(DeveloperFunctions.DB_SEED)} disabled={isLoading}>
+					Seed demo data
+				</Button>
 			</nav>
+
 			<nav class="nav">
 				<Button
-					on:click={databaseWipeAccountsAssets}
+					on:click={() => submitFunction(DeveloperFunctions.DB_WIPE_ACCOUNTS_ASSETS)}
 					appearance={Appearance.NEGATIVE}
 					disabled={isLoading}
 				>
 					Delete accounts & assets
 				</Button>
 				<Button
-					on:click={databaseWipeTransactions}
+					on:click={() => submitFunction(DeveloperFunctions.DB_WIPE_TRANSACTIONS)}
 					appearance={Appearance.NEGATIVE}
 					disabled={isLoading}
 				>
@@ -121,7 +95,7 @@
 	div.database {
 		display: flex;
 		flex-direction: column;
-		gap: 16px;
+		row-gap: 16px;
 	}
 
 	nav.nav {
