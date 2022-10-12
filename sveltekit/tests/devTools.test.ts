@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { DeveloperFunctions } from '../src/lib/helpers/constants.js';
-import { databaseWipe, delay } from './fixtures/helpers.js';
+import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
 
 test.describe('Developer tools', () => {
 	// FIXME: this test fails in CI, probably due to a race condition
@@ -15,7 +15,7 @@ test.describe('Developer tools', () => {
 			await expect(page.locator('a', { hasText: 'Developer tools' })).not.toBeVisible();
 		});
 
-		test('Delete only accounts, transactions and assets', async ({ page }) => {
+		test('Seed data, then delete accounts, transactions & assets', async ({ page }) => {
 			await page.goto('/');
 			expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$0');
 
@@ -41,7 +41,7 @@ test.describe('Developer tools', () => {
 				'$185,719'
 			);
 
-			// Wipe DB
+			// Delete all accounts and assets
 			await page.goto('/devTools');
 			await page.locator('button', { hasText: 'Delete accounts & assets' }).click();
 			await delay();
@@ -52,6 +52,27 @@ test.describe('Developer tools', () => {
 
 			await page.goto('/');
 			expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$0');
+		});
+
+		test('Delete only transactions', async ({ baseURL, page }) => {
+			await databaseSeed(baseURL!);
+			await page.goto('/transactions');
+			await delay();
+			expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('111');
+
+			// Delete all Transactions
+			const statusBar = page.locator('.statusBar');
+			await page.goto('/devTools');
+			await page.locator('button', { hasText: 'Delete transactions' }).click();
+			await delay();
+			await expect(statusBar).toHaveClass(/statusBar--positive/);
+			expect(await statusBar.textContent()).toMatch(
+				'Database action was performed, likely without errors'
+			);
+
+			await page.goto('/transactions');
+			await delay();
+			expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('0');
 		});
 
 		test('Deleting all data including sync settings', async ({ baseURL, page }) => {
@@ -78,9 +99,10 @@ test.describe('Developer tools', () => {
 			);
 			await page.locator('button', { hasText: 'Enable' }).click();
 			await expect(sidebarSyncButton).toBeVisible();
-			await sidebarSyncButton.click();
 
 			// Check the server response was imported correctly
+			await sidebarSyncButton.click();
+			await delay();
 			await page.locator('a', { hasText: 'The big picture' }).click();
 			await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 			expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch(

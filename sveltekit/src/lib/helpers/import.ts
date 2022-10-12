@@ -1,5 +1,5 @@
 import { fromUnixTime } from 'date-fns';
-import { Prisma } from '@prisma/client';
+import { Prisma, type Transaction } from '@prisma/client';
 
 import prisma from '$lib/helpers/prisma';
 import { getModelType, getTransactionCategoryId } from '$lib/helpers/models';
@@ -160,41 +160,50 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 					}
 				}
 
-				// Transactions
+				// Transactions + TransactionImports (a.k.a. history of imported transactions)
 				if (account.transactions) {
 					for (const transaction of account.transactions) {
-						const transactionBlueprint = {
+						const transactionImportBlueprint = {
 							createdAt: fromUnixTime(transaction.createdAt),
 							description: transaction.description,
 							date: fromUnixTime(transaction.date),
 							value: transaction.value,
 							isExcluded: transaction.isExcluded,
-							isPending: transaction.isExcluded,
-							accountId: existingAccount.id,
-							categoryId: await getTransactionCategoryId(transaction.categoryName)
+							isPending: transaction.isPending,
+							accountId: existingAccount.id
 						};
 
-						// Check if transaction is already in database
-						const existingTransaction = await prisma.transaction.findFirst({
+						// Check if a TransactionImport already exists
+						const existingTransactionImport = await prisma.transactionImport.findFirst({
 							where: {
-								...transactionBlueprint
+								...transactionImportBlueprint
 							}
 						});
 
-						// Skip duplicate transactions
-						if (existingTransaction) {
+						// Skip duplicate TransactionImports
+						if (existingTransactionImport) {
 							importedAccounts.transactions.skipped.push(transaction);
 							continue;
 						}
 
-						// Create transaction
+						// Create Transaction
 						const { id } = await prisma.transaction.create({
 							data: {
-								...transactionBlueprint,
-								importedAt: importSessionDate
+								...transactionImportBlueprint,
+								categoryId: await getTransactionCategoryId(transaction.categoryName)
 							}
 						});
-						importedAccounts.transactions.created.push(id);
+
+						// Create TransactionImport
+						const transactionImport = await prisma.transactionImport.create({
+							data: {
+								...transactionImportBlueprint,
+								transactionId: id,
+								categoryName: transaction.categoryName
+							}
+						});
+
+						importedAccounts.transactions.created.push(transactionImport.transactionId);
 					}
 				}
 			}

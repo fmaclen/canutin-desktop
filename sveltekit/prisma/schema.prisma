@@ -20,6 +20,7 @@ model Account {
   accountType              AccountType               @relation(fields: [accountTypeId], references: [id])
   accountBalanceStatements AccountBalanceStatement[]
   transactions             Transaction[]
+  transactionImports       TransactionImport[]
 }
 
 model AccountBalanceStatement {
@@ -86,9 +87,25 @@ model Transaction {
   isPending           Boolean
   categoryId          Int
   accountId           Int
-  importedAt          DateTime?
+  transactionImport   TransactionImport?
   transactionCategory TransactionCategory @relation(fields: [categoryId], references: [id])
   account             Account             @relation(fields: [accountId], references: [id], onDelete: Cascade)
+}
+
+model TransactionImport {
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  description   String
+  date          DateTime
+  value         Float
+  categoryName  String
+  isExcluded    Boolean
+  isPending     Boolean
+  accountId     Int
+  transactionId Int         @unique
+  account       Account     @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
 }
 
 model TransactionCategory {
