@@ -233,4 +233,92 @@ test.describe('Import CanutinFile', () => {
 			expect(await page.textContent('.card__value--netWorth')).toBe('$7,571');
 		});
 	});
+
+	test('Importing the same transactions multiple times are only imported once', async ({
+		page
+	}) => {
+		// Import accounts and transactions
+		await page.goto('/');
+		await page.locator('a.layout__a', { hasText: 'Add or update data' }).click();
+		await page.locator('a', { hasText: 'Import file' }).click();
+		await page.setInputFiles(
+			'input[type="file"]',
+			'./tests/fixtures/canutinFile-maximum-data.json'
+		);
+		await page.locator('button', { hasText: 'Upload' }).click();
+		const dismissButton = page.locator('.button', { hasText: 'Dismiss' });
+		const statusBar = page.locator('.statusBar');
+		await expect(statusBar).toHaveClass(/statusBar--positive/);
+
+		await dismissButton.click();
+
+		// Check that the transactions are imported
+		const formSelect = page.locator('.formSelect__select');
+		const formInput = page.locator('.formInput__input');
+		const cardNetBalance = page.locator('.card', { hasText: 'Net balance' });
+		const tableRows = page.locator('.table__tr');
+
+		await page.locator('a', { hasText: 'Transactions' }).click();
+		await formSelect.selectOption('7'); // Lifetime
+		await formSelect.dispatchEvent('change');
+		await formInput.click();
+		await delay();
+		expect(await tableRows.count()).toBe(5);
+		expect(await cardNetBalance.textContent()).toMatch('$599.71');
+
+		// Edit every field to make sure the Transaction is
+		await page.locator('a', { hasText: 'Initech Payroll' }).click();
+		await page.locator('.formInput__input[name="description"]').fill('Not Initech Payroll');
+		await page
+			.locator('.formSelect__select[name=categoryId]')
+			.selectOption({ label: 'Uncategorized' });
+		await page.locator('.formSelect__select[name="yearSelect"]').selectOption('2019');
+		await page.locator('.formInputCheckbox', { hasText: 'Excluded from totals' }).click();
+		await page.locator('.formCurrencyInput input[name="formatted-value"]').focus();
+		for (let i = 1; i < '3,500.25'.length; i++) await page.keyboard.press('Backspace');
+		await page.keyboard.type('9999');
+		await page.locator('button', { hasText: 'Save' }).click();
+		await delay();
+		await dismissButton.click();
+		expect(await tableRows.count()).toBe(1);
+
+		await formSelect.selectOption('7'); // Lifetime
+		await formSelect.dispatchEvent('change');
+		await formInput.click();
+		await delay();
+		expect(await tableRows.count()).toBe(5);
+		expect(await tableRows.nth(4).textContent()).toMatch('Not Initech Payroll');
+		expect(await tableRows.nth(4).textContent()).toMatch('2019');
+		expect(await tableRows.nth(4).textContent()).toMatch('Uncategorized');
+		expect(await page.locator('.table__excluded').last().textContent()).toBe('$9,999.00');
+		expect(await cardNetBalance.textContent()).toMatch('-$2,900.50');
+
+		// Import again
+		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
+
+		await page.locator('a.layout__a', { hasText: 'Add or update data' }).click();
+		await page.locator('a', { hasText: 'Import file' }).click();
+		await page.setInputFiles(
+			'input[type="file"]',
+			'./tests/fixtures/canutinFile-maximum-data.json'
+		);
+		await page.locator('button', { hasText: 'Upload' }).click();
+		await expect(statusBar).toHaveClass(/statusBar--positive/);
+
+		// Check that the transactions are not duplicated
+		await page.locator('a', { hasText: 'Transactions' }).click();
+		await delay();
+		expect(await tableRows.count()).toBe(1);
+
+		await formSelect.selectOption('7'); // Lifetime
+		await formSelect.dispatchEvent('change');
+		await formInput.click();
+		await delay();
+		expect(await tableRows.count()).toBe(5);
+		expect(await tableRows.nth(4).textContent()).toMatch('Not Initech Payroll');
+		expect(await tableRows.nth(4).textContent()).toMatch('2019');
+		expect(await tableRows.nth(4).textContent()).toMatch('Uncategorized');
+		expect(await page.locator('.table__excluded').last().textContent()).toBe('$9,999.00');
+		expect(await cardNetBalance.textContent()).toMatch('-$2,900.50');
+	});
 });
