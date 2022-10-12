@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { databaseWipe } from './fixtures/helpers.js';
+import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
 
 test.describe('Accounts', () => {
 	test.beforeEach(async ({ baseURL }) => {
@@ -202,5 +202,60 @@ test.describe('Accounts', () => {
 		expect(await balanceTypeGroup.textContent()).toMatch('Savings');
 		expect(await balanceTypeGroup.textContent()).toMatch("Alice's Savings");
 		expect(await balanceTypeGroup.textContent()).toMatch('$421');
+	});
+
+	test("Account and it's transactions can be deleted", async ({ baseURL, page }) => {
+		await databaseSeed(baseURL!);
+
+		// Check the account exists and that it has transactions
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Transactions' }).click();
+
+		const accountLink = page.locator('a', { hasText: "Bob's Laughable-Yield Checking" });
+		await expect(accountLink.first()).toBeVisible();
+		expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('111');
+
+		// Delete account
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
+		await expect(accountLink).toBeVisible();
+
+		await accountLink.click();
+		expect(await page.locator('p.danger-zone__p').first().textContent()).toBe(
+			"Permanently delete account Bob's Laughable-Yield Checking (including transactions)"
+		);
+
+		const statusBar = page.locator('.statusBar');
+		await expect(statusBar).not.toHaveClass(/statusBar--active/);
+		expect(await statusBar.textContent()).not.toMatch(
+			'The account "Bob\'s Laughable-Yield Checking" was deleted successfully'
+		);
+
+		// Prepare to confirm the dialog prompt
+		page.on('dialog', (dialog) => {
+			expect(dialog.message()).toMatch(
+				"Are you sure you want to delete the account and all of it's associated transactions?"
+			);
+
+			dialog.accept();
+		});
+
+		// Proceed to delete account
+		await page.locator('button', { hasText: 'Delete' }).click();
+
+		// Check status message confirms account deletion
+		await expect(statusBar).toHaveClass(/statusBar--active/);
+		expect(await statusBar.textContent()).toMatch(
+			'The account "Bob\'s Laughable-Yield Checking" was deleted successfully'
+		);
+
+		// Check the account is no longer present in Balance sheeet
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		await expect(accountLink).not.toBeVisible();
+
+		// Check the account is no longer present in Transactions
+		await page.locator('a', { hasText: 'Transactions' }).click();
+		await expect(accountLink).not.toBeVisible();
+		expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('87');
 	});
 });
