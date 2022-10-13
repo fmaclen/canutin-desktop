@@ -89,8 +89,6 @@ export interface ImportSync {
 }
 
 export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
-	const importSessionDate = new Date();
-
 	const importedAccounts: ImportedAccounts = {
 		created: [],
 		updated: [],
@@ -164,7 +162,6 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 				if (account.transactions) {
 					for (const transaction of account.transactions) {
 						const transactionImportBlueprint = {
-							createdAt: fromUnixTime(transaction.createdAt),
 							description: transaction.description,
 							date: fromUnixTime(transaction.date),
 							value: transaction.value,
