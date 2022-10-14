@@ -4,6 +4,7 @@
 	export let checked: boolean;
 	export let required: boolean = false;
 	export let disabled: boolean = false;
+	export let indeterminate: boolean = false;
 </script>
 
 <label class="formInputCheckbox {disabled && 'formInputCheckbox--disabled'}">
@@ -13,6 +14,7 @@
 		{name}
 		{required}
 		{disabled}
+		{indeterminate}
 		bind:checked
 	/>
 	<span class="formInputCheckbox__label">{label}</span>

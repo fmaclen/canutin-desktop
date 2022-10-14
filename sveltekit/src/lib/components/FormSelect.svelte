@@ -2,11 +2,15 @@
 	export let value: number | string;
 	export let options: { label: string; value?: string | number }[];
 	export let name: string;
+	export let placeholder: string = '';
 	export let disabled: boolean = false;
 </script>
 
-<div class="formSelect">
+<div class="formSelect {disabled && 'formSelect--disabled'}">
 	<select class="formSelect__select" type="text" {name} {disabled} bind:value on:change>
+		{#if placeholder}
+			<option value={0} disabled selected>{placeholder}</option>
+		{/if}
 		{#each options as { label, value }, i}
 			<option value={value || i}>{label}</option>
 		{/each}
@@ -16,6 +20,11 @@
 <style lang="scss">
 	div.formSelect {
 		position: relative;
+
+		&--disabled {
+			@import './Form.scss';
+			@include disabledInput;
+		}
 
 		&::after {
 			display: inline-block;
@@ -28,6 +37,7 @@
 			width: 20px;
 			font-size: 8px;
 			content: '▼';
+			color: currentColor;
 		}
 	}
 
