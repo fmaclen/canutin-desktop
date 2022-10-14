@@ -1,6 +1,7 @@
 import prisma from '$lib/helpers/prisma';
 import { getSelectTransactionCategories, getSelectAccounts } from '$lib/helpers/forms';
 import { notFound } from '$lib/helpers/misc';
+import { redirect } from '@sveltejs/kit';
 
 interface Params {
 	slug: string | null;
@@ -11,7 +12,14 @@ export const load = async ({ params }: { params: Params }) => {
 
 	if (!slug) return notFound();
 
-	const transactionIds = slug.split('-').map((id) => parseInt(id));
+	const transactionIds: number[] = [];
+	slug.split('-').forEach((id) => !Number.isNaN(parseInt(id)) && transactionIds.push(parseInt(id)));
+
+	if (transactionIds.length === 0) return notFound();
+
+	// If there is only one transaction selected then redirect to the *non-batch* edit page
+	if (transactionIds.length === 1) throw redirect(307, `/transaction/${transactionIds[0]}`);
+
 	const batchTransactions = await prisma.transaction.findMany({
 		where: {
 			id: {

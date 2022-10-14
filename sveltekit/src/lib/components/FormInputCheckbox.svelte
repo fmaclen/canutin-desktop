@@ -43,5 +43,6 @@
 
 	input.formInputCheckbox__input {
 		margin: 0;
+		accent-color: var(--color-bluePrimary);
 	}
 </style>

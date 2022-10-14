@@ -10,10 +10,10 @@ interface Params {
 export const load = async ({ params }: { params: Params }) => {
 	const { slug } = params;
 
-	if (!slug) return notFound();
+	if (!slug || Number.isNaN(parseInt(slug))) return notFound();
 
 	const transaction = (await prisma.transaction.findUnique({
-		where: { id: parseInt(slug!) }
+		where: { id: parseInt(slug) }
 	})) as Transaction;
 
 	if (!transaction) return notFound();

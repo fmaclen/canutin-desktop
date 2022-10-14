@@ -15,7 +15,7 @@ interface Params {
 export const load = async ({ params }: { params: Params }) => {
 	const { slug } = params;
 
-	if (!slug) return notFound();
+	if (!slug || Number.isNaN(parseInt(slug))) return notFound();
 
 	const asset = (await prisma.asset.findUnique({ where: { id: parseInt(slug) } })) as Asset;
 
