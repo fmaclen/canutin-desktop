@@ -240,7 +240,7 @@
 
 			<table class="table">
 				<thead>
-					<tr class="table__tr">
+					<tr>
 						<th class="table__th table__th--checkbox">
 							<input
 								name="toggleSelectAll"
@@ -274,8 +274,9 @@
 							{@const { id, date, description, transactionCategory, account, value, isExcluded } =
 								transaction}
 							<tr
-								class="table__tr {highlight === id ||
-									(selectedTransactions.includes(id) && `table__tr--highlight`)}"
+								class="table__tr {highlight === id || selectedTransactions.includes(id)
+									? 'table__tr--highlight'
+									: null}"
 							>
 								<td class="table__td table__td--batchEditor">
 									<input
