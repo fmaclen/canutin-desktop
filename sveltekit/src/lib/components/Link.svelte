@@ -18,7 +18,7 @@
 <style lang="scss">
 	a.a {
 		color: var(--color-grey70);
-		border-bottom: 1px solid var(--color-border);
+		border-bottom: 1px solid var(--color-black-alpha10);
 		text-decoration: none;
 		cursor: pointer;
 

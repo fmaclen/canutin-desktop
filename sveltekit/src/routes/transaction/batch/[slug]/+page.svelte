@@ -20,6 +20,8 @@
 	import Button from '$lib/components/Button.svelte';
 	import FormFieldFlags from '$lib/components/FormFieldFlags.svelte';
 	import FormDateInput from '$lib/components/FormDateInput.svelte';
+	import DangerZone from '$lib/components/DangerZone.svelte';
+	import Link from '$lib/components/Link.svelte';
 
 	export let data: PageData;
 	let transaction: AddOrUpdateAPIResponse;
@@ -63,6 +65,8 @@
 		// 	await goto(`/transactions?highlight=${transaction.id}`);
 		// }
 	};
+
+	const handleDelete = async (event: any) => {};
 
 	const title = 'Batch editor';
 
@@ -192,9 +196,18 @@
 					</FormField>
 				</FormFieldset>
 				<FormFooter>
+					<Link href="/transactions">Discard</Link>
 					<Button appearance={Appearance.ACTIVE} disabled={isSubmitDisabled}>Apply</Button>
 				</FormFooter>
 			</Form>
+		</div>
+	</Section>
+
+	<Section title="Danger zone">
+		<div slot="CONTENT">
+			<DangerZone {handleDelete}>
+				Permanently delete <strong>all {data.batchTransactions.length} transactions</strong>
+			</DangerZone>
 		</div>
 	</Section>
 </ScrollView>
