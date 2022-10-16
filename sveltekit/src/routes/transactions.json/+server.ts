@@ -1,12 +1,19 @@
 import { type RequestEvent, json } from '@sveltejs/kit';
 import { startOfMonth, endOfMonth, sub, fromUnixTime, getUnixTime } from 'date-fns';
 
-import type { Prisma, Account, Transaction, TransactionCategory } from '@prisma/client';
+import type {
+	Prisma,
+	Account,
+	Transaction,
+	TransactionCategory,
+	TransactionImport
+} from '@prisma/client';
 import prisma, { crudResponse, handleError } from '$lib/helpers/prisma';
 import { SortOrder } from '$lib/helpers/constants';
 
 export interface EndpointTransaction extends Omit<Transaction, 'date'> {
 	date: number;
+	transactionImport: TransactionImport | null;
 	transactionCategory: TransactionCategory;
 	account: Account;
 }
@@ -78,6 +85,7 @@ export const GET = async ({ url }: { url: URL }) => {
 			...whereOr()
 		},
 		include: {
+			transactionImport: true,
 			transactionCategory: true,
 			account: true
 		},

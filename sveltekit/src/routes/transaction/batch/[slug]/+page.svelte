@@ -134,7 +134,7 @@
 </svelte:head>
 
 <ScrollView {title}>
-	<Section title="Editing {batchTransactions.length} transactions">
+	<Section title="Update {batchTransactions.length} transactions">
 		<div slot="CONTENT">
 			<Form on:submit={handleSubmit}>
 				<FormFieldset>

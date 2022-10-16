@@ -243,14 +243,16 @@
 				<thead>
 					<tr>
 						<th class="table__th table__th--checkbox">
-							<input
-								name="toggleSelectAll"
-								type="checkbox"
-								on:click={toggleSelectTransactions}
-								checked={allSelected}
-								indeterminate={someSelected}
-								class="batchEditor-checkbox"
-							/>
+							<label class="batchEditor-checkbox">
+								<input
+									name="toggleSelectAll"
+									type="checkbox"
+									on:click={toggleSelectTransactions}
+									checked={allSelected}
+									indeterminate={someSelected}
+									class="batchEditor-checkbox__input"
+								/>
+							</label>
 						</th>
 
 						{#each TABLE_HEADERS as tableHeader}
@@ -279,15 +281,17 @@
 									? 'table__tr--highlight'
 									: null}"
 							>
-								<td class="table__td table__td--batchEditor">
-									<input
-										bind:group={selectedTransactions}
-										checked={selectedTransactions.includes(id)}
-										name={transaction.id.toString()}
-										value={transaction.id}
-										type="checkbox"
-										class="batchEditor-checkbox"
-									/>
+								<td class="table__td table__td--checkbox">
+									<label class="batchEditor-checkbox">
+										<input
+											bind:group={selectedTransactions}
+											checked={selectedTransactions.includes(id)}
+											name={transaction.id.toString()}
+											value={transaction.id}
+											type="checkbox"
+											class="batchEditor-checkbox__input"
+										/>
+									</label>
 								</td>
 
 								<td class="table__td table__td--date"
@@ -375,7 +379,9 @@
 			padding-right: 16px;
 		}
 
-		&--checkbox {
+		&--checkbox,
+		&--checkbox:first-child {
+			padding: unset;
 			width: max-content;
 		}
 
@@ -465,7 +471,9 @@
 			padding-left: 16px;
 		}
 
-		&--checkbox {
+		&--checkbox,
+		&--checkbox:first-child:not(.table__td--notice) {
+			padding: unset;
 			width: max-content;
 		}
 
@@ -517,7 +525,13 @@
 		font-style: unset;
 	}
 
-	input.batchEditor-checkbox {
+	label.batchEditor-checkbox {
+		display: flex;
+		height: 100%;
+		padding: 12px 16px;
+	}
+
+	input.batchEditor-checkbox__input {
 		margin: 0;
 	}
 </style>
