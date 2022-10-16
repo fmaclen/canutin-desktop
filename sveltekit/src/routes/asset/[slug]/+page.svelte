@@ -13,7 +13,7 @@
 
 	export let data: PageData;
 	const title = data.asset.name;
-	let asset: AddOrUpdateAPIResponse;
+	let asset: AddOrUpdateAPIResponse; // FIXME: should be CRUDResponse
 
 	const handleSubmit = async (event: any) => {
 		let payload: Prisma.AssetUncheckedCreateInput = {
@@ -35,12 +35,10 @@
 		asset = await api({ endpoint: 'asset', method: 'PATCH', payload });
 
 		if (asset.error) {
-			if (!asset.error.name) {
-				$statusBarStore = {
-					message: "An error ocurred and the asset likely wasn't updated",
-					appearance: Appearance.NEGATIVE
-				};
-			}
+			$statusBarStore = {
+				message: asset.error,
+				appearance: Appearance.NEGATIVE
+			};
 		} else {
 			$statusBarStore = {
 				message: 'The asset was updated successfully',
@@ -64,9 +62,7 @@
 
 		if (deletedAsset.error) {
 			$statusBarStore = {
-				message: deletedAsset.error?.name
-					? deletedAsset.error.name
-					: "An error ocurred and the asset likely wasn't deleted",
+				message: deletedAsset.error,
 				appearance: Appearance.NEGATIVE
 			};
 		} else {

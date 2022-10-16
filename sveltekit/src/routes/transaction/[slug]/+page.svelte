@@ -14,7 +14,7 @@
 	export let data: PageData;
 
 	const title = data.transaction.description;
-	let transaction: AddOrUpdateAPIResponse;
+	let transaction: AddOrUpdateAPIResponse; // FIXME: should be CRUDResponse
 
 	const handleSubmit = async (event: any) => {
 		let payload: Prisma.TransactionUncheckedCreateInput = {
@@ -30,12 +30,10 @@
 		transaction = await api({ endpoint: 'transaction', method: 'PATCH', payload });
 
 		if (transaction.error) {
-			if (!transaction.error.name) {
-				$statusBarStore = {
-					message: "An error ocurred and the transaction likely wasn't updated",
-					appearance: Appearance.NEGATIVE
-				};
-			}
+			$statusBarStore = {
+				message: transaction.error,
+				appearance: Appearance.NEGATIVE
+			};
 		} else {
 			$statusBarStore = {
 				message: 'The transaction was updated successfully',
@@ -59,9 +57,7 @@
 
 		if (deletedTransaction.error) {
 			$statusBarStore = {
-				message: deletedTransaction.error?.name
-					? deletedTransaction.error.name
-					: "An error ocurred and the transaction likely wasn't deleted",
+				message: deletedTransaction.error,
 				appearance: Appearance.NEGATIVE
 			};
 		} else {

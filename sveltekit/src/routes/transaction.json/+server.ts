@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { Prisma } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
-import prisma, { handleError } from '$lib/helpers/prisma';
+import prisma, { handleError, crudResponse } from '$lib/helpers/prisma';
 import { fromUnixTime } from 'date-fns';
 
 // Create new transaction
@@ -29,9 +29,9 @@ export const POST = async ({ request }: RequestEvent) => {
 			}
 		});
 
-		return json({ id: transaction.id });
+		return json({ id: transaction.id }); // FIXME: should return crudResponse
 	} catch (error) {
-		return json(handleError(error, 'transaction'));
+		return crudResponse(handleError(error, 'transaction'));
 	}
 };
 
@@ -55,9 +55,9 @@ export const PATCH = async ({ request }: RequestEvent) => {
 				...payload
 			}
 		});
-		return json({ id: transaction.id });
+		return json({ id: transaction.id }); // FIXME: should return crudResponse
 	} catch (error) {
-		return json(handleError(error, 'transaction'));
+		return crudResponse(handleError(error, 'transaction'));
 	}
 };
 
@@ -68,8 +68,8 @@ export const DELETE = async ({ request }: RequestEvent) => {
 		const transaction = await prisma.transaction.delete({
 			where: { id: payload }
 		});
-		return json({ id: transaction.id });
+		return json({ id: transaction.id }); // FIXME: should return crudResponse
 	} catch (error) {
-		return json(handleError(error, 'transaction'));
+		return crudResponse(handleError(error, 'transaction'));
 	}
 };

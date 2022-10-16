@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { Prisma } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
-import prisma, { handleError } from '$lib/helpers/prisma';
+import prisma, { crudResponse, handleError } from '$lib/helpers/prisma';
 
 // Create new account
 export const POST = async ({ request }: RequestEvent) => {
@@ -16,9 +16,9 @@ export const POST = async ({ request }: RequestEvent) => {
 				...payload
 			}
 		});
-		return json({ id: account.id });
+		return json({ id: account.id }); // FIXME: should return crudResponse
 	} catch (error) {
-		return json(handleError(error, 'account'));
+		return crudResponse(handleError(error, 'account'));
 	}
 };
 
@@ -37,9 +37,9 @@ export const PATCH = async ({ request }: RequestEvent) => {
 				...payload
 			}
 		});
-		return json({ id: account.id });
+		return json({ id: account.id }); // FIXME: should return crudResponse
 	} catch (error) {
-		return json(handleError(error, 'account'));
+		return crudResponse(handleError(error, 'account'));
 	}
 };
 
@@ -50,8 +50,8 @@ export const DELETE = async ({ request }: RequestEvent) => {
 		const account = await prisma.account.delete({
 			where: { id: payload }
 		});
-		return json({ id: account.id });
+		return json({ id: account.id }); // FIXME: should return crudResponse
 	} catch (error) {
-		return json(handleError(error, 'account'));
+		return crudResponse(handleError(error, 'account'));
 	}
 };

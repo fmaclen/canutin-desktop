@@ -12,19 +12,20 @@
 	import FormInputCheckbox from '$lib/components/FormInputCheckbox.svelte';
 	import FormEditableField from '$lib/components/FormEditableField.svelte';
 	import FormCurrency from '$lib/components/FormCurrency.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
-	import { api } from '$lib/helpers/misc';
-	import { Appearance } from '$lib/helpers/constants';
-	import type { PageData } from './$types';
-	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
-	import Button from '$lib/components/Button.svelte';
 	import FormFieldFlags from '$lib/components/FormFieldFlags.svelte';
 	import FormDateInput from '$lib/components/FormDateInput.svelte';
+	import Button from '$lib/components/Button.svelte';
 	import DangerZone from '$lib/components/DangerZone.svelte';
 	import Link from '$lib/components/Link.svelte';
+	import statusBarStore from '$lib/stores/statusBarStore';
+	import { api } from '$lib/helpers/misc';
+	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
+	import type { PageData } from './$types';
+	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
+	import type { CRUDResponse } from '$lib/helpers/prisma';
 
 	export let data: PageData;
-	let transaction: AddOrUpdateAPIResponse;
+	let transaction: AddOrUpdateAPIResponse; // FIXME: should be CRUDResponse
 
 	const {
 		batchTransactions,
@@ -49,7 +50,7 @@
 		// 	isExcluded: event.target.isExcluded?.checked ? true : false,
 		// 	isPending: event.target.isPending?.checked ? true : false
 		// };
-		// transaction = await api({ endpoint: 'transaction', method: 'POST', payload });
+		// transaction = await api({ endpoint: 'transactions', method: 'POST', payload });
 		// if (transaction.error) {
 		// 	if (!transaction.error.name) {
 		// 		$statusBarStore = {
@@ -66,7 +67,31 @@
 		// }
 	};
 
-	const handleDelete = async (event: any) => {};
+	const handleDelete = async () => {
+		const confirmDeletion = window.confirm(
+			`${UNDOABLE_ACTION}Are you sure you want to delete the ${batchTransactions.length} transactions?`
+		);
+		if (!confirmDeletion) return;
+
+		const response: CRUDResponse = await api({
+			endpoint: 'transactions',
+			method: 'DELETE',
+			payload: data.batchTransactions
+		});
+
+		if (response.error) {
+			$statusBarStore = {
+				message: response.error,
+				appearance: Appearance.NEGATIVE
+			};
+		} else {
+			$statusBarStore = {
+				message: `${response.payload.count} transactions were deleted successfully`,
+				appearance: Appearance.ACTIVE
+			};
+			await goto('/transactions');
+		}
+	};
 
 	const title = 'Batch editor';
 

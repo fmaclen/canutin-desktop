@@ -11,7 +11,7 @@
 	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
-	let transaction: AddOrUpdateAPIResponse;
+	let transaction: AddOrUpdateAPIResponse; // FIXME: should be CRUDResponse
 
 	const handleSubmit = async (event: any) => {
 		const payload: Prisma.TransactionUncheckedCreateInput = {
@@ -26,12 +26,10 @@
 		transaction = await api({ endpoint: 'transaction', method: 'POST', payload });
 
 		if (transaction.error) {
-			if (!transaction.error.name) {
-				$statusBarStore = {
-					message: "An error ocurred and the transaction likely wasn't added",
-					appearance: Appearance.NEGATIVE
-				};
-			}
+			$statusBarStore = {
+				message: transaction.error,
+				appearance: Appearance.NEGATIVE
+			};
 		} else {
 			$statusBarStore = {
 				message: 'The transaction was added successfully',

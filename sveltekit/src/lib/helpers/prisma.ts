@@ -1,7 +1,8 @@
 import path from 'path';
 import { fork } from 'child_process';
 import { env } from '$env/dynamic/private';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient, type Account, type Asset, type Transaction } from '@prisma/client';
+import { json } from '@sveltejs/kit';
 
 const cwd = env.SVELTEKIT_PATH ? env.SVELTEKIT_PATH : process.cwd();
 
@@ -162,15 +163,24 @@ export const validateVaultSeed = async (ranTwice = false) => {
 	return true;
 };
 
-export const handleError = (error: any, modelName: string) => {
+export const handleError = (error: any, modelName: string): CRUDResponse => {
 	switch (error.code) {
 		case 'P2002':
-			return { error: { name: `An ${modelName} with the same name already exists` } };
+			return { error: `An ${modelName} with the same name already exists` };
 		case 'P2025':
-			return { error: { name: `The ${modelName} doesn't exist` } };
+			return { error: `The ${modelName} doesn't exist` };
 		default:
 			return { error };
 	}
+};
+
+export interface CRUDResponse {
+	payload?: any; // Prisma.BatchPayload | Account | Asset | Transaction
+	error?: string;
+}
+
+export const crudResponse = (response: CRUDResponse): Response => {
+	return json(response);
 };
 
 // Default Prisma client

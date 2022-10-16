@@ -14,7 +14,7 @@
 	export let data: PageData;
 
 	const title = data.account.name;
-	let account: AddOrUpdateAPIResponse;
+	let account: AddOrUpdateAPIResponse; // FIXME: should be CRUDResponse
 
 	const handleSubmit = async (event: any) => {
 		let payload: Prisma.AccountUncheckedCreateInput = {
@@ -30,12 +30,10 @@
 		account = await api({ endpoint: 'account', method: 'PATCH', payload });
 
 		if (account.error) {
-			if (!account.error.name) {
-				$statusBarStore = {
-					message: "An error ocurred and the account likely wasn't updated",
-					appearance: Appearance.NEGATIVE
-				};
-			}
+			$statusBarStore = {
+				message: account.error,
+				appearance: Appearance.NEGATIVE
+			};
 		} else {
 			$statusBarStore = {
 				message: 'The account was updated successfully',
@@ -59,9 +57,7 @@
 
 		if (deletedAccount.error) {
 			$statusBarStore = {
-				message: deletedAccount.error?.name
-					? deletedAccount.error.name
-					: "An error ocurred and the account likely wasn't deleted",
+				message: deletedAccount.error,
 				appearance: Appearance.NEGATIVE
 			};
 		} else {

@@ -126,16 +126,13 @@ test.describe('Assets', () => {
 		// Another asset with the same name can't be created
 		await page.locator('a', { hasText: 'Add asset' }).click();
 		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
-		const inputError = page.locator('.formInput__error');
-		await expect(inputError).not.toBeVisible();
+		await expect(statusBar).not.toHaveClass(/statusBar--negative/);
 
 		await nameInput.fill('GameStop');
 		await page.locator('button', { hasText: 'Dismiss' }).click();
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(inputError).toBeVisible();
-		expect(await inputError.textContent()).toMatch('An asset with the same name already exists');
-		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).not.toMatch('The asset was added successfully');
+		await expect(statusBar).toHaveClass(/statusBar--negative/);
+		expect(await statusBar.textContent()).toMatch('An asset with the same name already exists');
 
 		// Check an asset can't be edited to have the same name as another asset
 		await nameInput.fill('AMC Entertainment Holdings Inc');
@@ -148,10 +145,9 @@ test.describe('Assets', () => {
 
 		// Rename using an existing asset name
 		await nameInput.fill('GameStop');
-		await expect(inputError).not.toBeVisible();
-
 		await page.locator('button', { hasText: 'Save' }).click();
-		expect(await inputError.textContent()).toMatch('An asset with the same name already exists');
+		await expect(statusBar).toHaveClass(/statusBar--negative/);
+		expect(await statusBar.textContent()).toMatch('An asset with the same name already exists');
 	});
 
 	test('Asset can be deleted', async ({ baseURL, page }) => {
