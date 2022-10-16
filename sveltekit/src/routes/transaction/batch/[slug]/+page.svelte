@@ -21,11 +21,12 @@
 	import { api } from '$lib/helpers/misc';
 	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
-	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
 	import type { CRUDResponse } from '$lib/helpers/prisma';
+	import type { BatchEditPayload } from 'src/routes/transactions.json/+server';
 
 	export let data: PageData;
-	let transaction: AddOrUpdateAPIResponse; // FIXME: should be CRUDResponse
+
+	const title = 'Batch editor';
 
 	const {
 		batchTransactions,
@@ -40,31 +41,65 @@
 		hasSharedValues
 	} = data;
 
-	const handleSubmit = async (event: any) => {
-		// const payload: Prisma.TransactionUncheckedCreateInput = {
-		// 	description: event.target.description?.value,
-		// 	date: event.target.date?.value,
-		// 	categoryId: parseInt(event.target.categoryId?.value),
-		// 	accountId: parseInt(event.target.accountId?.value),
-		// 	value: parseFloat(event.target.value?.value),
-		// 	isExcluded: event.target.isExcluded?.checked ? true : false,
-		// 	isPending: event.target.isPending?.checked ? true : false
-		// };
-		// transaction = await api({ endpoint: 'transactions', method: 'POST', payload });
-		// if (transaction.error) {
-		// 	if (!transaction.error.name) {
-		// 		$statusBarStore = {
-		// 			message: "An error ocurred and the transaction likely wasn't added",
-		// 			appearance: Appearance.NEGATIVE
-		// 		};
-		// 	}
-		// } else {
-		// 	$statusBarStore = {
-		// 		message: 'The transaction was added successfully',
-		// 		appearance: Appearance.POSITIVE
-		// 	};
-		// 	await goto(`/transactions?highlight=${transaction.id}`);
-		// }
+	let accountId = hasSharedAccounts ? batchTransactions[0].accountId : 0;
+	let description = hasSharedDescriptions ? batchTransactions[0].description : '';
+	let categoryId = hasSharedCategories ? batchTransactions[0].categoryId : 0;
+	let date = hasSharedDates ? batchTransactions[0].date : undefined;
+	let isExcluded = hasSharedIsExcluded ? batchTransactions[0].isExcluded : false;
+	let isPending = hasSharedIsPending ? batchTransactions[0].isPending : false;
+	let value = hasSharedValues ? batchTransactions[0].value : 0;
+
+	let accountIdEdited: boolean = false;
+	let descriptionEdited: boolean = false;
+	let categoryIdEdited: boolean = false;
+	let dateEdited: boolean = false;
+	let isExcludedEdited: boolean = false;
+	let isPendingEdited: boolean = false;
+	let valueEdited: boolean = false;
+
+	$: isSubmitDisabled =
+		!accountIdEdited &&
+		!descriptionEdited &&
+		!categoryIdEdited &&
+		!dateEdited &&
+		!isExcludedEdited &&
+		!isPendingEdited &&
+		!valueEdited;
+
+	const handleSubmit = async () => {
+		const updatedProps: Prisma.TransactionUncheckedUpdateManyInput = {
+			accountId: accountIdEdited ? accountId : undefined,
+			description: descriptionEdited ? description : undefined,
+			categoryId: categoryIdEdited ? categoryId : undefined,
+			date: dateEdited ? date : undefined,
+			isExcluded: isExcludedEdited ? isExcluded : undefined,
+			isPending: isPendingEdited ? isPending : undefined,
+			value: valueEdited ? value : undefined
+		};
+
+		const payload: BatchEditPayload = {
+			transactionIds: batchTransactions.map((t) => t.id),
+			updatedProps
+		};
+
+		const updatedTransactions = (await api({
+			endpoint: 'transactions',
+			method: 'POST',
+			payload
+		})) as CRUDResponse;
+
+		if (updatedTransactions.error) {
+			$statusBarStore = {
+				message: updatedTransactions.error,
+				appearance: Appearance.NEGATIVE
+			};
+		} else {
+			$statusBarStore = {
+				message: `The ${batchTransactions.length} transactions were updated successfully`,
+				appearance: Appearance.POSITIVE
+			};
+			await goto('/transactions');
+		}
 	};
 
 	const handleDelete = async () => {
@@ -92,33 +127,6 @@
 			await goto('/transactions');
 		}
 	};
-
-	const title = 'Batch editor';
-
-	let accountId = hasSharedAccounts ? batchTransactions[0].accountId : 0;
-	let description = hasSharedDescriptions ? batchTransactions[0].description : '';
-	let categoryId = hasSharedCategories ? batchTransactions[0].categoryId : 0;
-	let date = hasSharedDates ? batchTransactions[0].date : undefined;
-	let isExcluded = hasSharedIsExcluded ? batchTransactions[0].isExcluded : false;
-	let isPending = hasSharedIsPending ? batchTransactions[0].isPending : false;
-	let value = hasSharedValues ? batchTransactions[0].value : 0;
-
-	let accountIdEdited: boolean = false;
-	let descriptionEdited: boolean = false;
-	let categoryIdEdited: boolean = false;
-	let dateEdited: boolean = false;
-	let isExcludedEdited: boolean = false;
-	let isPendingEdited: boolean = false;
-	let valueEdited: boolean = false;
-
-	$: isSubmitDisabled =
-		!accountIdEdited &&
-		!descriptionEdited &&
-		!categoryIdEdited &&
-		!dateEdited &&
-		!isExcludedEdited &&
-		!isPendingEdited &&
-		!valueEdited;
 </script>
 
 <svelte:head>

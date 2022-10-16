@@ -18,7 +18,6 @@
 	export let selectBalanceGroups: FormSelectOption[];
 	export let lastBalanceStatement: AccountBalanceStatement | null = null;
 	export let submitButtonLabel: string;
-	export let error: any | null = null;
 
 	let name = account ? account.name : '';
 	let accountTypeId = account ? account.accountTypeId : 1;
@@ -76,6 +75,6 @@
 	div.accountBalanceField {
 		display: grid;
 		grid-template-columns: minmax(96px, 1fr) 2fr;
-		grid-gap: 8px;
+		column-gap: 8px;
 	}
 </style>

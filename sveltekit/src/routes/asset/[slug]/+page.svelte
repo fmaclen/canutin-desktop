@@ -89,7 +89,6 @@
 				selectBalanceGroups={data.selectBalanceGroups}
 				quantifiableAssetTypes={data.quantifiableAssetTypes}
 				lastBalanceStatement={data.lastBalanceStatement}
-				error={asset?.error}
 				submitButtonLabel="Save"
 			/>
 		</div>

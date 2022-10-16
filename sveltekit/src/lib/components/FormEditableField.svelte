@@ -18,6 +18,6 @@
 	div.form__editable-field {
 		display: grid;
 		grid-template-columns: auto max-content;
-		column-gap: 4px;
+		column-gap: 8px;
 	}
 </style>

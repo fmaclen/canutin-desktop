@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Section from '$lib/components/Section.svelte';
 	import Form from '$lib/components/Form.svelte';
 	import FormField from '$lib/components/FormField.svelte';
 	import FormFieldset from '$lib/components/FormFieldset.svelte';
@@ -20,7 +19,6 @@
 	export let quantifiableAssetTypes: number[];
 	export let lastBalanceStatement: AssetBalanceStatement | null = null;
 	export let submitButtonLabel: string;
-	export let error: any | null = null;
 
 	let name = asset ? asset.name : '';
 	let assetTypeId = asset ? asset.assetTypeId : 1;

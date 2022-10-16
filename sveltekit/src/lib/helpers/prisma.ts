@@ -1,7 +1,7 @@
 import path from 'path';
 import { fork } from 'child_process';
 import { env } from '$env/dynamic/private';
-import { Prisma, PrismaClient, type Account, type Asset, type Transaction } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { json } from '@sveltejs/kit';
 
 const cwd = env.SVELTEKIT_PATH ? env.SVELTEKIT_PATH : process.cwd();
@@ -175,7 +175,7 @@ export const handleError = (error: any, modelName: string): CRUDResponse => {
 };
 
 export interface CRUDResponse {
-	payload?: any; // Prisma.BatchPayload | Account | Asset | Transaction
+	payload?: any; // Prisma.BatchPayload | Account | Asset | Transaction | etc...
 	error?: string;
 }
 

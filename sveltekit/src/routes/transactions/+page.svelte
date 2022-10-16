@@ -172,7 +172,7 @@
 	let highlight = highlightParam ? parseInt(highlightParam) : undefined;
 	let selectedTransactions: number[] = [];
 
-	$: allSelected = transactions.length === selectedTransactions.length;
+	$: allSelected = transactions.length > 0 && transactions.length === selectedTransactions.length;
 	$: someSelected =
 		transactions.length > selectedTransactions.length && selectedTransactions.length > 0;
 	$: if (highlight && selectedTransactions.includes(highlight)) highlight = undefined; // Reset highlight when selecting transactions

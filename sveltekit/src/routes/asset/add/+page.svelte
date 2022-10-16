@@ -61,7 +61,6 @@
 				selectAssetTypes={data.selectAssetTypes}
 				selectBalanceGroups={data.selectBalanceGroups}
 				quantifiableAssetTypes={data.quantifiableAssetTypes}
-				error={asset?.error}
 				submitButtonLabel="Add"
 			/>
 		</div>

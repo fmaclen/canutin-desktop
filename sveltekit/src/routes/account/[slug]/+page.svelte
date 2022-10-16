@@ -83,7 +83,6 @@
 				selectAccountTypes={data.selectAccountTypes}
 				selectBalanceGroups={data.selectBalanceGroups}
 				lastBalanceStatement={data.lastBalanceStatement}
-				error={account?.error}
 				submitButtonLabel="Save"
 			/>
 		</div>

@@ -2,7 +2,7 @@ import { type RequestEvent, json } from '@sveltejs/kit';
 import { startOfMonth, endOfMonth, sub, fromUnixTime, getUnixTime } from 'date-fns';
 
 import type { Prisma, Account, Transaction, TransactionCategory } from '@prisma/client';
-import prisma, { crudResponse, handleError, type CRUDResponse } from '$lib/helpers/prisma';
+import prisma, { crudResponse, handleError } from '$lib/helpers/prisma';
 import { SortOrder } from '$lib/helpers/constants';
 
 export interface EndpointTransaction extends Omit<Transaction, 'date'> {
@@ -93,6 +93,32 @@ export const GET = async ({ url }: { url: URL }) => {
 	return json({
 		transactions: endpointTransactions
 	});
+};
+
+export interface BatchEditPayload {
+	transactionIds: number[];
+	updatedProps: Prisma.TransactionUncheckedUpdateManyInput;
+}
+
+// Batch edit transactions
+export const POST = async ({ request }: RequestEvent) => {
+	const payload: BatchEditPayload = await request.json();
+
+	const { transactionIds, updatedProps } = payload;
+	try {
+		const updatedTransactions = await prisma.transaction.updateMany({
+			where: {
+				id: {
+					in: transactionIds
+				}
+			},
+			data: updatedProps
+		});
+
+		return crudResponse({ payload: updatedTransactions });
+	} catch (error) {
+		return crudResponse(handleError(error, 'transactions'));
+	}
 };
 
 // Batch delete transactions

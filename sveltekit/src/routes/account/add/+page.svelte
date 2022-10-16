@@ -53,7 +53,6 @@
 				{handleSubmit}
 				selectAccountTypes={data.selectAccountTypes}
 				selectBalanceGroups={data.selectBalanceGroups}
-				error={account?.error}
 				submitButtonLabel="Add"
 			/>
 		</div>
