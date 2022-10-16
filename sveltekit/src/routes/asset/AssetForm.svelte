@@ -34,7 +34,7 @@
 <Form on:submit={handleSubmit}>
 	<FormFieldset>
 		<FormField name="name" label="Name">
-			<FormInput type="text" name="name" bind:value={name} error={error?.name} />
+			<FormInput type="text" name="name" bind:value={name} />
 		</FormField>
 		<FormField name="assetTypeId" label="Asset type">
 			<FormSelect name="assetTypeId" options={selectAssetTypes} bind:value={assetTypeId} />

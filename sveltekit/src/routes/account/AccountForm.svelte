@@ -29,7 +29,7 @@
 <Form on:submit={handleSubmit}>
 	<FormFieldset>
 		<FormField name="name" label="Name">
-			<FormInput type="text" name="name" bind:value={name} error={error?.name} />
+			<FormInput type="text" name="name" bind:value={name} />
 		</FormField>
 		<FormField name="accountTypeId" label="Account type">
 			<FormSelect name="accountTypeId" options={selectAccountTypes} bind:value={accountTypeId} />
