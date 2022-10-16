@@ -169,12 +169,13 @@
 
 	// Highlight the transaction after it's created or updated
 	const highlightParam = $page.url.searchParams.get('highlight');
-	const highlight = highlightParam ? parseInt(highlightParam) : undefined;
-
+	let highlight = highlightParam ? parseInt(highlightParam) : undefined;
 	let selectedTransactions: number[] = [];
+
 	$: allSelected = transactions.length === selectedTransactions.length;
 	$: someSelected =
 		transactions.length > selectedTransactions.length && selectedTransactions.length > 0;
+	$: if (highlight && selectedTransactions.includes(highlight)) highlight = undefined; // Reset highlight when selecting transactions
 
 	const toggleSelectTransactions = () => {
 		selectedTransactions = allSelected ? [] : transactions.map((transaction) => transaction.id);
