@@ -563,6 +563,9 @@ test.describe('Transactions', () => {
 			expect(await batchEditor.textContent()).toMatch('2 transactions selected');
 			await page.locator('a', { hasText: 'Edit together' }).click();
 			await expect(page.locator('h1', { hasText: 'Batch editor' })).toBeVisible();
+
+			await page.locator('a', { hasText: 'Discard' }).click();
+			await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
 		});
 
 		test('Edit and delete multiple transactions', async ({ page }) => {

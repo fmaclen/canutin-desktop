@@ -175,6 +175,8 @@ export const handleError = (error: any, modelName: string): CRUDResponse => {
 	}
 };
 
+// DEPRECATED (...maybe)
+// https://github.com/Canutin/desktop/issues/128
 export interface CRUDResponse {
 	payload?: any; // Prisma.BatchPayload | Account | Asset | Transaction | etc...
 	error?: string;
