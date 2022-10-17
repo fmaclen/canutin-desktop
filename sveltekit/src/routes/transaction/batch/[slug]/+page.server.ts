@@ -35,7 +35,7 @@ export const load = async ({ params }: { params: Params }) => {
 	const hasSharedAccounts = batchTransactions.every((transaction) => transaction.accountId === accountId); // prettier-ignore
 	const hasSharedDescriptions = batchTransactions.every((transaction) => transaction.description === description); // prettier-ignore
 	const hasSharedCategories = batchTransactions.every((transaction) => transaction.categoryId === categoryId); // prettier-ignore
-	const hasSharedDates = batchTransactions.every((transaction) => transaction.date === date); // prettier-ignore
+	const hasSharedDates = batchTransactions.every((transaction) => transaction.date.getTime() === date.getTime()); // prettier-ignore
 	const hasSharedIsExcluded = batchTransactions.every((transaction) => transaction.isExcluded === isExcluded); // prettier-ignore
 	const hasSharedIsPending = batchTransactions.every((transaction) => transaction.isPending === isPending); // prettier-ignore
 	const hasSharedValues = batchTransactions.every((transaction) => transaction.value === value); // prettier-ignore

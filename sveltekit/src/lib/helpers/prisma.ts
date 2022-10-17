@@ -170,7 +170,8 @@ export const handleError = (error: any, modelName: string): CRUDResponse => {
 		case 'P2025':
 			return { error: `The ${modelName} doesn't exist` };
 		default:
-			return { error };
+			console.error(error);
+			return { error: 'An error ocurred and the request could not be completed' };
 	}
 };
 

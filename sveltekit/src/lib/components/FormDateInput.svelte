@@ -8,7 +8,7 @@
 
 	$: inputDate = new Date(`${thisYear}-${thisMonth}-${thisDate}`).getTime() / 1000;
 
-	let thisYear = date.getFullYear();
+	let thisYear = date.getUTCFullYear();
 	const years = [
 		// Past 15 years
 		...Array.from(Array(15).keys())
@@ -19,10 +19,10 @@
 		...Array.from(Array(15).keys()).map((i) => thisYear + 1 + i)
 	];
 
-	let thisMonth = date.getMonth() + 1;
+	let thisMonth = date.getUTCMonth() + 1;
 	let months = Array.from(Array(12).keys()).map((i) => i + 1); // 12 months in a year
 
-	let thisDate = date ? date.getDate() : new Date().getDate();
+	let thisDate = date ? date.getUTCDate() : new Date().getUTCDate();
 	const days = Array.from(Array(31).keys()).map((i) => i + 1); // 31 days in a month
 
 	const getDateSelects = (dates: number[]) => {

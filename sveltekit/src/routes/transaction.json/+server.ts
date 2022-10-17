@@ -39,11 +39,12 @@ export const POST = async ({ request }: RequestEvent) => {
 export const PATCH = async ({ request }: RequestEvent) => {
 	const payload: Prisma.TransactionUncheckedCreateInput = await request.json();
 
-	// HACK: `payload.date` is actually a number but it conflicts with the type
-	// `Prisma.TransactionUncheckedCreateInput`
-	payload.date = fromUnixTime(payload.date as any);
-
 	if (!payload.id) return json({ error: 'Insufficient data' });
+
+	// Convert the date from Unix timestamp to a Date object.
+	if (typeof payload.date === 'string') {
+		payload.date = fromUnixTime(parseInt(payload.date));
+	}
 
 	try {
 		const transaction = await prisma.transaction.upsert({

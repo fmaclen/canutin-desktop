@@ -109,8 +109,16 @@ export interface BatchEditPayload {
 }
 
 // Batch edit transactions
-export const POST = async ({ request }: RequestEvent) => {
+export const PATCH = async ({ request }: RequestEvent) => {
 	const payload: BatchEditPayload = await request.json();
+
+	if (payload.transactionIds.length < 2 || !payload.updatedProps)
+		return json({ error: 'Insufficient data' });
+
+	// Convert the date from Unix timestamp to a Date object.
+	if (typeof payload.updatedProps.date === 'string') {
+		payload.updatedProps.date = fromUnixTime(parseInt(payload.updatedProps.date));
+	}
 
 	const { transactionIds, updatedProps } = payload;
 	try {

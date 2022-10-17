@@ -66,12 +66,12 @@
 		!isPendingEdited &&
 		!valueEdited;
 
-	const handleSubmit = async () => {
+	const handleSubmit = async (event: any) => {
 		const updatedProps: Prisma.TransactionUncheckedUpdateManyInput = {
 			accountId: accountIdEdited ? accountId : undefined,
 			description: descriptionEdited ? description : undefined,
 			categoryId: categoryIdEdited ? categoryId : undefined,
-			date: dateEdited ? date : undefined,
+			date: dateEdited ? event.target.date?.value : undefined,
 			isExcluded: isExcludedEdited ? isExcluded : undefined,
 			isPending: isPendingEdited ? isPending : undefined,
 			value: valueEdited ? value : undefined
@@ -84,7 +84,7 @@
 
 		const updatedTransactions = (await api({
 			endpoint: 'transactions',
-			method: 'POST',
+			method: 'PATCH',
 			payload
 		})) as CRUDResponse;
 
@@ -175,11 +175,11 @@
 					</FormField>
 					<FormField name="date" label="Date">
 						<FormEditableField name="dateEdit" label="Edit" bind:checked={dateEdited}>
-							{#if !dateEdited}
+							{#if !dateEdited && !hasSharedDates}
 								<FormInput
 									type="text"
-									name="fakeDate"
-									placeholder={hasSharedDates ? undefined : 'Multiple dates'}
+									name="placeholderDate"
+									placeholder={'Multiple dates'}
 									disabled={!dateEdited}
 								/>
 							{:else}
@@ -215,11 +215,11 @@
 				<FormFieldset>
 					<FormField name="value" label="Amount">
 						<FormEditableField name="valueEdit" label="Edit" bind:checked={valueEdited}>
-							{#if !valueEdited}
+							{#if !valueEdited && !hasSharedDescriptions}
 								<FormInput
 									type="text"
-									name="fakeValue"
-									placeholder={hasSharedDescriptions ? undefined : 'Multiple amounts'}
+									name="placeholderValue"
+									placeholder={'Multiple amounts'}
 									disabled={!valueEdited}
 								/>
 							{:else}

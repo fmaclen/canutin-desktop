@@ -3,6 +3,9 @@ import { format, addDays, startOfMonth } from 'date-fns';
 
 import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
 
+// This date is set by the seed data at `src/lib/seed/seedData/transactions.ts`.
+const latestTransactionDate = addDays(startOfMonth(new Date()), 27);
+
 test.describe('Transactions', () => {
 	test.beforeEach(async ({ baseURL }) => {
 		await databaseWipe(baseURL!);
@@ -89,8 +92,6 @@ test.describe('Transactions', () => {
 		expect(await tableRows.last().textContent()).toMatch("Bob's Laughable-Yield Checking");
 		expect(await tableRows.last().textContent()).toMatch('-$2,250.00');
 
-		// This date is set by the seed data at `src/lib/seed/seedData/transactions.ts`.
-		const latestTransactionDate = addDays(startOfMonth(new Date()), 27);
 		// Check the date column is formatted correctly
 		//
 		// FIXME: date it's zoned to the device's timezone so it's possible this test will fail,
@@ -444,7 +445,7 @@ test.describe('Transactions', () => {
 		await expect(transactionLink).toBeVisible();
 
 		await transactionLink.click();
-		expect(await page.locator('p.danger-zone__p').first().textContent()).toBe(
+		expect(await page.locator('p.dangerZone__p').first().textContent()).toBe(
 			'Permanently delete transaction Hølm Home'
 		);
 
@@ -485,5 +486,356 @@ test.describe('Transactions', () => {
 		// Check status message shows an error
 		await expect(statusBar).toHaveClass(/statusBar--negative/);
 		expect(await statusBar.textContent()).toMatch("The transaction doesn't exist");
+	});
+
+	test.describe('Batch-edit', async () => {
+		test.beforeEach(async ({ baseURL, page }) => {
+			await databaseSeed(baseURL!);
+
+			await page.goto('/');
+			await page.locator('a', { hasText: 'Transactions' }).click();
+			await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
+		});
+
+		test('Selecting multiple transactions', async ({ page }) => {
+			await page.goto('/');
+			await page.locator('a', { hasText: 'Transactions' }).click();
+			await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
+
+			const tableRows = page.locator('.table__tr');
+			expect(await tableRows.count()).toBe(111);
+
+			const selectAllCheckbox = page.locator('th input.batchEditor-checkbox__input');
+			const selectCheckboxes = page.locator('td input.batchEditor-checkbox__input');
+			const highlightedRows = page.locator('.table__tr--highlight');
+			const batchEditor = page.locator('.batchEditor');
+
+			expect(await page.locator('.table').textContent()).not.toMatch('No transactions found');
+			await expect(batchEditor).not.toBeVisible();
+			await expect(selectCheckboxes.first()).not.toBeChecked();
+			await expect(selectCheckboxes.last()).not.toBeChecked();
+			expect(await highlightedRows.count()).toBe(0);
+
+			// Select all
+			await selectAllCheckbox.check();
+			await expect(batchEditor).toBeVisible();
+			await expect(selectCheckboxes.first()).toBeChecked();
+			await expect(selectCheckboxes.last()).toBeChecked();
+			expect(await highlightedRows.count()).toBe(111);
+			expect(await batchEditor.textContent()).toMatch('111 transactions selected');
+
+			// Unselect all
+			await selectAllCheckbox.uncheck();
+			await expect(batchEditor).not.toBeVisible();
+			await expect(selectCheckboxes.first()).not.toBeChecked();
+			await expect(selectCheckboxes.last()).not.toBeChecked();
+			expect(await highlightedRows.count()).toBe(0);
+
+			// Highlight a transaction
+			const transaction = page.locator('a', { hasText: 'Patriot Insurance' });
+			await transaction.first().click();
+			await page.locator('button', { hasText: 'Save' }).click();
+			await expect(transaction.first()).toBeVisible();
+			expect(await highlightedRows.count()).toBe(1);
+			await expect(batchEditor).not.toBeVisible();
+
+			// Check the highlighted transaction
+			await page.locator("tr.table__tr--highlight input[type='checkbox']").check();
+			expect(await highlightedRows.count()).toBe(1);
+			await expect(batchEditor).toBeVisible();
+			expect(await batchEditor.textContent()).toMatch('1 transactions selected');
+			await expect(selectAllCheckbox).not.toBeChecked(); // It's actually "indeterminate", not "unchecked"
+
+			// Unchecking the highlighted transaction removes an existing highlight
+			await page.locator("tr.table__tr--highlight input[type='checkbox']").uncheck();
+			expect(await highlightedRows.count()).toBe(0);
+			await expect(batchEditor).not.toBeVisible();
+
+			// Batch-editing a one transaction takes you to the single-transaction edit page
+			await selectCheckboxes.nth(1).check();
+			await page.locator('a', { hasText: 'Edit together' }).click();
+			await expect(page.locator('h1', { hasText: 'Patriot Insurance' })).toBeVisible();
+			await page.locator('button', { hasText: 'Save' }).click();
+
+			// Batch-editing two or more transactions takes you to the batch-edit page
+			await selectCheckboxes.nth(0).check();
+			await selectCheckboxes.nth(1).check();
+			expect(await batchEditor.textContent()).toMatch('2 transactions selected');
+			await page.locator('a', { hasText: 'Edit together' }).click();
+			await expect(page.locator('h1', { hasText: 'Batch editor' })).toBeVisible();
+		});
+
+		test('Edit and delete multiple transactions', async ({ page }) => {
+			const statusBar = page.locator('.statusBar');
+			const dismissButton = page.locator('button', { hasText: 'Dismiss' });
+			const tableRows = page.locator('.table__tr');
+			const selectAllCheckbox = page.locator('th input.batchEditor-checkbox__input');
+			const selectCheckboxes = page.locator('td input.batchEditor-checkbox__input');
+			const batchEditor = page.locator('.batchEditor');
+			const excludedTotals = page.locator('span.table__excluded');
+
+			// Select all but 2 transactions in "Last 3 months"
+			await selectAllCheckbox.check();
+			await selectCheckboxes.nth(0).uncheck();
+			await selectCheckboxes.nth(1).uncheck();
+			expect(await tableRows.count()).toBe(111);
+			expect(await batchEditor.textContent()).toMatch('109 transactions selected');
+
+			// Delete selected transactions
+			await page.locator('a', { hasText: 'Edit together' }).click();
+			await expect(page.locator('h1', { hasText: 'Batch editor' })).toBeVisible();
+			expect(await page.locator('.sectionTitle').first().textContent()).toMatch(
+				'Update 109 transactions'
+			);
+			expect(await page.locator('.dangerZone').textContent()).toMatch(
+				'Permanently delete all 109 transactions'
+			);
+
+			// Prepare to confirm the dialog prompt
+			page.on('dialog', (dialog) => {
+				expect(dialog.message()).toMatch('Are you sure you want to delete the 109 transactions?');
+
+				dialog.accept();
+			});
+
+			await expect(statusBar).not.toHaveClass(/statusBar--active/);
+
+			await page.locator('button', { hasText: 'Delete' }).click();
+
+			await expect(statusBar).toHaveClass(/statusBar--active/);
+			expect(await statusBar.textContent()).toMatch('109 transactions were deleted successfully');
+
+			await dismissButton.click();
+
+			// Check initial values for the first transaction
+			expect(await tableRows.nth(0).textContent()).toMatch(
+				format(latestTransactionDate, 'MMM dd, yyyy')
+			);
+			expect(await tableRows.nth(0).textContent()).toMatch('Toyota - TFS Payment');
+			expect(await tableRows.nth(0).textContent()).toMatch('Automotive');
+			expect(await tableRows.nth(0).textContent()).toMatch("Bob's Laughable-Yield Checking");
+			expect(await tableRows.nth(0).textContent()).toMatch('-$500.00');
+
+			// Check initial values for the second transaction
+			expect(await tableRows.nth(1).textContent()).toMatch(
+				format(latestTransactionDate, 'MMM dd, yyyy')
+			);
+			expect(await tableRows.nth(1).textContent()).toMatch('Patriot Insurance');
+			expect(await tableRows.nth(1).textContent()).toMatch('Insurance');
+			expect(await tableRows.nth(1).textContent()).toMatch("Alice's Limited Rewards");
+			expect(await tableRows.nth(1).textContent()).toMatch('-$135.67');
+
+			// Check that there are only 2 transactions left
+			expect(await tableRows.count()).toBe(2);
+
+			// Check none of the transactions have excluded totals
+			expect(await excludedTotals.count()).toBe(0);
+
+			await selectAllCheckbox.check();
+			expect(await batchEditor.textContent()).toMatch('2 transactions selected');
+
+			// Edit the 2 transactions
+			await page.locator('a', { hasText: 'Edit together' }).click();
+			await expect(page.locator('h1', { hasText: 'Batch editor' })).toBeVisible();
+			expect(await page.locator('.sectionTitle').first().textContent()).toMatch(
+				'Update 2 transactions'
+			);
+
+			// Check all edit checkboxes are unchecked and fields are disabled by default
+			const applyButton = page.locator('button', { hasText: 'Apply' });
+			await expect(applyButton).toBeDisabled();
+
+			// Edit account
+			const accountIdEditCheckbox = page.locator('input.formInputCheckbox__input[name=accountIdEdit]'); // prettier-ignore
+			const accountIdSelect = page.locator('.formSelect__select[name=accountId]'); // prettier-ignore
+			await expect(accountIdEditCheckbox).not.toBeChecked();
+			await expect(accountIdSelect).toBeDisabled();
+
+			await accountIdEditCheckbox.check();
+			await expect(applyButton).not.toBeDisabled();
+			await expect(accountIdSelect).not.toBeDisabled();
+			expect(await accountIdSelect.textContent()).toMatch('Multiple accounts');
+
+			await accountIdSelect.selectOption({ label: 'Emergency Fund' });
+
+			// Edit description
+			const descriptionEditCheckbox = page.locator('input.formInputCheckbox__input[name=descriptionEdit]'); // prettier-ignore
+			const descriptionInput = page.locator('.formInput__input[name=description]');
+			await expect(descriptionEditCheckbox).not.toBeChecked();
+			await expect(descriptionInput).toBeDisabled();
+
+			await descriptionEditCheckbox.check();
+			await expect(descriptionInput).not.toBeDisabled();
+			await expect(descriptionInput).toHaveAttribute('placeholder', 'Multiple descriptions');
+			await expect(descriptionInput).toHaveValue('');
+
+			await descriptionInput.fill('Accidentes? Llámenos 1-800-877-7770');
+
+			// Edit category
+			const categoryIdEditCheckbox = page.locator('input.formInputCheckbox__input[name=categoryIdEdit]'); // prettier-ignore
+			const categoryIdSelect = page.locator('.formSelect__select[name=categoryId]');
+			await expect(categoryIdEditCheckbox).not.toBeChecked();
+			await expect(categoryIdSelect).toBeDisabled();
+
+			await categoryIdEditCheckbox.check();
+			await expect(categoryIdSelect).not.toBeDisabled();
+			expect(await categoryIdSelect.textContent()).toMatch('Multiple categories');
+
+			await categoryIdSelect.selectOption({ label: 'Legal' });
+
+			// Dates are shared between the 2 transactions
+			const dateEditCheckbox = page.locator('input.formInputCheckbox__input[name=dateEdit]');
+			const placeholderDateInput = page.locator('.formInput__input[name=placeholderDate]');
+			const yearSelect = page.locator('.formSelect__select[name=yearSelect]');
+			const monthSelect = page.locator('.formSelect__select[name=monthSelect]');
+			const dateSelect = page.locator('.formSelect__select[name=dateSelect]');
+			await expect(dateEditCheckbox).not.toBeChecked();
+			await expect(placeholderDateInput).not.toBeVisible();
+			await expect(yearSelect).toBeVisible();
+			await expect(yearSelect).toHaveValue(new Date().getFullYear().toString());
+			await expect(monthSelect).toBeVisible();
+			await expect(monthSelect).toHaveValue((new Date().getMonth() + 1).toString());
+			await expect(dateSelect).toBeVisible();
+			expect(parseInt(await dateSelect.inputValue())).toBeGreaterThanOrEqual(1);
+			expect(parseInt(await dateSelect.inputValue())).toBeLessThanOrEqual(31);
+
+			// Edit excluded from totals
+			const isExcludedEditCheckbox = page.locator('input.formInputCheckbox__input[name=isExcludedEdit]'); // prettier-ignore
+			const isExcludedCheckbox = page.locator('.formInputCheckbox__input[name=isExcluded]');
+			await expect(isExcludedEditCheckbox).not.toBeChecked();
+			await expect(isExcludedCheckbox).toBeDisabled();
+
+			await isExcludedEditCheckbox.check();
+			await expect(isExcludedCheckbox).not.toBeDisabled();
+
+			await isExcludedCheckbox.check();
+
+			// Edit pending
+			const isPendingEditCheckbox = page.locator('input.formInputCheckbox__input[name=isPendingEdit]'); // prettier-ignore
+			const isPendingCheckbox = page.locator('input.formInputCheckbox__input[name=isPending]');
+			await expect(isPendingEditCheckbox).not.toBeChecked();
+			await expect(isPendingCheckbox).toBeDisabled();
+
+			await isPendingEditCheckbox.check();
+			await expect(isPendingCheckbox).not.toBeDisabled();
+
+			await isPendingCheckbox.check();
+
+			// Edit amount
+			const amountEditCheckbox = page.locator('input.formInputCheckbox__input[name=valueEdit]');
+			const placeholderAmountInput = page.locator('.formInput__input[name=placeholderValue]'); // prettier-ignore
+			const amountInput = page.locator('.currencyInput__formatted[name="formatted-value"]');
+			await expect(amountEditCheckbox).not.toBeChecked();
+			await expect(placeholderAmountInput).toBeDisabled();
+			await expect(amountInput).not.toBeVisible();
+			await expect(placeholderAmountInput).toHaveAttribute('placeholder', 'Multiple amounts');
+
+			await amountEditCheckbox.check();
+			await expect(placeholderAmountInput).not.toBeVisible();
+			await expect(amountInput).toBeVisible();
+
+			await amountInput.type('999');
+
+			await expect(statusBar).not.toHaveClass(/statusBar--positive/);
+
+			await applyButton.click();
+
+			await expect(statusBar).toHaveClass(/statusBar--positive/);
+			expect(await statusBar.textContent()).toMatch('The 2 transactions were updated successfully');
+
+			await dismissButton.click();
+
+			// Check the first transaction was edited
+			expect(await tableRows.nth(0).textContent()).toMatch('Accidentes? Llámenos 1-800-877-7770');
+			expect(await tableRows.nth(0).textContent()).toMatch('Legal');
+			expect(await tableRows.nth(0).textContent()).toMatch('Emergency Fund');
+			expect(await tableRows.nth(0).textContent()).toMatch('$999.00');
+			expect(await tableRows.nth(0).textContent()).toMatch('28');
+
+			// Check the second transaction was edited
+			expect(await tableRows.nth(1).textContent()).toMatch('Accidentes? Llámenos 1-800-877-7770');
+			expect(await tableRows.nth(1).textContent()).toMatch('Legal');
+			expect(await tableRows.nth(1).textContent()).toMatch('Emergency Fund');
+			expect(await tableRows.nth(1).textContent()).toMatch('$999.00');
+			expect(await tableRows.nth(1).textContent()).toMatch('28');
+
+			// Check only 2 transactions are visible
+			expect(await tableRows.count()).toBe(2);
+
+			// Check none of the transactions have excluded totals
+			expect(await excludedTotals.count()).toBe(2);
+
+			// Update the date of the first transaction
+			await page.locator('a', { hasText: 'Accidentes? Llámenos 1-800-877-7770' }).first().click();
+			await dateSelect.selectOption({ label: '29' });
+			await page.locator('button', { hasText: 'Save' }).click();
+
+			await expect(statusBar).toHaveClass(/statusBar--positive/);
+			expect(await statusBar.textContent()).toMatch('The transaction was updated successfully');
+
+			await dismissButton.click();
+			expect(await tableRows.nth(0).textContent()).toMatch('29');
+			expect(await tableRows.nth(1).textContent()).toMatch('28');
+
+			// Update the 2 transactions again
+			await selectAllCheckbox.check();
+			await page.locator('a', { hasText: 'Edit together' }).click();
+
+			// Check that accounts are the same
+			await expect(accountIdEditCheckbox).not.toBeChecked();
+			await expect(accountIdSelect).toBeDisabled();
+			expect(await accountIdSelect.textContent()).toMatch('Emergency Fund');
+
+			// Check that descriptions are the same
+			await expect(descriptionEditCheckbox).not.toBeChecked();
+			await expect(descriptionInput).toBeDisabled();
+			await expect(descriptionInput).not.toHaveAttribute('placeholder', 'Multiple descriptions');
+			expect(await descriptionInput.inputValue()).toMatch('Accidentes? Llámenos 1-800-877-7770');
+
+			// Check that categories are the same
+			await expect(categoryIdEditCheckbox).not.toBeChecked();
+			await expect(categoryIdSelect).toBeDisabled();
+			expect(await categoryIdSelect.textContent()).toMatch('Legal');
+
+			// Check the dates are different
+			await expect(dateEditCheckbox).not.toBeChecked();
+			await expect(yearSelect).not.toBeVisible();
+			await expect(monthSelect).not.toBeVisible();
+			await expect(dateSelect).not.toBeVisible();
+			await expect(placeholderDateInput).toBeVisible();
+			await expect(placeholderDateInput).toHaveAttribute('placeholder', 'Multiple dates');
+
+			// Edit the date
+			await dateEditCheckbox.check();
+			await expect(yearSelect).toBeVisible();
+			await expect(monthSelect).toBeVisible();
+			await expect(dateSelect).toBeVisible();
+			await expect(placeholderDateInput).not.toBeVisible();
+			await dateSelect.selectOption({ label: '15' });
+
+			// Check that excluded is the same
+			await expect(isExcludedEditCheckbox).not.toBeChecked();
+			await expect(isExcludedCheckbox).toBeDisabled();
+			await expect(isExcludedCheckbox).toBeChecked();
+
+			// Check that pending is the same
+			await expect(isPendingEditCheckbox).not.toBeChecked();
+			await expect(isPendingCheckbox).toBeDisabled();
+			await expect(isPendingCheckbox).toBeChecked();
+
+			// Check that amount is the same
+			await expect(amountEditCheckbox).not.toBeChecked();
+			await expect(placeholderAmountInput).not.toBeVisible();
+			await expect(amountInput).toBeDisabled();
+			expect(await amountInput.inputValue()).toMatch('$999');
+
+			await applyButton.click();
+			await expect(statusBar).toHaveClass(/statusBar--positive/);
+			expect(await statusBar.textContent()).toMatch('The 2 transactions were updated successfully');
+
+			await dismissButton.click();
+			expect(await tableRows.nth(0).textContent()).toMatch('15');
+			expect(await tableRows.nth(1).textContent()).toMatch('15');
+		});
 	});
 });

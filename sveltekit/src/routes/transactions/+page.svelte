@@ -263,10 +263,12 @@
 							>
 								<button
 									class="table__sortable
-								{sortBy === column && 'table__sortable--active'}
-								{sortBy === column && `table__sortable--${sortOrder}`}"
-									on:click={async () => await sortTransactionsBy(column)}>{label}</button
+									{sortBy === column && 'table__sortable--active'}
+									{sortBy === column && `table__sortable--${sortOrder}`}"
+									on:click={async () => await sortTransactionsBy(column)}
 								>
+									{label}
+								</button>
 							</th>
 						{/each}
 					</tr>
@@ -277,9 +279,8 @@
 							{@const { id, date, description, transactionCategory, account, value, isExcluded } =
 								transaction}
 							<tr
-								class="table__tr {highlight === id || selectedTransactions.includes(id)
-									? 'table__tr--highlight'
-									: null}"
+								class="table__tr
+									{highlight === id || selectedTransactions.includes(id) ? 'table__tr--highlight' : null}"
 							>
 								<td class="table__td table__td--checkbox">
 									<label class="batchEditor-checkbox">
@@ -294,24 +295,24 @@
 									</label>
 								</td>
 
-								<td class="table__td table__td--date"
-									>{formatInUTC(fromUnixTime(date), 'MMM dd, yyyy')}</td
-								>
+								<td class="table__td table__td--date">
+									{formatInUTC(fromUnixTime(date), 'MMM dd, yyyy')}
+								</td>
 								<td class="table__td"><Link href={`/transaction/${id}`}>{description}</Link></td>
 								<td class="table__td">{transactionCategory.name}</td>
-								<td class="table__td"
-									><Link href={`/account/${transaction.accountId}`}>{account.name}</Link></td
-								>
-								<td class="table__td table__td--total {value > 0 && `table__td--positive`}"
-									><span
+								<td class="table__td">
+									<Link href={`/account/${transaction.accountId}`}>{account.name}</Link>
+								</td>
+								<td class="table__td table__td--total {value > 0 && `table__td--positive`}">
+									<span
 										class={isExcluded ? `table__excluded` : null}
 										title={isExcluded
 											? "This transaction is excluded from 'The big picture' and 'Balance sheet' totals"
 											: null}
 									>
 										{formatCurrency(value, 2, 2)}
-									</span></td
-								>
+									</span>
+								</td>
 							</tr>
 						{/each}
 					{:else}
