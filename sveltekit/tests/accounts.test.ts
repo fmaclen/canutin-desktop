@@ -218,7 +218,7 @@ test.describe('Accounts', () => {
 		await expect(accountLink).toBeVisible();
 
 		await accountLink.click();
-		expect(await page.locator('p.danger-zone__p').first().textContent()).toBe(
+		expect(await page.locator('p.dangerZone__p').first().textContent()).toBe(
 			"Permanently delete account Bob's Laughable-Yield Checking (including transactions)"
 		);
 

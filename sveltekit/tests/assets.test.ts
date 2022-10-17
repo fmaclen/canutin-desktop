@@ -161,7 +161,7 @@ test.describe('Assets', () => {
 		await expect(assetLink).toBeVisible();
 
 		await assetLink.click();
-		expect(await page.locator('p.danger-zone__p').first().textContent()).toBe(
+		expect(await page.locator('p.dangerZone__p').first().textContent()).toBe(
 			'Permanently delete asset 1998 Fiat Multipla'
 		);
 
