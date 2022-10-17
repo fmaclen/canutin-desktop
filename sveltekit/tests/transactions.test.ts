@@ -498,10 +498,6 @@ test.describe('Transactions', () => {
 		});
 
 		test('Selecting multiple transactions', async ({ page }) => {
-			await page.goto('/');
-			await page.locator('a', { hasText: 'Transactions' }).click();
-			await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
-
 			const tableRows = page.locator('.table__tr');
 			expect(await tableRows.count()).toBe(111);
 
