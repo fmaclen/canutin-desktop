@@ -1,8 +1,13 @@
 import { fromUnixTime } from 'date-fns';
-import { Prisma, type Transaction } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 import prisma from '$lib/helpers/prisma';
-import { getModelType, getTransactionCategoryId } from '$lib/helpers/models';
+import {
+	formatTransactionDescription,
+	formatTransactionDate,
+	getModelType,
+	getTransactionCategoryId
+} from '$lib/helpers/models';
 import { SyncSettings } from './constants';
 import type { SyncStatusStore } from '$lib/stores/syncStatusStore';
 
@@ -162,8 +167,8 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 				if (account.transactions) {
 					for (const transaction of account.transactions) {
 						const transactionImportBlueprint = {
-							description: transaction.description,
-							date: fromUnixTime(transaction.date),
+							description: formatTransactionDescription(transaction.description),
+							date: formatTransactionDate(transaction.date),
 							value: transaction.value,
 							isExcluded: transaction.isExcluded,
 							isPending: transaction.isPending,
@@ -179,6 +184,20 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 
 						// Skip duplicate TransactionImports
 						if (existingTransactionImport) {
+							importedAccounts.transactions.skipped.push(transaction);
+							continue;
+						}
+
+						// Minimize duplicate Transactions by matching key values against existing transactions
+						const existingTransaction = await prisma.transaction.findFirst({
+							where: {
+								accountId: transactionImportBlueprint.accountId,
+								description: transactionImportBlueprint.description,
+								date: transactionImportBlueprint.date,
+								value: transactionImportBlueprint.value
+							}
+						});
+						if (existingTransaction) {
 							importedAccounts.transactions.skipped.push(transaction);
 							continue;
 						}

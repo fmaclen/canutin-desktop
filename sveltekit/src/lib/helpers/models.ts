@@ -1,7 +1,9 @@
 import prisma from '$lib/helpers/prisma';
 import type { Account } from '@prisma/client';
 import type { Asset } from '@prisma/client';
+import { fromUnixTime } from 'date-fns';
 import { SortOrder } from './constants';
+import { dateInUTC } from './misc';
 
 // Gets the Account or Asset type id from the name
 export const getModelType = async (modelTypeName: string, isAccount: boolean) => {
@@ -113,4 +115,23 @@ export const getTransactionCategoryId = async (categoryName: string) => {
 	}
 
 	return transactionCategoryId!.id;
+};
+
+// Transaction descriptions are cleaned by removing extra spaces, tabs or new lines
+export const formatTransactionDescription = (description: string) => {
+	return description.replace(/\s\s+/g, ' ');
+};
+
+// Transaction dates are normalized to UTC at midnight
+export const formatTransactionDate = (date: string | number | Date) => {
+	switch (typeof date) {
+		case 'string':
+			return dateInUTC(fromUnixTime(Number(date)));
+		case 'number':
+			return dateInUTC(fromUnixTime(date));
+		case 'object':
+			return dateInUTC(date);
+		default:
+			throw new Error(`Invalid date type: ${typeof date}`);
+	}
 };

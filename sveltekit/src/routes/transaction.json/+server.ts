@@ -2,15 +2,15 @@ import { json } from '@sveltejs/kit';
 import type { Prisma } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
 import prisma, { handleError, crudResponse } from '$lib/helpers/prisma';
-import { fromUnixTime } from 'date-fns';
+import { formatTransactionDate, formatTransactionDescription } from '$lib/helpers/models';
 
 // Create new transaction
 export const POST = async ({ request }: RequestEvent) => {
 	const payload: Prisma.TransactionUncheckedCreateInput = await request.json();
 
-	// HACK: `payload.date` is actually a number but it conflicts with the type
-	// `Prisma.TransactionUncheckedCreateInput`
-	payload.date = fromUnixTime(payload.date as any);
+	// Normalize payload values
+	payload.date = formatTransactionDate(payload.date);
+	payload.description = formatTransactionDescription(payload.description);
 
 	if (
 		!payload.description ||
@@ -41,10 +41,9 @@ export const PATCH = async ({ request }: RequestEvent) => {
 
 	if (!payload.id) return json({ error: 'Insufficient data' });
 
-	// Convert the date from Unix timestamp to a Date object.
-	if (typeof payload.date === 'string') {
-		payload.date = fromUnixTime(parseInt(payload.date));
-	}
+	// Normalize payload values
+	payload.date = formatTransactionDate(payload.date);
+	payload.description = formatTransactionDescription(payload.description);
 
 	try {
 		const transaction = await prisma.transaction.upsert({
