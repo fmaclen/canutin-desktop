@@ -324,7 +324,7 @@ test.describe('Import CanutinFile', () => {
 		await page.locator('a', { hasText: 'Import file' }).click();
 		await page.setInputFiles(
 			'input[type="file"]',
-			'./tests/fixtures/canutinFile-duplicate-data.json'
+			'./tests/fixtures/canutinFile-duplicated-transactions.json'
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
 		const dismissButton = page.locator('.button', { hasText: 'Dismiss' });
