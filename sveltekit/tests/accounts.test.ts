@@ -104,12 +104,14 @@ test.describe('Accounts', () => {
 		await nameInput.fill('Fiat Financial Services');
 		await page.locator('button', { hasText: 'Dismiss' }).click();
 		await page.locator('button', { hasText: 'Add' }).click();
+		await delay(); // HACK: Needed for CI
 		await expect(statusBar).toHaveClass(/statusBar--negative/);
 		expect(await statusBar.textContent()).toMatch('An account with the same name already exists');
 
 		// Check an account can't be edited to have the same name as another account
 		await nameInput.fill("Alice's Savings");
 		await page.locator('button', { hasText: 'Add' }).click();
+		await delay(); // HACK: Needed for CI
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
 		expect(await statusBar.textContent()).toMatch('The account was added successfully');
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
@@ -120,6 +122,7 @@ test.describe('Accounts', () => {
 
 		await nameInput.fill('Fiat Financial Services');
 		await page.locator('button', { hasText: 'Save' }).click();
+		await delay(); // HACK: Needed for CI
 		await expect(statusBar).toHaveClass(/statusBar--negative/);
 		expect(await statusBar.textContent()).toMatch('An account with the same name already exists');
 	});

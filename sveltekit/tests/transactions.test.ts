@@ -82,6 +82,7 @@ test.describe('Transactions', () => {
 		expect(await cardNetBalance.textContent()).toMatch('Net balance');
 
 		const tableRows = page.locator('.table__tr');
+		await delay(); // HACK: Needed for CI
 		expect(await tableRows.count()).toBe(111);
 		expect(await tableRows.first().textContent()).toMatch('Toyota - TFS Payment');
 		expect(await tableRows.first().textContent()).toMatch('Automotive');
