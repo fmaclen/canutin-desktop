@@ -456,7 +456,7 @@
 		&--highlight {
 			&:nth-child(even),
 			&:nth-child(odd) {
-				td.table__td {
+				td.table__td:not(.table__td--notice) {
 					background-color: var(--color-blueSecondary);
 				}
 			}

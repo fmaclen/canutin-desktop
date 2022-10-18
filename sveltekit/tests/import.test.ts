@@ -309,12 +309,59 @@ test.describe('Import CanutinFile', () => {
 		await formSelect.selectOption('7'); // Lifetime
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
-		await expect(tableRows.nth(4)).toBeVisible();
 		expect(await tableRows.count()).toBe(5);
+		await expect(tableRows.nth(4)).toBeVisible();
 		expect(await tableRows.nth(4).textContent()).toMatch('Not Initech Payroll');
 		expect(await tableRows.nth(4).textContent()).toMatch('2019');
 		expect(await tableRows.nth(4).textContent()).toMatch('Uncategorized');
 		expect(await page.locator('.table__excluded').last().textContent()).toBe('$9,999.00');
 		expect(await cardNetBalance.textContent()).toMatch('-$2,900.50');
+	});
+
+	test('Risk of importing duplicate transactions is minimized', async ({ page }) => {
+		await page.goto('/');
+		await page.locator('a.layout__a', { hasText: 'Add or update data' }).click();
+		await page.locator('a', { hasText: 'Import file' }).click();
+		await page.setInputFiles(
+			'input[type="file"]',
+			'./tests/fixtures/canutinFile-duplicate-data.json'
+		);
+		await page.locator('button', { hasText: 'Upload' }).click();
+		const dismissButton = page.locator('.button', { hasText: 'Dismiss' });
+		const statusBar = page.locator('.statusBar');
+		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		expect(await page.locator('section.section', { hasText: 'Accounts' }).first().textContent()).toMatch('Created 1'); // prettier-ignore
+		expect(await page.locator('section.section', { hasText: 'Accounts Transactions' }).textContent()).toMatch('Duplicates (Skipped) 2'); // prettier-ignore
+
+		await dismissButton.click();
+		await page.locator('a', { hasText: 'Transactions' }).click();
+
+		const formInput = page.locator('.formInput__input');
+		const formSelect = page.locator('.formSelect__select');
+		const cardNetBalance = page.locator('.card', { hasText: 'Net balance' });
+		const tableRows = page.locator('.table__tr');
+
+		await formSelect.selectOption('7'); // Lifetime
+		await formSelect.dispatchEvent('change');
+		await formInput.click();
+		expect(await cardNetBalance.textContent()).toMatch('-$24.99');
+		expect(await tableRows.count()).toBe(2);
+
+		expect(await tableRows.nth(0).textContent()).toMatch('Nov 16, 2022');
+		expect(await tableRows.nth(0).textContent()).toMatch('NetTV *PYMNT ~Thank You~');
+		expect(await tableRows.nth(0).textContent()).toMatch('Television');
+		expect(await tableRows.nth(0).textContent()).toMatch("Bob's Laughable-Yield Checking");
+		expect(await tableRows.nth(0).textContent()).toMatch('-$24.99');
+
+		expect(await tableRows.nth(1).textContent()).toMatch('Nov 15, 2022');
+		expect(await tableRows.nth(1).textContent()).toMatch('NetTV *PYMNT ~Thank You~');
+		expect(await tableRows.nth(1).textContent()).toMatch('Subscriptions');
+		expect(await tableRows.nth(1).textContent()).toMatch("Bob's Laughable-Yield Checking");
+		expect(await tableRows.nth(1).textContent()).toMatch('-$24.99');
+		expect(await page.locator('span.table__excluded', { hasText: '-$24.99' }).count()).toBe(1);
+
+		// Check the extra spaces in the transaction description have been removed
+		await page.locator('a', { hasText: 'NetTV *PYMNT ~Thank You~' }).first().click();
+		expect(await page.locator(".formInput__input[name=description]").inputValue()).toBe('NetTV *PYMNT ~Thank You~'); // prettier-ignore
 	});
 });
