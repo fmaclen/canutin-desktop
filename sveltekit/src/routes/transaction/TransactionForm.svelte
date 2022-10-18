@@ -10,12 +10,13 @@
 	import FormNoticeNotice from '$lib/components/FormNoticeNotice.svelte';
 	import FormNoticeP from '$lib/components/FormNoticeP.svelte';
 	import FormCurrency from '$lib/components/FormCurrency.svelte';
+	import FormFieldFlags from '$lib/components/FormFieldFlags.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Link from '$lib/components/Link.svelte';
-	import { LOCALE } from '$lib/helpers/misc';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { FormSelectOption } from '$lib/components/FormSelect';
 	import type { Transaction } from '@prisma/client';
+	import FormDateInput from '$lib/components/FormDateInput.svelte';
 
 	export let handleSubmit: (e: SubmitEvent) => void;
 	export let transaction: Transaction | null = null;
@@ -23,45 +24,12 @@
 	export let selectTransactionCategories: FormSelectOption[];
 	export let submitButtonLabel: string;
 
-	let thisYear = transaction?.date ? transaction.date.getFullYear() : new Date().getFullYear();
-	const years = [
-		// Past 15 years
-		...Array.from(Array(15).keys())
-			.map((i) => thisYear - 1 - i)
-			.reverse(),
-		thisYear,
-		// Next 15 years
-		...Array.from(Array(15).keys()).map((i) => thisYear + 1 + i)
-	];
-
-	let thisMonth = transaction?.date ? transaction.date.getMonth() + 1 : new Date().getMonth() + 1;
-	let months = Array.from(Array(12).keys()).map((i) => i + 1); // 12 months in a year
-
-	let thisDate = transaction?.date ? transaction.date.getDate() : new Date().getDate();
-	const days = Array.from(Array(31).keys()).map((i) => i + 1); // 31 days in a month
-
-	const getDateSelects = (dates: number[]) => {
-		const isMonth = dates.length === 12;
-
-		return dates.map((date) => {
-			return {
-				label: isMonth
-					? `${date} - ${new Date(thisYear, date - 1, 1).toLocaleString(LOCALE, {
-							month: 'short'
-					  })}` // e.g. "9 - Sep"
-					: date.toString(),
-				value: date
-			};
-		});
-	};
-
 	let description = transaction ? transaction.description : '';
 	let accountId = transaction ? transaction.accountId : 1;
 	let categoryId = transaction ? transaction.categoryId : 1;
 	let isPending = transaction ? transaction.isPending : false;
 	let isExcluded = transaction ? transaction.isExcluded : false;
 	let hasNoAccounts = selectAccounts.length < 1;
-	$: date = new Date(`${thisYear}-${thisMonth}-${thisDate}`).getTime() / 1000;
 	$: isSubmitDisabled = !accountId || !description;
 </script>
 
@@ -102,32 +70,12 @@
 			/>
 		</FormField>
 		<FormField name="date" label="Date">
-			<div class="transactionDateField">
-				<input type="hidden" name="date" value={date} />
-				<FormSelect
-					name="yearSelect"
-					options={getDateSelects(years)}
-					disabled={hasNoAccounts}
-					bind:value={thisYear}
-				/>
-				<FormSelect
-					name="monthSelect"
-					options={getDateSelects(months)}
-					disabled={hasNoAccounts}
-					bind:value={thisMonth}
-				/>
-				<FormSelect
-					name="dateSelect"
-					options={getDateSelects(days)}
-					disabled={hasNoAccounts}
-					bind:value={thisDate}
-				/>
-			</div>
+			<FormDateInput name="date" disabled={hasNoAccounts} date={transaction?.date} />
 		</FormField>
 	</FormFieldset>
 	<FormFieldset>
 		<FormField name="flags" label="Marked as">
-			<div class="transactionFlags">
+			<FormFieldFlags>
 				<FormInputCheckbox
 					name="isExcluded"
 					label="Excluded from totals"
@@ -140,7 +88,7 @@
 					disabled={hasNoAccounts}
 					bind:checked={isPending}
 				/>
-			</div>
+			</FormFieldFlags>
 		</FormField>
 	</FormFieldset>
 	<FormFieldset>
@@ -152,17 +100,3 @@
 		<Button disabled={isSubmitDisabled} appearance={Appearance.ACTIVE}>{submitButtonLabel}</Button>
 	</FormFooter>
 </Form>
-
-<style lang="scss">
-	div.transactionFlags {
-		display: flex;
-		flex-direction: column;
-		row-gap: 4px;
-	}
-
-	div.transactionDateField {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		column-gap: 4px;
-	}
-</style>

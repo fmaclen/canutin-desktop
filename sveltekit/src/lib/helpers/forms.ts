@@ -1,6 +1,8 @@
 import { BalanceGroup, getBalanceGroupLabel } from '$lib/helpers/constants';
 import prisma from '$lib/helpers/prisma';
 
+// DEPRECATED: replace with CRUDResponse
+// https://github.com/Canutin/desktop/issues/128
 export interface AddOrUpdateAPIResponse {
 	id?: number;
 	error?: any;

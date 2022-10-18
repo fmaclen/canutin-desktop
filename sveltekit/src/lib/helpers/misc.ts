@@ -1,3 +1,4 @@
+import { redirect } from '@sveltejs/kit';
 import formatInTimeZone from 'date-fns-tz/esm/formatInTimeZone';
 import { SortOrder } from '$lib/helpers/constants';
 
@@ -54,4 +55,8 @@ export const api = async ({ endpoint, method, payload, params }: Api) => {
 		body: payload && JSON.stringify(payload)
 	});
 	return await response.json();
+};
+
+export const notFound = () => {
+	throw redirect(307, '/404');
 };

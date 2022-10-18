@@ -99,16 +99,13 @@ test.describe('Accounts', () => {
 		// Check a new account with the same name can't be created
 		await page.locator('a', { hasText: 'Add account' }).click();
 		await expect(page.locator('h1', { hasText: 'Add account' })).toBeVisible();
-		const inputError = page.locator('.formInput__error');
-		await expect(inputError).not.toBeVisible();
+		await expect(statusBar).not.toHaveClass(/statusBar--negative/);
 
 		await nameInput.fill('Fiat Financial Services');
 		await page.locator('button', { hasText: 'Dismiss' }).click();
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(inputError).toBeVisible();
-		expect(await inputError.textContent()).toMatch('An account with the same name already exists');
-		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).not.toMatch('The account was added successfully');
+		await expect(statusBar).toHaveClass(/statusBar--negative/);
+		expect(await statusBar.textContent()).toMatch('An account with the same name already exists');
 
 		// Check an account can't be edited to have the same name as another account
 		await nameInput.fill("Alice's Savings");
@@ -122,9 +119,9 @@ test.describe('Accounts', () => {
 		await expect(page.locator('h1', { hasText: "Alice's Savings" })).toBeVisible();
 
 		await nameInput.fill('Fiat Financial Services');
-		await expect(inputError).not.toBeVisible();
 		await page.locator('button', { hasText: 'Save' }).click();
-		expect(await inputError.textContent()).toMatch('An account with the same name already exists');
+		await expect(statusBar).toHaveClass(/statusBar--negative/);
+		expect(await statusBar.textContent()).toMatch('An account with the same name already exists');
 	});
 
 	test('Auto-calculated accounts show the correct balance', async ({ page }) => {
@@ -221,7 +218,7 @@ test.describe('Accounts', () => {
 		await expect(accountLink).toBeVisible();
 
 		await accountLink.click();
-		expect(await page.locator('p.danger-zone__p').first().textContent()).toBe(
+		expect(await page.locator('p.dangerZone__p').first().textContent()).toBe(
 			"Permanently delete account Bob's Laughable-Yield Checking (including transactions)"
 		);
 

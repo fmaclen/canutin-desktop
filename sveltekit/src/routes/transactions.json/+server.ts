@@ -1,12 +1,19 @@
-import { json } from '@sveltejs/kit';
+import { type RequestEvent, json } from '@sveltejs/kit';
 import { startOfMonth, endOfMonth, sub, fromUnixTime, getUnixTime } from 'date-fns';
 
-import type { Account, Transaction, TransactionCategory } from '@prisma/client';
-import prisma from '$lib/helpers/prisma';
+import type {
+	Prisma,
+	Account,
+	Transaction,
+	TransactionCategory,
+	TransactionImport
+} from '@prisma/client';
+import prisma, { crudResponse, handleError } from '$lib/helpers/prisma';
 import { SortOrder } from '$lib/helpers/constants';
 
 export interface EndpointTransaction extends Omit<Transaction, 'date'> {
 	date: number;
+	transactionImport: TransactionImport | null;
 	transactionCategory: TransactionCategory;
 	account: Account;
 }
@@ -78,6 +85,7 @@ export const GET = async ({ url }: { url: URL }) => {
 			...whereOr()
 		},
 		include: {
+			transactionImport: true,
 			transactionCategory: true,
 			account: true
 		},
@@ -93,4 +101,58 @@ export const GET = async ({ url }: { url: URL }) => {
 	return json({
 		transactions: endpointTransactions
 	});
+};
+
+export interface BatchEditPayload {
+	transactionIds: number[];
+	updatedProps: Prisma.TransactionUncheckedUpdateManyInput;
+}
+
+// Batch edit transactions
+export const PATCH = async ({ request }: RequestEvent) => {
+	const payload: BatchEditPayload = await request.json();
+
+	if (payload.transactionIds.length < 2 || !payload.updatedProps)
+		return json({ error: 'Insufficient data' });
+
+	// Convert the date from Unix timestamp to a Date object.
+	if (typeof payload.updatedProps.date === 'string') {
+		payload.updatedProps.date = fromUnixTime(parseInt(payload.updatedProps.date));
+	}
+
+	const { transactionIds, updatedProps } = payload;
+	try {
+		const updatedTransactions = await prisma.transaction.updateMany({
+			where: {
+				id: {
+					in: transactionIds
+				}
+			},
+			data: updatedProps
+		});
+
+		return crudResponse({ payload: updatedTransactions });
+	} catch (error) {
+		return crudResponse(handleError(error, 'transactions'));
+	}
+};
+
+// Batch delete transactions
+export const DELETE = async ({ request }: RequestEvent) => {
+	const payload: Transaction[] = await request.json();
+	const transactionIds = payload.map((transaction) => transaction.id);
+
+	try {
+		const transactionCount = await prisma.transaction.deleteMany({
+			where: {
+				id: {
+					in: transactionIds
+				}
+			}
+		});
+
+		return crudResponse({ payload: transactionCount });
+	} catch (error) {
+		return crudResponse(handleError(error, 'transactions'));
+	}
 };

@@ -1,25 +1,21 @@
-import { redirect } from '@sveltejs/kit';
 import prisma from '$lib/helpers/prisma';
 import { getSelectAccountTypes, selectBalanceGroups } from '$lib/helpers/forms';
 import type { Account } from '@prisma/client';
 import { SortOrder } from '$lib/helpers/constants';
+import { notFound } from '$lib/helpers/misc';
 
 interface Params {
 	slug: string | null;
 }
 
-const returnNotFound = () => {
-	throw redirect(307, '/404');
-};
-
 export const load = async ({ params }: { params: Params }) => {
 	const { slug } = params;
 
-	if (!slug) returnNotFound();
+	if (!slug || Number.isNaN(parseInt(slug))) return notFound();
 
-	const account = (await prisma.account.findUnique({ where: { id: parseInt(slug!) } })) as Account;
+	const account = (await prisma.account.findUnique({ where: { id: parseInt(slug) } })) as Account;
 
-	if (!account) returnNotFound();
+	if (!account) return notFound();
 
 	const selectAccountTypes = await getSelectAccountTypes();
 	const lastBalanceStatement = await prisma.accountBalanceStatement.findFirst({

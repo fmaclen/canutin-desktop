@@ -5,12 +5,12 @@
 	export let handleDelete: (e: Event) => void;
 </script>
 
-<div class="danger-zone">
-	<div class="danger-zone__notice">
-		<p class="danger-zone__p">
+<div class="dangerZone">
+	<div class="dangerZone__notice">
+		<p class="dangerZone__p">
 			<slot />
 		</p>
-		<p class="danger-zone__p danger-zone__p--negative">{UNDOABLE_ACTION.split('🚩')[1]}</p>
+		<p class="dangerZone__p dangerZone__p--negative">{UNDOABLE_ACTION.split('🚩')[1]}</p>
 	</div>
 	<nav>
 		<Button on:click={handleDelete}>Delete</Button>
@@ -18,7 +18,7 @@
 </div>
 
 <style lang="scss">
-	div.danger-zone {
+	div.dangerZone {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -33,7 +33,7 @@
 		}
 	}
 
-	p.danger-zone__p {
+	p.dangerZone__p {
 		font-size: 12px;
 		margin: 0;
 		color: var(--color-grey70);

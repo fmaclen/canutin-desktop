@@ -18,7 +18,6 @@
 	export let selectBalanceGroups: FormSelectOption[];
 	export let lastBalanceStatement: AccountBalanceStatement | null = null;
 	export let submitButtonLabel: string;
-	export let error: any | null = null;
 
 	let name = account ? account.name : '';
 	let accountTypeId = account ? account.accountTypeId : 1;
@@ -29,7 +28,7 @@
 <Form on:submit={handleSubmit}>
 	<FormFieldset>
 		<FormField name="name" label="Name">
-			<FormInput type="text" name="name" bind:value={name} error={error?.name} />
+			<FormInput type="text" name="name" bind:value={name} />
 		</FormField>
 		<FormField name="accountTypeId" label="Account type">
 			<FormSelect name="accountTypeId" options={selectAccountTypes} bind:value={accountTypeId} />
@@ -76,6 +75,6 @@
 	div.accountBalanceField {
 		display: grid;
 		grid-template-columns: minmax(96px, 1fr) 2fr;
-		grid-gap: 8px;
+		column-gap: 8px;
 	}
 </style>

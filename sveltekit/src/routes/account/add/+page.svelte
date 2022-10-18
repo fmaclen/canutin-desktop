@@ -11,7 +11,7 @@
 	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
-	let account: AddOrUpdateAPIResponse;
+	let account: AddOrUpdateAPIResponse; // FIXME: should be CRUDResponse
 
 	const handleSubmit = async (event: any) => {
 		const payload: Prisma.AccountUncheckedCreateInput = {
@@ -26,12 +26,10 @@
 		account = await api({ endpoint: 'account', method: 'POST', payload });
 
 		if (account.error) {
-			if (!account.error.name) {
-				$statusBarStore = {
-					message: "An error ocurred and the account likely wasn't added",
-					appearance: Appearance.NEGATIVE
-				};
-			}
+			$statusBarStore = {
+				message: account.error,
+				appearance: Appearance.NEGATIVE
+			};
 		} else {
 			$statusBarStore = {
 				message: 'The account was added successfully',
@@ -55,7 +53,6 @@
 				{handleSubmit}
 				selectAccountTypes={data.selectAccountTypes}
 				selectBalanceGroups={data.selectBalanceGroups}
-				error={account?.error}
 				submitButtonLabel="Add"
 			/>
 		</div>

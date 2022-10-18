@@ -1,4 +1,3 @@
-import { redirect } from '@sveltejs/kit';
 import {
 	getSelectAssetTypes,
 	getQuantifiableAssetTypes,
@@ -7,23 +6,20 @@ import {
 import prisma from '$lib/helpers/prisma';
 import type { Asset } from '@prisma/client';
 import { SortOrder } from '$lib/helpers/constants';
+import { notFound } from '$lib/helpers/misc';
 
 interface Params {
 	slug: string | null;
 }
 
-const returnNotFound = () => {
-	throw redirect(307, '/404');
-};
-
 export const load = async ({ params }: { params: Params }) => {
 	const { slug } = params;
 
-	if (!slug) returnNotFound();
+	if (!slug || Number.isNaN(parseInt(slug))) return notFound();
 
-	const asset = (await prisma.asset.findUnique({ where: { id: parseInt(slug!) } })) as Asset;
+	const asset = (await prisma.asset.findUnique({ where: { id: parseInt(slug) } })) as Asset;
 
-	if (!asset) returnNotFound();
+	if (!asset) return notFound();
 
 	const selectAssetTypes = await getSelectAssetTypes();
 	const quantifiableAssetTypes = await getQuantifiableAssetTypes();

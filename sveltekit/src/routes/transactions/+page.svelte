@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { slide } from 'svelte/transition';
 	import {
 		subMonths,
 		subYears,
@@ -168,7 +169,17 @@
 
 	// Highlight the transaction after it's created or updated
 	const highlightParam = $page.url.searchParams.get('highlight');
-	const highlight = highlightParam ? parseInt(highlightParam) : undefined;
+	let highlight = highlightParam ? parseInt(highlightParam) : undefined;
+	let selectedTransactions: number[] = [];
+
+	$: allSelected = transactions.length > 0 && transactions.length === selectedTransactions.length;
+	$: someSelected =
+		transactions.length > selectedTransactions.length && selectedTransactions.length > 0;
+	$: if (highlight && selectedTransactions.includes(highlight)) highlight = undefined; // Reset highlight when selecting transactions
+
+	const toggleSelectTransactions = () => {
+		selectedTransactions = allSelected ? [] : transactions.map((transaction) => transaction.id);
+	};
 </script>
 
 <svelte:head>
@@ -220,46 +231,88 @@
 				</div>
 			</header>
 
+			{#if selectedTransactions.length > 0}
+				<nav class="batchEditor" transition:slide|local>
+					<em class="batchEditor__em">{selectedTransactions.length} transactions selected</em>
+					—
+					<Link href={`/transaction/batch/${selectedTransactions.join('-')}`}>Edit together</Link>
+				</nav>
+			{/if}
+
 			<table class="table">
 				<thead>
-					{#each TABLE_HEADERS as tableHeader}
-						{@const { label, column } = tableHeader}
-						<th
-							class="table__th {tableHeader.label === TABLE_HEADERS[4].label && 'table__th--total'}"
-						>
-							<button
-								class="table__sortable
-								{sortBy === column && 'table__sortable--active'}
-								{sortBy === column && `table__sortable--${sortOrder}`}"
-								on:click={async () => await sortTransactionsBy(column)}>{label}</button
-							>
+					<tr>
+						<th class="table__th table__th--checkbox">
+							<label class="batchEditor-checkbox">
+								<input
+									name="toggleSelectAll"
+									type="checkbox"
+									on:click={toggleSelectTransactions}
+									checked={allSelected}
+									indeterminate={someSelected}
+									class="batchEditor-checkbox__input"
+								/>
+							</label>
 						</th>
-					{/each}
+
+						{#each TABLE_HEADERS as tableHeader}
+							{@const { label, column } = tableHeader}
+							<th
+								class="table__th {tableHeader.label === TABLE_HEADERS[4].label &&
+									'table__th--total'}"
+							>
+								<button
+									class="table__sortable
+									{sortBy === column && 'table__sortable--active'}
+									{sortBy === column && `table__sortable--${sortOrder}`}"
+									on:click={async () => await sortTransactionsBy(column)}
+								>
+									{label}
+								</button>
+							</th>
+						{/each}
+					</tr>
 				</thead>
 				<tbody>
 					{#if filteredTransactions?.length > 0}
 						{#each filteredTransactions as transaction}
 							{@const { id, date, description, transactionCategory, account, value, isExcluded } =
 								transaction}
-							<tr class="table__tr {highlight === id && `table__tr--highlight`}">
-								<td class="table__td table__td--date"
-									>{formatInUTC(fromUnixTime(date), 'MMM dd, yyyy')}</td
-								>
+							<tr
+								class="table__tr
+									{highlight === id || selectedTransactions.includes(id) ? 'table__tr--highlight' : null}"
+							>
+								<td class="table__td table__td--checkbox">
+									<label class="batchEditor-checkbox">
+										<input
+											bind:group={selectedTransactions}
+											checked={selectedTransactions.includes(id)}
+											name={transaction.id.toString()}
+											value={transaction.id}
+											type="checkbox"
+											class="batchEditor-checkbox__input"
+										/>
+									</label>
+								</td>
+
+								<td class="table__td table__td--date">
+									{formatInUTC(fromUnixTime(date), 'MMM dd, yyyy')}
+								</td>
 								<td class="table__td"><Link href={`/transaction/${id}`}>{description}</Link></td>
 								<td class="table__td">{transactionCategory.name}</td>
-								<td class="table__td"
-									><Link href={`/account/${transaction.accountId}`}>{account.name}</Link></td
-								>
-								<td class="table__td table__td--total {value > 0 && `table__td--positive`}"
-									><span
+								<td class="table__td">
+									<Link href={`/account/${transaction.accountId}`}>{account.name}</Link>
+								</td>
+								<td class="table__td table__td--total {value > 0 && `table__td--positive`}">
+									<span
 										class={isExcluded ? `table__excluded` : null}
 										title={isExcluded
 											? "This transaction is excluded from 'The big picture' and 'Balance sheet' totals"
 											: null}
 									>
 										{formatCurrency(value, 2, 2)}
-									</span></td
-								>
+									</span>
+								</td>
 							</tr>
 						{/each}
 					{:else}
@@ -325,6 +378,12 @@
 
 		&:last-child {
 			padding-right: 16px;
+		}
+
+		&--checkbox,
+		&--checkbox:first-child {
+			padding: unset;
+			width: max-content;
 		}
 
 		&--total {
@@ -393,6 +452,7 @@
 			}
 		}
 
+		&:hover,
 		&--highlight {
 			&:nth-child(even),
 			&:nth-child(odd) {
@@ -412,15 +472,23 @@
 			padding-left: 16px;
 		}
 
+		&--checkbox,
+		&--checkbox:first-child:not(.table__td--notice) {
+			padding: unset;
+			width: max-content;
+		}
+
 		&--date {
 			font-family: var(--font-monospace);
 			text-transform: uppercase;
 			font-size: 11px;
+			line-height: 16px;
 		}
 
 		&--total {
 			font-family: var(--font-monospace);
 			text-align: right;
+			line-height: 16px;
 		}
 
 		&--positive {
@@ -440,5 +508,31 @@
 		color: var(--color-grey40);
 		border-bottom: 1px dashed var(--color-grey10);
 		cursor: help;
+	}
+
+	// Batch-editor
+	nav.batchEditor {
+		display: flex;
+		gap: 8px;
+		font-size: 12px;
+		padding: 16px;
+		color: var(--color-grey20);
+		border-bottom: 1px solid var(--color-border);
+		background-color: var(--color-blueSecondary);
+	}
+
+	em.batchEditor__em {
+		color: var(--color-bluePrimary);
+		font-style: unset;
+	}
+
+	label.batchEditor-checkbox {
+		display: flex;
+		height: 100%;
+		padding: 12px 16px;
+	}
+
+	input.batchEditor-checkbox__input {
+		margin: 0;
 	}
 </style>

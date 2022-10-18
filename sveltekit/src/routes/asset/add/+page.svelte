@@ -11,7 +11,7 @@
 	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
-	let asset: AddOrUpdateAPIResponse;
+	let asset: AddOrUpdateAPIResponse; // FIXME: should be CRUDResponse
 
 	const handleSubmit = async (event: any) => {
 		const payload: Prisma.AssetUncheckedCreateInput = {
@@ -33,12 +33,10 @@
 		asset = await api({ endpoint: 'asset', method: 'POST', payload });
 
 		if (asset.error) {
-			if (!asset.error.name) {
-				$statusBarStore = {
-					message: "An error ocurred and the asset likely wasn't added",
-					appearance: Appearance.NEGATIVE
-				};
-			}
+			$statusBarStore = {
+				message: asset.error,
+				appearance: Appearance.NEGATIVE
+			};
 		} else {
 			$statusBarStore = {
 				message: 'The asset was added successfully',
@@ -63,7 +61,6 @@
 				selectAssetTypes={data.selectAssetTypes}
 				selectBalanceGroups={data.selectBalanceGroups}
 				quantifiableAssetTypes={data.quantifiableAssetTypes}
-				error={asset?.error}
 				submitButtonLabel="Add"
 			/>
 		</div>
