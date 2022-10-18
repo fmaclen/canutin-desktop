@@ -450,6 +450,7 @@ test.describe('Transactions', () => {
 		);
 
 		const statusBar = page.locator('.statusBar');
+		await delay(); // HACK: Needed for CI
 		await expect(statusBar).not.toHaveClass(/statusBar--active/);
 		expect(await statusBar.textContent()).not.toMatch(
 			'The transaction "Hølm Home" was deleted successfully'
@@ -466,6 +467,7 @@ test.describe('Transactions', () => {
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message confirms transaction deletion
+		await delay(); // HACK: Needed for CI
 		await expect(statusBar).toHaveClass(/statusBar--active/);
 		expect(await statusBar.textContent()).toMatch(
 			'The transaction —Hølm Home— was deleted successfully'
@@ -484,6 +486,7 @@ test.describe('Transactions', () => {
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message shows an error
+		await delay(); // HACK: Needed for CI
 		await expect(statusBar).toHaveClass(/statusBar--negative/);
 		expect(await statusBar.textContent()).toMatch("The transaction doesn't exist");
 	});
@@ -600,7 +603,7 @@ test.describe('Transactions', () => {
 			await expect(statusBar).not.toHaveClass(/statusBar--active/);
 
 			await page.locator('button', { hasText: 'Delete' }).click();
-
+			await delay(); // HACK: Needed for CI
 			await expect(statusBar).toHaveClass(/statusBar--active/);
 			expect(await statusBar.textContent()).toMatch('109 transactions were deleted successfully');
 
@@ -738,7 +741,7 @@ test.describe('Transactions', () => {
 			await expect(statusBar).not.toHaveClass(/statusBar--positive/);
 
 			await applyButton.click();
-
+			await delay(); // HACK: Needed for CI
 			await expect(statusBar).toHaveClass(/statusBar--positive/);
 			expect(await statusBar.textContent()).toMatch('The 2 transactions were updated successfully');
 
@@ -768,7 +771,7 @@ test.describe('Transactions', () => {
 			await page.locator('a', { hasText: 'Accidentes? Llámenos 1-800-877-7770' }).first().click();
 			await dateSelect.selectOption({ label: '29' });
 			await page.locator('button', { hasText: 'Save' }).click();
-
+			await delay(); // HACK: Needed for CI
 			await expect(statusBar).toHaveClass(/statusBar--positive/);
 			expect(await statusBar.textContent()).toMatch('The transaction was updated successfully');
 
@@ -829,6 +832,7 @@ test.describe('Transactions', () => {
 			expect(await amountInput.inputValue()).toMatch('$999');
 
 			await applyButton.click();
+			await delay(); // HACK: Needed for CI
 			await expect(statusBar).toHaveClass(/statusBar--positive/);
 			expect(await statusBar.textContent()).toMatch('The 2 transactions were updated successfully');
 

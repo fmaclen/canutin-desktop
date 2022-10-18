@@ -131,12 +131,14 @@ test.describe('Assets', () => {
 		await nameInput.fill('GameStop');
 		await page.locator('button', { hasText: 'Dismiss' }).click();
 		await page.locator('button', { hasText: 'Add' }).click();
+		await delay(); // HACK: Needed for CI
 		await expect(statusBar).toHaveClass(/statusBar--negative/);
 		expect(await statusBar.textContent()).toMatch('An asset with the same name already exists');
 
 		// Check an asset can't be edited to have the same name as another asset
 		await nameInput.fill('AMC Entertainment Holdings Inc');
 		await page.locator('button', { hasText: 'Add' }).click();
+		await delay(); // HACK: Needed for CI
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
 		expect(await statusBar.textContent()).toMatch('The asset was added successfully');
 
@@ -146,6 +148,7 @@ test.describe('Assets', () => {
 		// Rename using an existing asset name
 		await nameInput.fill('GameStop');
 		await page.locator('button', { hasText: 'Save' }).click();
+		await delay(); // HACK: Needed for CI
 		await expect(statusBar).toHaveClass(/statusBar--negative/);
 		expect(await statusBar.textContent()).toMatch('An asset with the same name already exists');
 	});

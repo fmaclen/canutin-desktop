@@ -171,6 +171,7 @@ test.describe('Accounts', () => {
 		await page.locator('button', { hasText: 'Add' }).click();
 
 		const statusBar = page.locator('.statusBar');
+		await delay(); // HACK: Needed for CI
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
 		await page.locator('button', { hasText: 'Dismiss' }).click();
 
@@ -188,6 +189,7 @@ test.describe('Accounts', () => {
 		await page.keyboard.type('-420.69');
 		await isExcludedCheckbox.check();
 		await page.locator('button', { hasText: 'Add' }).click();
+		await delay(); // HACK: Needed for CI
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
 		expect(await tableRows.first().textContent()).toMatch('$420.69');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch(
@@ -223,6 +225,7 @@ test.describe('Accounts', () => {
 		);
 
 		const statusBar = page.locator('.statusBar');
+		await delay(); // HACK: Needed for CI
 		await expect(statusBar).not.toHaveClass(/statusBar--active/);
 		expect(await statusBar.textContent()).not.toMatch(
 			"The account —Bob's Laughable-Yield Checking— was deleted successfully"
@@ -241,6 +244,7 @@ test.describe('Accounts', () => {
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message confirms account deletion
+		await delay(); // HACK: Needed for CI
 		await expect(statusBar).toHaveClass(/statusBar--active/);
 		expect(await statusBar.textContent()).toMatch(
 			"The account —Bob's Laughable-Yield Checking— was deleted successfully"
