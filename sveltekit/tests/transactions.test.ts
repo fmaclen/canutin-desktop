@@ -503,6 +503,7 @@ test.describe('Transactions', () => {
 
 		test('Selecting multiple transactions', async ({ page }) => {
 			const tableRows = page.locator('.table__tr');
+			await delay(); // HACK: Needed for CI
 			expect(await tableRows.count()).toBe(111);
 
 			const selectAllCheckbox = page.locator('th input.batchEditor-checkbox__input');
@@ -581,6 +582,7 @@ test.describe('Transactions', () => {
 			await selectAllCheckbox.check();
 			await selectCheckboxes.nth(0).uncheck();
 			await selectCheckboxes.nth(1).uncheck();
+			await delay(); // HACK: Needed for CI
 			expect(await tableRows.count()).toBe(111);
 			expect(await batchEditor.textContent()).toMatch('109 transactions selected');
 
