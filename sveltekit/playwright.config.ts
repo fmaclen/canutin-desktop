@@ -13,7 +13,7 @@ const projectBrowser = [
 
 const config: PlaywrightTestConfig = {
 	globalSetup: './tests/fixtures/global-setup.ts',
-	retries: isEnvCI ? 5 : 0,
+	retries: isEnvCI ? 7 : 0,
 	webServer: {
 		command: 'npm run build && npm run preview',
 		port: 4173,
