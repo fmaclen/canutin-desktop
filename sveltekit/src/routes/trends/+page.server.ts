@@ -1,17 +1,50 @@
-import { SortOrder } from '$lib/helpers/constants';
-import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
 import prisma from '$lib/helpers/prisma';
-import { endOfMonth, sub, eachWeekOfInterval, eachMonthOfInterval } from 'date-fns';
+import type { ChartDataset } from 'chart.js';
+
+import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
+import { endOfMonth, sub, eachWeekOfInterval } from 'date-fns';
+import { BalanceGroup } from '$lib/helpers/constants';
 
 const today = endOfMonth(new Date());
 
 export const load = async () => {
 	const labels: string[] = [];
-	const datasets: { label: string; data: number[]; balanceGroup?: number }[] = [];
+	const datasetNetWorth: ChartDataset[] = [];
+	const datasetCash: ChartDataset[] = [];
+	const datasetDebt: ChartDataset[] = [];
+	const datasetInvestments: ChartDataset[] = [];
+	const datasetOtherAssets: ChartDataset[] = [];
+
+	// Assign item to dataset
+	const itemToDataset = (label: string, balance: number, balanceGroup?: BalanceGroup) => {
+		const itemData = { label, data: [balance] };
+
+		// Find the item in the dataset by chart label
+		const updateDataset = (dataset: ChartDataset[]) => {
+			const currentDataset = dataset.find(({ label }) => label === itemData.label);
+			currentDataset ? currentDataset.data.push(balance) : dataset.push(itemData);
+		};
+
+		switch (balanceGroup) {
+			case BalanceGroup.CASH:
+				updateDataset(datasetCash);
+				break;
+			case BalanceGroup.DEBT:
+				updateDataset(datasetDebt);
+				break;
+			case BalanceGroup.INVESTMENTS:
+				updateDataset(datasetInvestments);
+				break;
+			case BalanceGroup.OTHER_ASSETS:
+				updateDataset(datasetOtherAssets);
+				break;
+			default:
+				updateDataset(datasetNetWorth);
+		}
+	};
 
 	const defaultPeriod = sub(today, { years: 2 });
 	const weeksInPeriod = eachWeekOfInterval({
-		// start: (await getLifetimeDate()) || defaultPeriod,
 		start: defaultPeriod,
 		end: today
 	});
@@ -20,95 +53,58 @@ export const load = async () => {
 	const assets = await prisma.asset.findMany();
 
 	for (const weekInPeriod of weeksInPeriod) {
-		labels.push(weekInPeriod.toISOString().slice(0, 10));
+		labels.push(weekInPeriod.toISOString().slice(0, 10)); // e.g. 2022-12-31
 
-		let netWorth = 0;
+		let netWorthPeriod = 0;
+		let cashPeriod = 0;
+		let debtPeriod = 0;
+		let investmentsPeriod = 0;
+		let otherAssetsPeriod = 0;
+
+		const balanceToBalanceGroupDataset = (balanceGroup: BalanceGroup, balance: number) => {
+			switch (balanceGroup) {
+				case BalanceGroup.CASH:
+					cashPeriod += balance;
+					break;
+				case BalanceGroup.DEBT:
+					debtPeriod += balance;
+					break;
+				case BalanceGroup.INVESTMENTS:
+					investmentsPeriod += balance;
+					break;
+				case BalanceGroup.OTHER_ASSETS:
+					otherAssetsPeriod += balance;
+			}
+			netWorthPeriod = netWorthPeriod + balance;
+		};
 
 		for (const account of accounts) {
+			const { name, balanceGroup } = account;
 			const balance = await getAccountCurrentBalance(account, weekInPeriod);
-
-			const accountDataset = datasets.find(({ label }) => label === account.name);
-			accountDataset
-				? accountDataset.data.push(balance)
-				: datasets.push({
-						label: account.name,
-						balanceGroup: account.balanceGroup,
-						data: [balance]
-				  });
-
-			netWorth = netWorth + balance;
+			itemToDataset(name, balance, balanceGroup);
+			balanceToBalanceGroupDataset(balanceGroup, balance);
 		}
 
 		for (const asset of assets) {
+			const { name, balanceGroup } = asset;
 			const balance = await getAssetCurrentBalance(asset, weekInPeriod);
-			const assetDataset = datasets.find(({ label }) => label === asset.name);
-			assetDataset
-				? assetDataset.data.push(balance)
-				: datasets.push({
-						label: asset.name,
-						balanceGroup: asset.balanceGroup,
-						data: [balance]
-				  });
-			netWorth = netWorth + balance;
+			itemToDataset(name, balance, balanceGroup);
+			balanceToBalanceGroupDataset(balanceGroup, balance);
 		}
 
-		const netWorthDataset = datasets.find(({ label }) => label === 'Net worth');
-		netWorthDataset
-			? netWorthDataset.data.push(netWorth)
-			: datasets.push({
-					label: 'Net worth',
-					data: [netWorth]
-			  });
+		itemToDataset('Net worth', netWorthPeriod);
+		itemToDataset('Cash', cashPeriod);
+		itemToDataset('Debt', debtPeriod);
+		itemToDataset('Investments', investmentsPeriod);
+		itemToDataset('Other assets', otherAssetsPeriod);
 	}
 
 	return {
-		datasets,
-		labels
+		labels,
+		datasetNetWorth,
+		datasetCash,
+		datasetDebt,
+		datasetInvestments,
+		datasetOtherAssets
 	};
-};
-
-const getLifetimeDate = async (): Promise<Date | undefined> => {
-	const oldestBalanceStatementParams = {
-		where: {
-			createdAt: {
-				lte: today
-			}
-		},
-		select: {
-			createdAt: true
-		},
-		orderBy: {
-			createdAt: SortOrder.ASC
-		}
-	};
-
-	const oldestAccountBalanceStatement = await prisma.accountBalanceStatement.findFirst(oldestBalanceStatementParams); // prettier-ignore
-	const oldestAssetBalanceStatement = await prisma.assetBalanceStatement.findFirst(oldestBalanceStatementParams); // prettier-ignore
-
-	// Oldest transaction from an account that is autoCalculated
-	const oldestTransaction = await prisma.transaction.findFirst({
-		where: {
-			date: {
-				lte: today
-			},
-			account: {
-				isAutoCalculated: true
-			}
-		},
-		select: {
-			date: true
-		},
-		orderBy: {
-			date: SortOrder.ASC
-		}
-	});
-
-	const oldestDates = [];
-	oldestAccountBalanceStatement?.createdAt && oldestDates.push(oldestAccountBalanceStatement.createdAt); // prettier-ignore
-	oldestAssetBalanceStatement?.createdAt && oldestDates.push(oldestAssetBalanceStatement.createdAt);
-	oldestTransaction?.date && oldestDates.push(oldestTransaction.date);
-
-	return oldestDates.length > 1
-		? oldestDates.sort((a, b) => a.getTime() - b.getTime())[0]
-		: undefined;
 };

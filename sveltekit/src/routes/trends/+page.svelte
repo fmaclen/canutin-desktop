@@ -1,69 +1,49 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import Values from 'values.js';
 	import type { ChartDataset } from 'chart.js';
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
-	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
-
-	import { BalanceGroup, TrendPeriods } from '$lib/helpers/constants';
-	import type { PageData } from './$types';
 	import ChartJs from '$lib/components/ChartJS.svelte';
+	import { BalanceGroup, SortOrder } from '$lib/helpers/constants';
+	import type { PageData } from './$types';
 
 	const title = 'Trends';
 
 	export let data: PageData;
 
-	let currentSegment = TrendPeriods.LIFETIME;
-	const toggleSegment = () => {
-		currentSegment =
-			currentSegment === TrendPeriods.SIX_MONTHS ? TrendPeriods.LIFETIME : TrendPeriods.SIX_MONTHS;
-	};
+	// const COLOR_WEIGHT = 125;
+	// const setBorderColor = (chartDatasets: ChartDataset[], color: string, orderBy?: SortOrder) => {
+	// 	// Before setting a border color we need to sort the dataset in a meaningul way.
+	// 	// Because values can vary a lot, we choose to sort by the most recent value in the dataset.
+	// 	chartDatasets.sort((a, b) => {
+	// 		const aLastValue = (a.data[a.data.length - 1] || 0) as number;
+	// 		const bLastValue = (b.data[b.data.length - 1] || 0) as number;
 
-	const chartNetWorth: ChartDataset[] = [];
-	const chartCash: ChartDataset[] = [];
-	const chartDebt: ChartDataset[] = [];
-	const chartInvestments: ChartDataset[] = [];
-	const chartOtherAssets: ChartDataset[] = [];
+	// 		// NOTE: in the case of `chartDebt` the sort order is reversed.
+	// 		return orderBy === SortOrder.ASC ? bLastValue - aLastValue : aLastValue - bLastValue;
+	// 	});
 
-	data.datasets.forEach((dataset, i) => {
-		switch (dataset.balanceGroup) {
-			case BalanceGroup.CASH:
-				chartCash.push({
-					label: dataset.label,
-					data: dataset.data,
-					borderColor: '#00A36F'
-				});
-				break;
-			case BalanceGroup.DEBT:
-				chartDebt.push({
-					label: dataset.label,
-					data: dataset.data,
-					borderColor: '#e75258'
-				});
-				break;
-			case BalanceGroup.INVESTMENTS:
-				chartInvestments.push({
-					label: dataset.label,
-					data: dataset.data,
-					borderColor: '#B19B70'
-				});
-				break;
-			case BalanceGroup.OTHER_ASSETS:
-				chartOtherAssets.push({
-					label: dataset.label,
-					data: dataset.data,
-					borderColor: '#5255AC'
-				});
-				break;
-			default:
-				chartNetWorth.push({
-					label: dataset.label,
-					data: dataset.data,
-					borderColor: '#0366D6'
-				});
-		}
-	});
+	// 	chartDatasets.forEach((chartDataset, i) => {
+	// 		chartDataset.borderColor = new Values(color)
+	// 			.all(COLOR_WEIGHT / chartDatasets.length)
+	// 			[i].hexString();
+	// 	});
+	// };
+
+	// const chartNetWorth: ChartDataset[] = data.datasets.filter((dataset) => dataset.balanceGroup === undefined); // prettier-ignore
+	// const chartCash: ChartDataset[] = data.datasets.filter((dataset) => dataset.balanceGroup === BalanceGroup.CASH); // prettier-ignore
+	// const chartDebt: ChartDataset[] = data.datasets.filter((dataset) => dataset.balanceGroup === BalanceGroup.DEBT); // prettier-ignore
+	// const chartInvestments: ChartDataset[] = data.datasets.filter((dataset) => dataset.balanceGroup === BalanceGroup.INVESTMENTS); // prettier-ignore
+	// const chartOtherAssets: ChartDataset[] = data.datasets.filter((dataset) => dataset.balanceGroup === BalanceGroup.OTHER_ASSETS); // prettier-ignore
+
+	// setBorderColor(chartCash, '#00A36F');
+	// setBorderColor(chartDebt, '#e75258', SortOrder.ASC);
+	// setBorderColor(chartInvestments, '#B19B70');
+	// setBorderColor(chartOtherAssets, '#5255AC');
+	// setBorderColor(chartNetWorth, '#0366D6');
+
+	// console.log(data.datasetCash);
 </script>
 
 <svelte:head>
@@ -72,80 +52,32 @@
 
 <ScrollView {title}>
 	<Section title="Net worth">
-		<div slot="HEADER">
-			<SegmentedControl
-				{currentSegment}
-				segments={Object.values(TrendPeriods)}
-				callback={toggleSegment}
-			/>
-		</div>
 		<div slot="CONTENT">
-			<ChartJs labels={data.labels} datasets={chartNetWorth} />
+			<ChartJs labels={data.labels} datasets={data.datasetNetWorth} />
 		</div>
 	</Section>
 
 	<Section title="Cash">
-		<div slot="HEADER" class="import">
-			<SegmentedControl
-				{currentSegment}
-				segments={Object.values(TrendPeriods)}
-				callback={toggleSegment}
-			/>
-		</div>
 		<div slot="CONTENT">
-			<ChartJs labels={data.labels} datasets={chartCash} />
+			<ChartJs labels={data.labels} datasets={data.datasetCash} />
 		</div>
 	</Section>
 
 	<Section title="Debt">
-		<div slot="HEADER" class="import">
-			<SegmentedControl
-				{currentSegment}
-				segments={Object.values(TrendPeriods)}
-				callback={toggleSegment}
-			/>
-		</div>
 		<div slot="CONTENT">
-			<ChartJs labels={data.labels} datasets={chartDebt} />
+			<ChartJs labels={data.labels} datasets={data.datasetDebt} />
 		</div>
 	</Section>
 
 	<Section title="Investments">
-		<div slot="HEADER" class="import">
-			<SegmentedControl
-				{currentSegment}
-				segments={Object.values(TrendPeriods)}
-				callback={toggleSegment}
-			/>
-		</div>
 		<div slot="CONTENT">
-			<ChartJs labels={data.labels} datasets={chartInvestments} />
+			<ChartJs labels={data.labels} datasets={data.datasetInvestments} />
 		</div>
 	</Section>
 
 	<Section title="Other assets">
-		<div slot="HEADER" class="import">
-			<SegmentedControl
-				{currentSegment}
-				segments={Object.values(TrendPeriods)}
-				callback={toggleSegment}
-			/>
-		</div>
 		<div slot="CONTENT">
-			<ChartJs labels={data.labels} datasets={chartOtherAssets} />
+			<ChartJs labels={data.labels} datasets={data.datasetOtherAssets} />
 		</div>
 	</Section>
 </ScrollView>
-
-<style lang="scss">
-	.chart {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-		grid-template-rows: minmax(384px, 25vh);
-		box-sizing: border-box;
-		background-color: var(--color-white);
-		box-shadow: var(--box-shadow);
-		border-radius: 4px;
-		padding: 16px 32px 32px 32px;
-	}
-</style>
