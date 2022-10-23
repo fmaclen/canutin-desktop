@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Chart, type ChartConfiguration } from 'chart.js/auto/auto.js';
+	import type { ChartDataset } from 'chart.js';
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
@@ -8,6 +8,7 @@
 
 	import { BalanceGroup, TrendPeriods } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
+	import ChartJs from '$lib/components/ChartJS.svelte';
 
 	const title = 'Trends';
 
@@ -19,11 +20,11 @@
 			currentSegment === TrendPeriods.SIX_MONTHS ? TrendPeriods.LIFETIME : TrendPeriods.SIX_MONTHS;
 	};
 
-	const chartNetWorth: any[] = [];
-	const chartCash: any[] = [];
-	const chartDebt: any[] = [];
-	const chartInvestments: any[] = [];
-	const chartOtherAssets: any[] = [];
+	const chartNetWorth: ChartDataset[] = [];
+	const chartCash: ChartDataset[] = [];
+	const chartDebt: ChartDataset[] = [];
+	const chartInvestments: ChartDataset[] = [];
+	const chartOtherAssets: ChartDataset[] = [];
 
 	data.datasets.forEach((dataset, i) => {
 		switch (dataset.balanceGroup) {
@@ -31,119 +32,37 @@
 				chartCash.push({
 					label: dataset.label,
 					data: dataset.data,
-					borderColor: '#00A36F',
-					fill: false,
-					pointRadius: 2,
-					pointHitRadius: 64,
-					borderWidth: 2,
-					lineTension: 0.25
+					borderColor: '#00A36F'
 				});
 				break;
 			case BalanceGroup.DEBT:
 				chartDebt.push({
 					label: dataset.label,
 					data: dataset.data,
-					borderColor: '#e75258',
-					fill: false,
-					pointRadius: 2,
-					pointHitRadius: 64,
-					borderWidth: 2,
-					lineTension: 0.25
+					borderColor: '#e75258'
 				});
 				break;
 			case BalanceGroup.INVESTMENTS:
 				chartInvestments.push({
 					label: dataset.label,
 					data: dataset.data,
-					borderColor: '#B19B70',
-					fill: false,
-					pointRadius: 2,
-					pointHitRadius: 64,
-					borderWidth: 2,
-					lineTension: 0.25
+					borderColor: '#B19B70'
 				});
 				break;
 			case BalanceGroup.OTHER_ASSETS:
 				chartOtherAssets.push({
 					label: dataset.label,
 					data: dataset.data,
-					borderColor: '#5255AC',
-					fill: false,
-					pointRadius: 2,
-					pointHitRadius: 64,
-					borderWidth: 2,
-					lineTension: 0.25
+					borderColor: '#5255AC'
 				});
 				break;
 			default:
 				chartNetWorth.push({
 					label: dataset.label,
 					data: dataset.data,
-					borderColor: '#0366D6',
-					fill: false,
-					pointRadius: 2,
-					pointHitRadius: 64,
-					borderWidth: 2,
-					lineTension: 0.25
+					borderColor: '#0366D6'
 				});
 		}
-	});
-
-	const config: ChartConfiguration = {
-		type: 'line',
-
-		options: {
-			maintainAspectRatio: false,
-			plugins: {
-				legend: {
-					display: true
-				}
-			}
-		}
-	};
-
-	let canvasChartNetWorth: any;
-	let canvasChartCash: any;
-	let canvasChartDebt: any;
-	let canvasChartInvestments: any;
-	let canvasChartOtherAssets: any;
-
-	onMount(() => {
-		new Chart(canvasChartNetWorth.getContext('2d'), {
-			...config,
-			data: {
-				labels: data.labels,
-				datasets: chartNetWorth
-			}
-		});
-		new Chart(canvasChartCash.getContext('2d'), {
-			...config,
-			data: {
-				labels: data.labels,
-				datasets: chartCash
-			}
-		});
-		new Chart(canvasChartDebt.getContext('2d'), {
-			...config,
-			data: {
-				labels: data.labels,
-				datasets: chartDebt
-			}
-		});
-		new Chart(canvasChartInvestments.getContext('2d'), {
-			...config,
-			data: {
-				labels: data.labels,
-				datasets: chartInvestments
-			}
-		});
-		new Chart(canvasChartOtherAssets.getContext('2d'), {
-			...config,
-			data: {
-				labels: data.labels,
-				datasets: chartOtherAssets
-			}
-		});
 	});
 </script>
 
@@ -161,9 +80,7 @@
 			/>
 		</div>
 		<div slot="CONTENT">
-			<div class="chart">
-				<canvas bind:this={canvasChartNetWorth} />
-			</div>
+			<ChartJs labels={data.labels} datasets={chartNetWorth} />
 		</div>
 	</Section>
 
@@ -176,9 +93,7 @@
 			/>
 		</div>
 		<div slot="CONTENT">
-			<div class="chart">
-				<canvas bind:this={canvasChartCash} />
-			</div>
+			<ChartJs labels={data.labels} datasets={chartCash} />
 		</div>
 	</Section>
 
@@ -191,9 +106,7 @@
 			/>
 		</div>
 		<div slot="CONTENT">
-			<div class="chart">
-				<canvas bind:this={canvasChartDebt} />
-			</div>
+			<ChartJs labels={data.labels} datasets={chartDebt} />
 		</div>
 	</Section>
 
@@ -206,9 +119,7 @@
 			/>
 		</div>
 		<div slot="CONTENT">
-			<div class="chart">
-				<canvas bind:this={canvasChartInvestments} />
-			</div>
+			<ChartJs labels={data.labels} datasets={chartInvestments} />
 		</div>
 	</Section>
 
@@ -221,9 +132,7 @@
 			/>
 		</div>
 		<div slot="CONTENT">
-			<div class="chart">
-				<canvas bind:this={canvasChartOtherAssets} />
-			</div>
+			<ChartJs labels={data.labels} datasets={chartOtherAssets} />
 		</div>
 	</Section>
 </ScrollView>
