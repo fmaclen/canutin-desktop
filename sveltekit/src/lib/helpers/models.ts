@@ -45,13 +45,16 @@ export const getModelType = async (modelTypeName: string, isAccount: boolean) =>
 	return modelTypeId!.id;
 };
 
-export const getAccountCurrentBalance = async (account: Account) => {
+export const getAccountCurrentBalance = async (account: Account, periodStart?: Date) => {
 	if (account.isAutoCalculated) {
 		// For auto-calculated accounts sum all of the transactions (except for excluded ones)
 		const balanceFromTransactions = await prisma.transaction.aggregate({
 			where: {
 				accountId: account.id,
-				isExcluded: false
+				isExcluded: false,
+				date: {
+					lte: periodStart
+				}
 			},
 			_sum: {
 				value: true
@@ -63,7 +66,10 @@ export const getAccountCurrentBalance = async (account: Account) => {
 		// For non-auto-calculated accounts get the most recent balance statement
 		const lastBalanceStatement = await prisma.accountBalanceStatement.findFirst({
 			where: {
-				accountId: account.id
+				accountId: account.id,
+				createdAt: {
+					lte: periodStart
+				}
 			},
 			orderBy: {
 				createdAt: SortOrder.DESC
@@ -74,10 +80,13 @@ export const getAccountCurrentBalance = async (account: Account) => {
 	}
 };
 
-export const getAssetCurrentBalance = async (asset: Asset) => {
+export const getAssetCurrentBalance = async (asset: Asset, periodStart?: Date) => {
 	const lastBalanceStatement = await prisma.assetBalanceStatement.findFirst({
 		where: {
-			assetId: asset.id
+			assetId: asset.id,
+			createdAt: {
+				lte: periodStart
+			}
 		},
 		orderBy: {
 			createdAt: SortOrder.DESC

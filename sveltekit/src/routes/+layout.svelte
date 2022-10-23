@@ -163,6 +163,12 @@
 				>Balance sheet
 			</a>
 			<a
+				class="layout__a {pathname === '/trends' && 'layout__a--active'} {!$isVaultReadyStore &&
+					'layout__a--disabled'}"
+				href="/trends"
+				>Trends
+			</a>
+			<a
 				class="layout__a {pathname === '/transactions' &&
 					'layout__a--active'} {!$isVaultReadyStore && 'layout__a--disabled'}"
 				href="/transactions"
