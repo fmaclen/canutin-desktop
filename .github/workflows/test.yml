@@ -2,7 +2,7 @@ name: Test only
 
 on:
   pull_request:
-    branches: [main, master]
+    branches: [main, master, develop]
 
 jobs:
   Electron:
