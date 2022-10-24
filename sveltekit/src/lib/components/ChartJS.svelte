@@ -61,16 +61,16 @@
 					ticks: {
 						padding: 16,
 						callback: (index: any) => {
-							// Display tick every 7 ticks (a.ka. 1 week)
-							if (index % 7 === 0) return labels[index];
+							// Display tick every 7 ticks (a.k.a. 2 weeks)
+							if (index % 14 === 0) return labels[index];
 						}
 					},
-					min: 1,
+					min: 7, // "Trim" the first week so the chart sticks to the left border nicely
 					max: 104,
 					grid: {
 						tickLength: 0,
 						tickWidth: 0,
-						offset: false
+						offset: true
 					}
 				},
 				y: {
