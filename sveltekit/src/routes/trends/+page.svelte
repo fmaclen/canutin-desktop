@@ -1,11 +1,7 @@
 <script lang="ts">
-	import Values from 'values.js';
-	import type { ChartDataset } from 'chart.js';
-
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import ChartJs from '$lib/components/ChartJS.svelte';
-	import { BalanceGroup, SortOrder } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 
 	const title = 'Trends';

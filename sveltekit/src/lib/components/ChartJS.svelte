@@ -21,8 +21,8 @@
 					pointStyle: 'circle',
 					pointRadius: 0,
 					pointHitRadius: 64,
-					pointHoverBorderWidth: 4,
-					borderWidth: 2,
+					pointHoverBorderWidth: 1,
+					borderWidth: 1.25,
 					tension: 0.25
 				}
 			},
@@ -36,9 +36,9 @@
 							size: 13
 						},
 						usePointStyle: true,
-						boxWidth: 8,
-						boxHeight: 8,
-						padding: 16
+						boxWidth: 4,
+						boxHeight: 4,
+						padding: 12
 					}
 				},
 				tooltip: {
@@ -54,6 +54,29 @@
 						size: 13
 					}
 				}
+			},
+			scales: {
+				x: {
+					beginAtZero: true,
+					ticks: {
+						padding: 16,
+						callback: (index: any) => {
+							// Display tick every 7 ticks (a.ka. 1 week)
+							if (index % 7 === 0) return labels[index];
+						}
+					},
+					min: 1,
+					max: 104,
+					grid: {
+						tickLength: 0,
+						tickWidth: 0,
+						offset: false
+					}
+				},
+				y: {
+					beginAtZero: true,
+					display: false
+				}
 			}
 		}
 	};
@@ -62,6 +85,9 @@
 		const context = canvasChart.getContext('2d');
 		context && new Chart(context, config);
 	});
+
+	// only return indexes every 10 idexes
+	// const labels = data.labels.filter((_, index) => index % 10 === 0);
 </script>
 
 <div class="chart">
@@ -77,7 +103,6 @@
 		background-color: var(--color-white);
 		box-shadow: var(--box-shadow);
 		border-radius: 4px;
-		padding: 16px 32px 32px 32px;
-		/* padding: 16px; */
+		padding-top: 8px;
 	}
 </style>
