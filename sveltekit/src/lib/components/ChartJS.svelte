@@ -8,6 +8,7 @@
 
 	let canvasChart: HTMLCanvasElement;
 
+	const FONT_FAMILY = '"Inter", Helvetica, Arial, sans-serif';
 	const config: ChartConfiguration = {
 		type: 'line',
 		data: {
@@ -17,9 +18,10 @@
 		options: {
 			datasets: {
 				line: {
-					fill: false,
-					pointRadius: 2,
+					pointStyle: 'circle',
+					pointRadius: 0,
 					pointHitRadius: 64,
+					pointHoverBorderWidth: 4,
 					borderWidth: 2,
 					tension: 0.25
 				}
@@ -27,7 +29,30 @@
 			maintainAspectRatio: false,
 			plugins: {
 				legend: {
-					display: datasets.length > 1
+					display: datasets.length > 1,
+					labels: {
+						font: {
+							family: FONT_FAMILY,
+							size: 13
+						},
+						usePointStyle: true,
+						boxWidth: 8,
+						boxHeight: 8,
+						padding: 16
+					}
+				},
+				tooltip: {
+					padding: 8,
+					caretPadding: 16,
+					yAlign: 'top',
+					usePointStyle: true,
+					boxWidth: 8,
+					boxHeight: 8,
+					cornerRadius: 4,
+					bodyFont: {
+						family: FONT_FAMILY,
+						size: 13
+					}
 				}
 			}
 		}
@@ -53,5 +78,6 @@
 		box-shadow: var(--box-shadow);
 		border-radius: 4px;
 		padding: 16px 32px 32px 32px;
+		/* padding: 16px; */
 	}
 </style>
