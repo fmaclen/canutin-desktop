@@ -16,6 +16,12 @@
 			datasets
 		},
 		options: {
+			animation: false,
+			maintainAspectRatio: false,
+			interaction: {
+				mode: 'index',
+				intersect: false
+			},
 			datasets: {
 				line: {
 					pointStyle: 'circle',
@@ -26,7 +32,6 @@
 					tension: 0.25
 				}
 			},
-			maintainAspectRatio: false,
 			plugins: {
 				legend: {
 					display: datasets.length > 1,
@@ -42,9 +47,10 @@
 					}
 				},
 				tooltip: {
-					padding: 8,
+					mode: 'index',
+					intersect: false,
+					padding: 12,
 					caretPadding: 16,
-					yAlign: 'top',
 					usePointStyle: true,
 					boxWidth: 8,
 					boxHeight: 8,
@@ -58,6 +64,8 @@
 			scales: {
 				x: {
 					beginAtZero: true,
+					min: 7, // "Trim" the first week so the chart sticks to the left border nicely
+					max: 104,
 					ticks: {
 						padding: 16,
 						callback: (index: any) => {
@@ -65,8 +73,6 @@
 							if (index % 14 === 0) return labels[index];
 						}
 					},
-					min: 7, // "Trim" the first week so the chart sticks to the left border nicely
-					max: 104,
 					grid: {
 						tickLength: 0,
 						tickWidth: 0,
