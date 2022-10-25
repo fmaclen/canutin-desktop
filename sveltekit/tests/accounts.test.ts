@@ -152,11 +152,10 @@ test.describe('Accounts', () => {
 		expect(await balanceTypeGroup.textContent()).toMatch('$0');
 
 		// Check no transactions exist
-		const noTransactionsNotice = page.locator('.table__td--notice', {
-			hasText: 'No transactions found'
-		});
 		await page.locator('a', { hasText: 'Transactions' }).click();
-		await expect(noTransactionsNotice).toBeVisible();
+		await expect(
+			page.locator('.table__td--notice', { hasText: 'No transactions found' })
+		).toBeVisible();
 
 		const descriptionInput = page.locator('.formInput__input[name=description]');
 		const accountIdSelect = page.locator('.formSelect__select[name=accountId]');
@@ -176,7 +175,6 @@ test.describe('Accounts', () => {
 		await page.locator('button', { hasText: 'Dismiss' }).click();
 
 		const tableRows = page.locator('.table__tr');
-		await expect(noTransactionsNotice).not.toBeVisible();
 		expect(await tableRows.first().textContent()).toMatch('$420.69');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch(
 			'$420.69'
