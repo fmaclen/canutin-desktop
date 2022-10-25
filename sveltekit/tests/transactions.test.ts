@@ -82,6 +82,10 @@ test.describe('Transactions', () => {
 		expect(await cardNetBalance.textContent()).toMatch('Net balance');
 
 		const tableRows = page.locator('.table__tr');
+		const noTransactionsNotice = page.locator('.table__td--notice', {
+			hasText: 'No transactions found'
+		});
+		expect(noTransactionsNotice).not.toBeVisible();
 		expect(await tableRows.count()).toBe(111);
 		expect(await tableRows.first().textContent()).toMatch('Toyota - TFS Payment');
 		expect(await tableRows.first().textContent()).toMatch('Automotive');
@@ -274,10 +278,11 @@ test.describe('Transactions', () => {
 		expect(await balanceTypeGroup.count()).toBe(0);
 
 		// Check no transactions are present
+		const noTransactionsNotice = page.locator('.table__td--notice', {
+			hasText: 'No transactions found'
+		});
 		await page.locator('a', { hasText: 'Transactions' }).click();
-		await expect(
-			page.locator('.table__td--notice', { hasText: 'No transactions found' })
-		).toBeVisible();
+		await expect(noTransactionsNotice).toBeVisible();
 
 		const accountIdSelect = page.locator('.formSelect__select[name=accountId]');
 		const descriptionInput = page.locator('.formInput__input[name=description]');
@@ -354,10 +359,11 @@ test.describe('Transactions', () => {
 		expect(await balanceTypeGroup.textContent()).toMatch("Bob's Laughable-Yield Checking");
 
 		// Check no transactions exist
+		const noTransactionsNotice = page.locator('.table__td--notice', {
+			hasText: 'No transactions found'
+		});
 		await page.locator('a', { hasText: 'Transactions' }).click();
-		await expect(
-			page.locator('.table__td--notice', { hasText: 'No transactions found' })
-		).toBeVisible();
+		await expect(noTransactionsNotice).toBeVisible();
 
 		const accountIdSelect = page.locator('.formSelect__select[name=accountId]');
 		const descriptionInput = page.locator('.formInput__input[name=description]');
@@ -401,6 +407,7 @@ test.describe('Transactions', () => {
 
 		// Check the transaction is visible
 		const tableRows = page.locator('.table__tr');
+		expect(noTransactionsNotice).not.toBeVisible();
 		expect(await tableRows.count()).toBe(1);
 		expect(await tableRows.first().textContent()).toMatch('Mar 15, 2020');
 		expect(await tableRows.first().textContent()).toMatch('Toilet Paper Depot');
@@ -499,6 +506,10 @@ test.describe('Transactions', () => {
 
 		test('Selecting multiple transactions', async ({ page }) => {
 			const tableRows = page.locator('.table__tr');
+			const noTransactionsNotice = page.locator('.table__td--notice', {
+				hasText: 'No transactions found'
+			});
+			expect(noTransactionsNotice).not.toBeVisible();
 			expect(await tableRows.count()).toBe(111);
 
 			const selectAllCheckbox = page.locator('th input.batchEditor-checkbox__input');
@@ -572,11 +583,15 @@ test.describe('Transactions', () => {
 			const selectCheckboxes = page.locator('td input.batchEditor-checkbox__input');
 			const batchEditor = page.locator('.batchEditor');
 			const excludedTotals = page.locator('span.table__excluded');
+			const noTransactionsNotice = page.locator('.table__td--notice', {
+				hasText: 'No transactions found'
+			});
 
 			// Select all but 2 transactions in "Last 3 months"
 			await selectAllCheckbox.check();
 			await selectCheckboxes.nth(0).uncheck();
 			await selectCheckboxes.nth(1).uncheck();
+			expect(noTransactionsNotice).not.toBeVisible();
 			expect(await tableRows.count()).toBe(111);
 			expect(await batchEditor.textContent()).toMatch('109 transactions selected');
 
