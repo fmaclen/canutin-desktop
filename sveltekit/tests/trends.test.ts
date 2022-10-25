@@ -13,22 +13,32 @@ test.describe('Trends', () => {
 		const MAX_DIFF_PIXELS = 256;
 		const charts = page.locator('.chart canvas');
 		expect(await charts.count()).toBe(5);
+
+		await charts.nth(0).hover();
 		expect(await charts.nth(0).screenshot()).toMatchSnapshot({
 			name: 'chart-netWorth.png',
 			maxDiffPixels: MAX_DIFF_PIXELS
 		});
+
+		await charts.nth(1).hover();
 		expect(await charts.nth(1).screenshot()).toMatchSnapshot({
 			name: 'chart-cash.png',
 			maxDiffPixels: MAX_DIFF_PIXELS
 		});
+
+		await charts.nth(2).hover();
 		expect(await charts.nth(2).screenshot()).toMatchSnapshot({
 			name: 'chart-debt.png',
 			maxDiffPixels: MAX_DIFF_PIXELS
 		});
+
+		await charts.nth(3).hover();
 		expect(await charts.nth(3).screenshot()).toMatchSnapshot({
 			name: 'chart-investments.png',
 			maxDiffPixels: MAX_DIFF_PIXELS
 		});
+
+		await charts.nth(4).hover();
 		expect(await charts.nth(4).screenshot()).toMatchSnapshot({
 			name: 'chart-otherAssets.png',
 			maxDiffPixels: MAX_DIFF_PIXELS
