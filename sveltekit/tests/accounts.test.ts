@@ -57,7 +57,7 @@ test.describe('Accounts', () => {
 		await expect(currencyInput).toHaveValue('$420.69');
 
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		await expect(statusBar).toHaveClass(/statusBar--positive/, { timeout: 10000 });
 		expect(await statusBar.textContent()).toMatch('The account was added successfully');
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		expect(await balanceTypeGroup.count()).toBe(1);
@@ -104,13 +104,13 @@ test.describe('Accounts', () => {
 		await nameInput.fill('Fiat Financial Services');
 		await page.locator('button', { hasText: 'Dismiss' }).click();
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--negative/);
+		await expect(statusBar).toHaveClass(/statusBar--negative/, { timeout: 10000 });
 		expect(await statusBar.textContent()).toMatch('An account with the same name already exists');
 
 		// Check an account can't be edited to have the same name as another account
 		await nameInput.fill("Alice's Savings");
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		await expect(statusBar).toHaveClass(/statusBar--positive/, { timeout: 10000 });
 		expect(await statusBar.textContent()).toMatch('The account was added successfully');
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 
@@ -120,7 +120,7 @@ test.describe('Accounts', () => {
 
 		await nameInput.fill('Fiat Financial Services');
 		await page.locator('button', { hasText: 'Save' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--negative/);
+		await expect(statusBar).toHaveClass(/statusBar--negative/, { timeout: 10000 });
 		expect(await statusBar.textContent()).toMatch('An account with the same name already exists');
 	});
 
@@ -171,7 +171,7 @@ test.describe('Accounts', () => {
 		await page.locator('button', { hasText: 'Add' }).click();
 
 		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		await expect(statusBar).toHaveClass(/statusBar--positive/, { timeout: 10000 });
 		await page.locator('button', { hasText: 'Dismiss' }).click();
 
 		const tableRows = page.locator('.table__tr');
@@ -188,7 +188,7 @@ test.describe('Accounts', () => {
 		await page.keyboard.type('-420.69');
 		await isExcludedCheckbox.check();
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		await expect(statusBar).toHaveClass(/statusBar--positive/, { timeout: 10000 });
 		expect(await tableRows.first().textContent()).toMatch('$420.69');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch(
 			'$420.69'
@@ -241,7 +241,7 @@ test.describe('Accounts', () => {
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message confirms account deletion
-		await expect(statusBar).toHaveClass(/statusBar--active/);
+		await expect(statusBar).toHaveClass(/statusBar--active/, { timeout: 10000 });
 		expect(await statusBar.textContent()).toMatch(
 			"The account —Bob's Laughable-Yield Checking— was deleted successfully"
 		);
@@ -263,7 +263,7 @@ test.describe('Accounts', () => {
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message shows an error
-		await expect(statusBar).toHaveClass(/statusBar--negative/);
+		await expect(statusBar).toHaveClass(/statusBar--negative/, { timeout: 10000 });
 		expect(await statusBar.textContent()).toMatch("The account doesn't exist");
 	});
 });

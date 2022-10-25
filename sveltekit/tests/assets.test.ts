@@ -46,7 +46,7 @@ test.describe('Assets', () => {
 		expect(await statusBar.textContent()).not.toMatch('The asset was added successfully');
 
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		await expect(statusBar).toHaveClass(/statusBar--positive/, { timeout: 10000 });
 		expect(await statusBar.textContent()).toMatch('The asset was added successfully');
 
 		// Check the asset was created successfully
@@ -78,7 +78,7 @@ test.describe('Assets', () => {
 		expect(await statusBar.textContent()).not.toMatch('The asset was updated successfully');
 
 		await page.locator('button', { hasText: 'Save' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		await expect(statusBar).toHaveClass(/statusBar--positive/, { timeout: 10000 });
 		expect(await statusBar.textContent()).toMatch('The asset was updated successfully');
 
 		// Check the account was updated successfully
@@ -131,7 +131,7 @@ test.describe('Assets', () => {
 		await nameInput.fill('GameStop');
 		await page.locator('button', { hasText: 'Dismiss' }).click();
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--negative/);
+		await expect(statusBar).toHaveClass(/statusBar--negative/, { timeout: 10000 });
 		expect(await statusBar.textContent()).toMatch('An asset with the same name already exists');
 
 		// Check an asset can't be edited to have the same name as another asset
@@ -146,7 +146,7 @@ test.describe('Assets', () => {
 		// Rename using an existing asset name
 		await nameInput.fill('GameStop');
 		await page.locator('button', { hasText: 'Save' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--negative/);
+		await expect(statusBar).toHaveClass(/statusBar--negative/, { timeout: 10000 });
 		expect(await statusBar.textContent()).toMatch('An asset with the same name already exists');
 	});
 
@@ -182,7 +182,7 @@ test.describe('Assets', () => {
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message confirms asset deletion
-		await expect(statusBar).toHaveClass(/statusBar--active/);
+		await expect(statusBar).toHaveClass(/statusBar--active/, { timeout: 10000 });
 		expect(await statusBar.textContent()).toMatch(
 			'The asset —1998 Fiat Multipla— was deleted successfully'
 		);
@@ -199,7 +199,7 @@ test.describe('Assets', () => {
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message shows an error
-		await expect(statusBar).toHaveClass(/statusBar--negative/);
+		await expect(statusBar).toHaveClass(/statusBar--negative/, { timeout: 10000 });
 		expect(await statusBar.textContent()).toMatch("The asset doesn't exist");
 	});
 });
