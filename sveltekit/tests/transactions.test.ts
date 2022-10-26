@@ -186,6 +186,7 @@ test.describe('Transactions', () => {
 		await formSelect.selectOption('1');
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
+		await delay();
 		expect(await tableRows.count()).toBe(4);
 		expect(await cardNetBalance.textContent()).toMatch('-$1,000.00');
 
