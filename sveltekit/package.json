@@ -39,7 +39,7 @@
 	"type": "module",
 	"dependencies": {
 		"@canutin/svelte-currency-input": "^0.7.2",
-		"@prisma/client": "^4.4.0",
+		"@prisma/client": "^4.5.0",
 		"chart.js": "^3.9.1",
 		"date-fns": "^2.29.2",
 		"date-fns-tz": "^1.3.6",
