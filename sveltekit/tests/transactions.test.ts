@@ -386,7 +386,7 @@ test.describe('Transactions', () => {
 		await monthSelect.selectOption({ label: '3 - Mar' });
 		await dateSelect.selectOption({ label: '15' });
 		await amountInput.focus();
-		await page.keyboard.type('-420.69');
+		await page.keyboard.type('-420.69', { delay: 25 });
 		await addButton.click();
 
 		const netBalanceCard = page.locator('.card', { hasText: 'Net balance' });
