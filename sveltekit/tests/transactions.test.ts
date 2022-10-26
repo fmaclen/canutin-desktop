@@ -82,6 +82,7 @@ test.describe('Transactions', () => {
 		expect(await cardNetBalance.textContent()).toMatch('Net balance');
 
 		const tableRows = page.locator('.table__tr');
+		await expect(page.locator('.table__td--notice')).not.toBeVisible();
 		expect(await tableRows.count()).toBe(111);
 		expect(await tableRows.first().textContent()).toMatch('Toyota - TFS Payment');
 		expect(await tableRows.first().textContent()).toMatch('Automotive');
@@ -500,6 +501,7 @@ test.describe('Transactions', () => {
 
 		test('Selecting multiple transactions', async ({ page }) => {
 			const tableRows = page.locator('.table__tr');
+			await expect(page.locator('.table__td--notice')).not.toBeVisible();
 			expect(await tableRows.count()).toBe(111);
 
 			const selectAllCheckbox = page.locator('th input.batchEditor-checkbox__input');
@@ -578,6 +580,7 @@ test.describe('Transactions', () => {
 			await selectAllCheckbox.check();
 			await selectCheckboxes.nth(0).uncheck();
 			await selectCheckboxes.nth(1).uncheck();
+			await expect(page.locator('.table__td--notice')).not.toBeVisible();
 			expect(await tableRows.count()).toBe(111);
 			expect(await batchEditor.textContent()).toMatch('109 transactions selected');
 

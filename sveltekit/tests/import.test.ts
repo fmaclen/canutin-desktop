@@ -260,6 +260,7 @@ test.describe('Import CanutinFile', () => {
 		await formSelect.selectOption('7'); // Lifetime
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
+		await delay();
 		await expect(tableRows.nth(4)).toBeVisible();
 		expect(await tableRows.count()).toBe(5);
 		expect(await cardNetBalance.textContent()).toMatch('$599.71');
@@ -282,6 +283,7 @@ test.describe('Import CanutinFile', () => {
 		await formSelect.selectOption('7'); // Lifetime
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
+		await delay();
 		await expect(tableRows.nth(4)).toBeVisible();
 		expect(await tableRows.count()).toBe(5);
 		expect(await tableRows.nth(4).textContent()).toMatch('Not Initech Payroll');
@@ -309,6 +311,7 @@ test.describe('Import CanutinFile', () => {
 		await formSelect.selectOption('7'); // Lifetime
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
+		await delay();
 		expect(await tableRows.count()).toBe(5);
 		await expect(tableRows.nth(4)).toBeVisible();
 		expect(await tableRows.nth(4).textContent()).toMatch('Not Initech Payroll');
@@ -344,6 +347,7 @@ test.describe('Import CanutinFile', () => {
 		await formSelect.selectOption('7'); // Lifetime
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
+		await delay();
 		expect(await cardNetBalance.textContent()).toMatch('-$24.99');
 		expect(await tableRows.count()).toBe(2);
 
