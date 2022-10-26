@@ -151,65 +151,95 @@
 	<aside class="layout__aside">
 		<nav class="layout__nav">
 			<a
-				class="layout__a {pathname === '/' && 'layout__a--active'} {!$isVaultReadyStore &&
-					'layout__a--disabled'}"
 				href="/"
-				>The big picture
+				class="layout__a
+					{pathname === '/' && 'layout__a--active'}
+					{!$isVaultReadyStore && 'layout__a--disabled'}
+				"
+			>
+				The big picture
 			</a>
 			<a
-				class="layout__a {pathname === '/balanceSheet' &&
-					'layout__a--active'} {!$isVaultReadyStore && 'layout__a--disabled'}"
 				href="/balanceSheet"
-				>Balance sheet
+				class="layout__a
+					{pathname === '/balanceSheet' && 'layout__a--active'}
+					{!$isVaultReadyStore && 'layout__a--disabled'}
+				"
+			>
+				Balance sheet
 			</a>
 			<a
-				class="layout__a {pathname === '/trends' && 'layout__a--active'} {!$isVaultReadyStore &&
-					'layout__a--disabled'}"
 				href="/trends"
-				>Trends
+				class="layout__a
+					{pathname === '/trends' && 'layout__a--active'}
+					{!$isVaultReadyStore && 'layout__a--disabled'}
+				"
+			>
+				Trends
 			</a>
 			<a
-				class="layout__a {pathname === '/transactions' &&
-					'layout__a--active'} {!$isVaultReadyStore && 'layout__a--disabled'}"
 				href="/transactions"
-				>Transactions
+				class="layout__a
+					{pathname === '/transactions' && 'layout__a--active'}
+					{!$isVaultReadyStore && 'layout__a--disabled'}
+				"
+			>
+				Transactions
 			</a>
 		</nav>
 
 		<nav class="layout__nav layout__nav--secondary">
 			{#if dev}
 				<a
-					class="layout__a {!$isVaultReadyStore && 'layout__a--disabled'} {pathname ===
-						'/devTools' && 'layout__a--active'}"
 					href="/devTools"
-					>Developer tools
+					class="layout__a
+						{pathname === '/devTools' && 'layout__a--active'}
+						{!$isVaultReadyStore && 'layout__a--disabled'}
+					"
+				>
+					Developer tools
 				</a>
 			{/if}
-			<a class="layout__a {pathname === '/settings' && 'layout__a--active'}" href="/settings"
-				>Settings
+			<a
+				href="/settings"
+				class="layout__a
+					{pathname === '/settings' && 'layout__a--active'}
+				"
+			>
+				Settings
 			</a>
 			{#if isSyncSetup}
-				<a class="layout__a {pathname === '/data' && 'layout__a--active'}" href="/data"
-					>Add or update data
+				<a
+					href="/data"
+					class="layout__a
+						{pathname === '/data' && 'layout__a--active'}
+					"
+				>
+					Add or update data
 				</a>
 			{/if}
 		</nav>
 
 		<nav class="layout__nav layout__nav--primary">
-			{#if !isSyncSetup}
-				<a
-					class="layout__a layout__a--primary {pathname === '/data' && 'layout__a--active'}"
-					href="/data"
-					>Add or update data
-				</a>
-			{/if}
 			{#if isSyncSetup}
 				<button
-					class="layout__a layout__a--primary {!$isVaultReadyStore && 'layout__a--disabled'}"
 					on:click={() => sync()}
 					disabled={!isSyncEnabled || isSyncing}
-					>Sync
+					class="layout__a layout__a--primary
+						{!$isVaultReadyStore && 'layout__a--disabled'}
+					"
+				>
+					Sync
 				</button>
+			{:else}
+				<a
+					href="/data"
+					class="layout__a layout__a--primary
+						{pathname === '/data' && 'layout__a--active'}
+					"
+				>
+					Add or update data
+				</a>
 			{/if}
 		</nav>
 	</aside>

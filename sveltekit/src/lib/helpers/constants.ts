@@ -35,16 +35,6 @@ export enum TrailingCashflowPeriods {
 	LAST_12_MONTHS = 'Last 12 months'
 }
 
-export enum TrendPeriods {
-	ONE_MONTH = '1M',
-	THREE_MONTHS = '3M',
-	SIX_MONTHS = '6M',
-	ONE_YEAR = '1Y',
-	TWO_YEARS = '2Y',
-	FIVE_YEARS = '5Y',
-	LIFETIME = 'All'
-}
-
 export enum EventFrequency {
 	NEVER = 'Never',
 	ONCE_AN_HOUR = 'Once an hour',

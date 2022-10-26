@@ -6,8 +6,6 @@ import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/m
 import { endOfMonth, sub, eachWeekOfInterval } from 'date-fns';
 import { BalanceGroup, SortOrder } from '$lib/helpers/constants';
 
-const today = endOfMonth(new Date());
-
 export const load = async () => {
 	const labels: string[] = [];
 	const datasetNetWorth: ChartDataset[] = [];
@@ -16,11 +14,11 @@ export const load = async () => {
 	const datasetInvestments: ChartDataset[] = [];
 	const datasetOtherAssets: ChartDataset[] = [];
 
-	// Assign item to dataset
-	const itemToDataset = (label: string, balance: number, balanceGroup?: BalanceGroup) => {
+	// Add balance to dataset
+	const balanceToDataset = (label: string, balance: number, balanceGroup?: BalanceGroup) => {
 		const itemData = { label, data: [balance] };
 
-		// Find the item in the dataset by chart label
+		// Find an existing dataset from it's label (or add it for the first time)
 		const updateDataset = (dataset: ChartDataset[]) => {
 			const currentDataset = dataset.find(({ label }) => label === itemData.label);
 			currentDataset ? currentDataset.data.push(balance) : dataset.push(itemData);
@@ -44,10 +42,10 @@ export const load = async () => {
 		}
 	};
 
-	const defaultPeriod = sub(today, { years: 2 });
+	const endOfThisMonth = endOfMonth(new Date());
 	const weeksInPeriod = eachWeekOfInterval({
-		start: defaultPeriod,
-		end: today
+		start: sub(endOfThisMonth, { years: 2 }), // Two years ago
+		end: endOfThisMonth
 	});
 
 	const accounts = await prisma.account.findMany();
@@ -62,6 +60,7 @@ export const load = async () => {
 		let investmentsPeriod = 0;
 		let otherAssetsPeriod = 0;
 
+		// Calculates balances of balance groups and net worth so they can be added as separate datasets
 		const balanceToBalanceGroupDataset = (balanceGroup: BalanceGroup, balance: number) => {
 			switch (balanceGroup) {
 				case BalanceGroup.CASH:
@@ -82,24 +81,25 @@ export const load = async () => {
 		for (const account of accounts) {
 			const { name, balanceGroup } = account;
 			const balance = await getAccountCurrentBalance(account, weekInPeriod);
-			itemToDataset(name, balance, balanceGroup);
+			balanceToDataset(name, balance, balanceGroup);
 			balanceToBalanceGroupDataset(balanceGroup, balance);
 		}
 
 		for (const asset of assets) {
 			const { name, balanceGroup } = asset;
 			const balance = await getAssetCurrentBalance(asset, weekInPeriod);
-			itemToDataset(name, balance, balanceGroup);
+			balanceToDataset(name, balance, balanceGroup);
 			balanceToBalanceGroupDataset(balanceGroup, balance);
 		}
 
-		itemToDataset('Net worth', netWorthPeriod);
-		itemToDataset('Cash', cashPeriod);
-		itemToDataset('Debt', debtPeriod);
-		itemToDataset('Investments', investmentsPeriod);
-		itemToDataset('Other assets', otherAssetsPeriod);
+		balanceToDataset('Net worth', netWorthPeriod);
+		balanceToDataset('Cash', cashPeriod);
+		balanceToDataset('Debt', debtPeriod);
+		balanceToDataset('Investments', investmentsPeriod);
+		balanceToDataset('Other assets', otherAssetsPeriod);
 	}
 
+	// Generate shades of a given color for each dataset
 	const COLOR_WEIGHT = 125;
 	const setShadedBorderColor = (
 		chartDatasets: ChartDataset[],
@@ -123,32 +123,32 @@ export const load = async () => {
 		});
 	};
 
-	setShadedBorderColor(datasetCash, '#00A36F');
-	setShadedBorderColor(datasetDebt, '#e75258', SortOrder.ASC);
-	setShadedBorderColor(datasetInvestments, '#B19B70');
-	setShadedBorderColor(datasetOtherAssets, '#5255AC');
+	setShadedBorderColor(datasetCash, '#00A36F'); // var(--color-greenPrimary)
+	setShadedBorderColor(datasetDebt, '#e75258', SortOrder.ASC); // var(--color-redPrimary)
+	setShadedBorderColor(datasetInvestments, '#B19B70'); // var(--color-yellowPrimary)
+	setShadedBorderColor(datasetOtherAssets, '#5255AC'); // var(--color-purplePrimary)
 
 	datasetNetWorth.forEach((chartDataset) => {
 		switch (chartDataset.label) {
 			case 'Net worth':
-				chartDataset.backgroundColor = '#333333';
-				chartDataset.borderColor = '#333333';
+				chartDataset.backgroundColor = '#333333'; // var(--color-grey80)
+				chartDataset.borderColor = '#333333'; // var(--color-grey80)
 				break;
 			case 'Cash':
-				chartDataset.backgroundColor = '#00A36F';
-				chartDataset.borderColor = '#00A36F';
+				chartDataset.backgroundColor = '#00A36F'; // var(--color-greenPrimary)
+				chartDataset.borderColor = '#00A36F'; // var(--color-greenPrimary)
 				break;
 			case 'Debt':
-				chartDataset.backgroundColor = '#e75258';
-				chartDataset.borderColor = '#e75258';
+				chartDataset.backgroundColor = '#e75258'; // var(--color-redPrimary)
+				chartDataset.borderColor = '#e75258'; // var(--color-redPrimary)
 				break;
 			case 'Investments':
-				chartDataset.backgroundColor = '#B19B70';
-				chartDataset.borderColor = '#B19B70';
+				chartDataset.backgroundColor = '#B19B70'; // var(--color-yellowPrimary)
+				chartDataset.borderColor = '#B19B70'; // var(--color-yellowPrimary)
 				break;
 			case 'Other assets':
-				chartDataset.backgroundColor = '#5255AC';
-				chartDataset.borderColor = '#5255AC';
+				chartDataset.backgroundColor = '#5255AC'; // var(--color-purplePrimary)
+				chartDataset.borderColor = '#5255AC'; // var(--color-purplePrimary)
 				break;
 		}
 	});

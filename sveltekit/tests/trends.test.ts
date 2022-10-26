@@ -3,7 +3,7 @@ import { databaseWipe, databaseSeed } from './fixtures/helpers.js';
 
 test.describe('Trends', () => {
 	test('Charts are rendered correctly', async ({ page, baseURL }, testInfo) => {
-		// NOTE: Our current testing setup runs on Windows, Linux and MacOS.
+		// NOTE: Our current testing setup runs on Windows, Linux and macOS.
 		// On each OS we also run the tests in Chromium, Firefox and Webkit.
 		// To run pixel perfect visual regression tests we would need dedicated snapshots
 		// for each OS and browser combination so to simplify things we use the macOS + Chromium
