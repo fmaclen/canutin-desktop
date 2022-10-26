@@ -72,7 +72,7 @@ test.describe('Assets', () => {
 		// Update the asset
 		await quantityInput.fill('4.20');
 		await costInput.focus();
-		await page.keyboard.type('69');
+		await page.keyboard.type('69', { delay: 25 });
 		await expect(valueInput).toBeDisabled();
 		await expect(valueInput).toHaveValue('$289.8');
 		expect(await statusBar.textContent()).not.toMatch('The asset was updated successfully');
@@ -130,6 +130,7 @@ test.describe('Assets', () => {
 
 		await nameInput.fill('GameStop');
 		await page.locator('button', { hasText: 'Dismiss' }).click();
+		await delay();
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(statusBar).toHaveClass(/statusBar--negative/);
 		expect(await statusBar.textContent()).toMatch('An asset with the same name already exists');

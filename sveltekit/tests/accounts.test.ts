@@ -53,7 +53,7 @@ test.describe('Accounts', () => {
 
 		// Add a new account
 		await currencyInput.focus();
-		await page.keyboard.type('420.69');
+		await page.keyboard.type('420.69', { delay: 25 });
 		await expect(currencyInput).toHaveValue('$420.69');
 
 		await page.locator('button', { hasText: 'Add' }).click();
@@ -103,6 +103,7 @@ test.describe('Accounts', () => {
 
 		await nameInput.fill('Fiat Financial Services');
 		await page.locator('button', { hasText: 'Dismiss' }).click();
+		await delay();
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(statusBar).toHaveClass(/statusBar--negative/);
 		expect(await statusBar.textContent()).toMatch('An account with the same name already exists');
@@ -167,7 +168,7 @@ test.describe('Accounts', () => {
 		await accountIdSelect.selectOption({ label: "Alice's Savings" });
 		await descriptionInput.fill('Evergreen Market');
 		await currencyInput.focus();
-		await page.keyboard.type('420.69');
+		await page.keyboard.type('420.69', { delay: 25 });
 		await page.locator('button', { hasText: 'Add' }).click();
 
 		const statusBar = page.locator('.statusBar');
@@ -185,10 +186,11 @@ test.describe('Accounts', () => {
 		await accountIdSelect.selectOption({ label: "Alice's Savings" });
 		await descriptionInput.fill('Transfer from Ransack Bank');
 		await currencyInput.focus();
-		await page.keyboard.type('-420.69');
+		await page.keyboard.type('-420.69', { delay: 25 });
 		await isExcludedCheckbox.check();
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		await expect(page.locator('.table__td--notice')).not.toBeVisible();
 		expect(await tableRows.first().textContent()).toMatch('$420.69');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch(
 			'$420.69'
