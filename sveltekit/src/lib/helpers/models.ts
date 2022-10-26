@@ -1,7 +1,9 @@
 import prisma from '$lib/helpers/prisma';
 import type { Account } from '@prisma/client';
 import type { Asset } from '@prisma/client';
+import { fromUnixTime } from 'date-fns';
 import { SortOrder } from './constants';
+import { dateInUTC } from './misc';
 
 // Gets the Account or Asset type id from the name
 export const getModelType = async (modelTypeName: string, isAccount: boolean) => {
@@ -43,13 +45,16 @@ export const getModelType = async (modelTypeName: string, isAccount: boolean) =>
 	return modelTypeId!.id;
 };
 
-export const getAccountCurrentBalance = async (account: Account) => {
+export const getAccountCurrentBalance = async (account: Account, periodStart?: Date) => {
 	if (account.isAutoCalculated) {
 		// For auto-calculated accounts sum all of the transactions (except for excluded ones)
 		const balanceFromTransactions = await prisma.transaction.aggregate({
 			where: {
 				accountId: account.id,
-				isExcluded: false
+				isExcluded: false,
+				date: {
+					lte: periodStart
+				}
 			},
 			_sum: {
 				value: true
@@ -61,7 +66,10 @@ export const getAccountCurrentBalance = async (account: Account) => {
 		// For non-auto-calculated accounts get the most recent balance statement
 		const lastBalanceStatement = await prisma.accountBalanceStatement.findFirst({
 			where: {
-				accountId: account.id
+				accountId: account.id,
+				createdAt: {
+					lte: periodStart
+				}
 			},
 			orderBy: {
 				createdAt: SortOrder.DESC
@@ -72,10 +80,13 @@ export const getAccountCurrentBalance = async (account: Account) => {
 	}
 };
 
-export const getAssetCurrentBalance = async (asset: Asset) => {
+export const getAssetCurrentBalance = async (asset: Asset, periodStart?: Date) => {
 	const lastBalanceStatement = await prisma.assetBalanceStatement.findFirst({
 		where: {
-			assetId: asset.id
+			assetId: asset.id,
+			createdAt: {
+				lte: periodStart
+			}
 		},
 		orderBy: {
 			createdAt: SortOrder.DESC
@@ -113,4 +124,23 @@ export const getTransactionCategoryId = async (categoryName: string) => {
 	}
 
 	return transactionCategoryId!.id;
+};
+
+// Transaction descriptions are cleaned by removing extra spaces, tabs or new lines
+export const formatTransactionDescription = (description: string) => {
+	return description.replace(/\s\s+/g, ' ');
+};
+
+// Transaction dates are normalized to UTC at midnight
+export const formatTransactionDate = (date: string | number | Date) => {
+	switch (typeof date) {
+		case 'string':
+			return dateInUTC(fromUnixTime(Number(date)));
+		case 'number':
+			return dateInUTC(fromUnixTime(date));
+		case 'object':
+			return dateInUTC(date);
+		default:
+			throw new Error(`Invalid date type: ${typeof date}`);
+	}
 };

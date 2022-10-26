@@ -22,6 +22,7 @@
 	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { CRUDResponse } from '$lib/helpers/prisma';
+	// FIXME: I don't think we need to import types from `+server` here
 	import type { BatchEditPayload } from 'src/routes/transactions.json/+server';
 
 	export let data: PageData;
@@ -168,7 +169,7 @@
 								name="categoryId"
 								options={selectTransactionCategories}
 								disabled={!categoryIdEdited}
-								placeholder={hasSharedAccounts ? undefined : 'Multiple categories'}
+								placeholder={hasSharedCategories ? undefined : 'Multiple categories'}
 								bind:value={categoryId}
 							/>
 						</FormEditableField>
