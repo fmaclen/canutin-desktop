@@ -41,7 +41,6 @@ const config: PlaywrightTestConfig = {
 			]
 		}
 	},
-	timeout: 15000,
 	projects: isEnvCI ? projectBrowser : undefined,
 	// Can't have more than 1 worker because the tests read/write to the same DB at the same time
 	workers: 1

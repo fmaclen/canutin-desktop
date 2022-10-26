@@ -580,9 +580,9 @@ test.describe('Transactions', () => {
 			await selectAllCheckbox.check();
 			await selectCheckboxes.nth(0).uncheck();
 			await selectCheckboxes.nth(1).uncheck();
-			await expect(page.locator('.table__td--notice')).not.toBeVisible();
-			expect(await tableRows.count()).toBe(111);
+			await expect(batchEditor).toBeVisible();
 			expect(await batchEditor.textContent()).toMatch('109 transactions selected');
+			expect(await tableRows.count()).toBe(111);
 
 			// Delete selected transactions
 			await page.locator('a', { hasText: 'Edit together' }).click();
