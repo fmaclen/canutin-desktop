@@ -11,7 +11,7 @@ import type {
 import prisma, { crudResponse, handleError } from '$lib/helpers/prisma';
 import { SortOrder } from '$lib/helpers/constants';
 
-export interface EndpointTransaction extends Omit<Transaction, 'date'> {
+export interface TransactionResponse extends Omit<Transaction, 'date'> {
 	date: number;
 	transactionImport: TransactionImport | null;
 	transactionCategory: TransactionCategory;
@@ -93,24 +93,24 @@ export const GET = async ({ url }: { url: URL }) => {
 	});
 
 	// Endpoint body gets returned as serialized JSON so we convert the date to Unix timestamps.
-	const endpointTransactions: EndpointTransaction[] = transactions.map((transaction) => ({
+	const transactionsResponse: TransactionResponse[] = transactions.map((transaction) => ({
 		...transaction,
 		date: getUnixTime(transaction.date)
 	}));
 
 	return json({
-		transactions: endpointTransactions
+		transactions: transactionsResponse
 	});
 };
 
-export interface BatchEditPayload {
+export interface BatchEditResponse {
 	transactionIds: number[];
 	updatedProps: Prisma.TransactionUncheckedUpdateManyInput;
 }
 
 // Batch edit transactions
 export const PATCH = async ({ request }: RequestEvent) => {
-	const payload: BatchEditPayload = await request.json();
+	const payload: BatchEditResponse = await request.json();
 
 	if (payload.transactionIds.length < 2 || !payload.updatedProps)
 		return json({ error: 'Insufficient data' });

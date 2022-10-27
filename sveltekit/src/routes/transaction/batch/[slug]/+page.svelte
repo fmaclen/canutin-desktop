@@ -21,9 +21,8 @@
 	import { api } from '$lib/helpers/misc';
 	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
-	import type { CRUDResponse } from '$lib/helpers/prisma';
-	// FIXME: I don't think we need to import types from `+server` here
-	import type { BatchEditPayload } from 'src/routes/transactions.json/+server';
+	import type { CRUDResponse } from '$lib/helpers/forms';
+	import type { BatchEditResponse } from 'src/routes/transactions.json/+server';
 
 	export let data: PageData;
 
@@ -78,7 +77,7 @@
 			value: valueEdited ? value : undefined
 		};
 
-		const payload: BatchEditPayload = {
+		const payload: BatchEditResponse = {
 			transactionIds: batchTransactions.map((t) => t.id),
 			updatedProps
 		};

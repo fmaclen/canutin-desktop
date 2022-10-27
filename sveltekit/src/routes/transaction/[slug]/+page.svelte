@@ -9,12 +9,12 @@
 	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { Prisma } from '@prisma/client';
-	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
+	import type { CRUDResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
 
 	const title = data.transaction.description;
-	let transaction: AddOrUpdateAPIResponse; // FIXME: should be CRUDResponse
+	let transaction: CRUDResponse; // FIXME: should be CRUDResponse
 
 	const handleSubmit = async (event: any) => {
 		let payload: Prisma.TransactionUncheckedCreateInput = {
