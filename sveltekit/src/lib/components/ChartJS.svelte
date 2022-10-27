@@ -68,7 +68,7 @@
 					x: {
 						beginAtZero: true,
 						min: 7, // "Trim" the first week so the chart sticks to the left border nicely
-						max: 104,
+						max: 105,
 						ticks: {
 							padding: 16,
 							callback: (index: any) => {
