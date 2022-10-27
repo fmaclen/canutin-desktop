@@ -1,17 +1,17 @@
-name: Test, build & release
+name: Build & release
 
 on:
   push:
     branches: [main, master]
 
 jobs:
-  release:
-    name: Release
-    runs-on: ${{ matrix.os }}
-
+  Release:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
+
+    name: Release (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
@@ -24,17 +24,6 @@ jobs:
       - name: Install Prisma's dependencies
         working-directory: ./sveltekit
         run: npx prisma generate
-
-      - name: Install Playwright Browsers
-        working-directory: ./sveltekit
-        run: npx playwright install --with-deps
-
-      - name: Run Playwright tests
-        working-directory: ./sveltekit
-        run: npm test
-        env:
-          NODE_ENV: CI
-          BROWSER: chromium
 
       - name: Install Electron dependencies
         run: npm ci
