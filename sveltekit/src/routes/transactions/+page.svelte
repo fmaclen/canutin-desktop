@@ -24,7 +24,7 @@
 	import { CardAppearance } from '$lib/components/Card';
 	import { dateInUTC, formatCurrency, formatInUTC } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
-	import type { EndpointTransaction } from '../transactions.json/+server';
+	import type { TransactionResponse } from '../transactions.json/+server';
 
 	const title = 'Transactions';
 
@@ -106,8 +106,8 @@
 	];
 
 	// Default params
-	$: transactions = [] as EndpointTransaction[];
-	$: filteredTransactions = [] as EndpointTransaction[];
+	$: transactions = [] as TransactionResponse[];
+	$: filteredTransactions = [] as TransactionResponse[];
 	$: filterBy = Filter.ALL;
 
 	$: periodIndex = 2; // Last 3 months
@@ -148,7 +148,7 @@
 	};
 
 	// Sum the total from all the transaction values (ignoring "excluded" ones)
-	const sumTransactions = (transactions: EndpointTransaction[]) => {
+	const sumTransactions = (transactions: TransactionResponse[]) => {
 		return transactions.reduce((acc, transaction) => {
 			return transaction.isExcluded ? acc : acc + transaction.value;
 		}, 0);

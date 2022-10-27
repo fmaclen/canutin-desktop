@@ -9,11 +9,11 @@
 	import { api } from '$lib/helpers/misc';
 	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
-	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
+	import type { CRUDResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
 	const title = data.asset.name;
-	let asset: AddOrUpdateAPIResponse; // FIXME: should be CRUDResponse
+	let asset: CRUDResponse; // FIXME: should be CRUDResponse
 
 	const handleSubmit = async (event: any) => {
 		let payload: Prisma.AssetUncheckedCreateInput = {

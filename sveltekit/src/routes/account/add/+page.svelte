@@ -8,10 +8,10 @@
 	import { api } from '$lib/helpers/misc';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
-	import type { AddOrUpdateAPIResponse } from '$lib/helpers/forms';
+	import type { CRUDResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
-	let account: AddOrUpdateAPIResponse; // FIXME: should be CRUDResponse
+	let account: CRUDResponse; // FIXME: should be CRUDResponse
 
 	const handleSubmit = async (event: any) => {
 		const payload: Prisma.AccountUncheckedCreateInput = {
