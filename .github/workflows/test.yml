@@ -18,25 +18,36 @@ jobs:
   SvelteKit:
     strategy:
       matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
         browser: [chromium, firefox, webkit]
 
-    name: SvelteKit (${{ matrix.browser }})
+    name: SvelteKit (${{ matrix.os }} - ${{ matrix.browser }})
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
+
       - name: Install dependencies
         working-directory: ./sveltekit
         run: npm ci
+
       - name: Install Prisma's dependencies
         working-directory: ./sveltekit
         run: npx prisma generate
-      - name: Install Playwright Browser (${{ matrix.browser }})
+
+      - name: Install Playwright Browser
         working-directory: ./sveltekit
-        run: npx playwright install ${{ matrix.browser }}
+        run: npx playwright install --with-deps ${{ matrix.browser }} chromium
+
       - name: Run Playwright tests
         working-directory: ./sveltekit
         run: npm test
         env:
           NODE_ENV: CI
           BROWSER: ${{ matrix.browser }}
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ${{ matrix.browser }}-${{ matrix.os }}-test-results
+          path: test-results
