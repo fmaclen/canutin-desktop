@@ -214,7 +214,14 @@
 					options={periods}
 					bind:value={periodIndex}
 					on:change={async () => {
-						await getTransactions();
+						// HACK: there is a race condition (in Firefox) when changing the period.
+						// `periodIndex`, `dateFrom` and `dateTo` are not updated before
+						// getTransactions() is called. Adding a 1ms delay fixes the issue.
+						//
+						// REF https://github.com/Canutin/desktop/issues/119#issuecomment-1293639150
+						setTimeout(async () => {
+							await getTransactions();
+						}, 1);
 					}}
 				/>
 				<div class="transactions__summary">
