@@ -22,7 +22,6 @@
 	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { CRUDResponse } from '$lib/helpers/forms';
-	// FIXME: I don't think we need to import types from `+server` here
 	import type { BatchEditResponse } from 'src/routes/transactions.json/+server';
 
 	export let data: PageData;
