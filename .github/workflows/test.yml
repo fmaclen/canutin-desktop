@@ -1,12 +1,11 @@
-name: Test only
+name: Test
 
 on:
   pull_request:
-    branches: [main, master, develop]
+    branches: [main, master]
 
 jobs:
   Electron:
-    timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,70 +15,39 @@ jobs:
       - name: Run unit tests
         run: npx jest --ci
 
-  SvelteKit-Chromium:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-      - name: Install dependencies
-        working-directory: ./sveltekit
-        run: npm ci
-      - name: Install Prisma's dependencies
-        working-directory: ./sveltekit
-        run: npx prisma generate
-      - name: Install Playwright Browsers
-        working-directory: ./sveltekit
-        run: npx playwright install --with-deps
-      - name: Run Playwright tests
-        working-directory: ./sveltekit
-        run: npm test
-        env:
-          NODE_ENV: CI
-          BROWSER: chromium
+  SvelteKit:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        browser: [chromium, firefox, webkit]
 
-  SvelteKit-Firefox:
-    needs: SvelteKit-Chromium
-    timeout-minutes: 60
+    name: SvelteKit (${{ matrix.os }} - ${{ matrix.browser }})
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-      - name: Install dependencies
-        working-directory: ./sveltekit
-        run: npm ci
-      - name: Install Prisma's dependencies
-        working-directory: ./sveltekit
-        run: npx prisma generate
-      - name: Install Playwright Browsers
-        working-directory: ./sveltekit
-        run: npx playwright install --with-deps
-      - name: Run Playwright tests
-        working-directory: ./sveltekit
-        run: npm test
-        env:
-          NODE_ENV: CI
-          BROWSER: firefox
 
-  SvelteKit-Webkit:
-    needs: SvelteKit-Firefox
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
       - name: Install dependencies
         working-directory: ./sveltekit
         run: npm ci
+
       - name: Install Prisma's dependencies
         working-directory: ./sveltekit
         run: npx prisma generate
-      - name: Install Playwright Browsers
+
+      - name: Install Playwright Browser
         working-directory: ./sveltekit
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps ${{ matrix.browser }} chromium
+
       - name: Run Playwright tests
         working-directory: ./sveltekit
         run: npm test
         env:
           NODE_ENV: CI
-          BROWSER: webkit
+          BROWSER: ${{ matrix.browser }}
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ${{ matrix.browser }}-${{ matrix.os }}-test-results
+          path: test-results
