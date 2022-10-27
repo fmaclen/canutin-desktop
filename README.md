@@ -1,6 +1,6 @@
 # Canutin: desktop
 
-<img width="1754" alt="image" src="https://user-images.githubusercontent.com/1434675/194109413-c6726dc7-8f2f-4954-b737-d68c34670485.png">
+<img width="1495" alt="image" src="https://user-images.githubusercontent.com/1434675/198181820-1191dec9-907d-41bc-9d9f-70df17b6dd4e.png">
 
 <p align="center">
   💻 <strong>Download the <a href="https://github.com/Canutin/desktop/releases">latest release</a></strong> (Windows, macOS & Linux)
