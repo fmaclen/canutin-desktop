@@ -225,8 +225,8 @@
 				<button
 					on:click={() => sync()}
 					disabled={!isSyncEnabled || isSyncing}
-					class="layout__a layout__a--primary
-						{!$isVaultReadyStore && 'layout__a--disabled'}
+					class="layout__button layout__button--primary
+						{!$isVaultReadyStore && 'layout__button--disabled'}
 					"
 				>
 					Sync
@@ -341,7 +341,7 @@
 		}
 	}
 
-	button.layout__a,
+	button.layout__button,
 	a.layout__a {
 		font-size: 13px;
 		font-weight: 600;
@@ -370,8 +370,7 @@
 		}
 	}
 
-	// FIXME: should be called `button.layout__button`, maybe
-	button.layout__a {
+	button.layout__button {
 		border-left: none;
 		border-right: none;
 		border-bottom: none;
