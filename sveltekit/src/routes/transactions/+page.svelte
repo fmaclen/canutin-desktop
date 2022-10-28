@@ -16,10 +16,14 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
-	import FormInput from '$lib/components/FormInput.svelte';
-	import FormSelect from '$lib/components/FormSelect.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Link from '$lib/components/Link.svelte';
+	import FormInput from '$lib/components/FormInput.svelte';
+	import FormSelect from '$lib/components/FormSelect.svelte';
+	import Table from '$lib/components/Table.svelte';
+	import TableTh from '$lib/components/TableTh.svelte';
+	import TableTr from '$lib/components/TableTr.svelte';
+	import TableTd from '$lib/components/TableTd.svelte';
 	import { api } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
 	import { dateInUTC, formatCurrency, formatInUTC } from '$lib/helpers/misc';
@@ -246,28 +250,26 @@
 				</nav>
 			{/if}
 
-			<table class="table">
+			<Table>
 				<thead>
 					<tr>
-						<th class="table__th table__th--checkbox">
+						<TableTh hasCheckbox={true}>
 							<label class="batchEditor-checkbox">
 								<input
+									class="batchEditor-checkbox__input"
 									name="toggleSelectAll"
 									type="checkbox"
 									on:click={toggleSelectTransactions}
 									checked={allSelected}
+									disabled={transactions.length === 0}
 									indeterminate={someSelected}
-									class="batchEditor-checkbox__input"
 								/>
 							</label>
-						</th>
+						</TableTh>
 
 						{#each TABLE_HEADERS as tableHeader}
 							{@const { label, column } = tableHeader}
-							<th
-								class="table__th {tableHeader.label === TABLE_HEADERS[4].label &&
-									'table__th--total'}"
-							>
+							<TableTh hasTotal={tableHeader.label === TABLE_HEADERS[4].label}>
 								<button
 									class="table__sortable
 									{sortBy === column && 'table__sortable--active'}
@@ -276,7 +278,7 @@
 								>
 									{label}
 								</button>
-							</th>
+							</TableTh>
 						{/each}
 					</tr>
 				</thead>
@@ -285,11 +287,8 @@
 						{#each filteredTransactions as transaction}
 							{@const { id, date, description, transactionCategory, account, value, isExcluded } =
 								transaction}
-							<tr
-								class="table__tr
-									{highlight === id || selectedTransactions.includes(id) ? 'table__tr--highlight' : null}"
-							>
-								<td class="table__td table__td--checkbox">
+							<TableTr isHighlighted={highlight === id || selectedTransactions.includes(id)}>
+								<TableTd hasCheckbox={true}>
 									<label class="batchEditor-checkbox">
 										<input
 											bind:group={selectedTransactions}
@@ -300,17 +299,20 @@
 											class="batchEditor-checkbox__input"
 										/>
 									</label>
-								</td>
-
-								<td class="table__td table__td--date">
+								</TableTd>
+								<TableTd hasDate={true}>
 									{formatInUTC(fromUnixTime(date), 'MMM dd, yyyy')}
-								</td>
-								<td class="table__td"><Link href={`/transaction/${id}`}>{description}</Link></td>
-								<td class="table__td">{transactionCategory.name}</td>
-								<td class="table__td">
+								</TableTd>
+								<TableTd>
+									<Link href={`/transaction/${id}`}>{description}</Link>
+								</TableTd>
+								<TableTd>
+									{transactionCategory.name}
+								</TableTd>
+								<TableTd>
 									<Link href={`/account/${transaction.accountId}`}>{account.name}</Link>
-								</td>
-								<td class="table__td table__td--total {value > 0 && `table__td--positive`}">
+								</TableTd>
+								<TableTd hasTotal={true} isPositive={value > 0}>
 									<span
 										class={isExcluded ? `table__excluded` : null}
 										title={isExcluded
@@ -319,16 +321,16 @@
 									>
 										{formatCurrency(value, 2, 2)}
 									</span>
-								</td>
-							</tr>
+								</TableTd>
+							</TableTr>
 						{/each}
 					{:else}
-						<tr class="table__tr">
-							<td class="table__td table__td--notice" colspan="999">No transactions found</td>
-						</tr>
+						<TableTr>
+							<TableTd isNotice={true}>No transactions found</TableTd>
+						</TableTr>
 					{/if}
 				</tbody>
-			</table>
+			</Table>
 		</div>
 	</Section>
 </ScrollView>
@@ -356,46 +358,6 @@
 		grid-auto-flow: column;
 		column-gap: 8px;
 		grid-column: span 2;
-	}
-
-	table.table {
-		position: relative;
-		z-index: 1;
-		width: 100%;
-		table-layout: auto;
-		border-collapse: collapse;
-		font-size: 12px;
-	}
-
-	th.table__th {
-		color: var(--color-grey40);
-		font-weight: 400;
-		padding: 16px 16px 16px 0;
-		position: sticky;
-		top: 0;
-		z-index: 1;
-		box-shadow: inset 0 -2px 0 var(--color-grey10);
-		background-color: #fff;
-		text-align: left;
-		box-sizing: border-box;
-
-		&:first-child {
-			padding-left: 16px;
-		}
-
-		&:last-child {
-			padding-right: 16px;
-		}
-
-		&--checkbox,
-		&--checkbox:first-child {
-			padding: unset;
-			width: max-content;
-		}
-
-		&--total {
-			text-align: right;
-		}
 	}
 
 	button.table__sortable {
@@ -434,79 +396,6 @@
 
 		&--desc::after {
 			content: '▼';
-		}
-	}
-
-	tr.table__tr {
-		border-bottom: 1px dashed var(--color-border);
-		vertical-align: top;
-
-		&:nth-child(odd) {
-			td.table__td {
-				background-color: var(--color-grey3);
-			}
-		}
-
-		&:last-child {
-			border-bottom: none;
-
-			td.table__td:first-child {
-				border-bottom-left-radius: 4px;
-			}
-
-			td.table__td:last-child {
-				border-bottom-right-radius: 4px;
-			}
-		}
-
-		&:hover,
-		&--highlight {
-			&:nth-child(even),
-			&:nth-child(odd) {
-				td.table__td:not(.table__td--notice) {
-					background-color: var(--color-blueSecondary);
-				}
-			}
-		}
-	}
-
-	td.table__td {
-		font-size: 12px;
-		padding: 12px 16px 12px 0;
-		color: var(--color-grey80);
-
-		&:first-child:not(.table__td--notice) {
-			padding-left: 16px;
-		}
-
-		&--checkbox,
-		&--checkbox:first-child:not(.table__td--notice) {
-			padding: unset;
-			width: max-content;
-		}
-
-		&--date {
-			font-family: var(--font-monospace);
-			text-transform: uppercase;
-			font-size: 11px;
-			line-height: 16px;
-		}
-
-		&--total {
-			font-family: var(--font-monospace);
-			text-align: right;
-			line-height: 16px;
-		}
-
-		&--positive {
-			color: var(--color-greenPrimary);
-		}
-
-		&--notice {
-			text-align: center;
-			padding: 32px;
-			background-color: var(--color-grey5);
-			color: var(--color-grey50);
 		}
 	}
 
