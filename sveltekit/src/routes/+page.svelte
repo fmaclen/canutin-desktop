@@ -86,10 +86,11 @@
 					{@const isJanuary = month.getMonth() === 0}
 					<a
 						on:mouseenter={() => setActivePeriod(period)}
-						href="/transactions?periodFrom={format(month, 'yyyy-MM-dd')}&periodTo={format(
-							endOfMonth(month),
-							'yyyy-MM-dd'
-						)}&periodLabel={format(month, 'MMMM yyyy')}"
+						href="/transactions
+							?periodFrom={format(month, 'yyyy-MM-dd')}
+							&periodTo={format(endOfMonth(month), 'yyyy-MM-dd')}
+							&periodLabel={format(month, 'MMMM yyyy')}
+						"
 						title="See transactions in {format(month, 'MMMM yyyy')}"
 						class="chart__period
 							{isActive && 'chart__period--active'}

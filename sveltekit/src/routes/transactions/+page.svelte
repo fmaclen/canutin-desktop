@@ -32,6 +32,36 @@
 
 	const title = 'Transactions';
 
+	enum Filter {
+		ALL = 'All',
+		CREDITS = 'Credits',
+		DEBITS = 'Debits'
+	}
+
+	const TABLE_HEADERS = [
+		{
+			label: 'Date',
+			column: 'date'
+		},
+		{
+			label: 'Description',
+			column: 'description'
+		},
+		{
+			label: 'Category',
+			column: 'categoryId'
+		},
+		{
+			label: 'Account',
+			column: 'accountId'
+		},
+		{
+			label: 'Amount',
+			column: 'value'
+		}
+	];
+
+	// Filter transactions by date range
 	const today = new Date();
 	const thisMonthFrom = startOfMonth(today);
 	const thisMonthTo = endOfMonth(today);
@@ -80,47 +110,19 @@
 		}
 	];
 
-	enum Filter {
-		ALL = 'All',
-		CREDITS = 'Credits',
-		DEBITS = 'Debits'
-	}
-
-	const TABLE_HEADERS = [
-		{
-			label: 'Date',
-			column: 'date'
-		},
-		{
-			label: 'Description',
-			column: 'description'
-		},
-		{
-			label: 'Category',
-			column: 'categoryId'
-		},
-		{
-			label: 'Account',
-			column: 'accountId'
-		},
-		{
-			label: 'Amount',
-			column: 'value'
-		}
-	];
-
 	// Default params
 	$: transactions = [] as TransactionResponse[];
 	$: filteredTransactions = [] as TransactionResponse[];
 	$: filterBy = Filter.ALL;
 
-	$: periodIndex = 2; // Last 3 months
-	$: dateFrom = format(dateInUTC(periods[periodIndex].dateFrom), 'yyyy-MM-dd');
-	$: dateTo = format(dateInUTC(periods[periodIndex].dateTo), 'yyyy-MM-dd');
-
+	// Transaction sorting and filtering
 	$: sortBy = TABLE_HEADERS[0].column; // Date column
 	$: sortOrder = SortOrder.DESC;
 	$: keyword = '';
+
+	$: periodIndex = 2; // Last 3 months
+	$: dateFrom = format(dateInUTC(periods[periodIndex].dateFrom), 'yyyy-MM-dd');
+	$: dateTo = format(dateInUTC(periods[periodIndex].dateTo), 'yyyy-MM-dd');
 
 	const getTransactions = async () => {
 		const params = [
@@ -144,11 +146,12 @@
 		const periodFrom = urlParams.get('periodFrom');
 		const periodTo = urlParams.get('periodTo');
 
-		if (periodFrom && periodTo) {
+		// Add a new period with the custom date range
+		if (periodFrom && periodTo && periodLabel) {
 			periods = [
 				...periods,
 				{
-					label: periodLabel ? periodLabel : 'Other',
+					label: periodLabel,
 					dateFrom: dateInUTC(new Date(periodFrom)),
 					dateTo: dateInUTC(new Date(periodTo))
 				}
