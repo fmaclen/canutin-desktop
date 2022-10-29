@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { format, addDays, startOfMonth } from 'date-fns';
+import { format, addDays, startOfMonth, subMonths } from 'date-fns';
 
 import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
 
@@ -840,5 +840,38 @@ test.describe('Transactions', () => {
 			expect(await tableRows.nth(0).textContent()).toMatch('15');
 			expect(await tableRows.nth(1).textContent()).toMatch('15');
 		});
+	});
+
+	test('Filter transactions by a custom date range', async ({ page, baseURL }) => {
+		await databaseSeed(baseURL!);
+
+		await page.goto('/');
+		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
+
+		const chartPeriods = page.locator('.chart__period');
+		expect(await chartPeriods.count()).toBe(13);
+
+		await chartPeriods.nth(0).click();
+		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
+
+		const selectOptions = page.locator('.formSelect__select option');
+		const twelveMonthsAgo = format(subMonths(new Date(), 12), 'MMMM yyyy');
+		const sixMonthsAgo = format(subMonths(new Date(), 7), 'MMMM yyyy');
+		const thisMonth = format(new Date(), 'MMMM yyyy');
+		expect(await selectOptions.nth(8).textContent()).toMatch(twelveMonthsAgo);
+		expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('37');
+		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch('$808.77'); // prettier-ignore
+
+		await page.locator('a', { hasText: 'The big picture' }).click();
+		await chartPeriods.nth(5).click();
+		expect(await selectOptions.nth(8).textContent()).toMatch(sixMonthsAgo);
+		expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('37');
+		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch('$217.01'); // prettier-ignore
+
+		await page.locator('a', { hasText: 'The big picture' }).click();
+		await chartPeriods.nth(12).click();
+		expect(await selectOptions.nth(8).textContent()).toMatch(thisMonth);
+		expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('37');
+		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch('$228.44'); // prettier-ignore
 	});
 });
