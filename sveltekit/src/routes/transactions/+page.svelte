@@ -37,7 +37,7 @@
 	const thisMonthTo = endOfMonth(today);
 	const thisYearFrom = startOfYear(today);
 	const thisYearTo = endOfYear(today);
-	const periods = [
+	let periods = [
 		{
 			label: 'This month',
 			dateFrom: thisMonthFrom,
@@ -136,8 +136,29 @@
 		setFilterBy(filterBy);
 	};
 
-	// When the component is mounted retrieve transactions with the default params
+	// When the component is mounted retrieve transactions with the params set in
+	// the URL or with default params if no params are present.
 	onMount(async () => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const periodLabel = urlParams.get('periodLabel');
+		const periodFrom = urlParams.get('periodFrom');
+		const periodTo = urlParams.get('periodTo');
+
+		if (periodFrom && periodTo) {
+			periods = [
+				...periods,
+				{
+					label: periodLabel ? periodLabel : 'Other',
+					dateFrom: dateInUTC(new Date(periodFrom)),
+					dateTo: dateInUTC(new Date(periodTo))
+				}
+			];
+
+			periodIndex = periods.length - 1;
+			dateFrom = periodFrom;
+			dateTo = periodTo;
+		}
+
 		await getTransactions();
 	});
 

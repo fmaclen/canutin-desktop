@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { format, fromUnixTime } from 'date-fns';
+	import { endOfMonth, format, fromUnixTime } from 'date-fns';
 	import type { PageData } from './$types';
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
@@ -84,11 +84,17 @@
 						[chart.highestSurplus, chart.lowestSurplus].includes(period.surplus)}
 					{@const month = fromUnixTime(period.month)}
 					{@const isJanuary = month.getMonth() === 0}
-
-					<div
-						class="chart__period {isActive && 'chart__period--active'} {isJanuary &&
-							'chart__period--january'}"
+					<a
 						on:mouseenter={() => setActivePeriod(period)}
+						href="/transactions?periodFrom={format(month, 'yyyy-MM-dd')}&periodTo={format(
+							endOfMonth(month),
+							'yyyy-MM-dd'
+						)}&periodLabel={format(month, 'MMMM yyyy')}"
+						title="See transactions in {format(month, 'MMMM yyyy')}"
+						class="chart__period
+							{isActive && 'chart__period--active'}
+							{isJanuary && 'chart__period--january'}
+						"
 					>
 						<ChartBar
 							{isCurrentPeriod}
@@ -104,7 +110,7 @@
 							{format(month, 'MMM')}
 							{isJanuary ? `'${format(month, 'yy')}` : ''}
 						</time>
-					</div>
+					</a>
 				{/each}
 			</div>
 			<div class="bigPictureCashflow__summary">
@@ -180,11 +186,12 @@
 		grid-auto-columns: minmax(0, 1fr);
 	}
 
-	div.chart__period {
+	a.chart__period {
 		display: flex;
 		flex-direction: column;
 		border-left: 1px solid var(--color-border);
 		border-bottom: 1px solid var(--color-border);
+		text-decoration: none;
 
 		&:first-child {
 			border-left: none;

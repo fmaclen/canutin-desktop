@@ -24,7 +24,7 @@
 	let barBackground = isCurrentPeriod ? `--background-url: url(${currentPeriodBackground});` : '';
 </script>
 
-<div class="chart__barContainer" style={barGridTemplateRows} title={value.toString()}>
+<div class="chart__barContainer" style={barGridTemplateRows}>
 	{#if trend === 'negative'}
 		<div class="chart__barPlaceholder" />
 		<hr class="chart__hr" />
