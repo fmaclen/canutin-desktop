@@ -32,12 +32,42 @@
 
 	const title = 'Transactions';
 
+	enum Filter {
+		ALL = 'All',
+		CREDITS = 'Credits',
+		DEBITS = 'Debits'
+	}
+
+	const TABLE_HEADERS = [
+		{
+			label: 'Date',
+			column: 'date'
+		},
+		{
+			label: 'Description',
+			column: 'description'
+		},
+		{
+			label: 'Category',
+			column: 'categoryId'
+		},
+		{
+			label: 'Account',
+			column: 'accountId'
+		},
+		{
+			label: 'Amount',
+			column: 'value'
+		}
+	];
+
+	// Filter transactions by date range
 	const today = new Date();
 	const thisMonthFrom = startOfMonth(today);
 	const thisMonthTo = endOfMonth(today);
 	const thisYearFrom = startOfYear(today);
 	const thisYearTo = endOfYear(today);
-	const periods = [
+	let periods = [
 		{
 			label: 'This month',
 			dateFrom: thisMonthFrom,
@@ -80,47 +110,19 @@
 		}
 	];
 
-	enum Filter {
-		ALL = 'All',
-		CREDITS = 'Credits',
-		DEBITS = 'Debits'
-	}
-
-	const TABLE_HEADERS = [
-		{
-			label: 'Date',
-			column: 'date'
-		},
-		{
-			label: 'Description',
-			column: 'description'
-		},
-		{
-			label: 'Category',
-			column: 'categoryId'
-		},
-		{
-			label: 'Account',
-			column: 'accountId'
-		},
-		{
-			label: 'Amount',
-			column: 'value'
-		}
-	];
-
 	// Default params
 	$: transactions = [] as TransactionResponse[];
 	$: filteredTransactions = [] as TransactionResponse[];
 	$: filterBy = Filter.ALL;
 
-	$: periodIndex = 2; // Last 3 months
-	$: dateFrom = format(dateInUTC(periods[periodIndex].dateFrom), 'yyyy-MM-dd');
-	$: dateTo = format(dateInUTC(periods[periodIndex].dateTo), 'yyyy-MM-dd');
-
+	// Transaction sorting and filtering
 	$: sortBy = TABLE_HEADERS[0].column; // Date column
 	$: sortOrder = SortOrder.DESC;
 	$: keyword = '';
+
+	$: periodIndex = 2; // Last 3 months
+	$: dateFrom = format(dateInUTC(periods[periodIndex].dateFrom), 'yyyy-MM-dd');
+	$: dateTo = format(dateInUTC(periods[periodIndex].dateTo), 'yyyy-MM-dd');
 
 	const getTransactions = async () => {
 		const params = [
@@ -136,8 +138,30 @@
 		setFilterBy(filterBy);
 	};
 
-	// When the component is mounted retrieve transactions with the default params
+	// When the component is mounted retrieve transactions with the params set in
+	// the URL or with default params if no params are present.
 	onMount(async () => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const periodLabel = urlParams.get('periodLabel');
+		const periodFrom = urlParams.get('periodFrom');
+		const periodTo = urlParams.get('periodTo');
+
+		// Add a new period with the custom date range
+		if (periodFrom && periodTo && periodLabel) {
+			periods = [
+				...periods,
+				{
+					label: periodLabel,
+					dateFrom: dateInUTC(new Date(periodFrom)),
+					dateTo: dateInUTC(new Date(periodTo))
+				}
+			];
+
+			periodIndex = periods.length - 1;
+			dateFrom = periodFrom;
+			dateTo = periodTo;
+		}
+
 		await getTransactions();
 	});
 

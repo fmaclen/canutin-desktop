@@ -48,17 +48,9 @@ test.describe('Balance sheet', () => {
 
 	test('Cashflow totals are calculated and rendered in a chart correctly', async ({ page }) => {
 		await page.goto('/');
-		expect(
-			await page.locator('.bigPictureCashflow__summary .card', { hasText: 'Income' }).textContent()
-		).toMatch('$0');
-		expect(
-			await page
-				.locator('.bigPictureCashflow__summary .card', { hasText: 'Expenses' })
-				.textContent()
-		).toMatch('$0');
-		expect(
-			await page.locator('.bigPictureCashflow__summary .card', { hasText: 'Surplus' }).textContent()
-		).toMatch('$0');
+		expect(await page.locator('.bigPictureCashflow__summary .card', { hasText: 'Income' }).textContent()).toMatch('$0'); // prettier-ignore
+		expect(await page.locator('.bigPictureCashflow__summary .card', { hasText: 'Expenses' }).textContent()).toMatch('$0'); // prettier-ignore
+		expect(await page.locator('.bigPictureCashflow__summary .card', { hasText: 'Surplus' }).textContent()).toMatch('$0'); // prettier-ignore
 
 		const chartPeriods = page.locator('.chart__period');
 		expect(await chartPeriods.count()).toBe(13);
