@@ -4,6 +4,7 @@
 	export let hasTotal: boolean = false;
 	export let isPositive: boolean = false;
 	export let isNotice: boolean = false;
+	export let isAlignedRight: boolean = false;
 </script>
 
 <td
@@ -13,6 +14,7 @@
 		{hasTotal && 'table__td--total'}
 		{isPositive && 'table__td--positive'}
 		{isNotice && 'table__td--notice'}
+		{isAlignedRight && 'table__td--align-right'}
 	"
 	colspan={isNotice ? 999 : undefined}
 >
@@ -44,7 +46,6 @@
 
 		&--total {
 			font-family: var(--font-monospace);
-			text-align: right;
 			line-height: 16px;
 		}
 
@@ -57,6 +58,10 @@
 			padding: 32px;
 			background-color: var(--color-grey5);
 			color: var(--color-grey50);
+		}
+
+		&--align-right {
+			text-align: right;
 		}
 	}
 </style>

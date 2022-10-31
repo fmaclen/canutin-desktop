@@ -177,6 +177,16 @@
 			>
 				Trends
 			</a>
+			<hr class="layout__hr" />
+			<a
+				href="/accounts"
+				class="layout__a
+					{pathname === '/accounts' && 'layout__a--active'}
+					{!$isVaultReadyStore && 'layout__a--disabled'}
+				"
+			>
+				Accounts
+			</a>
 			<a
 				href="/transactions"
 				class="layout__a
@@ -368,6 +378,12 @@
 			box-sizing: border-box;
 			border-top: 1px solid var(--color-border);
 		}
+	}
+
+	hr.layout__hr {
+		border: none;
+		border-top: 1px solid var(--color-border);
+		margin: 16px 0;
 	}
 
 	button.layout__button {

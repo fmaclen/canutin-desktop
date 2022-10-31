@@ -1,12 +1,12 @@
 <script lang="ts">
 	export let hasCheckbox: boolean = false;
-	export let hasTotal: boolean = false;
+	export let isAlignedRight: boolean = false;
 </script>
 
 <th
 	class="table__th
 		{hasCheckbox && 'table__th--checkbox'}
-		{hasTotal && 'table__th--total'}
+		{isAlignedRight && 'table__th--align-right'}
 	"
 >
 	<slot />
@@ -39,7 +39,7 @@
 			width: max-content;
 		}
 
-		&--total {
+		&--align-right {
 			text-align: right;
 		}
 	}
