@@ -48,9 +48,12 @@
 	}
 
 	const tableHeaders = Object.values(TableHeaders).map((tableHeader) => {
+		// "Amount" refers to the "value" column in the Transactions database table
+		const column = tableHeader === TableHeaders.AMOUNT ? 'value' : toCamelCase(tableHeader);
+
 		return {
 			label: tableHeader,
-			column: toCamelCase(tableHeader)
+			column
 		};
 	});
 

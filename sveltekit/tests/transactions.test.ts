@@ -836,7 +836,12 @@ test.describe('Transactions', () => {
 			await expect(statusBar).toHaveClass(/statusBar--positive/);
 			expect(await statusBar.textContent()).toMatch('The 2 transactions were updated successfully');
 
-			await dismissButton.click();
+			const formSelect = page.locator('.formSelect__select');
+			const formInput = page.locator('.formInput__input');
+			await formSelect.selectOption('7'); // Lifetime
+			await formSelect.dispatchEvent('change');
+			await formInput.click();
+			await delay();
 			expect(await tableRows.nth(0).textContent()).toMatch('15');
 			expect(await tableRows.nth(1).textContent()).toMatch('15');
 		});

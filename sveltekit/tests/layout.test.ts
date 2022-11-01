@@ -127,7 +127,7 @@ test.describe('Layout', () => {
 			'/account/add'
 		);
 
-		await page.locator('a', { hasText: 'Account' }).click();
+		await page.locator('a.wizard__a', { hasText: 'Account' }).click();
 		await expect(page.locator('h1', { hasText: 'Account' })).toBeVisible();
 
 		// Add Asset
@@ -160,7 +160,7 @@ test.describe('Layout', () => {
 				hasText: 'Add or update data'
 			})
 			.click();
-		await page.locator('a', { hasText: 'Account' }).click();
+		await page.locator('a.wizard__a', { hasText: 'Account' }).click();
 
 		const statusBar = page.locator('.statusBar');
 		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
