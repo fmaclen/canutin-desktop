@@ -138,7 +138,7 @@ test.describe('Layout', () => {
 			'/asset/add'
 		);
 
-		await page.locator('a', { hasText: 'Asset' }).click();
+		await page.locator('a.wizard__a', { hasText: 'Asset' }).click();
 		await expect(page.locator('h1', { hasText: 'Asset' })).toBeVisible();
 
 		// Add transaction
