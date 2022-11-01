@@ -14,6 +14,7 @@
 	import { formatCurrency, formatInUTC } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { AccountResponse } from '../accounts.json/+server';
+	import TableNoValue from '$lib/components/TableNoValue.svelte';
 
 	const title = 'Accounts';
 
@@ -171,7 +172,7 @@
 									{#if institution}
 										{institution}
 									{:else}
-										<span class="table__no-value">~</span>
+										<TableNoValue />
 									{/if}
 								</TableTd>
 
@@ -183,7 +184,7 @@
 									{#if transactionCount > 0}
 										<Link href={`/transactions?keyword=${name}`}>{transactionCount}</Link>
 									{:else}
-										<span class="table__no-value">~</span>
+										<TableNoValue />
 									{/if}
 								</TableTd>
 
@@ -192,7 +193,7 @@
 										{#if isClosed}
 											Closed
 										{:else}
-											<span class="table__no-value">~</span>
+											<TableNoValue />
 										{/if}
 									</TableTd>
 								{/if}
@@ -202,7 +203,7 @@
 										{#if isAutoCalculated}
 											Auto-calculated
 										{:else}
-											<span class="table__no-value">~</span>
+											<TableNoValue />
 										{/if}
 									</TableTd>
 								{/if}
@@ -228,10 +229,6 @@
 </ScrollView>
 
 <style lang="scss">
-	span.table__no-value {
-		color: var(--color-grey30);
-	}
-
 	div.accounts {
 		background-color: var(--color-white);
 		box-shadow: var(--box-shadow);

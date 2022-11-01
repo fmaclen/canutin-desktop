@@ -179,6 +179,15 @@
 			</a>
 			<hr class="layout__hr" />
 			<a
+				href="/assets"
+				class="layout__a
+					{pathname === '/assets' && 'layout__a--active'}
+					{!$isVaultReadyStore && 'layout__a--disabled'}
+				"
+			>
+				Assets
+			</a>
+			<a
 				href="/accounts"
 				class="layout__a
 					{pathname === '/accounts' && 'layout__a--active'}

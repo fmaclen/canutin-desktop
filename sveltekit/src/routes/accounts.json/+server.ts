@@ -1,8 +1,8 @@
 import { json } from '@sveltejs/kit';
 import { getUnixTime } from 'date-fns';
 
-import type { Account, AccountType } from '@prisma/client';
 import prisma from '$lib/helpers/prisma';
+import type { Account, AccountType } from '@prisma/client';
 import { getAccountCurrentBalance } from '$lib/helpers/models';
 
 export interface AccountResponse extends Account {
