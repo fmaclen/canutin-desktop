@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { afterNavigate, goto } from '$app/navigation';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import AccountForm from '../AccountForm.svelte';
@@ -12,9 +12,13 @@
 	import type { CRUDResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
-
 	const title = data.account.name;
 	let account: CRUDResponse;
+	let referrer = '/accounts';
+
+	afterNavigate(({ from }) => {
+		referrer = from?.url.pathname || referrer;
+	});
 
 	const handleSubmit = async (event: any) => {
 		let payload: Prisma.AccountUncheckedCreateInput = {
@@ -39,7 +43,7 @@
 				message: 'The account was updated successfully',
 				appearance: Appearance.POSITIVE
 			};
-			await goto(`/balanceSheet`);
+			await goto(referrer);
 		}
 	};
 
@@ -65,7 +69,7 @@
 				message: `The account —${data.account.name}— was deleted successfully`,
 				appearance: Appearance.ACTIVE
 			};
-			await goto('/balanceSheet');
+			await goto(referrer);
 		}
 	};
 </script>

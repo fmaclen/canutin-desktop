@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { afterNavigate, goto } from '$app/navigation';
 	import type { Prisma } from '@prisma/client';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
@@ -14,6 +14,11 @@
 	export let data: PageData;
 	const title = data.asset.name;
 	let asset: CRUDResponse;
+	let referrer = '/assets';
+
+	afterNavigate(({ from }) => {
+		referrer = from?.url.pathname || referrer;
+	});
 
 	const handleSubmit = async (event: any) => {
 		let payload: Prisma.AssetUncheckedCreateInput = {
@@ -44,7 +49,7 @@
 				message: 'The asset was updated successfully',
 				appearance: Appearance.POSITIVE
 			};
-			await goto(`/balanceSheet`);
+			await goto(referrer);
 		}
 	};
 
@@ -70,7 +75,7 @@
 				message: `The asset —${data.asset.name}— was deleted successfully`,
 				appearance: Appearance.ACTIVE
 			};
-			await goto('/balanceSheet');
+			await goto(referrer);
 		}
 	};
 </script>
