@@ -313,18 +313,12 @@ test.describe('Transactions', () => {
 		await page.locator('a', { hasText: 'Add a new account' }).click();
 		await expect(page.locator('h1', { hasText: 'Add account' })).toBeVisible();
 
+		// Check it redirects back to "Add transaction" page
 		const nameInput = page.locator('.formInput__input[name=name]');
 		await nameInput.fill("Bob's Laughable-Yield Checking");
 		await page.locator('button', { hasText: 'Add' }).click();
-		expect(await balanceTypeGroup.textContent()).toMatch("Bob's Laughable-Yield Checking");
-
-		await page.locator('a', { hasText: 'Transactions' }).click();
-		await page.locator('a', { hasText: 'Add transaction' }).click();
-		await expect(
-			page.locator('.formNotice__notice--warning', {
-				hasText: 'At least one account is needed to create a transaction'
-			})
-		).not.toBeVisible();
+		await expect(page.locator('h1', { hasText: 'Add transaction' })).toBeVisible();
+		await expect(page.locator('.formNotice__notice--warning', { hasText: 'At least one account is needed to create a transaction' })).not.toBeVisible(); // prettier-ignore
 		await expect(accountIdSelect).not.toBeDisabled();
 		await expect(descriptionInput).not.toBeDisabled();
 		await expect(categoryIdSelect).not.toBeDisabled();
