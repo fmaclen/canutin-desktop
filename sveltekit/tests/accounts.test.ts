@@ -173,7 +173,15 @@ test.describe('Accounts', () => {
 
 		const statusBar = page.locator('.statusBar');
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
+
+		const formSelect = page.locator('.formSelect__select');
+		const formInput = page.locator('.formInput__input');
+		await formSelect.selectOption('7'); // Lifetime
+		await formSelect.dispatchEvent('change');
+		await formInput.click();
+		await delay();
 		await page.locator('button', { hasText: 'Dismiss' }).click();
+		await expect(page.locator('.table__td--notice')).not.toBeVisible();
 
 		const tableRows = page.locator('.table__tr');
 		expect(await tableRows.first().textContent()).toMatch('$420.69');
@@ -190,11 +198,17 @@ test.describe('Accounts', () => {
 		await isExcludedCheckbox.check();
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
+
+		await formSelect.selectOption('7'); // Lifetime
+		await formSelect.dispatchEvent('change');
+		await formInput.click();
+		await delay();
 		await expect(page.locator('.table__td--notice')).not.toBeVisible();
 		expect(await tableRows.first().textContent()).toMatch('$420.69');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch(
 			'$420.69'
 		);
+
 		// Check the account balance is calculated correctly
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$421');
