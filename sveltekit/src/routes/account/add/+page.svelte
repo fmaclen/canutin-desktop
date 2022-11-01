@@ -11,7 +11,7 @@
 	import type { CRUDResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
-	let account: CRUDResponse; // FIXME: should be CRUDResponse
+	let account: CRUDResponse;
 
 	const handleSubmit = async (event: any) => {
 		const payload: Prisma.AccountUncheckedCreateInput = {

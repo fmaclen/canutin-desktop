@@ -13,7 +13,7 @@
 
 	export let data: PageData;
 	const title = data.asset.name;
-	let asset: CRUDResponse; // FIXME: should be CRUDResponse
+	let asset: CRUDResponse;
 
 	const handleSubmit = async (event: any) => {
 		let payload: Prisma.AssetUncheckedCreateInput = {

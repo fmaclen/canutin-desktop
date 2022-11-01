@@ -11,7 +11,7 @@
 	import type { CRUDResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
-	let asset: CRUDResponse; // FIXME: should be CRUDResponse
+	let asset: CRUDResponse;
 
 	const handleSubmit = async (event: any) => {
 		const payload: Prisma.AssetUncheckedCreateInput = {

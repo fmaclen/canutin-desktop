@@ -14,7 +14,7 @@
 	export let data: PageData;
 
 	const title = data.account.name;
-	let account: CRUDResponse; // FIXME: should be CRUDResponse
+	let account: CRUDResponse;
 
 	const handleSubmit = async (event: any) => {
 		let payload: Prisma.AccountUncheckedCreateInput = {
