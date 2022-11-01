@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { afterNavigate, goto } from '$app/navigation';
 	import type { Prisma } from '@prisma/client';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
@@ -12,6 +12,13 @@
 
 	export let data: PageData;
 	let asset: CRUDResponse;
+	let referrer = '/assets';
+
+	afterNavigate(({ from }) => {
+		// Redirect to `/assets` if the referrer came from the "Add or update data" page
+		const { pathname } = from?.url || {};
+		referrer = pathname && pathname !== '/data' ? pathname : referrer;
+	});
 
 	const handleSubmit = async (event: any) => {
 		const payload: Prisma.AssetUncheckedCreateInput = {
@@ -42,7 +49,7 @@
 				message: 'The asset was added successfully',
 				appearance: Appearance.POSITIVE
 			};
-			await goto(`/balanceSheet`);
+			await goto(referrer);
 		}
 	};
 
