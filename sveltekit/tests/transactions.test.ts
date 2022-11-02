@@ -858,18 +858,24 @@ test.describe('Transactions', () => {
 		const sixMonthsAgo = format(subMonths(new Date(), 7), 'MMMM yyyy');
 		const thisMonth = format(new Date(), 'MMMM yyyy');
 		expect(await selectOptions.nth(8).textContent()).toMatch(twelveMonthsAgo);
+
+		await delay();
 		expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('37');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch('$808.77'); // prettier-ignore
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
 		await chartPeriods.nth(5).click();
 		expect(await selectOptions.nth(8).textContent()).toMatch(sixMonthsAgo);
+
+		await delay();
 		expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('37');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch('$217.01'); // prettier-ignore
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
 		await chartPeriods.nth(12).click();
 		expect(await selectOptions.nth(8).textContent()).toMatch(thisMonth);
+
+		await delay();
 		expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('37');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch('$228.44'); // prettier-ignore
 	});
