@@ -289,10 +289,12 @@ test.describe('Accounts', () => {
 		await page.locator('a.layout__a', { hasText: 'Accounts' }).click();
 
 		// Check no accounts are present
-		const tableNotice = page.locator('.table__td--notice', { hasText: 'No accounts found' });
+		const noAccountsTableNotice = page.locator('.table__td--notice', {
+			hasText: 'No accounts found'
+		});
 		await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
 		await expect(page.locator('section', { hasText: 'All accounts / 0' })).toBeVisible();
-		await expect(tableNotice).toBeVisible();
+		await expect(noAccountsTableNotice).toBeVisible();
 
 		const nameInput = page.locator('.formInput__input[name=name]');
 		const institutionInput = page.locator('.formInput__input[name=institution]');
@@ -324,7 +326,7 @@ test.describe('Accounts', () => {
 		await expect(page.locator('button.table__sortable', { hasText: 'Balance' })).toBeVisible();
 		await expect(page.locator('button.table__sortable', { hasText: 'Last updated' })).toBeVisible();
 		await expect(page.locator('button.table__sortable', { hasText: 'Marked as' })).not.toBeVisible(); // prettier-ignore
-		await expect(tableNotice).not.toBeVisible();
+		await expect(noAccountsTableNotice).not.toBeVisible();
 		expect(page.locator('td.table__td', { hasText: "Alice's Savings" })).toBeVisible;
 		expect(page.locator('td.table__td', { hasText: 'Ransack Bank' })).toBeVisible;
 		expect(page.locator('td.table__td', { hasText: 'Savings' })).toBeVisible;
@@ -342,6 +344,7 @@ test.describe('Accounts', () => {
 		expect(page.locator('td.table__td', { hasText: "Bob's Limited Rewards" })).toBeVisible;
 		expect(page.locator('td.table__td', { hasText: 'Auto-calculated' })).toBeVisible;
 		expect(page.locator('td.table__td', { hasText: '$0.00' })).toBeVisible;
+		await expect(noAccountsTableNotice).not.toBeVisible();
 		expect(await tableRows.count()).toBe(2);
 
 		// Create a transaction for the auto-calculated account
@@ -350,10 +353,15 @@ test.describe('Accounts', () => {
 		await page.locator('.formSelect__select[name=accountId]').selectOption({ label: "Bob's Limited Rewards" }); // prettier-ignore
 		await page.locator('.formInput__input[name=description]').fill('Evergreen Market');
 		await currencyInput.focus();
-		await page.keyboard.type('1500', { delay: 25 });
+		await page.keyboard.type('999', { delay: 25 });
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
-		expect(page.locator('td.table__td', { hasText: '$1,500.00' })).toBeVisible();
+
+		const noTransactionsTableNotice = page.locator('.table__td--notice', { hasText: 'No transactions found' }) // prettier-ignore
+		await expect(noTransactionsTableNotice).not.toBeVisible();
+		expect(await tableRows.count()).toBe(1);
+		expect(page.locator('td.table__td', { hasText: '$999.00' })).toBeVisible();
+		expect(page.locator('td.table__td', { hasText: '$15.00' })).not.toBeVisible();
 
 		// Create another transaction for the non-auto-calculated account
 		await page.locator('a', { hasText: 'Add transaction' }).click();
@@ -363,25 +371,17 @@ test.describe('Accounts', () => {
 		await page.keyboard.type('15', { delay: 25 });
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
-		expect(page.locator('td.table__td', { hasText: '$15.00' })).toBeVisible();
+		await expect(noTransactionsTableNotice).not.toBeVisible();
 		expect(await tableRows.count()).toBe(2);
+		expect(page.locator('td.table__td', { hasText: '$999.00' })).toBeVisible();
+		expect(page.locator('td.table__td', { hasText: '$15.00' })).toBeVisible();
 
 		// Check the auto-calculated account balance is updated
 		await page.locator('a.layout__a', { hasText: 'Accounts' }).click();
 		await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
 		expect(page.locator('td.table__td', { hasText: '$420.69' })).toBeVisible;
-		expect(page.locator('td.table__td', { hasText: '$1,500.00' })).toBeVisible();
+		expect(page.locator('td.table__td', { hasText: '$999.00' })).toBeVisible();
 		expect(page.locator('td.table__td', { hasText: 'Closed' })).not.toBeVisible();
-
-		// TODO: Click on the 2nd link, which links to the transactions filtered by the 2nd account in the list
-		// const transactionLinks = page.locator('td.table__td:nth-child(4) a');
-		// expect(await transactionLinks.count()).toBe(2);
-
-		// await transactionLinks.nth(1).click();
-		// await expect(tableNotice).not.toBeVisible();
-		// expect(await tableRows.count()).toBe(1);
-		// expect(page.locator('td.table__td', { hasText: "Alice's Savings" })).not.toBeVisible;
-		// expect(page.locator('td.table__td', { hasText: "Bob's Limited Rewards" })).not.toBeVisible;
 
 		// Check closed accounts are marked as such
 		await page.locator('a.layout__a', { hasText: 'Accounts' }).click();
