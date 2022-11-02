@@ -175,7 +175,7 @@ test.describe('Accounts', () => {
 		const statusBar = page.locator('.statusBar');
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
 
-		const formSelect = page.locator('.formSelect__select');
+		const formSelect = page.locator('.formSelect__select[name=periods]');
 		const formInput = page.locator('.formInput__input');
 		await formSelect.selectOption('7'); // Lifetime
 		await formSelect.dispatchEvent('change');
@@ -386,11 +386,19 @@ test.describe('Accounts', () => {
 		// Check closed accounts are marked as such
 		await page.locator('a.layout__a', { hasText: 'Accounts' }).click();
 		await page.locator('a', { hasText: "Alice's Savings" }).click();
+		await expect(page.locator('h1', { hasText: "Alice's Savings" })).toBeVisible();
 		await isClosed.check();
 		await page.locator('button', { hasText: 'Save' }).click();
+		await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
+
+		// HACK: The `td.table__td` assertions below fail intermittently in CI after
+		// the account has been updated. This is a workaround to ensure the latest data
+		// is loaded before the assertions are run.
+		await page.reload();
 		await expect(noAccountsTableNotice).not.toBeVisible();
 		await expect(page.locator('button.table__sortable', { hasText: 'Marked as' })).toBeVisible(); // prettier-ignore
 		expect(page.locator('td.table__td', { hasText: "Alice's Savings" })).toBeVisible();
+		expect(page.locator('td.table__td', { hasText: "Bob's Limited Rewards" })).toBeVisible();
 		expect(page.locator('td.table__td', { hasText: 'Closed' })).toBeVisible();
 	});
 });
