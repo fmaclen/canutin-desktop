@@ -388,6 +388,7 @@ test.describe('Accounts', () => {
 		await page.locator('a', { hasText: "Alice's Savings" }).click();
 		await isClosed.check();
 		await page.locator('button', { hasText: 'Save' }).click();
+		await delay();
 		await expect(noTransactionsTableNotice).not.toBeVisible();
 		await expect(page.locator('button.table__sortable', { hasText: 'Marked as' })).toBeVisible(); // prettier-ignore
 		expect(page.locator('td.table__td', { hasText: "Alice's Savings" })).toBeVisible();
