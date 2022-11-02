@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { format } from 'date-fns';
 import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
 
 test.describe('Assets', () => {
@@ -202,5 +203,81 @@ test.describe('Assets', () => {
 		// Check status message shows an error
 		await expect(statusBar).toHaveClass(/statusBar--negative/);
 		expect(await statusBar.textContent()).toMatch("The asset doesn't exist");
+	});
+
+	test('Assets page is rendered correctly', async ({ page }) => {
+		await page.goto('/');
+		await page.locator('a.layout__a', { hasText: 'Assets' }).click();
+
+		// Check no assets are present
+		const tableNotice = page.locator('.table__td--notice', { hasText: 'No assets found' });
+		await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
+		await expect(page.locator('section', { hasText: 'All assets / 0' })).toBeVisible();
+		await expect(tableNotice).toBeVisible();
+
+		const nameInput = page.locator('.formInput__input[name=name]');
+		const symbolInput = page.locator('.formInput__input[name=symbol]');
+		const quantityInput = page.locator('.formInput__input[name=quantity]');
+		const costInput = page.locator('.formCurrencyInput input[name="formatted-cost"]');
+		const assetTypeSelect = page.locator('.formSelect__select[name=assetTypeId]');
+		const balanceGroupSelect = page.locator('.formSelect__select[name=balanceGroup]');
+		const isSoldCheckbox = page.locator('.formInputCheckbox__input[name=isSold]');
+
+		await page.locator('a', { hasText: 'Add asset' }).click();
+		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
+
+		// Create a new asset
+		await nameInput.fill('1998 Fiat Multipla');
+		await assetTypeSelect.selectOption({ label: 'Vehicle' });
+		await balanceGroupSelect.selectOption({ label: 'Other assets' });
+		await page.locator('button', { hasText: 'Add' }).click();
+
+		// Check the asset is listed
+		const today = format(new Date(), 'MMM dd, yyyy');
+		const tableRows = page.locator('.table__tr');
+		await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Name' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Asset type' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Value' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Last updated' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Marked as' })).not.toBeVisible(); // prettier-ignore
+		await expect(page.locator('button.table__sortable', { hasText: 'Quantity' })).not.toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Cost' })).not.toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Symbol' })).not.toBeVisible();
+		await expect(tableNotice).not.toBeVisible();
+		expect(page.locator('td.table__td', { hasText: '1998 Fiat Multipla' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: 'Vehicle' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: '$6,570.51' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: today })).toBeVisible;
+		expect(await tableRows.count()).toBe(1);
+
+		// Check the "Quantity, Cost and Symbol" columns are visible when at least one asset is 'quantifiable"
+		await page.locator('a', { hasText: 'Add asset' }).click();
+		await nameInput.fill('Bitcoin');
+		await assetTypeSelect.selectOption({ label: 'Cryptocurrency' });
+		await balanceGroupSelect.selectOption({ label: 'Investments' });
+		await symbolInput.fill('BTC');
+		await quantityInput.fill('0.25');
+		await costInput.fill('10000');
+		await page.locator('button', { hasText: 'Add' }).click();
+		await expect(page.locator('button.table__sortable', { hasText: 'Quantity' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Cost' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Symbol' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Marked as' })).not.toBeVisible(); // prettier-ignore
+		expect(page.locator('td.table__td', { hasText: 'Bitcoin' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: 'Cryptocurrency' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: 'BTC' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: '0.25' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: '$10,000.00' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: '$2,500.00' })).toBeVisible;
+		expect(await tableRows.count()).toBe(2);
+
+		// Check "Marked as" column is visible only when there is at least one "Sold" asset
+		await page.locator('a', { hasText: '1998 Fiat Multipla' }).click();
+		await isSoldCheckbox.check();
+		await page.locator('button', { hasText: 'Save' }).click();
+		await expect(page.locator('button.table__sortable', { hasText: 'Marked as' })).toBeVisible();
+		await expect(page.locator('td.table__td', { hasText: 'Sold' })).toBeVisible;
+		await expect(page.locator('td.table__td', { hasText: '~' })).toBeVisible;
 	});
 });

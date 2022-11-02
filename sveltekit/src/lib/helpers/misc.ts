@@ -60,3 +60,15 @@ export const api = async ({ endpoint, method, payload, params }: Api) => {
 export const notFound = () => {
 	throw redirect(307, '/404');
 };
+
+export const toCamelCase = (sentence: string) => {
+	return sentence
+		.split(' ')
+		.map((word, index) => {
+			if (index === 0) {
+				return word.toLowerCase();
+			}
+			return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+		})
+		.join('');
+};

@@ -313,18 +313,12 @@ test.describe('Transactions', () => {
 		await page.locator('a', { hasText: 'Add a new account' }).click();
 		await expect(page.locator('h1', { hasText: 'Add account' })).toBeVisible();
 
+		// Check it redirects back to "Add transaction" page
 		const nameInput = page.locator('.formInput__input[name=name]');
 		await nameInput.fill("Bob's Laughable-Yield Checking");
 		await page.locator('button', { hasText: 'Add' }).click();
-		expect(await balanceTypeGroup.textContent()).toMatch("Bob's Laughable-Yield Checking");
-
-		await page.locator('a', { hasText: 'Transactions' }).click();
-		await page.locator('a', { hasText: 'Add transaction' }).click();
-		await expect(
-			page.locator('.formNotice__notice--warning', {
-				hasText: 'At least one account is needed to create a transaction'
-			})
-		).not.toBeVisible();
+		await expect(page.locator('h1', { hasText: 'Add transaction' })).toBeVisible();
+		await expect(page.locator('.formNotice__notice--warning', { hasText: 'At least one account is needed to create a transaction' })).not.toBeVisible(); // prettier-ignore
 		await expect(accountIdSelect).not.toBeDisabled();
 		await expect(descriptionInput).not.toBeDisabled();
 		await expect(categoryIdSelect).not.toBeDisabled();
@@ -836,7 +830,12 @@ test.describe('Transactions', () => {
 			await expect(statusBar).toHaveClass(/statusBar--positive/);
 			expect(await statusBar.textContent()).toMatch('The 2 transactions were updated successfully');
 
-			await dismissButton.click();
+			const formSelect = page.locator('.formSelect__select');
+			const formInput = page.locator('.formInput__input');
+			await formSelect.selectOption('7'); // Lifetime
+			await formSelect.dispatchEvent('change');
+			await formInput.click();
+			await delay();
 			expect(await tableRows.nth(0).textContent()).toMatch('15');
 			expect(await tableRows.nth(1).textContent()).toMatch('15');
 		});
@@ -859,18 +858,24 @@ test.describe('Transactions', () => {
 		const sixMonthsAgo = format(subMonths(new Date(), 7), 'MMMM yyyy');
 		const thisMonth = format(new Date(), 'MMMM yyyy');
 		expect(await selectOptions.nth(8).textContent()).toMatch(twelveMonthsAgo);
+
+		await delay();
 		expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('37');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch('$808.77'); // prettier-ignore
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
 		await chartPeriods.nth(5).click();
 		expect(await selectOptions.nth(8).textContent()).toMatch(sixMonthsAgo);
+
+		await delay();
 		expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('37');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch('$217.01'); // prettier-ignore
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
 		await chartPeriods.nth(12).click();
 		expect(await selectOptions.nth(8).textContent()).toMatch(thisMonth);
+
+		await delay();
 		expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('37');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch('$228.44'); // prettier-ignore
 	});

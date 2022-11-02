@@ -24,11 +24,12 @@
 	import TableTh from '$lib/components/TableTh.svelte';
 	import TableTr from '$lib/components/TableTr.svelte';
 	import TableTd from '$lib/components/TableTd.svelte';
-	import { api } from '$lib/helpers/misc';
+	import { api, toCamelCase } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
 	import { dateInUTC, formatCurrency, formatInUTC } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { TransactionResponse } from '../transactions.json/+server';
+	import TableButtonSortable from '$lib/components/TableButtonSortable.svelte';
 
 	const title = 'Transactions';
 
@@ -38,28 +39,23 @@
 		DEBITS = 'Debits'
 	}
 
-	const TABLE_HEADERS = [
-		{
-			label: 'Date',
-			column: 'date'
-		},
-		{
-			label: 'Description',
-			column: 'description'
-		},
-		{
-			label: 'Category',
-			column: 'categoryId'
-		},
-		{
-			label: 'Account',
-			column: 'accountId'
-		},
-		{
-			label: 'Amount',
-			column: 'value'
-		}
-	];
+	enum TableHeaders {
+		DATE = 'Date',
+		DESCRIPTION = 'Description',
+		CATEGORY = 'Category',
+		ACCOUNT = 'Account',
+		AMOUNT = 'Amount'
+	}
+
+	const tableHeaders = Object.values(TableHeaders).map((tableHeader) => {
+		// "Amount" refers to the "value" column in the Transactions database table
+		const column = tableHeader === TableHeaders.AMOUNT ? 'value' : toCamelCase(tableHeader);
+
+		return {
+			label: tableHeader,
+			column
+		};
+	});
 
 	// Filter transactions by date range
 	const today = new Date();
@@ -111,16 +107,16 @@
 	];
 
 	// Default params
-	$: transactions = [] as TransactionResponse[];
-	$: filteredTransactions = [] as TransactionResponse[];
-	$: filterBy = Filter.ALL;
+	let transactions = [] as TransactionResponse[];
+	let filteredTransactions = [] as TransactionResponse[];
+	let filterBy = Filter.ALL;
 
 	// Transaction sorting and filtering
-	$: sortBy = TABLE_HEADERS[0].column; // Date column
-	$: sortOrder = SortOrder.DESC;
-	$: keyword = '';
+	let sortBy = toCamelCase(TableHeaders.DATE);
+	let sortOrder = SortOrder.DESC;
+	let keyword = '';
 
-	$: periodIndex = 2; // Last 3 months
+	let periodIndex = 2; // Last 3 months
 	$: dateFrom = format(dateInUTC(periods[periodIndex].dateFrom), 'yyyy-MM-dd');
 	$: dateTo = format(dateInUTC(periods[periodIndex].dateTo), 'yyyy-MM-dd');
 
@@ -291,17 +287,15 @@
 							</label>
 						</TableTh>
 
-						{#each TABLE_HEADERS as tableHeader}
+						{#each tableHeaders as tableHeader}
 							{@const { label, column } = tableHeader}
-							<TableTh hasTotal={tableHeader.label === TABLE_HEADERS[4].label}>
-								<button
-									class="table__sortable
-									{sortBy === column && 'table__sortable--active'}
-									{sortBy === column && `table__sortable--${sortOrder}`}"
-									on:click={async () => await sortTransactionsBy(column)}
-								>
+							<TableTh isAlignedRight={tableHeader.label === TableHeaders.AMOUNT}>
+								<TableButtonSortable
 									{label}
-								</button>
+									{sortOrder}
+									sortBy={sortBy === column}
+									on:click={async () => await sortTransactionsBy(column)}
+								/>
 							</TableTh>
 						{/each}
 					</tr>
@@ -336,7 +330,7 @@
 								<TableTd>
 									<Link href={`/account/${transaction.accountId}`}>{account.name}</Link>
 								</TableTd>
-								<TableTd hasTotal={true} isPositive={value > 0}>
+								<TableTd isAlignedRight={true} hasTotal={true} isPositive={value > 0}>
 									<span
 										class={isExcluded ? `table__excluded` : null}
 										title={isExcluded
@@ -382,45 +376,6 @@
 		grid-auto-flow: column;
 		column-gap: 8px;
 		grid-column: span 2;
-	}
-
-	button.table__sortable {
-		border: none;
-		padding: 0;
-		background-color: transparent;
-		color: var(--color-grey40);
-		text-decoration: none;
-		cursor: pointer;
-
-		&:hover,
-		&:hover::after {
-			color: var(--color-bluePrimary);
-		}
-
-		&--active {
-			color: var(--color-grey80);
-			font-weight: 600;
-		}
-
-		&--asc,
-		&--desc {
-			&::after {
-				position: relative;
-				display: inline-block;
-				padding-left: 4px;
-				font-size: 8px;
-				color: var(--color-grey70);
-				line-height: 1em;
-			}
-		}
-
-		&--asc::after {
-			content: '▲';
-		}
-
-		&--desc::after {
-			content: '▼';
-		}
 	}
 
 	span.table__excluded {

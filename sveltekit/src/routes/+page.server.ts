@@ -126,7 +126,7 @@ const getCashflow = async (): Promise<Cashflow> => {
 	// We want 13 periods, one for the current month and the 12 previous months
 	const CASHFLOW_PERIODS = 13;
 
-	const today = dateInUTC(new Date());
+	const today = new Date();
 	const monthsInPeriod = eachMonthOfInterval({
 		start: sub(today, { months: CASHFLOW_PERIODS - 1 }),
 		end: endOfMonth(today)

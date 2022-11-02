@@ -14,7 +14,7 @@
 	export let data: PageData;
 
 	const title = data.transaction.description;
-	let transaction: CRUDResponse; // FIXME: should be CRUDResponse
+	let transaction: CRUDResponse;
 
 	const handleSubmit = async (event: any) => {
 		let payload: Prisma.TransactionUncheckedCreateInput = {

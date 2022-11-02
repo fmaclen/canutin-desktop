@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { format } from 'date-fns';
 import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
 
 test.describe('Accounts', () => {
@@ -173,7 +174,15 @@ test.describe('Accounts', () => {
 
 		const statusBar = page.locator('.statusBar');
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
+
+		const formSelect = page.locator('.formSelect__select[name=periods]');
+		const formInput = page.locator('.formInput__input');
+		await formSelect.selectOption('7'); // Lifetime
+		await formSelect.dispatchEvent('change');
+		await formInput.click();
+		await delay();
 		await page.locator('button', { hasText: 'Dismiss' }).click();
+		await expect(page.locator('.table__td--notice')).not.toBeVisible();
 
 		const tableRows = page.locator('.table__tr');
 		expect(await tableRows.first().textContent()).toMatch('$420.69');
@@ -190,11 +199,17 @@ test.describe('Accounts', () => {
 		await isExcludedCheckbox.check();
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
+
+		await formSelect.selectOption('7'); // Lifetime
+		await formSelect.dispatchEvent('change');
+		await formInput.click();
+		await delay();
 		await expect(page.locator('.table__td--notice')).not.toBeVisible();
 		expect(await tableRows.first().textContent()).toMatch('$420.69');
 		expect(await page.locator('.card', { hasText: 'Net balance' }).textContent()).toMatch(
 			'$420.69'
 		);
+
 		// Check the account balance is calculated correctly
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$421');
@@ -267,5 +282,116 @@ test.describe('Accounts', () => {
 		// Check status message shows an error
 		await expect(statusBar).toHaveClass(/statusBar--negative/);
 		expect(await statusBar.textContent()).toMatch("The account doesn't exist");
+	});
+
+	test('Accounts page is rendered correctly', async ({ page }) => {
+		await page.goto('/');
+		await page.locator('a.layout__a', { hasText: 'Accounts' }).click();
+
+		// Check no accounts are present
+		const noAccountsTableNotice = page.locator('.table__td--notice', {
+			hasText: 'No accounts found'
+		});
+		await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
+		await expect(page.locator('section', { hasText: 'All accounts / 0' })).toBeVisible();
+		await expect(noAccountsTableNotice).toBeVisible();
+
+		const nameInput = page.locator('.formInput__input[name=name]');
+		const institutionInput = page.locator('.formInput__input[name=institution]');
+		const accountTypeSelect = page.locator('.formSelect__select[name=accountTypeId]');
+		const balanceGroupSelect = page.locator('.formSelect__select[name=balanceGroup]');
+		const isClosed = page.locator('.formInputCheckbox__input[name=isClosed]');
+		const isAutoCalculated = page.locator('.formInputCheckbox__input[name=isAutoCalculated]');
+		const currencyInput = page.locator('.formCurrencyInput input[name="formatted-value"]');
+
+		await page.locator('a', { hasText: 'Add account' }).click();
+		await expect(page.locator('h1', { hasText: 'Add account' })).toBeVisible();
+
+		// Create a new account
+		await nameInput.fill("Alice's Savings");
+		await institutionInput.fill('Ransack Bank');
+		await accountTypeSelect.selectOption({ label: 'Savings' });
+		await balanceGroupSelect.selectOption({ label: 'Cash' });
+		await currencyInput.focus();
+		await page.keyboard.type('420.69', { delay: 25 });
+		await page.locator('button', { hasText: 'Add' }).click();
+
+		// Check the account is listed
+		const today = format(new Date(), 'MMM dd, yyyy');
+		const tableRows = page.locator('.table__tr');
+		await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Name' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Institution' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Account type' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Balance' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Last updated' })).toBeVisible();
+		await expect(page.locator('button.table__sortable', { hasText: 'Marked as' })).not.toBeVisible(); // prettier-ignore
+		await expect(noAccountsTableNotice).not.toBeVisible();
+		expect(page.locator('td.table__td', { hasText: "Alice's Savings" })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: 'Ransack Bank' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: 'Savings' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: '~' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: '$420.69' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: today })).toBeVisible;
+		expect(await tableRows.count()).toBe(1);
+
+		// Check auto-calculated accounts are marked as such
+		await page.locator('a', { hasText: 'Add account' }).click();
+		await nameInput.fill("Bob's Limited Rewards");
+		await isAutoCalculated.check();
+		await page.locator('button', { hasText: 'Add' }).click();
+		await expect(page.locator('button.table__sortable', { hasText: 'Marked as' })).not.toBeVisible(); // prettier-ignore
+		expect(page.locator('td.table__td', { hasText: "Bob's Limited Rewards" })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: 'Auto-calculated' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: '$0.00' })).toBeVisible;
+		await expect(noAccountsTableNotice).not.toBeVisible();
+		expect(await tableRows.count()).toBe(2);
+
+		// Create a transaction for the auto-calculated account
+		await page.locator('a.layout__a', { hasText: 'Transactions' }).click();
+		await page.locator('a', { hasText: 'Add transaction' }).click();
+		await page.locator('.formSelect__select[name=accountId]').selectOption({ label: "Bob's Limited Rewards" }); // prettier-ignore
+		await page.locator('.formInput__input[name=description]').fill('Evergreen Market');
+		await currencyInput.focus();
+		await page.keyboard.type('999', { delay: 25 });
+		await page.locator('button', { hasText: 'Add' }).click();
+		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
+
+		const noTransactionsTableNotice = page.locator('.table__td--notice', { hasText: 'No transactions found' }) // prettier-ignore
+		await expect(noTransactionsTableNotice).not.toBeVisible();
+		expect(await tableRows.count()).toBe(1);
+		expect(page.locator('td.table__td', { hasText: '$999.00' })).toBeVisible();
+		expect(page.locator('td.table__td', { hasText: '$15.00' })).not.toBeVisible();
+
+		// Create another transaction for the non-auto-calculated account
+		await page.locator('a', { hasText: 'Add transaction' }).click();
+		await page.locator('.formSelect__select[name=accountId]').selectOption({ label: "Alice's Savings" }); // prettier-ignore
+		await page.locator('.formInput__input[name=description]').fill('NetTV');
+		await currencyInput.focus();
+		await page.keyboard.type('15', { delay: 25 });
+		await page.locator('button', { hasText: 'Add' }).click();
+		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
+		await expect(noTransactionsTableNotice).not.toBeVisible();
+		expect(await tableRows.count()).toBe(2);
+		expect(page.locator('td.table__td', { hasText: '$999.00' })).toBeVisible();
+		expect(page.locator('td.table__td', { hasText: '$15.00' })).toBeVisible();
+
+		// Check the auto-calculated account balance is updated
+		await page.locator('a.layout__a', { hasText: 'Accounts' }).click();
+		await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
+		expect(page.locator('td.table__td', { hasText: '$420.69' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: '$999.00' })).toBeVisible();
+		expect(page.locator('td.table__td', { hasText: 'Closed' })).not.toBeVisible();
+
+		// Check closed accounts are marked as such
+		await page.locator('a.layout__a', { hasText: 'Accounts' }).click();
+		await page.locator('a', { hasText: "Alice's Savings" }).click();
+		await expect(page.locator('h1', { hasText: "Alice's Savings" })).toBeVisible();
+		await isClosed.check();
+		await page.locator('button', { hasText: 'Save' }).click();
+		await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
+		await expect(noAccountsTableNotice).not.toBeVisible();
+		expect(page.locator('text=Closed')).toBeVisible();
+		expect(await tableRows.count()).toBe(2);
 	});
 });
