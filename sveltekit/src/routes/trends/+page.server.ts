@@ -3,7 +3,7 @@ import prisma from '$lib/helpers/prisma';
 import type { ChartDataset } from 'chart.js';
 
 import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
-import { endOfMonth, sub, eachWeekOfInterval } from 'date-fns';
+import { add, sub, eachWeekOfInterval, endOfWeek } from 'date-fns';
 import { BalanceGroup, SortOrder } from '$lib/helpers/constants';
 
 export const load = async () => {
@@ -42,10 +42,13 @@ export const load = async () => {
 		}
 	};
 
-	const endOfThisMonth = endOfMonth(new Date());
+	const endOfThisWeek = endOfWeek(new Date());
 	const weeksInPeriod = eachWeekOfInterval({
-		start: sub(endOfThisMonth, { years: 2 }), // Two years ago
-		end: endOfThisMonth
+		start: sub(endOfThisWeek, { years: 2 }), // Two years ago
+
+		// Setting the range at the end of the week doesn't include the current week,
+		// adding an extra day forces the end of range to include the current week.
+		end: add(endOfThisWeek, { days: 1 })
 	});
 
 	const accounts = await prisma.account.findMany();
