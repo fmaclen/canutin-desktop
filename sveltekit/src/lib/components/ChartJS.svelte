@@ -1,5 +1,8 @@
 <script lang="ts">
-	import Chart from 'chart.js/auto';
+	// Need to import ChartJS this way or it will break in the packaged app
+	// REF: https://github.com/sveltejs/kit/issues/5535
+	import Chart from 'chart.js/auto/auto.mjs';
+
 	import { onMount } from 'svelte';
 	import type { ChartConfiguration, ChartDataset } from 'chart.js';
 
