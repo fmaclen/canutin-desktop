@@ -11,98 +11,64 @@
 
 ---
 
-## Develoment
+# Table of contents
 
-### Overview
+- What is Canutin?
+- Features
+- Installation
+- Getting data in
+- Frequenty asked questions
+- Contributing
+- Development
 
-The repository is split into two semi-independent codebases:
+## What is Canutin?
 
-- A [SvelteKit](https://kit.svelte.dev/) SSR app that serves a front-end on `localhost` and handles 95% of the functionality. Code lives in `<root>/sveltekit`
-- A minimal [Electron](https://www.electronjs.org/) implementation that starts/stops the SvelteKit process through a tray menu interface. Doesn't make use of a [`BrowserWindow`](https://www.electronjs.org/docs/latest/api/browser-window) and instead relies on native OS interface components. Code lives in `<root>/electron`
+- Canutin is a desktop app for managing your personal finances.
+- It consolidates all your accounts, transactions and assets in one place and tracks them over time.
+- Runs entirely on your computer and stores your data locally.
+- It's open source, free to use and available for Windows, macOS & Linux.
+- No sign up is required.
 
-### Environment setup
+## Features
 
-1. Install **Electron** dependencies
+## Installation & first run
 
-```bash
-% npm install
-```
+1. Begin by downloading the [latest release](https://github.com/Canutin/desktop/releases) for your operating system.
+2. Run the installer and follow the instructions.
+3. Once the installation is complete, you can run the app from your applications menu\*
+4. The first time you run the app you'll be asked to create a new _vault_. This is where your data will be stored.
+5. After your vault is set, Canutin will open as a new tab in default browser and you'll be ready to start using the app 🎉
+6. **If you close the tab** you can re-open it again by looking for the Canutin icon in your tray bar and clicking `Open in browser`.
 
-2. Install **SvelteKit** dependencies
+#### \* Note for Windows and macOS users
 
-```bash
-% cd sveltekit && npm install
-```
+Canutin hasn't paid the _app-store tax_ that Microsoft and Apple require to _notarize_ the app, this means that when you first run it you'll see a warning that it's from an _"unidentified developer"_. Follow these steps to get the app running:
 
-3. Generate **Prisma's** artifacts.
+- **On Windows**: On the warning screen click on `More info` and then `Run anyway`.
+- **On macOS**: After you see `Canutin.app cannot be opened because the developer cannont be verified`, click `Cancel` and head over to `System Preferences > Security & Privacy` and click `Open Anyway`.
 
-```bash
-% cd sveltekit && npx prisma generate
-```
+You might need to do this step again in the future when you update the app.
 
-4. Create and seed a vault which will be seeded with the minimum required data (account/asset types, categories, etc).
+## Getting data in
 
-```bash
-% cd sveltekit && npx prisma migrate dev
-```
+There's multiple ways to get data into Canutin, these are available from the **Add or update data** page.
 
-### Running the app
+- **By hand:** you can add or edit any account, transaction or asset manually like you would if you used a spreadsheet.
+- **Importing via API:** at the moment this process requires some degree of technical knowledge but it allows you to import data from other apps or services much faster. You can find more information and examples in the [API documentation](docs/API.md).
+- **Importing from CSV:** _This is currently planned but not yet available_. If you'd like this feature to be prioritized, comment or upvote [this issue](https://github.com/Canutin/desktop/issues/74).
 
-The **Electron** and **SvelteKit** dev environments can be run independently of one another.
+## Frequenty asked questions
 
-To run only the **SvelteKit** dev server:
+- Can I use Canutin on my phone?
+- How do I share data between devices?
+- How do I backup my data?
+- What about security?
+- What about privacy?
+- How do you make money?
 
-```bash
-% npm run start
-```
+## Development
 
-To run the **Electron** together with **SvelteKit**:
-
-```bash
-% npm run dev
-```
-
-**Note:** This command needs a build of the SvelteKit app first, to create a build run `npm run build:sveltekit`. Because this build is bundled for distribution, if you make changes to the SvelteKit files you'll have to re-run the command for changes to be updated unlike `npm run start` which auto-reloads.
-
-To **package the app** for distribution run:
-
-```bash
-% npm run package
-```
-
-This command will create builds of everything and will copy all of the files that are needed to run the released app. For details on what happens in the background check the `package.json` on the root directory.
-
-### Testing
-
-**Electron** (Jest)
-
-```bash
-% npm test
-```
-
-**SvelteKit** (Playwright)
-
-```javascript
-% cd sveltekit && npm test
-```
-
-### Other commands
-
-**Prisma Studio**
-
-```bash
-% cd sveltekit && npx prisma studio
-```
-
-### Current Stack
-
-- Electron
-- Electron-Builder
-- Prisma + SQLite
-- SvelteKit
-- TypeScript
-
----
+If you are interested in extending what Canutin can do, take a look at the [development documentation](docs/DEVELOPMENT.md).
 
 ## Contributing
 
