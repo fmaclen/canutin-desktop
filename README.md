@@ -20,7 +20,7 @@
 - [Contributing](#contributing)
 - [Development](#development)
 
-### What is Canutin?
+## What is Canutin?
 
 - Canutin is a desktop app for managing your personal finances.
 - It consolidates all your accounts, transactions and assets in one place and tracks them over time.
@@ -29,7 +29,7 @@
 - Allows you to import accounts, assets and transactions [via API](#getting-data-in).
 - No sign up is required.
 
-### Installation & first run
+## Installation & first run
 
 1. Begin by downloading the [latest release](https://github.com/Canutin/desktop/releases) for your operating system.
 2. Run the installer and follow the instructions.
@@ -55,7 +55,7 @@ There's multiple ways to get data into Canutin, these are available from the **A
 - **Importing via API:** at the moment this process requires some degree of technical knowledge but it allows you to import data from other apps or services much faster. You can find more information and examples in the **[API documentation](docs/API.md)**.
 - **Importing from CSV:** _This is currently planned but not yet available_. If you'd like this feature to be prioritized, comment or upvote [this issue](https://github.com/Canutin/desktop/issues/74).
 
-### Frequenty asked questions
+## Frequenty asked questions
 
 - **Can I use Canutin on my phone?**
   At the moment Canutin only runs on desktop operating systems, though a mobile app is in the roadmap.
@@ -75,11 +75,11 @@ There's multiple ways to get data into Canutin, these are available from the **A
 - **How do you make money?**
   We don't. Canutin is a hobby project at the moment.
 
-### Development
+## Development
 
 If you are interested in extending what Canutin can do, take a look at the [development documentation](docs/DEVELOPMENT.md).
 
-### Contributing
+## Contributing
 
 Here's ways in which you can contribute:
 
