@@ -1,6 +1,6 @@
 # Canutin: desktop
 
-<img width="1495" alt="image" src="https://user-images.githubusercontent.com/1434675/198181820-1191dec9-907d-41bc-9d9f-70df17b6dd4e.png">
+<img width="1495" alt="image" src="https://user-images.githubusercontent.com/1434675/201496760-84c132ba-9685-4313-8668-9d72fd52537b.png">
 
 <p align="center">
   💻 <strong>Download the <a href="https://github.com/Canutin/desktop/releases">latest release</a></strong> (Windows, macOS & Linux)
@@ -11,27 +11,25 @@
 
 ---
 
-# Table of contents
+## Table of contents
 
-- What is Canutin?
-- Features
-- Installation
-- Getting data in
-- Frequenty asked questions
-- Contributing
-- Development
+- [What is Canutin?](#what-is-canutin)
+- [Installation](#installation--first-run)
+- [Getting data in](#getting-data-in)
+- [Frequenty asked questions](#frequenty-asked-questions)
+- [Contributing](#contributing)
+- [Development](#development)
 
-## What is Canutin?
+### What is Canutin?
 
 - Canutin is a desktop app for managing your personal finances.
 - It consolidates all your accounts, transactions and assets in one place and tracks them over time.
 - Runs entirely on your computer and stores your data locally.
 - It's open source, free to use and available for Windows, macOS & Linux.
+- Allows you to import accounts, assets and transactions [via API](#getting-data-in).
 - No sign up is required.
 
-## Features
-
-## Installation & first run
+### Installation & first run
 
 1. Begin by downloading the [latest release](https://github.com/Canutin/desktop/releases) for your operating system.
 2. Run the installer and follow the instructions.
@@ -54,23 +52,34 @@ You might need to do this step again in the future when you update the app.
 There's multiple ways to get data into Canutin, these are available from the **Add or update data** page.
 
 - **By hand:** you can add or edit any account, transaction or asset manually like you would if you used a spreadsheet.
-- **Importing via API:** at the moment this process requires some degree of technical knowledge but it allows you to import data from other apps or services much faster. You can find more information and examples in the [API documentation](docs/API.md).
+- **Importing via API:** at the moment this process requires some degree of technical knowledge but it allows you to import data from other apps or services much faster. You can find more information and examples in the **[API documentation](docs/API.md)**.
 - **Importing from CSV:** _This is currently planned but not yet available_. If you'd like this feature to be prioritized, comment or upvote [this issue](https://github.com/Canutin/desktop/issues/74).
 
-## Frequenty asked questions
+### Frequenty asked questions
 
-- Can I use Canutin on my phone?
-- How do I share data between devices?
-- How do I backup my data?
-- What about security?
-- What about privacy?
-- How do you make money?
+- **Can I use Canutin on my phone?**
+  At the moment Canutin only runs on desktop operating systems, though a mobile app is in the roadmap.
 
-## Development
+- **How do I share data between devices?**
+  The simplest way to do this is to use a cloud storage service like Dropbox or Google Drive. You can then set up Canutin to use that folder as the vault location. This way you can access the same data from multiple devices.
+
+- **How do I backup my data?**
+  All of the data Canutin interacts with is stored in a single file (referred to as a Vault file). You can backup this file the same way you would any other file on your computer.
+
+- **What about security?**
+  In it's current version Canutin does not encrypt your data, though that is in the roadmap. Canutin is as secure as your computer is, anyone who has access to your device will be able to access the data in the vaults stored in such device. By default Canutin's server is only accessible from your computer's browser but it's possible to expose it to your local network and/or the public Internet if your networking settings allow it.
+
+- **What about privacy?**
+  The data is stored locally in your device. Canutin does not collect any data about you or your usage of the app and does not contain any kind of telemetry or analytics.
+
+- **How do you make money?**
+  We don't. Canutin is a hobby project at the moment.
+
+### Development
 
 If you are interested in extending what Canutin can do, take a look at the [development documentation](docs/DEVELOPMENT.md).
 
-## Contributing
+### Contributing
 
 Here's ways in which you can contribute:
 
