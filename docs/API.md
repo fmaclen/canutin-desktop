@@ -1,5 +1,12 @@
 # Canutin: Rest API
 
+- [Endpoints](#endpoints)
+- [Importing data](#importing-data)
+- [Shape of a CanutinFile JSON](#shape-of-a-canutinfile-json)
+- [Examples](#examples)
+
+---
+
 ## Endpoints
 
 Canutin allows importing and exporting data via a REST API, these are the current endpoints:
@@ -92,3 +99,10 @@ interface CanutinFileAssetBalanceStatement {
   cost?: number;
 }
 ```
+
+### Examples
+
+- [canutinFile-maximum-data.json](https://github.com/Canutin/desktop/blob/master/sveltekit/tests/fixtures/canutinFile-maximum-data.json)
+- [canutinFile-minimum-data.json](https://github.com/Canutin/desktop/blob/master/sveltekit/tests/fixtures/canutinFile-minimum-data.json)
+- [canutinFile-only-accounts.json](https://github.com/Canutin/desktop/blob/master/sveltekit/tests/fixtures/canutinFile-only-accounts.json)
+- [canutinFile-only-assets.json](https://github.com/Canutin/desktop/blob/master/sveltekit/tests/fixtures/canutinFile-only-assets.json)

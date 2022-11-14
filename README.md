@@ -11,10 +11,8 @@
 
 ---
 
-## Table of contents
-
 - [What is Canutin?](#what-is-canutin)
-- [Installation](#installation--first-run)
+- [Installation & first run](#installation--first-run)
 - [Getting data in](#getting-data-in)
 - [Frequenty asked questions](#frequenty-asked-questions)
 - [Contributing](#contributing)
@@ -36,7 +34,7 @@
 3. Once the installation is complete, you can run the app from your applications menu\*
 4. The first time you run the app you'll be asked to create a new _vault_. This is where your data will be stored.
 5. After your vault is set, Canutin will open as a new tab in default browser and you'll be ready to start using the app 🎉
-6. **If you close the tab** you can re-open it again by looking for the Canutin icon in your tray bar and clicking `Open in browser`.
+6. **If you close the tab** you can re-open it again by looking for the Canutin icon in your tray bar and clicking `Open in browser` or by visiting [`http://localhost:42069`](http://localhost:42069).
 
 ### \* Note for Windows and macOS users
 
@@ -52,7 +50,7 @@ You might need to do this step again in the future when you update the app.
 There's multiple ways to get data into Canutin, these are available from the **Add or update data** page.
 
 - **By hand:** you can add or edit any account, transaction or asset manually like you would if you used a spreadsheet.
-- **Importing via API:** at the moment this process requires some degree of technical knowledge but it allows you to import data from other apps or services much faster. You can find more information and examples in the **[API documentation](docs/API.md)**.
+- **Importing via API:** at the moment this process requires some degree of technical knowledge but it allows you to import data from other apps or services, for example by scraping the data from your bank's website. You can find more information and examples in the **[API documentation](docs/API.md)**.
 - **Importing from CSV:** _This is currently planned but not yet available_. If you'd like this feature to be prioritized, comment or upvote [this issue](https://github.com/Canutin/desktop/issues/74).
 
 ## Frequenty asked questions
@@ -67,7 +65,6 @@ There's multiple ways to get data into Canutin, these are available from the **A
   All of the data Canutin interacts with is stored in a single file (referred to as a Vault file). You can backup this file the same way you would any other file on your computer.
 
 - **What about security?**
-  In it's current version Canutin does not encrypt your data, though that is in the roadmap. Canutin is as secure as your computer is, anyone who has access to your device will be able to access the data in the vaults stored in such device. By default Canutin's server is only accessible from your computer's browser but it's possible to expose it to your local network and/or the public Internet if your networking settings allow it.
   In it's current version Canutin does not encrypt your data though that is in the roadmap. Canutin is as secure as your computer is, anyone who has access to your device will be able to access the data in the vaults stored in such device. By default Canutin's server is only accessible from your computer's browser but it's possible to expose it to your local network and/or the public Internet if your networking settings allow it.
 
 - **What about privacy?**

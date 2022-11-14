@@ -1,6 +1,4 @@
-## Canutin: Develoment
-
-# Table of contents
+# Canutin: Develoment
 
 - [Overview](#overview)
 - [Environment setup](#environment-setup)
@@ -10,14 +8,16 @@
 - [Current stack](#current-stack)
 - [Contributing](#contributing)
 
-### Overview
+---
+
+## Overview
 
 The repository is split into two semi-independent codebases:
 
 - A [SvelteKit](https://kit.svelte.dev/) SSR app that serves a front-end on `localhost` and handles 95% of the functionality. Code lives in `<root>/sveltekit`
 - A minimal [Electron](https://www.electronjs.org/) implementation that starts/stops the SvelteKit process through a tray menu interface. Doesn't make use of a [`BrowserWindow`](https://www.electronjs.org/docs/latest/api/browser-window) and instead relies on native OS interface components. Code lives in `<root>/electron`
 
-### Environment setup
+## Environment setup
 
 1. Install **Electron** dependencies
 
@@ -43,7 +43,7 @@ The repository is split into two semi-independent codebases:
 % cd sveltekit && npx prisma migrate dev
 ```
 
-### Running the app
+## Running the app
 
 The **Electron** and **SvelteKit** dev environments can be run independently of one another.
 
@@ -69,7 +69,7 @@ To **package the app** for distribution run:
 
 This command will create builds of everything and will copy all of the files that are needed to run the released app. For details on what happens in the background check the `package.json` on the root directory.
 
-### Testing
+#### Testing
 
 **Electron** (Jest)
 
@@ -83,23 +83,23 @@ This command will create builds of everything and will copy all of the files tha
 % cd sveltekit && npm test
 ```
 
-### Other commands
+#### Other commands
 
-**Prisma Studio**
+[**Prisma Studio**](https://www.prisma.io/docs/concepts/components/prisma-studio)
+
+Allows you to browse the database data in a GUI.
 
 ```bash
 % cd sveltekit && npx prisma studio
 ```
 
-### Current Stack
+## Current Stack
 
+- TypeScript
 - Electron
 - Electron-Builder
-- Prisma + SQLite
 - SvelteKit
-- TypeScript
-
----
+- Prisma + SQLite
 
 ## Contributing
 
