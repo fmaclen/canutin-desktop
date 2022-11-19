@@ -84,7 +84,7 @@
 								family: getValueFromCSSVariable('--font-monospace')
 							},
 							padding: 16,
-							autoSkipPadding: 48,
+							autoSkipPadding: 80,
 							maxRotation: 0, // Prevent labels from rotating to fit on the canvas
 							color: getValueFromCSSVariable('--color-grey30'),
 							callback: (index: any) => {
@@ -98,6 +98,7 @@
 						}
 					},
 					y: {
+						grace: '5%',
 						ticks: {
 							font: {
 								family: getValueFromCSSVariable('--font-monospace')
