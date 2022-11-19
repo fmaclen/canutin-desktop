@@ -10,6 +10,8 @@
 	import type { PageData } from './$types';
 	import type { Prisma } from '@prisma/client';
 	import type { CRUDResponse } from '$lib/helpers/forms';
+	import ChartJs from '$lib/components/ChartJS.svelte';
+	import Notice from '$lib/components/Notice.svelte';
 
 	export let data: PageData;
 	const title = data.account.name;
@@ -79,6 +81,16 @@
 </svelte:head>
 
 <ScrollView {title}>
+	<Section title="Balance history">
+		<div slot="CONTENT">
+			{#if data.balanceHistoryDataset}
+				<ChartJs labels={data.labels} datasets={[data.balanceHistoryDataset]} />
+			{:else}
+				<Notice>This account doesn't have any balances</Notice>
+			{/if}
+		</div>
+	</Section>
+
 	<Section title="Update account">
 		<div slot="CONTENT">
 			<AccountForm
