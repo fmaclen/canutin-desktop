@@ -5,16 +5,20 @@
 
 	import { onMount } from 'svelte';
 	import type { ChartConfiguration, ChartDataset } from 'chart.js';
+	import { formatCurrency } from '$lib/helpers/misc';
 
 	export let labels: string[];
 	export let datasets: ChartDataset[];
 
 	let canvasChart: HTMLCanvasElement;
 
+	// Gets CSS values from the global variables set in `app.scss` to style ChartsJS
+	const getValueFromCSSVariable = (variable: string) => {
+		return getComputedStyle(document.documentElement).getPropertyValue(variable);
+	};
+
 	onMount(() => {
 		// Getting the font family from a CSS variable
-		const fontFamily = getComputedStyle(document.body).getPropertyValue('--font-sansSerif');
-
 		const config: ChartConfiguration = {
 			type: 'line',
 			data: {
@@ -43,7 +47,7 @@
 						display: datasets.length > 1,
 						labels: {
 							font: {
-								family: fontFamily,
+								family: getValueFromCSSVariable('--font-sansSerif'),
 								size: 13
 							},
 							usePointStyle: true,
@@ -53,6 +57,13 @@
 						}
 					},
 					tooltip: {
+						callbacks: {
+							label: (context) => {
+								// e.g. " Alice's Limited Rewards      $420.69"
+								return ` ${context.dataset.label}      ${formatCurrency(context.parsed.y)}`;
+							}
+						},
+
 						mode: 'index',
 						intersect: false,
 						padding: 12,
@@ -62,32 +73,54 @@
 						boxHeight: 8,
 						cornerRadius: 4,
 						bodyFont: {
-							family: fontFamily,
+							family: getValueFromCSSVariable('--font-sansSerif'),
 							size: 13
 						}
 					}
 				},
 				scales: {
 					x: {
-						beginAtZero: true,
-						min: 7, // "Trim" the first week so the chart sticks to the left border nicely
-						max: 105,
 						ticks: {
+							font: {
+								family: getValueFromCSSVariable('--font-monospace')
+							},
 							padding: 16,
+							autoSkipPadding: 80,
+							maxRotation: 0, // Prevent labels from rotating to fit on the canvas
+							color: getValueFromCSSVariable('--color-grey30'),
 							callback: (index: any) => {
-								// Display tick every 7 ticks (a.k.a. 1 week)
-								if (index % 14 === 0) return labels[index];
+								if (index === 0) return ''; // Hide the first label to prevent clutter between labels on the y-axis
+								return labels[index];
 							}
 						},
 						grid: {
-							tickLength: 0,
-							tickWidth: 0,
-							offset: true
+							drawBorder: false,
+							tickLength: 0 // Removes an extra space between the chart and the axis labels
 						}
 					},
 					y: {
-						beginAtZero: true,
-						display: false
+						grace: '5%',
+						ticks: {
+							font: {
+								family: getValueFromCSSVariable('--font-monospace')
+							},
+							padding: 16,
+							align: 'center',
+							color: getValueFromCSSVariable('--color-grey30'),
+							z: 2,
+							callback: (value: any, index: any, ticks: any) => {
+								// Only show ticks for zero, max and min values and format the value to currency
+								if (index === 0 || index === ticks.length - 1 || value === 0) {
+									return formatCurrency(value);
+								}
+							}
+						},
+						grid: {
+							drawBorder: false,
+							tickLength: 0, // Removes an extra space between the chart and the axis labels
+							z: 1, // Make the zero line appear on top of chat data with a value of zero
+							lineWidth: (context) => (context.tick.value == 0 ? 1 : 0) //Set only zero line visible
+						}
 					}
 				}
 			}
@@ -98,7 +131,7 @@
 	});
 </script>
 
-<div class="chart">
+<div class="chart {datasets.length > 1 && 'chart--multiple-datasets'}">
 	<canvas bind:this={canvasChart} />
 </div>
 
@@ -109,8 +142,12 @@
 		grid-template-rows: minmax(384px, 25vh);
 		box-sizing: border-box;
 		background-color: var(--color-white);
-		box-shadow: var(--box-shadow), inset 0 -48px 0 var(--color-grey3);
+		box-shadow: var(--box-shadow);
 		border-radius: 4px;
-		padding-top: 8px;
+
+		&--multiple-datasets {
+			padding-top: 8px;
+			padding-bottom: 8px;
+		}
 	}
 </style>

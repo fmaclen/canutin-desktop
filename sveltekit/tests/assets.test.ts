@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test';
 import { format } from 'date-fns';
-import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
+import {
+	databaseSeed,
+	databaseWipe,
+	delay,
+	MAX_DIFF_PIXEL_RATIO,
+	setSnapshotPath
+} from './fixtures/helpers.js';
 
 test.describe('Assets', () => {
 	test.beforeEach(async ({ baseURL }) => {
@@ -277,7 +283,36 @@ test.describe('Assets', () => {
 		await isSoldCheckbox.check();
 		await page.locator('button', { hasText: 'Save' }).click();
 		await expect(page.locator('button.table__sortable', { hasText: 'Marked as' })).toBeVisible();
-		await expect(page.locator('td.table__td', { hasText: 'Sold' })).toBeVisible;
-		await expect(page.locator('td.table__td', { hasText: '~' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: 'Sold' })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: '~' })).toBeVisible;
+	});
+
+	test('Asset page displays balance history chart correctly', async ({
+		baseURL,
+		page
+	}, testInfo) => {
+		setSnapshotPath(testInfo);
+		await databaseSeed(baseURL!);
+
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Assets' }).click();
+		const chart = page.locator('.chart canvas');
+
+		// Other asset
+		await page.locator('a', { hasText: '1998 Fiat Multipla' }).click();
+		await chart.hover();
+		expect(await chart.screenshot()).toMatchSnapshot({
+			name: 'chart-asset-other-asset.png',
+			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		});
+
+		// Investment
+		await page.locator('a', { hasText: 'Assets' }).click();
+		await page.locator('a', { hasText: 'Bitcoin' }).click();
+		await chart.hover();
+		expect(await chart.screenshot()).toMatchSnapshot({
+			name: 'chart-asset-investment.png',
+			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		});
 	});
 });

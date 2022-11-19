@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import formatInTimeZone from 'date-fns-tz/esm/formatInTimeZone';
-import { SortOrder } from '$lib/helpers/constants';
+import { BalanceGroup, SortOrder } from '$lib/helpers/constants';
+import type { ChartDataset } from 'chart.js';
 
 export const LOCALE = 'en-US';
 const CURRENCY = 'USD';

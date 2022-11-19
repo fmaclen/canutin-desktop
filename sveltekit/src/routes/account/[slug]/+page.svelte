@@ -10,6 +10,7 @@
 	import type { PageData } from './$types';
 	import type { Prisma } from '@prisma/client';
 	import type { CRUDResponse } from '$lib/helpers/forms';
+	import ChartBalanceHistory from '$lib/components/ChartBalanceHistory.svelte';
 
 	export let data: PageData;
 	const title = data.account.name;
@@ -79,6 +80,8 @@
 </svelte:head>
 
 <ScrollView {title}>
+	<ChartBalanceHistory balanceHistoryDataset={data.balanceHistoryDataset} labels={data.labels} />
+
 	<Section title="Update account">
 		<div slot="CONTENT">
 			<AccountForm
@@ -86,7 +89,7 @@
 				account={data.account}
 				selectAccountTypes={data.selectAccountTypes}
 				selectBalanceGroups={data.selectBalanceGroups}
-				lastBalanceStatement={data.lastBalanceStatement}
+				latestBalance={data.latestBalance}
 				submitButtonLabel="Save"
 			/>
 		</div>

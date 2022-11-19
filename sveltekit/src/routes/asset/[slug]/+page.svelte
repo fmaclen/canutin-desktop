@@ -10,6 +10,7 @@
 	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { CRUDResponse } from '$lib/helpers/forms';
+	import ChartBalanceHistory from '$lib/components/ChartBalanceHistory.svelte';
 
 	export let data: PageData;
 	const title = data.asset.name;
@@ -85,6 +86,8 @@
 </svelte:head>
 
 <ScrollView {title}>
+	<ChartBalanceHistory balanceHistoryDataset={data.balanceHistoryDataset} labels={data.labels} />
+
 	<Section title="Update asset">
 		<div slot="CONTENT">
 			<AssetForm
