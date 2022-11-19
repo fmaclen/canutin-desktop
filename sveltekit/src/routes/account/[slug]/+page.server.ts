@@ -21,14 +21,6 @@ export const load = async ({ params }: { params: Params }) => {
 	if (!account) return notFound();
 
 	const selectAccountTypes = await getSelectAccountTypes();
-	const lastBalanceStatement = await prisma.accountBalanceStatement.findFirst({
-		where: {
-			accountId: account.id
-		},
-		orderBy: {
-			createdAt: SortOrder.DESC
-		}
-	});
 
 	// Generate chart dataset
 	const labels: string[] = [];
@@ -68,11 +60,15 @@ export const load = async ({ params }: { params: Params }) => {
 		}
 	}
 
+	// Get the most recent balance from the balance history dataset
+	const { data } = balanceHistoryDataset;
+	const latestBalance = data.length > 0 ? (data[data.length - 1] as number) : 0;
+
 	return {
 		account,
 		selectAccountTypes,
 		selectBalanceGroups,
-		lastBalanceStatement,
+		latestBalance,
 		labels,
 		balanceHistoryDataset
 	};

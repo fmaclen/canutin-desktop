@@ -98,7 +98,7 @@
 				account={data.account}
 				selectAccountTypes={data.selectAccountTypes}
 				selectBalanceGroups={data.selectBalanceGroups}
-				lastBalanceStatement={data.lastBalanceStatement}
+				latestBalance={data.latestBalance}
 				submitButtonLabel="Save"
 			/>
 		</div>

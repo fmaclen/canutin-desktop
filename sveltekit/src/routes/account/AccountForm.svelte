@@ -16,7 +16,7 @@
 	export let account: Account | null = null;
 	export let selectAccountTypes: FormSelectOption[];
 	export let selectBalanceGroups: FormSelectOption[];
-	export let lastBalanceStatement: AccountBalanceStatement | null = null;
+	export let latestBalance: number;
 	export let submitButtonLabel: string;
 
 	let name = account ? account.name : '';
@@ -54,7 +54,7 @@
 			<div class="accountBalanceField">
 				<FormCurrency
 					name="value"
-					value={lastBalanceStatement?.value || 0}
+					value={latestBalance}
 					required={!isAutoCalculated}
 					disabled={isAutoCalculated}
 				/>
