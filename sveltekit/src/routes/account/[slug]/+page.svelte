@@ -83,10 +83,10 @@
 <ScrollView {title}>
 	<Section title="Balance history">
 		<div slot="CONTENT">
-			{#if data.balanceHistoryDataset}
+			{#if data.balanceHistoryDataset.data.length > 0}
 				<ChartJs labels={data.labels} datasets={[data.balanceHistoryDataset]} />
 			{:else}
-				<Notice>This account doesn't have any balances</Notice>
+				<Notice>This account doesn't have any balances to graph</Notice>
 			{/if}
 		</div>
 	</Section>

@@ -5,6 +5,7 @@ import type { ChartDataset } from 'chart.js';
 import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
 import { add, sub, eachWeekOfInterval, endOfWeek } from 'date-fns';
 import { BalanceGroup, SortOrder } from '$lib/helpers/constants';
+import { setChartDatasetColor } from '$lib/helpers/misc';
 
 export const load = async () => {
 	const labels: string[] = [];
@@ -128,30 +129,25 @@ export const load = async () => {
 
 	setShadedBorderColor(datasetCash, '#00A36F'); // var(--color-greenPrimary)
 	setShadedBorderColor(datasetDebt, '#e75258', SortOrder.ASC); // var(--color-redPrimary)
-	setShadedBorderColor(datasetInvestments, '#B19B70'); // var(--color-yellowPrimary)
+	setShadedBorderColor(datasetInvestments, '#B19B70'); // var(--color-goldPrimary)
 	setShadedBorderColor(datasetOtherAssets, '#5255AC'); // var(--color-purplePrimary)
 
 	datasetNetWorth.forEach((chartDataset) => {
 		switch (chartDataset.label) {
 			case 'Net worth':
-				chartDataset.backgroundColor = '#333333'; // var(--color-grey80)
-				chartDataset.borderColor = '#333333'; // var(--color-grey80)
+				setChartDatasetColor(chartDataset);
 				break;
 			case 'Cash':
-				chartDataset.backgroundColor = '#00A36F'; // var(--color-greenPrimary)
-				chartDataset.borderColor = '#00A36F'; // var(--color-greenPrimary)
+				setChartDatasetColor(chartDataset, BalanceGroup.CASH);
 				break;
 			case 'Debt':
-				chartDataset.backgroundColor = '#e75258'; // var(--color-redPrimary)
-				chartDataset.borderColor = '#e75258'; // var(--color-redPrimary)
+				setChartDatasetColor(chartDataset, BalanceGroup.DEBT);
 				break;
 			case 'Investments':
-				chartDataset.backgroundColor = '#B19B70'; // var(--color-yellowPrimary)
-				chartDataset.borderColor = '#B19B70'; // var(--color-yellowPrimary)
+				setChartDatasetColor(chartDataset, BalanceGroup.INVESTMENTS);
 				break;
 			case 'Other assets':
-				chartDataset.backgroundColor = '#5255AC'; // var(--color-purplePrimary)
-				chartDataset.borderColor = '#5255AC'; // var(--color-purplePrimary)
+				setChartDatasetColor(chartDataset, BalanceGroup.OTHER_ASSETS);
 				break;
 		}
 	});
