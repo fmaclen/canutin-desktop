@@ -287,7 +287,7 @@ test.describe('Assets', () => {
 		expect(page.locator('td.table__td', { hasText: '~' })).toBeVisible;
 	});
 
-	test('Accounts page displays balance history chart correctly', async ({
+	test('Asset page displays balance history chart correctly', async ({
 		baseURL,
 		page
 	}, testInfo) => {

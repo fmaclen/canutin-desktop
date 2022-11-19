@@ -407,7 +407,7 @@ test.describe('Accounts', () => {
 		expect(await tableRows.count()).toBe(2);
 	});
 
-	test('Accounts page displays balance history chart correctly', async ({
+	test('Account page displays balance history chart correctly', async ({
 		baseURL,
 		page
 	}, testInfo) => {
