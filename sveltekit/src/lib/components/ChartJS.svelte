@@ -84,7 +84,7 @@
 								family: getValueFromCSSVariable('--font-monospace')
 							},
 							padding: 16,
-							autoSkipPadding: 32,
+							autoSkipPadding: 48,
 							maxRotation: 0, // Prevent labels from rotating to fit on the canvas
 							color: getValueFromCSSVariable('--color-grey30'),
 							callback: (index: any) => {
@@ -93,6 +93,7 @@
 							}
 						},
 						grid: {
+							drawBorder: false,
 							tickLength: 0 // Removes an extra space between the chart and the axis labels
 						}
 					},
@@ -113,6 +114,7 @@
 							}
 						},
 						grid: {
+							drawBorder: false,
 							tickLength: 0, // Removes an extra space between the chart and the axis labels
 							z: 1, // Make the zero line appear on top of chat data with a value of zero
 							lineWidth: (context) => (context.tick.value == 0 ? 1 : 0) //Set only zero line visible
@@ -127,7 +129,7 @@
 	});
 </script>
 
-<div class="chart">
+<div class="chart {datasets.length > 1 && 'chart--multiple-datasets'}">
 	<canvas bind:this={canvasChart} />
 </div>
 
@@ -140,6 +142,10 @@
 		background-color: var(--color-white);
 		box-shadow: var(--box-shadow);
 		border-radius: 4px;
-		padding-top: 8px;
+
+		&--multiple-datasets {
+			padding-top: 8px;
+			padding-bottom: 8px;
+		}
 	}
 </style>
