@@ -26,7 +26,7 @@ export const load = async ({ params }: { params: Params }) => {
 	// Generate chart dataset
 	const labels: string[] = [];
 	const balanceHistoryDataset: ChartDataset = { label: account.name, data: [] };
-	const queryByAccount = { where: { accountId: account.id } }; // prettier-ignore
+	const queryByAccount = { where: { accountId: account.id } };
 
 	let periodStart: Date | undefined;
 	let periodEnd: Date | undefined;

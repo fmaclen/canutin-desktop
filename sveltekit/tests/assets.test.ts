@@ -298,7 +298,7 @@ test.describe('Assets', () => {
 		await page.locator('a', { hasText: 'Assets' }).click();
 		const chart = page.locator('.chart canvas');
 
-		// Cash account (auto-calculated)
+		// Other asset
 		await page.locator('a', { hasText: '1998 Fiat Multipla' }).click();
 		await chart.hover();
 		expect(await chart.screenshot()).toMatchSnapshot({
@@ -306,7 +306,7 @@ test.describe('Assets', () => {
 			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
 		});
 
-		// Debt account (auto-calculated)
+		// Investment
 		await page.locator('a', { hasText: 'Assets' }).click();
 		await page.locator('a', { hasText: 'Bitcoin' }).click();
 		await chart.hover();

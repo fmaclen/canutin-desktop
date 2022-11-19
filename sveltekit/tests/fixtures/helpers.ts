@@ -1,8 +1,9 @@
 import path from 'path';
 import fs from 'fs';
 import fetch from 'node-fetch';
-import { DeveloperFunctions } from '../../src/lib/helpers/constants.js';
 import type { TestInfo } from '@playwright/test';
+
+import { DeveloperFunctions } from '../../src/lib/helpers/constants.js';
 
 export const pathToTestVault = path.join(process.cwd(), 'tests', 'tmp', 'Canutin.vault.test');
 

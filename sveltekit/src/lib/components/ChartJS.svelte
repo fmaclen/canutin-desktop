@@ -12,7 +12,7 @@
 
 	let canvasChart: HTMLCanvasElement;
 
-	// Allows us to use global CSS variables to style ChartsJS
+	// Gets CSS values from the global variables set in `app.scss` to style ChartsJS
 	const getValueFromCSSVariable = (variable: string) => {
 		return getComputedStyle(document.documentElement).getPropertyValue(variable);
 	};
@@ -57,9 +57,9 @@
 						}
 					},
 					tooltip: {
-						// format the tooltip value to currency and include the label
 						callbacks: {
 							label: (context) => {
+								// e.g. " Alice's Limited Rewards      $420.69"
 								return ` ${context.dataset.label}      ${formatCurrency(context.parsed.y)}`;
 							}
 						},
