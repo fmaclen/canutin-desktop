@@ -12,6 +12,7 @@
 
 	let canvasChart: HTMLCanvasElement;
 
+	// Allows us to use global CSS variables to style ChartsJS
 	const getValueFromCSSVariable = (variable: string) => {
 		return getComputedStyle(document.documentElement).getPropertyValue(variable);
 	};

@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test';
 import { format } from 'date-fns';
-import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
+import {
+	databaseSeed,
+	databaseWipe,
+	delay,
+	MAX_DIFF_PIXEL_RATIO,
+	setSnapshotPath
+} from './fixtures/helpers.js';
 
 test.describe('Accounts', () => {
 	test.beforeEach(async ({ baseURL }) => {
@@ -216,6 +222,12 @@ test.describe('Accounts', () => {
 		expect(await balanceTypeGroup.textContent()).toMatch('Savings');
 		expect(await balanceTypeGroup.textContent()).toMatch("Alice's Savings");
 		expect(await balanceTypeGroup.textContent()).toMatch('$421');
+
+		// Check the balance is displayed correctly on the account page
+		await page.locator('a', { hasText: "Alice's Savings" }).click();
+		await expect(page.locator('h1', { hasText: "Alice's Savings" })).toBeVisible();
+		await expect(isAutoCalculatedCheckbox).toBeChecked();
+		await expect(page.locator('.formCurrencyInput input[name="formatted-value"]')).toHaveValue('$420.69'); // prettier-ignore
 	});
 
 	test("Account and it's transactions can be deleted", async ({ baseURL, page }) => {
@@ -393,5 +405,52 @@ test.describe('Accounts', () => {
 		await expect(noAccountsTableNotice).not.toBeVisible();
 		expect(page.locator('text=Closed')).toBeVisible();
 		expect(await tableRows.count()).toBe(2);
+	});
+
+	test('Accounts page displays balance history chart correctly', async ({
+		baseURL,
+		page
+	}, testInfo) => {
+		setSnapshotPath(testInfo);
+		await databaseSeed(baseURL!);
+
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Accounts' }).click();
+		const chart = page.locator('.chart canvas');
+
+		// Cash account (auto-calculated)
+		await page.locator('a', { hasText: 'Emergency fund' }).click();
+		await chart.hover();
+		expect(await chart.screenshot()).toMatchSnapshot({
+			name: 'chart-account-cash-auto-calculated.png',
+			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		});
+
+		// Debt account (auto-calculated)
+		await page.locator('a', { hasText: 'Accounts' }).click();
+		await page.locator('a', { hasText: "Alice's Limited Rewards" }).click();
+		await chart.hover();
+		expect(await chart.screenshot()).toMatchSnapshot({
+			name: 'chart-account-debt-auto-calculated.png',
+			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		});
+
+		// Investment account (auto-calculated)
+		await page.locator('a', { hasText: 'Accounts' }).click();
+		await page.locator('a', { hasText: "Alice's Roth IRA" }).click();
+		await chart.hover();
+		expect(await chart.screenshot()).toMatchSnapshot({
+			name: 'chart-account-investments.png',
+			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		});
+
+		// Debt account (auto-calculated)
+		await page.locator('a', { hasText: 'Accounts' }).click();
+		await page.locator('a', { hasText: 'Matress Wallet' }).click();
+		await chart.hover();
+		expect(await chart.screenshot()).toMatchSnapshot({
+			name: 'chart-account-cash.png',
+			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		});
 	});
 });
