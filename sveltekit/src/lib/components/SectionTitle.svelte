@@ -9,6 +9,7 @@
 		font-family: var(--font-monospace);
 		color: var(--color-grey40);
 		font-size: 12px;
+		font-weight: unset;
 		line-height: 1em;
 		letter-spacing: 0.1em;
 		margin-top: 0;
