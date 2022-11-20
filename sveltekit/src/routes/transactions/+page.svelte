@@ -325,7 +325,9 @@
 									<Link href={`/transaction/${id}`}>{description}</Link>
 								</TableTd>
 								<TableTd>
-									{transactionCategory.name}
+									<Link href={`/transaction/${transactionCategory.id}`}
+										>{transactionCategory.name}</Link
+									>
 								</TableTd>
 								<TableTd>
 									<Link href={`/account/${transaction.accountId}`}>{account.name}</Link>
