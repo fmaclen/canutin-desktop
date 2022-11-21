@@ -209,12 +209,19 @@
 		}
 	};
 
+	// Filter by category id
+	const setCategoryFilter = async (categoryId: number) => {
+		keyword = keyword + ` categoryId:${categoryId}`;
+		await getTransactions();
+	};
+
 	// Clear filters
 	$: hasClearableFilters = keyword !== '' || periodIndex !== 2;
 
 	const clearFilters = async () => {
-		keyword = '';
-		periodIndex = 2;
+		window.location.search = ''; // Remove all params from URL
+		periodIndex = 2; // Last 3 months
+		keyword = ''; // Clear keyword
 		await getTransactions();
 	};
 
@@ -257,7 +264,7 @@
 					<Button
 						disabled={!hasClearableFilters}
 						title="Reset all search terms and date range period"
-						on:click={clearFilters}
+						on:click={async () => await clearFilters()}
 					>
 						Clear filters
 					</Button>
@@ -361,10 +368,13 @@
 								<TableTd>
 									<Link href={`/transaction/${id}`}>{description}</Link>
 								</TableTd>
-								<TableTd>
-									<Link href={`/transaction/${transactionCategory.id}`}
-										>{transactionCategory.name}</Link
+								<TableTd hasTag={true}>
+									<button
+										class="layout__tag"
+										on:click={() => setCategoryFilter(transactionCategory.id)}
 									>
+										{transactionCategory.name}
+									</button>
 								</TableTd>
 								<TableTd>
 									<Link href={`/account/${transaction.accountId}`}>{account.name}</Link>

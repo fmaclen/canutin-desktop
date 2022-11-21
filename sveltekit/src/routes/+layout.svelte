@@ -426,7 +426,9 @@
 		column-gap: 4px;
 	}
 
-	button.layout__tag,
+	// FIXME: all instances of `layout__tag` should be their own component, maybe `<Tag />`.
+	// Perhaps combined with `segmentedControl__button`.
+	:global(button.layout__tag),
 	p.layout__tag {
 		font-family: var(--font-monospace);
 		font-weight: 400;
@@ -440,7 +442,7 @@
 		width: max-content;
 	}
 
-	button.layout__tag {
+	:global(button.layout__tag) {
 		border: none;
 		cursor: pointer;
 
