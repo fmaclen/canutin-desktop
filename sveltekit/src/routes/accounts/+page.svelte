@@ -182,7 +182,9 @@
 
 								<TableTd>
 									{#if transactionCount > 0}
-										<Link href={`/transactions?keyword=account:${id}`}>{transactionCount}</Link>
+										<Link href={`/transactions?keyword=accountId:${id}&periodPreset=Lifetime`}>
+											{transactionCount}
+										</Link>
 									{:else}
 										<TableNoValue />
 									{/if}

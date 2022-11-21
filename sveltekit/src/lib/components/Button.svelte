@@ -3,9 +3,12 @@
 
 	export let disabled: boolean = false;
 	export let appearance: Appearance | null = null;
+	export let title: string | null = null;
 </script>
 
-<button class="button {appearance && `button--${appearance}`}" {disabled} on:click><slot /></button>
+<button class="button {appearance && `button--${appearance}`}" {disabled} {title} on:click>
+	<slot />
+</button>
 
 <style lang="scss">
 	button.button {
