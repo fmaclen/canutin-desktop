@@ -25,7 +25,7 @@
 	export let submitButtonLabel: string;
 
 	let description = transaction ? transaction.description : '';
-	let accountId = transaction ? transaction.accountId : 1;
+	let accountId = transaction ? transaction.accountId : '';
 	let categoryId = transaction ? transaction.categoryId : 1;
 	let isPending = transaction ? transaction.isPending : false;
 	let isExcluded = transaction ? transaction.isExcluded : false;
