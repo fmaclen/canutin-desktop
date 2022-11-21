@@ -267,6 +267,69 @@ test.describe('Transactions', () => {
 		expect(await cardNetBalance.textContent()).toMatch('-$26,000.00');
 	});
 
+	test('Transactions can be filtered by account or category ids', async ({ baseURL, page }) => {
+		await databaseSeed(baseURL!);
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Transactions' }).click();
+		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
+
+		const formSelect = page.locator('.formSelect__select');
+		const keywordInput = page.locator('.formInput__input');
+		const clearFiltersButton = page.locator('button', { hasText: 'Clear Filters' });
+		const tableRow = page.locator('.table__tr');
+		const tableNotice = page.locator('.table__td--notice');
+		const cardTransactions = page.locator('.card', { hasText: 'Transactions' });
+		const cardNetBalance = page.locator('.card', { hasText: 'Net balance' });
+
+		expect(await cardTransactions.textContent()).toMatch('111');
+		expect(await cardNetBalance.textContent()).toMatch('$935.98');
+		expect(await keywordInput.inputValue()).toBe('');
+		expect(clearFiltersButton).toBeDisabled();
+
+		// Filter by account id
+		await page.locator('a', { hasText: 'Accounts' }).click();
+		await expect(tableNotice).not.toBeVisible();
+		expect(await tableRow.first().textContent()).toMatch("Alice's Limited Rewards");
+		expect(await tableRow.first().textContent()).toMatch('672');
+
+		// Checl accountId filter is applied
+		await page.locator('a', { hasText: '672' }).click();
+		await expect(tableNotice).not.toBeVisible();
+		expect(await cardTransactions.textContent()).toMatch('672');
+		expect(await cardNetBalance.textContent()).toMatch('$437.73');
+		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
+		expect(await formSelect.inputValue()).toBe('7'); // Lifetime
+		await expect(clearFiltersButton).not.toBeDisabled();
+
+		// Apply a category id filter
+		await page.locator('button', { hasText: 'Gas stations' }).first().click();
+		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
+		expect(await keywordInput.inputValue()).toMatch(/categoryId:\d+/); // e.g. "categoryId:123"
+		expect(await cardTransactions.textContent()).toMatch('48');
+		expect(await cardNetBalance.textContent()).toMatch('-$1,576.32');
+
+		// Apply excluded filter
+		await keywordInput.type('excluded:true ');
+		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
+		expect(await keywordInput.inputValue()).toMatch(/categoryId:\d+/); // e.g. "categoryId:123"
+		expect(await keywordInput.inputValue()).toMatch('excluded:true');
+		expect(await cardTransactions.textContent()).toMatch('0');
+		expect(await cardNetBalance.textContent()).toMatch('$0.00');
+
+		// Clear filters
+		await clearFiltersButton.click();
+		await expect(tableNotice).not.toBeVisible();
+		expect(await keywordInput.inputValue()).toBe('');
+		expect(await cardTransactions.textContent()).toMatch('111');
+		expect(await cardNetBalance.textContent()).toMatch('$935.98');
+		expect(await formSelect.inputValue()).toBe('2'); // Lifetime
+
+		// Apply excluded filter (again)
+		await keywordInput.type('excluded:true');
+		expect(await cardTransactions.textContent()).toMatch('6');
+		expect(await cardNetBalance.textContent()).toMatch('$0.00');
+	});
+
 	test("A new transaction can't be added if the vault has no accounts", async ({ page }) => {
 		await page.goto('/');
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
@@ -329,6 +392,17 @@ test.describe('Transactions', () => {
 		await expect(isPending).not.toBeDisabled();
 		await expect(amountInput).not.toBeDisabled();
 		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
+
+		// Check the "Add" button is disabled if "description" or "accounts" are not filled
+		await descriptionInput.fill('Evergreen Market');
+		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
+
+		await descriptionInput.fill('');
+		await accountIdSelect.selectOption({ label: "Bob's Laughable-Yield Checking" });
+		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
+
+		await descriptionInput.fill('Evergreen Market');
+		await expect(page.locator('button', { hasText: 'Add' })).not.toBeDisabled();
 	});
 
 	test('A new transaction can be added and updated', async ({ page }) => {
