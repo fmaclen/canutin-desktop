@@ -113,12 +113,6 @@
 		}
 	];
 
-	console.log({
-		label: 'Lifetime',
-		dateFrom: data.earliestTransactionDate,
-		dateTo: data.latestTransactionDate
-	});
-
 	// Default params
 	let transactions = [] as TransactionResponse[];
 	let filteredTransactions = [] as TransactionResponse[];
@@ -215,6 +209,15 @@
 		}
 	};
 
+	// Clear filters
+	$: hasClearableFilters = keyword !== '' || periodIndex !== 2;
+
+	const clearFilters = async () => {
+		keyword = '';
+		periodIndex = 2;
+		await getTransactions();
+	};
+
 	// Highlight the transaction after it's created or updated
 	const highlightParam = $page.url.searchParams.get('highlight');
 	let highlight = highlightParam ? parseInt(highlightParam) : undefined;
@@ -251,6 +254,20 @@
 		<div slot="CONTENT" class="transactions">
 			<header class="transactions__header">
 				<div class="transactions__search">
+					<Button
+						disabled={!hasClearableFilters}
+						title="Reset all search terms and date range period"
+						on:click={clearFilters}
+					>
+						Clear filters
+					</Button>
+					<FormInput
+						type="text"
+						name="keyword"
+						placeholder="Type to filter by description, amount, category or account"
+						bind:value={keyword}
+						on:keyup={async () => await getTransactions()}
+					/>
 					<FormSelect
 						name="periods"
 						options={periods}
@@ -266,14 +283,6 @@
 							}, 1);
 						}}
 					/>
-					<FormInput
-						type="text"
-						name="keyword"
-						placeholder="Type to filter by description, amount, category or account"
-						bind:value={keyword}
-						on:keyup={async () => await getTransactions()}
-					/>
-					<Button title="Reset all search terms and date range period">Clear filters</Button>
 				</div>
 
 				<div class="transactions__summary">
@@ -403,7 +412,7 @@
 	div.transactions__search {
 		display: grid;
 		gap: 8px;
-		grid-template-columns: max-content auto max-content;
+		grid-template-columns: max-content 4fr 1fr;
 	}
 
 	div.transactions__summary {

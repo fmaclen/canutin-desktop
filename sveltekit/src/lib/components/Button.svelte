@@ -52,9 +52,10 @@
 
 		&:disabled {
 			color: var(--color-grey30);
-			background-color: var(--color-grey20);
-			border-color: var(--color-grey20);
+			background-color: var(--color-grey7);
+			border-color: var(--color-grey7);
 			cursor: default;
+			pointer-events: none;
 		}
 	}
 </style>
