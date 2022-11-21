@@ -273,14 +273,15 @@ test.describe('Transactions', () => {
 		await page.locator('a', { hasText: 'Transactions' }).click();
 		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
 
+		const tableNotice = page.locator('.table__td--notice');
+		const tableRow = page.locator('.table__tr');
 		const formSelect = page.locator('.formSelect__select');
 		const keywordInput = page.locator('.formInput__input');
 		const clearFiltersButton = page.locator('button', { hasText: 'Clear Filters' });
-		const tableRow = page.locator('.table__tr');
-		const tableNotice = page.locator('.table__td--notice');
 		const cardTransactions = page.locator('.card', { hasText: 'Transactions' });
 		const cardNetBalance = page.locator('.card', { hasText: 'Net balance' });
 
+		await expect(tableNotice).not.toBeVisible();
 		expect(await cardTransactions.textContent()).toMatch('111');
 		expect(await cardNetBalance.textContent()).toMatch('$935.98');
 		expect(await keywordInput.inputValue()).toBe('');

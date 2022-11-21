@@ -282,6 +282,7 @@ test.describe('Accounts', () => {
 		// Check the account is no longer present in Transactions
 		await page.locator('a', { hasText: 'Transactions' }).click();
 		await expect(accountLink).not.toBeVisible();
+		await expect(page.locator('.table__td--notice')).not.toBeVisible();
 		expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('87');
 
 		await page.locator('a', { hasText: "Alice's Limited Rewards" }).first().click();
@@ -405,6 +406,22 @@ test.describe('Accounts', () => {
 		await expect(noAccountsTableNotice).not.toBeVisible();
 		expect(page.locator('text=Closed')).toBeVisible();
 		expect(await tableRows.count()).toBe(2);
+
+		// Check transactions can be filtered by account
+		await page.locator('a.layout__a', { hasText: 'Accounts' }).click();
+		await page.locator('a', { hasText: "Alice's Savings" }).click();
+
+		const transactionsLink = page.locator('a', { hasText: 'Transactions (1)' });
+		await expect(transactionsLink).toBeVisible();
+		await transactionsLink.click();
+
+		const keywordInput = page.locator('.formInput__input');
+		const cardTransactions = page.locator('.card', { hasText: 'Transactions' });
+		const cardNetBalance = page.locator('.card', { hasText: 'Net balance' });
+
+		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
+		expect(await cardTransactions.textContent()).toMatch('1');
+		expect(await cardNetBalance.textContent()).toMatch('$15.00');
 	});
 
 	test('Account page displays balance history chart correctly', async ({
