@@ -219,9 +219,8 @@
 	$: hasClearableFilters = keyword !== '' || periodIndex !== 2;
 
 	const clearFilters = async () => {
-		window.location.search = ''; // Remove all params from URL
-		periodIndex = 2; // Last 3 months
-		keyword = ''; // Clear keyword
+		// Remove all params from URL (which triggers a page reload resetting all other filters)
+		window.location.search = '';
 		await getTransactions();
 	};
 
