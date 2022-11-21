@@ -304,6 +304,7 @@ test.describe('Transactions', () => {
 
 		// Apply a category id filter
 		await page.locator('button', { hasText: 'Gas stations' }).first().click();
+		await expect(tableNotice).not.toBeVisible();
 		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
 		expect(await keywordInput.inputValue()).toMatch(/categoryId:\d+/); // e.g. "categoryId:123"
 		expect(await cardTransactions.textContent()).toMatch('48');
@@ -311,6 +312,7 @@ test.describe('Transactions', () => {
 
 		// Apply excluded filter
 		await keywordInput.type('excluded:true ');
+		await expect(tableNotice).not.toBeVisible();
 		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
 		expect(await keywordInput.inputValue()).toMatch(/categoryId:\d+/); // e.g. "categoryId:123"
 		expect(await keywordInput.inputValue()).toMatch('excluded:true');
@@ -327,6 +329,7 @@ test.describe('Transactions', () => {
 
 		// Apply excluded filter (again)
 		await keywordInput.type('excluded:true');
+		await expect(tableNotice).not.toBeVisible();
 		expect(await cardTransactions.textContent()).toMatch('6');
 		expect(await cardNetBalance.textContent()).toMatch('$0.00');
 	});
