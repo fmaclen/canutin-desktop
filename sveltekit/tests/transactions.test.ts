@@ -312,6 +312,7 @@ test.describe('Transactions', () => {
 
 		// Apply excluded filter
 		await keywordInput.type('excluded:true ');
+		await delay();
 		await expect(tableNotice).not.toBeVisible();
 		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
 		expect(await keywordInput.inputValue()).toMatch(/categoryId:\d+/); // e.g. "categoryId:123"
@@ -328,7 +329,7 @@ test.describe('Transactions', () => {
 		expect(await formSelect.inputValue()).toBe('2'); // Lifetime
 
 		// Apply excluded filter (again)
-		await keywordInput.type('excluded:true');
+		await keywordInput.fill('excluded:true');
 		await expect(tableNotice).not.toBeVisible();
 		expect(await cardTransactions.textContent()).toMatch('6');
 		expect(await cardNetBalance.textContent()).toMatch('$0.00');
