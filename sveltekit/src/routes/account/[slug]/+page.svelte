@@ -83,7 +83,7 @@
 <ScrollView {title}>
 	<nav slot="NAV">
 		<Link href={`/transactions?keyword=accountId:${data.account.id}&periodPreset=Lifetime`}>
-			Transactions (682)
+			Transactions ({data.transactionsCount})
 		</Link>
 	</nav>
 	<ChartBalanceHistory balanceHistoryDataset={data.balanceHistoryDataset} labels={data.labels} />
