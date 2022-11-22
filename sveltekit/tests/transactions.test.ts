@@ -312,8 +312,7 @@ test.describe('Transactions', () => {
 
 		// Apply excluded filter
 		await keywordInput.type('excluded:true ');
-		await delay();
-		await expect(tableNotice).not.toBeVisible();
+		await expect(tableNotice).toBeVisible();
 		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
 		expect(await keywordInput.inputValue()).toMatch(/categoryId:\d+/); // e.g. "categoryId:123"
 		expect(await keywordInput.inputValue()).toMatch('excluded:true');
@@ -329,8 +328,10 @@ test.describe('Transactions', () => {
 		expect(await formSelect.inputValue()).toBe('2'); // Lifetime
 
 		// Apply excluded filter (again)
-		await keywordInput.fill('excluded:true');
+		await keywordInput.type('excluded:true');
 		await expect(tableNotice).not.toBeVisible();
+		await expect(page.locator('a', { hasText: "Bob's Laughable-Yield Checking" })).not.toBeVisible(); // prettier-ignore
+		expect(await page.locator('a', { hasText: 'Store.com' }).count()).toBe(6);
 		expect(await cardTransactions.textContent()).toMatch('6');
 		expect(await cardNetBalance.textContent()).toMatch('$0.00');
 	});
