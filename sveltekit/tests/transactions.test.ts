@@ -287,13 +287,13 @@ test.describe('Transactions', () => {
 		expect(await keywordInput.inputValue()).toBe('');
 		expect(clearFiltersButton).toBeDisabled();
 
-		// Filter by account id
+		// Filter by `accountId`
 		await page.locator('a', { hasText: 'Accounts' }).click();
 		await expect(tableNotice).not.toBeVisible();
 		expect(await tableRow.first().textContent()).toMatch("Alice's Limited Rewards");
 		expect(await tableRow.first().textContent()).toMatch('672');
 
-		// Checl accountId filter is applied
+		// Check `accountId` filter is applied
 		await page.locator('a', { hasText: '672' }).click();
 		await expect(tableNotice).not.toBeVisible();
 		expect(await cardTransactions.textContent()).toMatch('672');
@@ -302,7 +302,7 @@ test.describe('Transactions', () => {
 		expect(await formSelect.inputValue()).toBe('7'); // Lifetime
 		await expect(clearFiltersButton).not.toBeDisabled();
 
-		// Apply a category id filter
+		// Apply a `categoryId` filter
 		await page.locator('button', { hasText: 'Gas stations' }).first().click();
 		await expect(tableNotice).not.toBeVisible();
 		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
