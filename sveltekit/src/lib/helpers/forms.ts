@@ -1,4 +1,4 @@
-import { BalanceGroup, getBalanceGroupLabel } from '$lib/helpers/constants';
+import { BalanceGroup, getBalanceGroupLabel, SortOrder } from '$lib/helpers/constants';
 import prisma from '$lib/helpers/prisma';
 
 export interface CRUDResponse {
@@ -49,7 +49,10 @@ export const selectBalanceGroups = [
 // Transactions
 // Get list of transaction categories and format it for the select field
 export const getSelectTransactionCategories = async () => {
-	const transactionCategories = await prisma.transactionCategory.findMany(selectOptionsQuery);
+	const transactionCategories = await prisma.transactionCategory.findMany({
+		...selectOptionsQuery,
+		orderBy: { name: SortOrder.ASC }
+	});
 	return getSelectFor(transactionCategories);
 };
 
