@@ -1,10 +1,9 @@
 <script lang="ts">
 	export let disabled: boolean = false;
 	export let isActive: boolean = false;
-	export let title: string | null = null;
 </script>
 
-<button class="buttonTag {isActive && 'buttonTag--active'}" {disabled} {title} on:click>
+<button class="buttonTag {isActive && 'buttonTag--active'}" {disabled} on:click>
 	<slot />
 </button>
 
