@@ -357,10 +357,10 @@ test.describe('Balance sheet', () => {
 		expect(await expensesPerMonthCard.textContent()).toMatch('$0');
 		expect(await surplusPerMonthCard.textContent()).toMatch('$0');
 
-		const last6MonthsButton = page.locator('.segmentedControl__button', {
+		const last6MonthsButton = page.locator('.buttonTag', {
 			hasText: 'Last 6 months'
 		});
-		const last12MonthsButton = page.locator('.segmentedControl__button', {
+		const last12MonthsButton = page.locator('.buttonTag', {
 			hasText: 'Last 12 months'
 		});
 		await databaseSeed(baseURL!);
@@ -369,14 +369,14 @@ test.describe('Balance sheet', () => {
 		expect(await incomePerMonthCard.textContent()).toMatch('$7,577');
 		expect(await expensesPerMonthCard.textContent()).toMatch('-$7,137');
 		expect(await surplusPerMonthCard.textContent()).toMatch('$440');
-		await expect(last6MonthsButton).toHaveClass(/segmentedControl__button--active/);
-		await expect(last12MonthsButton).not.toHaveClass(/segmentedControl__button--active/);
+		await expect(last6MonthsButton).toHaveClass(/buttonTag--active/);
+		await expect(last12MonthsButton).not.toHaveClass(/buttonTag--active/);
 
 		await last12MonthsButton.click();
 		expect(await incomePerMonthCard.textContent()).toMatch('$7,612');
 		expect(await expensesPerMonthCard.textContent()).toMatch('-$7,167');
 		expect(await surplusPerMonthCard.textContent()).toMatch('$445');
-		await expect(last6MonthsButton).not.toHaveClass(/segmentedControl__button--active/);
-		await expect(last12MonthsButton).toHaveClass(/segmentedControl__button--active/);
+		await expect(last6MonthsButton).not.toHaveClass(/buttonTag--active/);
+		await expect(last12MonthsButton).toHaveClass(/buttonTag--active/);
 	});
 });

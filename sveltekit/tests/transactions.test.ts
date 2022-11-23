@@ -242,27 +242,27 @@ test.describe('Transactions', () => {
 		expect(await cardNetBalance.textContent()).toMatch('-$20,000.00');
 
 		// Check "All" is the default option
-		const segmentedControls = page.locator('.segmentedControl__button');
+		const segmentedControls = page.locator('.buttonTag');
 		expect(await segmentedControls.nth(0).textContent()).toMatch('All');
-		await expect(segmentedControls.nth(0)).toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(0)).toHaveClass(/buttonTag--active/);
 		expect(await segmentedControls.nth(1).textContent()).toMatch('Credits');
-		await expect(segmentedControls.nth(1)).not.toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(1)).not.toHaveClass(/buttonTag--active/);
 		expect(await segmentedControls.nth(2).textContent()).toMatch('Debits');
-		await expect(segmentedControls.nth(2)).not.toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(2)).not.toHaveClass(/buttonTag--active/);
 
 		// Click on "Credits"
 		await segmentedControls.nth(1).click();
-		await expect(segmentedControls.nth(0)).not.toHaveClass(/segmentedControl__button--active/);
-		await expect(segmentedControls.nth(1)).toHaveClass(/segmentedControl__button--active/);
-		await expect(segmentedControls.nth(2)).not.toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(0)).not.toHaveClass(/buttonTag--active/);
+		await expect(segmentedControls.nth(1)).toHaveClass(/buttonTag--active/);
+		await expect(segmentedControls.nth(2)).not.toHaveClass(/buttonTag--active/);
 		expect(await tableRows.count()).toBe(32);
 		expect(await cardNetBalance.textContent()).toMatch('$6,000.00');
 
 		// Click on "Debits"
 		await segmentedControls.nth(2).click();
-		await expect(segmentedControls.nth(0)).not.toHaveClass(/segmentedControl__button--active/);
-		await expect(segmentedControls.nth(1)).not.toHaveClass(/segmentedControl__button--active/);
-		await expect(segmentedControls.nth(2)).toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(0)).not.toHaveClass(/buttonTag--active/);
+		await expect(segmentedControls.nth(1)).not.toHaveClass(/buttonTag--active/);
+		await expect(segmentedControls.nth(2)).toHaveClass(/buttonTag--active/);
 		expect(await tableRows.count()).toBe(64);
 		expect(await cardNetBalance.textContent()).toMatch('-$26,000.00');
 	});
