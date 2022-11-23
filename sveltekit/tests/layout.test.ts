@@ -59,9 +59,11 @@ test.describe('Layout', () => {
 	test('Default settings are rendered correctly', async ({ page }) => {
 		await page.goto('/');
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
-		await expect(page.locator('p.layout__tag', { hasText: 'USD $' })).toBeVisible();
-		await expect(page.locator('p.layout__tag', { hasText: 'English' })).toBeVisible();
-		await expect(page.locator('button.layout__tag', { hasText: 'v0.0.0-test' })).toBeVisible();
+		await expect(page.locator('button.buttonTag', { hasText: 'USD $' })).toBeVisible();
+		await expect(page.locator('button.buttonTag', { hasText: 'USD $' })).toBeDisabled();
+		await expect(page.locator('button.buttonTag', { hasText: 'English' })).toBeVisible();
+		await expect(page.locator('button.buttonTag', { hasText: 'English' })).toBeDisabled();
+		await expect(page.locator('button.buttonTag', { hasText: 'v0.0.0-test' })).toBeVisible();
 	});
 
 	test('Error pages', async ({ page }) => {
@@ -211,8 +213,8 @@ test.describe('Layout', () => {
 			await page.goto('/');
 			await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
-			const currentVersionTag = page.locator('button.layout__tag');
-			expect(await currentVersionTag.textContent()).toMatch('v0.0.0-test');
+			const currentVersionTag = page.locator('button.buttonTag', { hasText: 'v0.0.0-test' });
+			await expect(currentVersionTag).toBeVisible();
 
 			// It should have checked for updates
 			const statusBar = page.locator('.statusBar');
@@ -234,10 +236,10 @@ test.describe('Layout', () => {
 			await page.goto('/');
 			await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 			const statusBar = page.locator('.statusBar');
-			const currentVersionTag = page.locator('button.layout__tag');
+			let currentVersionTag = page.locator('button.buttonTag', { hasText: 'v0.0.0-test' });
 			await expect(statusBar).not.toHaveClass(/statusBar--active/);
 			expect(await statusBar.textContent()).not.toMatch('A newer version is available');
-			expect(await currentVersionTag.textContent()).toMatch('v0.0.0-test');
+			await expect(currentVersionTag).toBeVisible();
 
 			// Check for updates
 			let storage = await context.storageState();
@@ -255,7 +257,8 @@ test.describe('Layout', () => {
 			// Set a new version that's higher than the latest one on GitHub
 			await setEnvironmentVariable(baseURL!, 'APP_VERSION', 'v4.2.0-next.69');
 			await page.reload();
-			expect(await currentVersionTag.textContent()).toMatch('v4.2.0-next.69');
+			currentVersionTag = page.locator('button.buttonTag', { hasText: 'v4.2.0-next.69' });
+			await expect(currentVersionTag).toBeVisible();
 
 			await currentVersionTag.click();
 			// This may break if the latest version is ever above 4.2.0 :)
@@ -265,7 +268,8 @@ test.describe('Layout', () => {
 			// Set it to a wrongly-formatted version to cause an error
 			await setEnvironmentVariable(baseURL!, 'APP_VERSION', 'not-semver');
 			await page.reload();
-			expect(await currentVersionTag.textContent()).toMatch('not-semver');
+			currentVersionTag = page.locator('button.buttonTag', { hasText: 'not-semver' });
+			await expect(currentVersionTag).toBeVisible();
 
 			await currentVersionTag.click();
 			await expect(statusBar).toHaveClass(/statusBar--warning/);
@@ -279,8 +283,8 @@ test.describe('Layout', () => {
 		await page.goto('/');
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
-		const currentVersionTag = page.locator('button.layout__tag');
-		expect(await currentVersionTag.textContent()).toMatch('v0.0.0-test');
+		const currentVersionTag = page.locator('button.buttonTag', { hasText: 'v0.0.0-test' });
+		await expect(currentVersionTag).toBeVisible();
 
 		// Set the app offline and trigger an update check
 		await context.setOffline(true);

@@ -8,7 +8,9 @@
 		startOfYear,
 		endOfYear,
 		fromUnixTime,
-		format
+		format,
+		addDays,
+		subDays
 	} from 'date-fns';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
@@ -16,6 +18,8 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
+	import Button from '$lib/components/Button.svelte';
+	import ButtonTag from '$lib/components/ButtonTag.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Link from '$lib/components/Link.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
@@ -24,13 +28,15 @@
 	import TableTh from '$lib/components/TableTh.svelte';
 	import TableTr from '$lib/components/TableTr.svelte';
 	import TableTd from '$lib/components/TableTd.svelte';
+	import TableButtonSortable from '$lib/components/TableButtonSortable.svelte';
 	import { api, toCamelCase } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
 	import { dateInUTC, formatCurrency, formatInUTC } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { TransactionResponse } from '../transactions.json/+server';
-	import TableButtonSortable from '$lib/components/TableButtonSortable.svelte';
+	import type { PageData } from './$types';
 
+	export let data: PageData;
 	const title = 'Transactions';
 
 	enum Filter {
@@ -63,6 +69,7 @@
 	const thisMonthTo = endOfMonth(today);
 	const thisYearFrom = startOfYear(today);
 	const thisYearTo = endOfYear(today);
+	const { earliestTransactionDate, latestTransactionDate } = data;
 	let periods = [
 		{
 			label: 'This month',
@@ -101,8 +108,9 @@
 		},
 		{
 			label: 'Lifetime',
-			dateFrom: subYears(thisYearTo, 900), // FIXME: should be the earliest transaction date
-			dateTo: thisYearTo // FIXME: should be the latest transaction date
+			// Adding 2 days before and after the date range to account for timezone variances
+			dateFrom: earliestTransactionDate ? subDays(earliestTransactionDate, 2) : subYears(thisYearTo, 900), // prettier-ignore
+			dateTo: latestTransactionDate ? addDays(latestTransactionDate, 2) : thisYearTo // prettier-ignore
 		}
 	];
 
@@ -114,11 +122,15 @@
 	// Transaction sorting and filtering
 	let sortBy = toCamelCase(TableHeaders.DATE);
 	let sortOrder = SortOrder.DESC;
-	let keyword = '';
+	$: keyword = '';
 
 	let periodIndex = 2; // Last 3 months
-	$: dateFrom = format(dateInUTC(periods[periodIndex].dateFrom), 'yyyy-MM-dd');
-	$: dateTo = format(dateInUTC(periods[periodIndex].dateTo), 'yyyy-MM-dd');
+	$: dateFrom = formatDate(periods[periodIndex].dateFrom);
+	$: dateTo = formatDate(periods[periodIndex].dateTo);
+
+	const formatDate = (date: Date) => {
+		return format(dateInUTC(date), 'yyyy-MM-dd');
+	};
 
 	const getTransactions = async () => {
 		const params = [
@@ -141,6 +153,8 @@
 		const periodLabel = urlParams.get('periodLabel');
 		const periodFrom = urlParams.get('periodFrom');
 		const periodTo = urlParams.get('periodTo');
+		const periodPreset = urlParams.get('periodPreset');
+		keyword = urlParams.get('keyword') || '';
 
 		// Add a new period with the custom date range
 		if (periodFrom && periodTo && periodLabel) {
@@ -156,6 +170,11 @@
 			periodIndex = periods.length - 1;
 			dateFrom = periodFrom;
 			dateTo = periodTo;
+		} else if (periodPreset) {
+			// Set the date range based on the label of an existing preset
+			periodIndex = periods.findIndex((period) => period.label === periodPreset);
+			dateFrom = formatDate(periods[periodIndex].dateFrom);
+			dateTo = formatDate(periods[periodIndex].dateTo);
 		}
 
 		await getTransactions();
@@ -189,6 +208,21 @@
 				filter === Filter.CREDITS ? transaction.value >= 0 : transaction.value < 0
 			);
 		}
+	};
+
+	// Filter by category id
+	const setCategoryFilter = async (categoryId: number) => {
+		keyword = keyword + ` categoryId:${categoryId}`;
+		await getTransactions();
+	};
+
+	// Clear filters
+	$: hasClearableFilters = keyword !== '' || periodIndex !== 2;
+
+	const clearFilters = async () => {
+		// Remove all params from URL (which triggers a page reload resetting all other filters)
+		window.location.search = '';
+		await getTransactions();
 	};
 
 	// Highlight the transaction after it's created or updated
@@ -226,28 +260,38 @@
 
 		<div slot="CONTENT" class="transactions">
 			<header class="transactions__header">
-				<FormInput
-					type="text"
-					name="keyword"
-					placeholder="Type to filter by description, amount, category or account"
-					bind:value={keyword}
-					on:keyup={async () => await getTransactions()}
-				/>
-				<FormSelect
-					name="periods"
-					options={periods}
-					bind:value={periodIndex}
-					on:change={async () => {
-						// HACK: there is a race condition (in Firefox) when changing the period.
-						// `periodIndex`, `dateFrom` and `dateTo` are not updated before
-						// getTransactions() is called. Adding a 1ms delay fixes the issue.
-						//
-						// REF https://github.com/Canutin/desktop/issues/119#issuecomment-1293639150
-						setTimeout(async () => {
-							await getTransactions();
-						}, 1);
-					}}
-				/>
+				<div class="transactions__search">
+					<Button
+						disabled={!hasClearableFilters}
+						title="Reset all search terms and date range period"
+						on:click={async () => await clearFilters()}
+					>
+						Clear filters
+					</Button>
+					<FormInput
+						type="text"
+						name="keyword"
+						placeholder="Type to filter by description, amount, category or account"
+						bind:value={keyword}
+						on:keyup={async () => await getTransactions()}
+					/>
+					<FormSelect
+						name="periods"
+						options={periods}
+						bind:value={periodIndex}
+						on:change={async () => {
+							// HACK: there is a race condition (in Firefox) when changing the period.
+							// `periodIndex`, `dateFrom` and `dateTo` are not updated before
+							// getTransactions() is called. Adding a 1ms delay fixes the issue.
+							//
+							// REF https://github.com/Canutin/desktop/issues/119#issuecomment-1293639150
+							setTimeout(async () => {
+								await getTransactions();
+							}, 1);
+						}}
+					/>
+				</div>
+
 				<div class="transactions__summary">
 					<Card
 						appearance={CardAppearance.SECONDARY}
@@ -324,8 +368,10 @@
 								<TableTd>
 									<Link href={`/transaction/${id}`}>{description}</Link>
 								</TableTd>
-								<TableTd>
-									{transactionCategory.name}
+								<TableTd hasTag={true}>
+									<ButtonTag on:click={() => setCategoryFilter(transactionCategory.id)}>
+										{transactionCategory.name}
+									</ButtonTag>
 								</TableTd>
 								<TableTd>
 									<Link href={`/account/${transaction.accountId}`}>{account.name}</Link>
@@ -361,21 +407,25 @@
 	}
 
 	header.transactions__header {
-		display: grid;
-		grid-template-columns: 4fr 1fr;
-		grid-template-rows: 1fr;
-		gap: 8px;
+		display: flex;
+		flex-direction: column;
+		row-gap: 8px;
 		border-radius: 4px 4px 0 0;
 		background-color: var(--color-grey3);
 		border-bottom: 1px solid var(--color-border);
 		padding: 16px;
 	}
 
+	div.transactions__search {
+		display: grid;
+		gap: 8px;
+		grid-template-columns: max-content 4fr 1fr;
+	}
+
 	div.transactions__summary {
 		display: grid;
-		grid-auto-flow: column;
+		grid-template-columns: repeat(2, 1fr);
 		column-gap: 8px;
-		grid-column: span 2;
 	}
 
 	span.table__excluded {

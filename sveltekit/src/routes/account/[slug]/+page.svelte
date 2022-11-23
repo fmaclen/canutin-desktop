@@ -11,6 +11,7 @@
 	import type { Prisma } from '@prisma/client';
 	import type { CRUDResponse } from '$lib/helpers/forms';
 	import ChartBalanceHistory from '$lib/components/ChartBalanceHistory.svelte';
+	import Link from '$lib/components/Link.svelte';
 
 	export let data: PageData;
 	const title = data.account.name;
@@ -80,6 +81,11 @@
 </svelte:head>
 
 <ScrollView {title}>
+	<nav slot="NAV">
+		<Link href={`/transactions?keyword=accountId:${data.account.id}&periodPreset=Lifetime`}>
+			Transactions ({data.transactionsCount})
+		</Link>
+	</nav>
 	<ChartBalanceHistory balanceHistoryDataset={data.balanceHistoryDataset} labels={data.labels} />
 
 	<Section title="Update account">

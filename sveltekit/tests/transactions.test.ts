@@ -242,29 +242,98 @@ test.describe('Transactions', () => {
 		expect(await cardNetBalance.textContent()).toMatch('-$20,000.00');
 
 		// Check "All" is the default option
-		const segmentedControls = page.locator('.segmentedControl__button');
+		const segmentedControls = page.locator('.buttonTag');
 		expect(await segmentedControls.nth(0).textContent()).toMatch('All');
-		await expect(segmentedControls.nth(0)).toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(0)).toHaveClass(/buttonTag--active/);
 		expect(await segmentedControls.nth(1).textContent()).toMatch('Credits');
-		await expect(segmentedControls.nth(1)).not.toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(1)).not.toHaveClass(/buttonTag--active/);
 		expect(await segmentedControls.nth(2).textContent()).toMatch('Debits');
-		await expect(segmentedControls.nth(2)).not.toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(2)).not.toHaveClass(/buttonTag--active/);
 
 		// Click on "Credits"
 		await segmentedControls.nth(1).click();
-		await expect(segmentedControls.nth(0)).not.toHaveClass(/segmentedControl__button--active/);
-		await expect(segmentedControls.nth(1)).toHaveClass(/segmentedControl__button--active/);
-		await expect(segmentedControls.nth(2)).not.toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(0)).not.toHaveClass(/buttonTag--active/);
+		await expect(segmentedControls.nth(1)).toHaveClass(/buttonTag--active/);
+		await expect(segmentedControls.nth(2)).not.toHaveClass(/buttonTag--active/);
 		expect(await tableRows.count()).toBe(32);
 		expect(await cardNetBalance.textContent()).toMatch('$6,000.00');
 
 		// Click on "Debits"
 		await segmentedControls.nth(2).click();
-		await expect(segmentedControls.nth(0)).not.toHaveClass(/segmentedControl__button--active/);
-		await expect(segmentedControls.nth(1)).not.toHaveClass(/segmentedControl__button--active/);
-		await expect(segmentedControls.nth(2)).toHaveClass(/segmentedControl__button--active/);
+		await expect(segmentedControls.nth(0)).not.toHaveClass(/buttonTag--active/);
+		await expect(segmentedControls.nth(1)).not.toHaveClass(/buttonTag--active/);
+		await expect(segmentedControls.nth(2)).toHaveClass(/buttonTag--active/);
 		expect(await tableRows.count()).toBe(64);
 		expect(await cardNetBalance.textContent()).toMatch('-$26,000.00');
+	});
+
+	test('Transactions can be filtered by account or category ids', async ({ baseURL, page }) => {
+		await databaseSeed(baseURL!);
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Transactions' }).click();
+		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
+
+		const tableNotice = page.locator('.table__td--notice');
+		const tableRow = page.locator('.table__tr');
+		const formSelect = page.locator('.formSelect__select');
+		const keywordInput = page.locator('.formInput__input');
+		const clearFiltersButton = page.locator('button', { hasText: 'Clear Filters' });
+		const cardTransactions = page.locator('.card', { hasText: 'Transactions' });
+		const cardNetBalance = page.locator('.card', { hasText: 'Net balance' });
+
+		await expect(tableNotice).not.toBeVisible();
+		expect(await cardTransactions.textContent()).toMatch('111');
+		expect(await cardNetBalance.textContent()).toMatch('$935.98');
+		expect(await keywordInput.inputValue()).toBe('');
+		expect(clearFiltersButton).toBeDisabled();
+
+		// Filter by `accountId`
+		await page.locator('a', { hasText: 'Accounts' }).click();
+		await expect(tableNotice).not.toBeVisible();
+		expect(await tableRow.first().textContent()).toMatch("Alice's Limited Rewards");
+		expect(await tableRow.first().textContent()).toMatch('672');
+
+		// Check `accountId` filter is applied
+		await page.locator('a', { hasText: '672' }).click();
+		await expect(tableNotice).not.toBeVisible();
+		expect(await cardTransactions.textContent()).toMatch('672');
+		expect(await cardNetBalance.textContent()).toMatch('$437.73');
+		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
+		expect(await formSelect.inputValue()).toBe('7'); // Lifetime
+		await expect(clearFiltersButton).not.toBeDisabled();
+
+		// Apply a `categoryId` filter
+		await page.locator('button', { hasText: 'Gas stations' }).first().click();
+		await expect(tableNotice).not.toBeVisible();
+		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
+		expect(await keywordInput.inputValue()).toMatch(/categoryId:\d+/); // e.g. "categoryId:123"
+		expect(await cardTransactions.textContent()).toMatch('48');
+		expect(await cardNetBalance.textContent()).toMatch('-$1,576.32');
+
+		// Apply excluded filter
+		await keywordInput.type('excluded:true ', { delay: 100 });
+		await expect(tableNotice).toBeVisible();
+		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
+		expect(await keywordInput.inputValue()).toMatch(/categoryId:\d+/); // e.g. "categoryId:123"
+		expect(await keywordInput.inputValue()).toMatch('excluded:true');
+		expect(await cardTransactions.textContent()).toMatch('0');
+		expect(await cardNetBalance.textContent()).toMatch('$0.00');
+
+		// Clear filters
+		await clearFiltersButton.click();
+		await expect(tableNotice).not.toBeVisible();
+		expect(await keywordInput.inputValue()).toBe('');
+		expect(await cardTransactions.textContent()).toMatch('111');
+		expect(await cardNetBalance.textContent()).toMatch('$935.98');
+		expect(await formSelect.inputValue()).toBe('2'); // Lifetime
+
+		// Apply excluded filter (again)
+		await keywordInput.type('excluded:true', { delay: 100 });
+		await expect(tableNotice).not.toBeVisible();
+		await expect(page.locator('a', { hasText: "Bob's Laughable-Yield Checking" })).not.toBeVisible(); // prettier-ignore
+		expect(await page.locator('a', { hasText: 'Store.com' }).count()).toBe(6);
+		expect(await cardTransactions.textContent()).toMatch('6');
+		expect(await cardNetBalance.textContent()).toMatch('$0.00');
 	});
 
 	test("A new transaction can't be added if the vault has no accounts", async ({ page }) => {
@@ -329,6 +398,17 @@ test.describe('Transactions', () => {
 		await expect(isPending).not.toBeDisabled();
 		await expect(amountInput).not.toBeDisabled();
 		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
+
+		// Check the "Add" button is disabled if "description" or "accounts" are not filled
+		await descriptionInput.fill('Evergreen Market');
+		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
+
+		await descriptionInput.fill('');
+		await accountIdSelect.selectOption({ label: "Bob's Laughable-Yield Checking" });
+		await expect(page.locator('button', { hasText: 'Add' })).toBeDisabled();
+
+		await descriptionInput.fill('Evergreen Market');
+		await expect(page.locator('button', { hasText: 'Add' })).not.toBeDisabled();
 	});
 
 	test('A new transaction can be added and updated', async ({ page }) => {
@@ -564,6 +644,7 @@ test.describe('Transactions', () => {
 		test('Edit and delete multiple transactions', async ({ page }) => {
 			const statusBar = page.locator('.statusBar');
 			const dismissButton = page.locator('button', { hasText: 'Dismiss' });
+			const tableNotice = page.locator('.table__td--notice');
 			const tableRows = page.locator('.table__tr');
 			const selectAllCheckbox = page.locator('th input.batchEditor-checkbox__input');
 			const selectCheckboxes = page.locator('td input.batchEditor-checkbox__input');
@@ -605,6 +686,7 @@ test.describe('Transactions', () => {
 			await dismissButton.click();
 
 			// Check initial values for the first transaction
+			await expect(tableNotice).not.toBeVisible();
 			expect(await tableRows.nth(0).textContent()).toMatch(
 				format(latestTransactionDate, 'MMM dd, yyyy')
 			);

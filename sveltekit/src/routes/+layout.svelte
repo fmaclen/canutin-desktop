@@ -9,13 +9,14 @@
 	import '../app.scss';
 
 	import StatusBar from '$lib/components/StatusBar.svelte';
+	import ButtonTag from '$lib/components/ButtonTag.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import lastUpdateCheckStore from '$lib/stores/lastUpdateCheckStore';
 	import syncStatusStore from '$lib/stores/syncStatusStore';
 	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
 	import { Appearance } from '$lib/helpers/constants';
-	import type { PageData } from './$types';
 	import { api } from '$lib/helpers/misc';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
 	$: pathname = $page.url.pathname;
@@ -268,11 +269,11 @@
 	<footer class="layout__footer">
 		<StatusBar />
 		<div class="layout__settings">
-			<p class="layout__tag">USD $</p>
-			<p class="layout__tag">English</p>
-			<button class="layout__tag" type="button" on:click={() => getAppLastestVersion(true)}>
+			<ButtonTag disabled={true}>USD $</ButtonTag>
+			<ButtonTag disabled={true}>English</ButtonTag>
+			<ButtonTag on:click={() => getAppLastestVersion(true)}>
 				{data.appVersion}
-			</button>
+			</ButtonTag>
 		</div>
 	</footer>
 </div>
@@ -424,28 +425,5 @@
 		justify-content: center;
 		padding: 0 16px;
 		column-gap: 4px;
-	}
-
-	button.layout__tag,
-	p.layout__tag {
-		font-family: var(--font-monospace);
-		font-weight: 400;
-		text-transform: uppercase;
-		font-size: 11px;
-		letter-spacing: -0.025em;
-		color: var(--color-grey50);
-		background-color: var(--color-grey7);
-		padding: 6px 8px;
-		border-radius: 4px;
-		width: max-content;
-	}
-
-	button.layout__tag {
-		border: none;
-		cursor: pointer;
-
-		&:hover {
-			color: var(--color-grey70);
-		}
 	}
 </style>

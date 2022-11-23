@@ -22,6 +22,9 @@ export const load = async ({ params }: { params: Params }) => {
 	if (!account) return notFound();
 
 	const selectAccountTypes = await getSelectAccountTypes();
+	const transactionsCount = await prisma.transaction.count({
+		where: { accountId: account.id }
+	});
 
 	// Generate chart dataset
 	const labels: string[] = [];
@@ -70,6 +73,7 @@ export const load = async ({ params }: { params: Params }) => {
 		selectAccountTypes,
 		selectBalanceGroups,
 		latestBalance,
+		transactionsCount,
 		labels,
 		balanceHistoryDataset
 	};

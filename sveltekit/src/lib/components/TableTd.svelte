@@ -2,6 +2,7 @@
 	export let hasCheckbox: boolean = false;
 	export let hasDate: boolean = false;
 	export let hasTotal: boolean = false;
+	export let hasTag: boolean = false;
 	export let isPositive: boolean = false;
 	export let isNotice: boolean = false;
 	export let isAlignedRight: boolean = false;
@@ -12,6 +13,7 @@
 		{hasCheckbox && 'table__td--checkbox'}
 		{hasDate && 'table__td--date'}
 		{hasTotal && 'table__td--total'}
+		{hasTag && 'table__td--with-tag'}
 		{isPositive && 'table__td--positive'}
 		{isNotice && 'table__td--notice'}
 		{isAlignedRight && 'table__td--align-right'}
@@ -58,6 +60,11 @@
 			padding: 32px;
 			background-color: var(--color-grey5);
 			color: var(--color-grey50);
+		}
+
+		&--with-tag {
+			padding-top: 8px;
+			padding-bottom: 8px;
 		}
 
 		&--align-right {

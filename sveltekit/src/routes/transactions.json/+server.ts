@@ -35,54 +35,112 @@ export const GET = async ({ url }: { url: URL }) => {
 		? fromUnixTime(Date.parse(paramDateTo) / 1000)
 		: endOfMonth(new Date());
 
-	// If a keyword param is provided we try to match it against the `description`
-	// or `value` columns.
-	const whereOr = () => {
-		if (paramKeyword) {
-			// For `value` we want to match the keyword number as positive and negative
-			const paramKeywordAsNumber = !isNaN(parseFloat(paramKeyword))
-				? parseFloat(paramKeyword)
-				: undefined;
+	let keyword: string | undefined = paramKeyword;
+	let isExcluded: boolean | undefined = undefined;
+	let isPending: boolean | undefined = undefined;
 
-			return {
-				OR: [
-					{
-						description: {
-							contains: paramKeyword
-						}
-					},
-					{
-						transactionCategory: {
-							name: { contains: paramKeyword }
-						}
-					},
-					{
-						account: {
-							name: { contains: paramKeyword }
-						}
-					},
-					{
-						value: {
-							equals: paramKeywordAsNumber
-						}
-					},
-					{
-						value: {
-							equals: paramKeywordAsNumber ? paramKeywordAsNumber * -1 : undefined
-						}
-					}
-				]
-			};
-		}
-	};
+	const accountIds: number[] = [];
+	const categoryIds: number[] = [];
+	const values: number[] = [];
 
+	// Parse accountIds, categoryIds, `excluded` and `pending` filters from keyword
+	// e.g. `accountIds:1,2,3 categoryIds:4,5,6 excluded:true pending:false`
+	//
+	// Every filter found is removed from the `keyword` string so what's left can
+	// be used as a regular search term
+
+	// Filter: isExcluded
+	const excludedRegex = new RegExp('excluded:(true|false)');
+	const excludedMatch = keyword?.match(excludedRegex);
+	if (excludedMatch) {
+		isExcluded = excludedMatch[1] === 'true';
+		keyword = keyword?.replace(excludedRegex, '').trim();
+	}
+
+	// Filter: isPending
+	const pendingRegex = new RegExp('pending:(true|false)');
+	const pendingMatch = keyword?.match(pendingRegex);
+	if (pendingMatch) {
+		isPending = pendingMatch[1] === 'true';
+		keyword = keyword?.replace(pendingRegex, '').trim();
+	}
+
+	// Filter: accountIds
+	const accountIdsRegex = new RegExp('accountId:\\d+', 'g');
+	const accountIdsMatch = keyword?.match(accountIdsRegex);
+	if (accountIdsMatch) {
+		accountIdsMatch.forEach((accountIdMatch) => {
+			accountIds.push(parseInt(accountIdMatch.replace('accountId:', '')));
+			keyword = keyword?.replace(accountIdMatch, '').trim();
+		});
+	}
+
+	// Filter: categoryIds
+	const categoryIdsRegex = new RegExp('categoryId:\\d+', 'g');
+	const categoryIdsMatch = keyword?.match(categoryIdsRegex);
+	if (categoryIdsMatch) {
+		categoryIdsMatch.forEach((categoryIdMatch) => {
+			categoryIds.push(parseInt(categoryIdMatch.replace('categoryId:', '')));
+			keyword = keyword?.replace(categoryIdMatch, '').trim();
+		});
+	}
+
+	// Parse numbers from keyword
+	const valueInKeywords = keyword?.match(/-?\d+([.,]\d+)?/g);
+	if (valueInKeywords) {
+		valueInKeywords.map((valueInKeyword) => {
+			const parsedValue = parseFloat(valueInKeyword?.replace(',', '.'));
+			values.push(parsedValue);
+			values.push(parsedValue * -1);
+			keyword = keyword?.replace(valueInKeyword, '').trim();
+		});
+	}
+
+	// Build search query
 	const transactions = await prisma.transaction.findMany({
 		where: {
+			accountId: {
+				in: accountIds.length > 0 ? accountIds : undefined
+			},
+			categoryId: {
+				in: categoryIds.length > 0 ? categoryIds : undefined
+			},
+			value: {
+				in: values.length > 0 ? values : undefined
+			},
+			isExcluded: {
+				equals: isExcluded !== undefined ? isExcluded : undefined
+			},
+			isPending: {
+				equals: isPending !== undefined ? isPending : undefined
+			},
 			date: {
 				lte: dateTo,
 				gte: dateFrom
 			},
-			...whereOr()
+			// If `keyword` is not empty after parsing, search across:
+			// description, category names or account names.
+			OR: [
+				{
+					description: {
+						contains: keyword
+					}
+				},
+				{
+					transactionCategory: {
+						name: {
+							contains: categoryIds.length > 0 ? undefined : keyword
+						}
+					}
+				},
+				{
+					account: {
+						name: {
+							contains: accountIds.length > 0 ? undefined : keyword
+						}
+					}
+				}
+			]
 		},
 		include: {
 			transactionImport: true,
