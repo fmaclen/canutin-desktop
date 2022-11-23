@@ -63,9 +63,8 @@
 		}
 
 		&--with-tag {
-			vertical-align: middle;
-			padding-top: 6px;
-			padding-bottom: 6px;
+			padding-top: 8px;
+			padding-bottom: 8px;
 		}
 
 		&--align-right {
