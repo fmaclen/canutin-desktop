@@ -213,7 +213,7 @@ test.describe('Layout', () => {
 			await page.goto('/');
 			await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
-			const currentVersionTag = page.locator('button.layout__tag');
+			const currentVersionTag = page.locator('button.buttonTag');
 			expect(await currentVersionTag.textContent()).toMatch('v0.0.0-test');
 
 			// It should have checked for updates
@@ -236,7 +236,7 @@ test.describe('Layout', () => {
 			await page.goto('/');
 			await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 			const statusBar = page.locator('.statusBar');
-			const currentVersionTag = page.locator('button.layout__tag');
+			const currentVersionTag = page.locator('button.buttonTag');
 			await expect(statusBar).not.toHaveClass(/statusBar--active/);
 			expect(await statusBar.textContent()).not.toMatch('A newer version is available');
 			expect(await currentVersionTag.textContent()).toMatch('v0.0.0-test');
@@ -281,7 +281,7 @@ test.describe('Layout', () => {
 		await page.goto('/');
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
-		const currentVersionTag = page.locator('button.layout__tag');
+		const currentVersionTag = page.locator('button.buttonTag');
 		expect(await currentVersionTag.textContent()).toMatch('v0.0.0-test');
 
 		// Set the app offline and trigger an update check

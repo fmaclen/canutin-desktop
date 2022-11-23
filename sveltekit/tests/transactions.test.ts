@@ -644,6 +644,7 @@ test.describe('Transactions', () => {
 		test('Edit and delete multiple transactions', async ({ page }) => {
 			const statusBar = page.locator('.statusBar');
 			const dismissButton = page.locator('button', { hasText: 'Dismiss' });
+			const tableNotice = page.locator('.table__td--notice');
 			const tableRows = page.locator('.table__tr');
 			const selectAllCheckbox = page.locator('th input.batchEditor-checkbox__input');
 			const selectCheckboxes = page.locator('td input.batchEditor-checkbox__input');
@@ -685,6 +686,7 @@ test.describe('Transactions', () => {
 			await dismissButton.click();
 
 			// Check initial values for the first transaction
+			await expect(tableNotice).not.toBeVisible();
 			expect(await tableRows.nth(0).textContent()).toMatch(
 				format(latestTransactionDate, 'MMM dd, yyyy')
 			);
