@@ -50,7 +50,6 @@ export const GET = async ({ url }: { url: URL }) => {
 	// be used as a regular search term
 
 	// Filter: isExcluded
-	// convert `/excluded:(true|false)/` to use `new RexExp` syntax
 	const excludedRegex = new RegExp('excluded:(true|false)');
 	const excludedMatch = keyword?.match(excludedRegex);
 	if (excludedMatch) {
