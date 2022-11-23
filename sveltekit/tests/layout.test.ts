@@ -59,9 +59,11 @@ test.describe('Layout', () => {
 	test('Default settings are rendered correctly', async ({ page }) => {
 		await page.goto('/');
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
-		await expect(page.locator('p.layout__tag', { hasText: 'USD $' })).toBeVisible();
-		await expect(page.locator('p.layout__tag', { hasText: 'English' })).toBeVisible();
-		await expect(page.locator('button.layout__tag', { hasText: 'v0.0.0-test' })).toBeVisible();
+		await expect(page.locator('button.buttonTag', { hasText: 'USD $' })).toBeVisible();
+		await expect(page.locator('button.buttonTag', { hasText: 'USD $' })).toBeDisabled();
+		await expect(page.locator('button.buttonTag', { hasText: 'English' })).toBeVisible();
+		await expect(page.locator('button.buttonTag', { hasText: 'English' })).toBeDisabled();
+		await expect(page.locator('button.buttonTag', { hasText: 'v0.0.0-test' })).toBeVisible();
 	});
 
 	test('Error pages', async ({ page }) => {

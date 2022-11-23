@@ -18,6 +18,8 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
+	import Button from '$lib/components/Button.svelte';
+	import ButtonTag from '$lib/components/ButtonTag.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Link from '$lib/components/Link.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
@@ -33,7 +35,6 @@
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { TransactionResponse } from '../transactions.json/+server';
 	import type { PageData } from './$types';
-	import Button from '$lib/components/Button.svelte';
 
 	export let data: PageData;
 	const title = 'Transactions';
@@ -368,12 +369,9 @@
 									<Link href={`/transaction/${id}`}>{description}</Link>
 								</TableTd>
 								<TableTd hasTag={true}>
-									<button
-										class="layout__tag"
-										on:click={() => setCategoryFilter(transactionCategory.id)}
-									>
+									<ButtonTag on:click={() => setCategoryFilter(transactionCategory.id)}>
 										{transactionCategory.name}
-									</button>
+									</ButtonTag>
 								</TableTd>
 								<TableTd>
 									<Link href={`/account/${transaction.accountId}`}>{account.name}</Link>
