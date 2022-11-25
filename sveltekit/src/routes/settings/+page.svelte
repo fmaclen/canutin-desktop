@@ -27,6 +27,15 @@
 	export let data: PageData;
 	$: ({ syncStatus, syncSettings } = data);
 
+	// Acess key
+	let isAccessKeyEnabled = false;
+	let accessKeyValue = '';
+
+	const handleAccessKeyForm = () => {
+		//
+	};
+
+	// Sync
 	$syncStatusStore = syncStatus || $syncStatusStore;
 	$: isSyncEnabled = $syncStatusStore.isSyncEnabled;
 	$: canutinFileUrlValue = '';
@@ -120,6 +129,61 @@
 </svelte:head>
 
 <ScrollView {title}>
+	<Section title="Access key">
+		<div slot="CONTENT" class="accessKey">
+			<Form on:submit={handleAccessKeyForm}>
+				<FormFieldset>
+					<FormField name="status" label="Status">
+						<FormNotice>
+							<FormNoticeNotice
+								appearance={isAccessKeyEnabled ? Appearance.POSITIVE : Appearance.WARNING}
+							>
+								<FormNoticeP>
+									<strong>Access key is {isAccessKeyEnabled ? 'enabled' : 'disabled'}</strong>
+								</FormNoticeP>
+								{#if !isAccessKeyEnabled}
+									<FormNoticeP>
+										Setting an access key will prevent unauthorized access to the vault data through
+										the web interface or API endpoints.
+									</FormNoticeP>
+									<FormNoticeP>
+										This action does not encrypt the vault data or the data in transit.
+									</FormNoticeP>
+								{/if}
+							</FormNoticeNotice>
+						</FormNotice>
+					</FormField>
+				</FormFieldset>
+				<FormFieldset>
+					<FormField name="accessKey" label="Key">
+						<div class="accessKeyGenerateField">
+							<FormInput
+								type="password"
+								required={false}
+								name="accessKey"
+								bind:value={accessKeyValue}
+							/>
+							{#if accessKeyValue}
+								<Button on:click={() => navigator.clipboard.writeText(accessKeyValue)}>Copy</Button>
+							{:else}
+								<Button on:click={() => (accessKeyValue = crypto.randomUUID())}>Generate</Button>
+							{/if}
+						</div>
+					</FormField>
+				</FormFieldset>
+				<FormFooter>
+					<Button disabled={!isAccessKeyEnabled}>Reset</Button>
+					<Button
+						disabled={!accessKeyValue}
+						appearance={isAccessKeyEnabled ? undefined : Appearance.ACTIVE}
+					>
+						{isAccessKeyEnabled ? 'Update' : 'Enable'}
+					</Button>
+				</FormFooter>
+			</Form>
+		</div>
+	</Section>
+
 	<Section title="Sync">
 		<div slot="CONTENT" class="import">
 			<Form on:submit={handleSyncForm}>
@@ -175,7 +239,10 @@
 					</FormField>
 				</FormFieldset>
 				<FormFooter>
-					<Button appearance={Appearance.ACTIVE} disabled={!canutinFileUrlValue}>
+					<Button
+						disabled={!canutinFileUrlValue}
+						appearance={isSyncEnabled ? undefined : Appearance.ACTIVE}
+					>
 						{isSyncEnabled ? 'Update' : 'Enable'}
 					</Button>
 				</FormFooter>
@@ -183,3 +250,11 @@
 		</div>
 	</Section>
 </ScrollView>
+
+<style lang="scss">
+	div.accessKeyGenerateField {
+		display: grid;
+		grid-template-columns: auto max-content;
+		column-gap: 8px;
+	}
+</style>
