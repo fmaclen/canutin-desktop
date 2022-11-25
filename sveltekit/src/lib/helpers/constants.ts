@@ -65,4 +65,11 @@ export enum SyncSettings {
 	SYNC_JWT = 'SYNC_JWT'
 }
 
+export enum AccessKeySettings {
+	ACCESS_KEY = 'ACCESS_KEY'
+}
+
+export const ACCESS_KEY_COOKIE_NAME = '_canutin-accessKey=';
+export const ACCESS_KEY_UNAUTHORIZED = 'Unauthorized';
+
 export const UNDOABLE_ACTION = "🚩 This action can't be undone\n";

@@ -15,7 +15,13 @@
 	import FormNoticeP from '$lib/components/FormNoticeP.svelte';
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import syncStatusStore from '$lib/stores/syncStatusStore';
-	import { SyncSettings, Appearance, EventFrequency } from '$lib/helpers/constants';
+	import {
+		SyncSettings,
+		Appearance,
+		EventFrequency,
+		ACCESS_KEY_COOKIE_NAME,
+		ACCESS_KEY_UNAUTHORIZED
+	} from '$lib/helpers/constants';
 	import type { ImportSync } from '$lib/helpers/import';
 	import { api } from '$lib/helpers/misc';
 	import type { PageData } from './$types';
@@ -25,14 +31,42 @@
 	let isLoading: boolean = false;
 
 	export let data: PageData;
-	$: ({ syncStatus, syncSettings } = data);
+	$: ({ syncStatus, syncSettings, accessKeySettings } = data);
 
 	// Acess key
-	let isAccessKeyEnabled = false;
+	$: isAccessKeyEnabled = false;
 	let accessKeyValue = '';
 
-	const handleAccessKeyForm = () => {
-		//
+	const handleAccessKeyForm = async (event: any) => {
+		const response = await api({
+			endpoint: 'accessKey',
+			method: 'POST',
+			payload: event?.target?.accessKey?.value
+		});
+
+		if (response !== ACCESS_KEY_UNAUTHORIZED) {
+			document.cookie = `${ACCESS_KEY_COOKIE_NAME}${response}; path=/; max-age=31536000; SameSite=Lax;`;
+			isAccessKeyEnabled = true;
+		} else {
+			console.log('REDIRECTING GOES HERE');
+		}
+	};
+
+	const handleAccessKeyReset = async () => {
+		const confirmDeletion = window.confirm('Are you sure you want to reset the access key?');
+		if (!confirmDeletion) return;
+
+		const isReset = await api({
+			endpoint: 'accessKey',
+			method: 'DELETE'
+		});
+
+		console.log(isReset);
+		if (isReset) {
+			document.cookie = `${ACCESS_KEY_COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax;`;
+			accessKeyValue = '';
+			isAccessKeyEnabled = false;
+		}
 	};
 
 	// Sync
@@ -104,6 +138,9 @@
 	}));
 
 	onMount(async () => {
+		isAccessKeyEnabled = accessKeySettings?.isEnabled || false;
+		accessKeyValue = accessKeySettings.accessKey ? accessKeySettings.accessKey : '';
+
 		syncSettings.forEach((setting) => {
 			if (!setting) return;
 			switch (setting.name) {
@@ -141,15 +178,13 @@
 								<FormNoticeP>
 									<strong>Access key is {isAccessKeyEnabled ? 'enabled' : 'disabled'}</strong>
 								</FormNoticeP>
-								{#if !isAccessKeyEnabled}
-									<FormNoticeP>
-										Setting an access key will prevent unauthorized access to the vault data through
-										the web interface or API endpoints.
-									</FormNoticeP>
-									<FormNoticeP>
-										This action does not encrypt the vault data or the data in transit.
-									</FormNoticeP>
-								{/if}
+								<FormNoticeP>
+									Setting an access key will prevent unauthorized access to the vault data through
+									the web interface or API endpoints.
+								</FormNoticeP>
+								<FormNoticeP>
+									This action does not encrypt the vault data or the data in transit.
+								</FormNoticeP>
 							</FormNoticeNotice>
 						</FormNotice>
 					</FormField>
@@ -172,7 +207,9 @@
 					</FormField>
 				</FormFieldset>
 				<FormFooter>
-					<Button disabled={!isAccessKeyEnabled}>Reset</Button>
+					<Button disabled={!isAccessKeyEnabled} on:click={handleAccessKeyReset} type="button">
+						Reset
+					</Button>
 					<Button
 						disabled={!accessKeyValue}
 						appearance={isAccessKeyEnabled ? undefined : Appearance.ACTIVE}
@@ -198,9 +235,12 @@
 								</FormNoticeP>
 								{#if !isSyncEnabled}
 									<FormNoticeP>
-										Enable syncing by providing a URL that can be fetched as a CanutinFile JSON
-										payload. On every sync the vault will be updated with any new data found,
-										duplicates will be ignored.
+										Syncing allows data to be fetched as a CanutinFile JSON payload from an external
+										server.
+									</FormNoticeP>
+									<FormNoticeP>
+										On every sync the vault will be updated with any new data found, duplicates will
+										be ignored.
 									</FormNoticeP>
 								{/if}
 							</FormNoticeNotice>

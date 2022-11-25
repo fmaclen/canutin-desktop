@@ -4,9 +4,10 @@
 	export let disabled: boolean = false;
 	export let appearance: Appearance | null = null;
 	export let title: string | null = null;
+	export let type: string | undefined = undefined;
 </script>
 
-<button class="button {appearance && `button--${appearance}`}" {disabled} {title} on:click>
+<button class="button {appearance && `button--${appearance}`}" {disabled} {title} {type} on:click>
 	<slot />
 </button>
 
