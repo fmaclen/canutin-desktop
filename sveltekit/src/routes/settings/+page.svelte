@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
@@ -38,17 +39,20 @@
 	let accessKeyValue = '';
 
 	const handleAccessKeyForm = async (event: any) => {
+		// FIXME: add try/catch here
 		const response = await api({
 			endpoint: 'accessKey',
-			method: 'POST',
+			method: 'PATCH',
 			payload: event?.target?.accessKey?.value
 		});
 
+		// FIXME: import cookie from helpers
 		if (response !== ACCESS_KEY_UNAUTHORIZED) {
 			document.cookie = `${ACCESS_KEY_COOKIE_NAME}${response}; path=/; max-age=31536000; SameSite=Lax;`;
 			isAccessKeyEnabled = true;
+			// FIXME: add positive status bar message
 		} else {
-			console.log('REDIRECTING GOES HERE');
+			await goto('/accessKey');
 		}
 	};
 
@@ -61,7 +65,6 @@
 			method: 'DELETE'
 		});
 
-		console.log(isReset);
 		if (isReset) {
 			document.cookie = `${ACCESS_KEY_COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax;`;
 			accessKeyValue = '';
@@ -192,12 +195,7 @@
 				<FormFieldset>
 					<FormField name="accessKey" label="Key">
 						<div class="accessKeyGenerateField">
-							<FormInput
-								type="password"
-								required={false}
-								name="accessKey"
-								bind:value={accessKeyValue}
-							/>
+							<FormInput type="password" name="accessKey" bind:value={accessKeyValue} />
 							{#if accessKeyValue}
 								<Button on:click={() => navigator.clipboard.writeText(accessKeyValue)}>Copy</Button>
 							{:else}

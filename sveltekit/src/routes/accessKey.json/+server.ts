@@ -8,36 +8,47 @@ import {
 	ACCESS_KEY_UNAUTHORIZED
 } from '$lib/helpers/constants';
 
-export const isRequestAuthorized = async (request: Request) => {
-	const cookie = request.headers.get('cookie');
-	const requestAccessKey = cookie?.split(ACCESS_KEY_COOKIE_NAME)[1];
-
-	const existingAccessKey = await prisma.setting.findUnique({
+const getAccessKey = async () => {
+	return await prisma.setting.findUnique({
 		where: { name: AccessKeySettings.ACCESS_KEY },
 		select: { value: true }
 	});
-
-	return existingAccessKey === null || existingAccessKey?.value === requestAccessKey;
 };
 
-export const GET = async ({ request }: RequestEvent) => {
-	const isAuthorized = await isRequestAuthorized(request);
-	return json(isAuthorized);
+export const isRequestAuthorized = async (request: Request) => {
+	const vaultAccessKey = await getAccessKey();
+
+	const cookie = request.headers.get('cookie');
+	const requestAccessKey = cookie?.split(ACCESS_KEY_COOKIE_NAME)[1];
+
+	return vaultAccessKey === null || vaultAccessKey?.value === requestAccessKey;
 };
 
 export const POST = async ({ request }: RequestEvent) => {
+	const vaultAccessKey = await getAccessKey();
+	const requestAccessKey = (await request.json()) as string;
+
+	if (vaultAccessKey?.value !== requestAccessKey)
+		return new Response(ACCESS_KEY_UNAUTHORIZED, { status: 401 });
+
+	return json(requestAccessKey);
+};
+
+export const PATCH = async ({ request }: RequestEvent) => {
 	const isAuthorized = await isRequestAuthorized(request);
-	const newAccessKey = (await request.json()) as string;
+	const requestAccessKey = (await request.json()) as string;
 
 	// Create or update setting
 	await prisma.setting.upsert({
 		where: { name: AccessKeySettings.ACCESS_KEY },
-		update: { value: newAccessKey },
-		create: { name: AccessKeySettings.ACCESS_KEY, value: newAccessKey }
+		update: { value: requestAccessKey },
+		create: { name: AccessKeySettings.ACCESS_KEY, value: requestAccessKey }
 	});
 
 	// Return 200 if authorized, 401 if not
-	return isAuthorized ? json(newAccessKey) : new Response(ACCESS_KEY_UNAUTHORIZED, { status: 401 });
+	return isAuthorized
+		? json(requestAccessKey)
+		: new Response(ACCESS_KEY_UNAUTHORIZED, { status: 401 });
 };
 
 export const DELETE = async ({ request }: RequestEvent) => {
