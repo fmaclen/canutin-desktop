@@ -5,7 +5,7 @@
 	import Button from './Button.svelte';
 	import Link from './Link.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
-	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
+	import isAppReadyStore from '$lib/stores/isAppReadyStore';
 	import { api } from '$lib/helpers/misc';
 	import { Appearance } from '$lib/helpers/constants';
 
@@ -40,7 +40,7 @@
 
 	// Set the default status bar message when layout is mounted
 	onMount(async () => {
-		$isVaultReadyStore && (await getVaultLastUpdate(true));
+		$isAppReadyStore && (await getVaultLastUpdate(true));
 	});
 
 	const dismissStatus = () => {

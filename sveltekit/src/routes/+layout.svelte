@@ -13,12 +13,13 @@
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import lastUpdateCheckStore from '$lib/stores/lastUpdateCheckStore';
 	import syncStatusStore from '$lib/stores/syncStatusStore';
-	import isVaultReadyStore from '$lib/stores/isVaultReadyStore';
+	import isAppReadyStore from '$lib/stores/isAppReadyStore';
 	import { Appearance } from '$lib/helpers/constants';
 	import { api } from '$lib/helpers/misc';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
+	$: disabledLink = !$isAppReadyStore && 'layout__a--disabled'; // Disabled links
 	$: pathname = $page.url.pathname;
 
 	const getAppLastestVersion = async (isUserRequested: boolean = false) => {
@@ -155,7 +156,7 @@
 				href="/"
 				class="layout__a
 					{pathname === '/' && 'layout__a--active'}
-					{!$isVaultReadyStore && 'layout__a--disabled'}
+					{disabledLink}
 				"
 			>
 				The big picture
@@ -164,7 +165,7 @@
 				href="/balanceSheet"
 				class="layout__a
 					{pathname === '/balanceSheet' && 'layout__a--active'}
-					{!$isVaultReadyStore && 'layout__a--disabled'}
+					{disabledLink}
 				"
 			>
 				Balance sheet
@@ -173,7 +174,7 @@
 				href="/trends"
 				class="layout__a
 					{pathname === '/trends' && 'layout__a--active'}
-					{!$isVaultReadyStore && 'layout__a--disabled'}
+					{disabledLink}
 				"
 			>
 				Trends
@@ -183,7 +184,7 @@
 				href="/assets"
 				class="layout__a
 					{pathname === '/assets' && 'layout__a--active'}
-					{!$isVaultReadyStore && 'layout__a--disabled'}
+					{disabledLink}
 				"
 			>
 				Assets
@@ -192,7 +193,7 @@
 				href="/accounts"
 				class="layout__a
 					{pathname === '/accounts' && 'layout__a--active'}
-					{!$isVaultReadyStore && 'layout__a--disabled'}
+					{disabledLink}
 				"
 			>
 				Accounts
@@ -201,7 +202,7 @@
 				href="/transactions"
 				class="layout__a
 					{pathname === '/transactions' && 'layout__a--active'}
-					{!$isVaultReadyStore && 'layout__a--disabled'}
+					{disabledLink}
 				"
 			>
 				Transactions
@@ -214,7 +215,7 @@
 					href="/devTools"
 					class="layout__a
 						{pathname === '/devTools' && 'layout__a--active'}
-						{!$isVaultReadyStore && 'layout__a--disabled'}
+						{disabledLink}
 					"
 				>
 					Developer tools
@@ -224,6 +225,7 @@
 				href="/settings"
 				class="layout__a
 					{pathname === '/settings' && 'layout__a--active'}
+					{disabledLink}
 				"
 			>
 				Settings
@@ -233,6 +235,7 @@
 					href="/data"
 					class="layout__a
 						{pathname === '/data' && 'layout__a--active'}
+						{disabledLink}
 					"
 				>
 					Add or update data
@@ -244,10 +247,8 @@
 			{#if isSyncSetup}
 				<button
 					on:click={() => sync()}
-					disabled={!isSyncEnabled || isSyncing}
-					class="layout__button layout__button--primary
-						{!$isVaultReadyStore && 'layout__button--disabled'}
-					"
+					disabled={!isSyncEnabled || isSyncing || !$isAppReadyStore}
+					class="layout__button layout__button--primary"
 				>
 					Sync
 				</button>
@@ -256,6 +257,7 @@
 					href="/data"
 					class="layout__a layout__a--primary
 						{pathname === '/data' && 'layout__a--active'}
+						{disabledLink}
 					"
 				>
 					Add or update data
