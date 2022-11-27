@@ -24,14 +24,20 @@
 
 	const title = 'Settings';
 
-	let isLoading: boolean = false;
-
 	export let data: PageData;
 	$: ({ syncStatus, syncSettings, accessKeySettings } = data);
 
+	const setStatusBar = (message: string, appearance: Appearance) => {
+		isLoading = false;
+		$statusBarStore = {
+			message,
+			appearance
+		};
+	};
+
 	// Acess key
-	$: isAccessKeyEnabled = false;
 	let accessKeyValue = '';
+	$: isAccessKeyEnabled = false;
 
 	const handleAccessKeyForm = async (event: any) => {
 		try {
@@ -43,6 +49,7 @@
 
 			document.cookie = getAccessKeyCookie(response.accessKey);
 			isAccessKeyEnabled = true;
+			setStatusBar('Access key has been set', Appearance.POSITIVE);
 		} catch (e) {
 			await goto('/accessKey');
 		}
@@ -61,10 +68,12 @@
 			document.cookie = getAccessKeyCookie('', 0); // Resets existing cookie
 			accessKeyValue = '';
 			isAccessKeyEnabled = false;
+			setStatusBar('Access key has been removed', Appearance.POSITIVE);
 		}
 	};
 
 	// Sync
+	let isLoading: boolean = false;
 	$syncStatusStore = syncStatus || $syncStatusStore;
 	$: isSyncEnabled = $syncStatusStore.isSyncEnabled;
 	$: canutinFileUrlValue = '';
@@ -77,14 +86,6 @@
 		$statusBarStore = {
 			message,
 			appearance: Appearance.ACTIVE
-		};
-	};
-
-	const setResultStatus = (message: string, appearance: Appearance) => {
-		isLoading = false;
-		$statusBarStore = {
-			message,
-			appearance
 		};
 	};
 
@@ -112,7 +113,7 @@
 		});
 
 		// Update the status bar
-		setResultStatus(
+		setStatusBar(
 			response?.error
 				? response?.error
 				: response?.warning
