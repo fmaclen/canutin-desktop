@@ -65,7 +65,7 @@ export const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, 
 // To run pixel perfect visual regression tests we would need dedicated snapshots
 // for each OS and browser combination so to simplify things we use the macOS + Chromium
 // snapshot as the source and allow the other scenarios to have a 5% pixel variance:
-export const MAX_DIFF_PIXEL_RATIO = 0.05;
+export const MAX_DIFF_PIXEL_RATIO = 0.075;
 
 // Playwright renames snapshots to match the current OS and browser, so we need to
 // update the test configuration so it always matches the macOS + Chromium snapshot.
