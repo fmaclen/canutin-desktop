@@ -35,13 +35,13 @@
 
 	const handleAccessKeyForm = async (event: any) => {
 		try {
-			const newAccessKey = await api({
+			const response = await api({
 				endpoint: 'accessKey',
 				method: 'PATCH',
 				payload: event?.target?.accessKey?.value
 			});
 
-			document.cookie = getAccessKeyCookie(newAccessKey);
+			document.cookie = getAccessKeyCookie(response.accessKey);
 			isAccessKeyEnabled = true;
 		} catch (e) {
 			await goto('/accessKey');
@@ -52,12 +52,12 @@
 		const confirmDeletion = window.confirm('Are you sure you want to reset the access key?');
 		if (!confirmDeletion) return;
 
-		const isReset = await api({
+		const response = await api({
 			endpoint: 'accessKey',
 			method: 'DELETE'
 		});
 
-		if (isReset) {
+		if (response.accessKey === null) {
 			document.cookie = getAccessKeyCookie('', 0); // Resets existing cookie
 			accessKeyValue = '';
 			isAccessKeyEnabled = false;

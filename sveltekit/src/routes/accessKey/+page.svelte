@@ -23,13 +23,13 @@
 
 	const handleAccessKeyForm = async (event: any) => {
 		try {
-			const newAccessKey = await api({
+			const response = await api({
 				endpoint: 'accessKey',
 				method: 'POST',
 				payload: event?.target?.accessKey?.value
 			});
 
-			document.cookie = getAccessKeyCookie(newAccessKey);
+			document.cookie = getAccessKeyCookie(response.accessKey);
 			$isAppReadyStore = true;
 			await goto('/');
 		} catch (e) {

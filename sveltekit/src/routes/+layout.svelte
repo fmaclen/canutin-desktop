@@ -388,10 +388,6 @@
 		color: var(--color-grey20);
 	}
 
-	button.layout__button--active {
-		color: var(--color-bluePrimary);
-	}
-
 	hr.layout__hr {
 		border: none;
 		border-top: 1px solid var(--color-border);

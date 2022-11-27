@@ -28,7 +28,7 @@ export const POST = async ({ request }: RequestEvent) => {
 	if (vaultAccessKey?.value !== requestAccessKey)
 		return new Response(ACCESS_KEY_UNAUTHORIZED, { status: 401 });
 
-	return json(requestAccessKey);
+	return json({ accessKey: requestAccessKey });
 };
 
 export const PATCH = async ({ request }: RequestEvent) => {
@@ -44,7 +44,7 @@ export const PATCH = async ({ request }: RequestEvent) => {
 
 	// Return 200 if authorized, 401 if not
 	return isAuthorized
-		? json(requestAccessKey)
+		? json({ accessKey: requestAccessKey })
 		: new Response(ACCESS_KEY_UNAUTHORIZED, { status: 401 });
 };
 
@@ -52,7 +52,7 @@ export const DELETE = async ({ request }: RequestEvent) => {
 	const isAuthorized = await isRequestAuthorized(request);
 	if (!isAuthorized) return new Response(ACCESS_KEY_UNAUTHORIZED, { status: 401 });
 
-	console.log(await prisma.setting.delete({ where: { name: AccessKeySettings.ACCESS_KEY } }));
+	await prisma.setting.delete({ where: { name: AccessKeySettings.ACCESS_KEY } });
 
-	return json(true);
+	return json({ accessKey: null });
 };

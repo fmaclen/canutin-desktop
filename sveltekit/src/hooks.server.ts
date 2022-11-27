@@ -2,10 +2,9 @@ import type { Handle } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { dev } from '$app/environment';
 import { isRequestAuthorized } from './routes/accessKey.json/+server';
-import type { RequestEvent } from '.svelte-kit/types/src/routes/$types';
 
-const redirect = (event: RequestEvent, route: string) => {
-	return Response.redirect(`${event.url.origin}${route}`, 307);
+const redirectTo = (origin: string, route: string) => {
+	return Response.redirect(`${origin}${route}`, 307);
 };
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -29,16 +28,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 		// The check is performed by the `/vault` route so we need to redirect any request
 		// to that path when the flag `ELECTRON_SWITCHED_VAULT=true` is set.
 		const shouldVaultBeChecked = env.ELECTRON_SWITCHED_VAULT === 'true';
-		if (shouldVaultBeChecked) return redirect(event, '/vault');
+		if (shouldVaultBeChecked) return redirectTo(event.url.origin, '/vault');
 
 		// Access key
 		//
 		// If the vault is protected by an access key we need to check if the request has the correct key
 		const isAuthorized = await isRequestAuthorized(event.request);
-		if (!isAuthorized) return redirect(event, '/accessKey');
+		if (!isAuthorized) return redirectTo(event.url.origin, '/accessKey');
 	}
 
 	// No need to redirect anywhere, continue as normal
-	const response = await resolve(event);
-	return response;
+	return await resolve(event);
 };
