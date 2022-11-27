@@ -5,10 +5,7 @@ import { isRequestAuthorized } from './routes/accessKey.json/+server';
 import type { RequestEvent } from '.svelte-kit/types/src/routes/$types';
 
 const redirect = (event: RequestEvent, route: string) => {
-	// Force redirect to not use `http:` in production because it'a always `localhost`
-	const url = new URL(event.url.origin);
-	url.protocol = 'http:';
-	return Response.redirect(`${url.origin}${route}`, 307);
+	return Response.redirect(`${event.url.origin}${route}`, 307);
 };
 
 export const handle: Handle = async ({ event, resolve }) => {

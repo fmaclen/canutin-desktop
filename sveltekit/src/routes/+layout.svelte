@@ -375,10 +375,6 @@
 			background-color: var(--color-grey3);
 		}
 
-		&--active:not(.layout__a--disabled) {
-			color: var(--color-bluePrimary);
-		}
-
 		&--primary {
 			height: 48px;
 			box-sizing: border-box;
@@ -390,6 +386,10 @@
 	a.layout__a--disabled {
 		pointer-events: none;
 		color: var(--color-grey20);
+	}
+
+	button.layout__button--active {
+		color: var(--color-bluePrimary);
 	}
 
 	hr.layout__hr {
