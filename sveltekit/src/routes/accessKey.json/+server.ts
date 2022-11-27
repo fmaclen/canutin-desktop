@@ -8,7 +8,7 @@ import {
 	ACCESS_KEY_UNAUTHORIZED
 } from '$lib/helpers/constants';
 
-const getAccessKey = async () => {
+const getVaultAccessKey = async () => {
 	return await prisma.setting.findUnique({
 		where: { name: AccessKeySettings.ACCESS_KEY },
 		select: { value: true }
@@ -16,7 +16,7 @@ const getAccessKey = async () => {
 };
 
 export const isRequestAuthorized = async (request: Request) => {
-	const vaultAccessKey = await getAccessKey();
+	const vaultAccessKey = await getVaultAccessKey();
 
 	const cookie = request.headers.get('cookie');
 	const requestAccessKey = cookie?.split(ACCESS_KEY_COOKIE_NAME)[1];
@@ -25,7 +25,7 @@ export const isRequestAuthorized = async (request: Request) => {
 };
 
 export const POST = async ({ request }: RequestEvent) => {
-	const vaultAccessKey = await getAccessKey();
+	const vaultAccessKey = await getVaultAccessKey();
 	const requestAccessKey = (await request.json()) as string;
 
 	if (vaultAccessKey?.value !== requestAccessKey)
