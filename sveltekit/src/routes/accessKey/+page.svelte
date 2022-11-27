@@ -10,33 +10,36 @@
 	import FormInput from '$lib/components/FormInput.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import FormFooter from '$lib/components/FormFooter.svelte';
-	import { ACCESS_KEY_COOKIE_NAME, Appearance } from '$lib/helpers/constants';
+	import { Appearance } from '$lib/helpers/constants';
+	import { getAccessKeyCookie } from '$lib/helpers/accessKey';
 	import { api } from '$lib/helpers/misc';
-	import type { PageData } from './$types';
+	import { onMount } from 'svelte';
 
 	const title = 'Access key';
 
-	export let data: PageData;
 	$isAppReadyStore = false;
-
 	let accessKeyValue = '';
 	let error = '';
 
 	const handleAccessKeyForm = async (event: any) => {
 		try {
-			const response = await api({
+			const newAccessKey = await api({
 				endpoint: 'accessKey',
 				method: 'POST',
 				payload: event?.target?.accessKey?.value
 			});
-			// FIXME: import cookie from helpers
-			document.cookie = `${ACCESS_KEY_COOKIE_NAME}${response}; path=/; max-age=31536000; SameSite=Lax;`;
+
+			document.cookie = getAccessKeyCookie(newAccessKey);
 			$isAppReadyStore = true;
 			await goto('/');
 		} catch (e) {
 			error = 'Invalid access key';
 		}
 	};
+
+	onMount(async () => {
+		document.cookie = getAccessKeyCookie('', 0); // Resets existing cookie
+	});
 </script>
 
 <svelte:head>

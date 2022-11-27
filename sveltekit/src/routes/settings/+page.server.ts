@@ -1,8 +1,24 @@
 import type { Setting } from '@prisma/client';
-import { SyncSettings } from '$lib/helpers/constants';
+import { AccessKeySettings, SyncSettings } from '$lib/helpers/constants';
 import prisma from '$lib/helpers/prisma';
 import { getSyncStatus } from '$lib/helpers/import';
-import { getAccessKeySettings } from '$lib/helpers/settings';
+import type { AccessKeyStatusStore } from '$lib/stores/accessKeyStatusStore';
+
+const getAccessKeySettings = async (): Promise<AccessKeyStatusStore> => {
+	const accessKeySettings = Object.values(AccessKeySettings);
+	const accessKeyValues = await prisma.setting.findMany({
+		where: { name: { in: accessKeySettings } }
+	});
+
+	const accessKey = accessKeyValues.find(
+		(setting) => setting.name === AccessKeySettings.ACCESS_KEY
+	);
+
+	return {
+		isEnabled: accessKey ? accessKey.value !== '' : false,
+		accessKey: accessKey?.value
+	};
+};
 
 export const load = async () => {
 	const accessKeySettings = await getAccessKeySettings();

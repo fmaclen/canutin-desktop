@@ -16,14 +16,9 @@
 	import FormNoticeP from '$lib/components/FormNoticeP.svelte';
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import syncStatusStore from '$lib/stores/syncStatusStore';
-	import {
-		SyncSettings,
-		Appearance,
-		EventFrequency,
-		ACCESS_KEY_COOKIE_NAME,
-		ACCESS_KEY_UNAUTHORIZED
-	} from '$lib/helpers/constants';
+	import { SyncSettings, Appearance, EventFrequency } from '$lib/helpers/constants';
 	import type { ImportSync } from '$lib/helpers/import';
+	import { getAccessKeyCookie } from '$lib/helpers/accessKey';
 	import { api } from '$lib/helpers/misc';
 	import type { PageData } from './$types';
 
@@ -39,19 +34,16 @@
 	let accessKeyValue = '';
 
 	const handleAccessKeyForm = async (event: any) => {
-		// FIXME: add try/catch here
-		const response = await api({
-			endpoint: 'accessKey',
-			method: 'PATCH',
-			payload: event?.target?.accessKey?.value
-		});
+		try {
+			const newAccessKey = await api({
+				endpoint: 'accessKey',
+				method: 'PATCH',
+				payload: event?.target?.accessKey?.value
+			});
 
-		// FIXME: import cookie from helpers
-		if (response !== ACCESS_KEY_UNAUTHORIZED) {
-			document.cookie = `${ACCESS_KEY_COOKIE_NAME}${response}; path=/; max-age=31536000; SameSite=Lax;`;
+			document.cookie = getAccessKeyCookie(newAccessKey);
 			isAccessKeyEnabled = true;
-			// FIXME: add positive status bar message
-		} else {
+		} catch (e) {
 			await goto('/accessKey');
 		}
 	};
@@ -66,7 +58,7 @@
 		});
 
 		if (isReset) {
-			document.cookie = `${ACCESS_KEY_COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax;`;
+			document.cookie = getAccessKeyCookie('', 0); // Resets existing cookie
 			accessKeyValue = '';
 			isAccessKeyEnabled = false;
 		}

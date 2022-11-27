@@ -31,7 +31,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 		// Every time the vault is switched we need to check if it's migrated and seeded.
 		// The check is performed by the `/vault` route so we need to redirect any request
 		// to that path when the flag `ELECTRON_SWITCHED_VAULT=true` is set.
-		if (env.ELECTRON_SWITCHED_VAULT === 'true') return redirect(event, '/vault');
+		const shouldVaultBeChecked = env.ELECTRON_SWITCHED_VAULT === 'true';
+		if (shouldVaultBeChecked) return redirect(event, '/vault');
 
 		// Access key
 		//

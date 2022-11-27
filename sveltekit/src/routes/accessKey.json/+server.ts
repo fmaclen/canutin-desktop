@@ -2,11 +2,9 @@ import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 
 import prisma from '$lib/helpers/prisma';
-import {
-	AccessKeySettings,
-	ACCESS_KEY_COOKIE_NAME,
-	ACCESS_KEY_UNAUTHORIZED
-} from '$lib/helpers/constants';
+import { AccessKeySettings, ACCESS_KEY_COOKIE_NAME } from '$lib/helpers/constants';
+
+const ACCESS_KEY_UNAUTHORIZED = 'Unauthorized';
 
 const getVaultAccessKey = async () => {
 	return await prisma.setting.findUnique({
@@ -16,10 +14,9 @@ const getVaultAccessKey = async () => {
 };
 
 export const isRequestAuthorized = async (request: Request) => {
-	const vaultAccessKey = await getVaultAccessKey();
-
 	const cookie = request.headers.get('cookie');
 	const requestAccessKey = cookie?.split(ACCESS_KEY_COOKIE_NAME)[1];
+	const vaultAccessKey = await getVaultAccessKey();
 
 	return vaultAccessKey === null || vaultAccessKey?.value === requestAccessKey;
 };

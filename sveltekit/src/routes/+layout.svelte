@@ -379,17 +379,17 @@
 			color: var(--color-bluePrimary);
 		}
 
-		&:disabled,
-		&--disabled {
-			pointer-events: none;
-			color: var(--color-grey20);
-		}
-
 		&--primary {
 			height: 48px;
 			box-sizing: border-box;
 			border-top: 1px solid var(--color-border);
 		}
+	}
+
+	button.layout__button:disabled,
+	a.layout__a--disabled {
+		pointer-events: none;
+		color: var(--color-grey20);
 	}
 
 	hr.layout__hr {
