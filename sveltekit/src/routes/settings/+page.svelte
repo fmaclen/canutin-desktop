@@ -163,7 +163,7 @@
 
 <ScrollView {title}>
 	<Section title="Access key">
-		<div slot="CONTENT" class="accessKey">
+		<div slot="CONTENT" data-test-id="settings-accessKey-form">
 			<Form on:submit={handleAccessKeyForm}>
 				<FormFieldset>
 					<FormField name="status" label="Status">
@@ -213,7 +213,7 @@
 	</Section>
 
 	<Section title="Sync">
-		<div slot="CONTENT" class="import">
+		<div slot="CONTENT" data-test-id="settings-sync-form">
 			<Form on:submit={handleSyncForm}>
 				<FormFieldset>
 					<FormField name="status" label="Status">
@@ -224,16 +224,14 @@
 								<FormNoticeP>
 									<strong>Sync is {isSyncEnabled ? 'enabled' : 'disabled'}</strong>
 								</FormNoticeP>
-								{#if !isSyncEnabled}
-									<FormNoticeP>
-										Syncing allows data to be fetched as a CanutinFile JSON payload from an external
-										server.
-									</FormNoticeP>
-									<FormNoticeP>
-										On every sync the vault will be updated with any new data found, duplicates will
-										be ignored.
-									</FormNoticeP>
-								{/if}
+								<FormNoticeP>
+									Syncing allows data to be fetched as a CanutinFile JSON payload from an external
+									server.
+								</FormNoticeP>
+								<FormNoticeP>
+									On every sync the vault will be updated with any new data found, duplicates will
+									be ignored.
+								</FormNoticeP>
 							</FormNoticeNotice>
 						</FormNotice>
 					</FormField>

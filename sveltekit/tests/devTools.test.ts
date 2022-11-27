@@ -97,7 +97,9 @@ test.describe('Developer tools', () => {
 			await jwtInput.fill(
 				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
 			);
-			await page.locator('button', { hasText: 'Enable' }).click();
+			await page
+				.locator('div[data-test-id=settings-sync-form] button', { hasText: 'Enable' })
+				.click();
 			await expect(sidebarSyncButton).toBeVisible();
 
 			// Check the server response was imported correctly

@@ -11,16 +11,19 @@ test.describe('Sync CanutinFile', () => {
 		await page.goto('/');
 		await page.locator('a', { hasText: 'Settings' }).click();
 		await expect(page.locator('section', { hasText: 'Sync' })).toBeVisible();
-		const formNotice = page.locator('.formNotice__notice');
+		const formNotice = page.locator('div[data-test-id=settings-sync-form] .formNotice__notice');
 		expect(await formNotice.textContent()).toMatch('Sync is disabled');
 		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
 
+		const submitButton = page.locator('div[data-test-id=settings-sync-form] button', {
+			hasText: 'Enable'
+		});
 		const urlInput = page.locator('.formInput__input[name=canutinFileUrl]');
 		await expect(urlInput).toHaveValue('');
-		await expect(page.locator('button', { hasText: 'Enable' })).toBeDisabled();
+		await expect(submitButton).toBeDisabled();
 
 		await urlInput.fill('http://myscraper.example.com/canutinFile.json');
-		await expect(page.locator('button', { hasText: 'Enable' })).not.toBeDisabled();
+		await expect(submitButton).not.toBeDisabled();
 		await expect(page.locator('button', { hasText: 'Sync' })).not.toBeVisible();
 	});
 
@@ -41,7 +44,9 @@ test.describe('Sync CanutinFile', () => {
 		const urlInput = page.locator('.formInput__input[name=canutinFileUrl]');
 		const cookieInput = page.locator('.formInput__input[name=cookie]');
 		const jwtInput = page.locator('.formInput__input[name=jwt]');
-		let submitButton = page.locator('button', { hasText: 'Enable' });
+		let submitButton = page.locator('div[data-test-id=settings-sync-form] button', {
+			hasText: 'Enable'
+		});
 
 		// This endpoint will return `tests/fixtures/canutinFile-maximum-data.json` as a response
 		await urlInput.fill(
@@ -72,7 +77,7 @@ test.describe('Sync CanutinFile', () => {
 		);
 
 		// Check the notice has changed
-		const formNotice = page.locator('.formNotice__notice');
+		const formNotice = page.locator('div[data-test-id=settings-sync-form] .formNotice__notice');
 		expect(await formNotice.textContent()).toMatch('Sync is enabled');
 		await expect(formNotice).toHaveClass(/formNotice__notice--positive/);
 
