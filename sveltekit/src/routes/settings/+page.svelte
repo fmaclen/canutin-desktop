@@ -133,8 +133,8 @@
 	}));
 
 	onMount(async () => {
-		isAccessKeyEnabled = accessKeySettings?.isEnabled || false;
 		accessKeyValue = accessKeySettings.accessKey ? accessKeySettings.accessKey : '';
+		isAccessKeyEnabled = accessKeySettings.accessKey !== undefined;
 
 		syncSettings.forEach((setting) => {
 			if (!setting) return;

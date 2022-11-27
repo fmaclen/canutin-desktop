@@ -15,7 +15,6 @@ const getAccessKeySettings = async (): Promise<AccessKeyStatusStore> => {
 	);
 
 	return {
-		isEnabled: accessKey ? accessKey.value !== '' : false,
 		accessKey: accessKey?.value
 	};
 };
