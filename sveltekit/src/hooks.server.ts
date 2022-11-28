@@ -14,19 +14,19 @@ export const handle: Handle = async ({ event, resolve }) => {
 			'This error is intentional and should be referenced by a test. If you see this in production god help us all!'
 		);
 
-	// Prevents infinite redirect loop on `/vault` and `/accessKey`
-	const skipPaths = [
-		'/vault',
-		'/accessKey',
-		'/devTools' // We use `/devTools` in tests to bypass the `/vault` logic in tests
-	];
+	// Prevents infinite redirect loop when checking for vault migration or access key authorization
+	const skipCheckPaths = ['/vault', '/accessKey'];
 
-	if (!skipPaths.some((path) => event.url.pathname.includes(path))) {
+	// We use `/devTools` in development or tests to bypass the `/vault` check logic
+	if (['development', 'CI'].includes(env.NODE_ENV)) skipCheckPaths.push('/devTools');
+
+	if (!skipCheckPaths.some((path) => event.url.pathname.includes(path))) {
 		// Vault
 		//
 		// Every time the vault is switched we need to check if it's migrated and seeded.
 		// The check is performed by the `/vault` route so we need to redirect any request
 		// to that path when the flag `ELECTRON_SWITCHED_VAULT=true` is set.
+
 		const shouldVaultBeChecked = env.ELECTRON_SWITCHED_VAULT === 'true';
 		if (shouldVaultBeChecked) return redirectTo(event.url.origin, '/vault');
 

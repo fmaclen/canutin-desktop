@@ -18,7 +18,7 @@ export const POST = async ({ url }: { url: URL }) => {
 
 	const setEnvironmentVariable = (name: string, value: string) => {
 		// Don't allow setting environment variables unless it's part of a test
-		if (process.env.NODE_ENV && ['CI', 'test'].includes(process.env.NODE_ENV)) return;
+		if (process.env.NODE_ENV && ['CI', 'development'].includes(process.env.NODE_ENV)) return;
 
 		process.env[`${name}`] = value;
 		env[`${name}`] = value;

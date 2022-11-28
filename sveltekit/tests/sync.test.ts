@@ -48,6 +48,9 @@ test.describe('Sync CanutinFile', () => {
 			hasText: 'Enable'
 		});
 
+		await expect(cookieInput).toHaveAttribute('type', 'password');
+		await expect(jwtInput).toHaveAttribute('type', 'password');
+
 		// This endpoint will return `tests/fixtures/canutinFile-maximum-data.json` as a response
 		await urlInput.fill(
 			`${baseURL}/devTools.json?functionType=${DeveloperFunctions.CANUTIN_FILE_SYNC_TEST}`
