@@ -34,6 +34,7 @@
 	let sortOrder = SortOrder.DESC;
 	let sortBy: string;
 
+	// FIXME: this should be moved to a `load()` function in `accounts/+page.server.ts`
 	const getAccounts = async () => {
 		accounts = await api({ endpoint: 'accounts', method: 'GET' });
 	};

@@ -1,3 +1,5 @@
+// FIXME: this should be moved to a `load()` function in `assets/+page.server.ts`
+
 import { json } from '@sveltejs/kit';
 import { getUnixTime } from 'date-fns';
 

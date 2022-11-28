@@ -34,6 +34,7 @@
 	let sortOrder = SortOrder.DESC;
 	let sortBy: string;
 
+	// FIXME: this should be moved to a `load()` function in `assets/+page.server.ts`
 	const getAssets = async () => {
 		assets = await api({ endpoint: 'assets', method: 'GET' });
 	};
