@@ -10,13 +10,16 @@
 	import TableTr from '$lib/components/TableTr.svelte';
 	import TableTd from '$lib/components/TableTd.svelte';
 	import TableButtonSortable from '$lib/components/TableButtonSortable.svelte';
-	import { api, toCamelCase } from '$lib/helpers/misc';
+	import TableNoValue from '$lib/components/TableNoValue.svelte';
+	import { toCamelCase } from '$lib/helpers/misc';
 	import { formatCurrency, formatInUTC } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
-	import type { AssetResponse } from '../assets.json/+server';
-	import TableNoValue from '$lib/components/TableNoValue.svelte';
+	import type { PageData } from './$types';
 
 	const title = 'Assets';
+
+	export let data: PageData;
+	let { assets } = data;
 
 	enum TableHeaders {
 		NAME = 'Name',
@@ -30,13 +33,8 @@
 	}
 
 	// Default params
-	let assets = [] as AssetResponse[];
 	let sortOrder = SortOrder.DESC;
 	let sortBy: string;
-
-	const getAssets = async () => {
-		assets = await api({ endpoint: 'assets', method: 'GET' });
-	};
 
 	// Sorts the assets by column and asc/desc order
 	const sortAssetsBy = async (column: string) => {
@@ -113,7 +111,6 @@
 
 	onMount(async () => {
 		sortAssetsBy(toCamelCase(TableHeaders.NAME));
-		await getAssets();
 	});
 </script>
 

@@ -353,11 +353,13 @@ test.describe('Accounts', () => {
 		await nameInput.fill("Bob's Limited Rewards");
 		await isAutoCalculated.check();
 		await page.locator('button', { hasText: 'Add' }).click();
+		await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
 		await expect(page.locator('button.table__sortable', { hasText: 'Marked as' })).not.toBeVisible(); // prettier-ignore
+		expect(page.locator('td.table__td', { hasText: "Alice's Savings" })).toBeVisible;
+		expect(page.locator('td.table__td', { hasText: 'Ransack Bank' })).toBeVisible;
 		expect(page.locator('td.table__td', { hasText: "Bob's Limited Rewards" })).toBeVisible;
 		expect(page.locator('td.table__td', { hasText: 'Auto-calculated' })).toBeVisible;
 		expect(page.locator('td.table__td', { hasText: '$0.00' })).toBeVisible;
-		await expect(noAccountsTableNotice).not.toBeVisible();
 		expect(await tableRows.count()).toBe(2);
 
 		// Create a transaction for the auto-calculated account
