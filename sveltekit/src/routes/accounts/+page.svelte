@@ -10,13 +10,17 @@
 	import TableTr from '$lib/components/TableTr.svelte';
 	import TableTd from '$lib/components/TableTd.svelte';
 	import TableButtonSortable from '$lib/components/TableButtonSortable.svelte';
-	import { api, toCamelCase } from '$lib/helpers/misc';
+	import TableNoValue from '$lib/components/TableNoValue.svelte';
+	import { toCamelCase } from '$lib/helpers/misc';
 	import { formatCurrency, formatInUTC } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { AccountResponse } from '../accounts.json/+server';
-	import TableNoValue from '$lib/components/TableNoValue.svelte';
+	import type { PageData } from './$types';
 
 	const title = 'Accounts';
+
+	export let data: PageData;
+	let { accounts } = data;
 
 	enum TableHeaders {
 		NAME = 'Name',
@@ -30,14 +34,8 @@
 	}
 
 	// Default params
-	let accounts = [] as AccountResponse[];
 	let sortOrder = SortOrder.DESC;
 	let sortBy: string;
-
-	// FIXME: this should be moved to a `load()` function in `accounts/+page.server.ts`
-	const getAccounts = async () => {
-		accounts = await api({ endpoint: 'accounts', method: 'GET' });
-	};
 
 	// Sorts the accounts by column and asc/desc order
 	const sortAccountsBy = async (column: string) => {
@@ -115,7 +113,6 @@
 
 	onMount(async () => {
 		sortAccountsBy(toCamelCase(TableHeaders.NAME));
-		await getAccounts();
 	});
 </script>
 

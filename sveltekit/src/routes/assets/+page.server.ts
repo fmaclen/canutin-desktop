@@ -1,13 +1,10 @@
-// FIXME: this should be moved to a `load()` function in `assets/+page.server.ts`
-
-import { json } from '@sveltejs/kit';
 import { getUnixTime } from 'date-fns';
 
 import prisma from '$lib/helpers/prisma';
 import type { Asset, AssetType } from '@prisma/client';
 import { getAssetCurrentBalance } from '$lib/helpers/models';
 
-export interface AssetResponse extends Asset {
+interface AssetSummary extends Asset {
 	lastUpdated: number;
 	value: number;
 	quantity: number;
@@ -15,7 +12,7 @@ export interface AssetResponse extends Asset {
 	assetType: AssetType;
 }
 
-export const GET = async () => {
+export const load = async () => {
 	const assets = await prisma.asset.findMany({
 		include: {
 			assetBalanceStatements: true,
@@ -26,14 +23,14 @@ export const GET = async () => {
 		}
 	});
 
-	const assetsResponse: Promise<AssetResponse[]> = Promise.all(
+	const assetSummaries: Promise<AssetSummary[]> = Promise.all(
 		assets.map(async (asset) => {
 			const lastBalanceStatement =
 				asset.assetBalanceStatements[asset.assetBalanceStatements.length - 1];
 
 			return {
 				...asset,
-				lastUpdated: getUnixTime(asset.updatedAt),
+				lastUpdated: getUnixTime(lastBalanceStatement.createdAt),
 				value: await getAssetCurrentBalance(asset),
 				quantity: lastBalanceStatement?.quantity || 0,
 				cost: lastBalanceStatement?.cost || 0
@@ -41,5 +38,5 @@ export const GET = async () => {
 		})
 	);
 
-	return json(await assetsResponse);
+	return { assets: assetSummaries };
 };
