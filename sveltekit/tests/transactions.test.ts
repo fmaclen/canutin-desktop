@@ -289,7 +289,7 @@ test.describe('Transactions', () => {
 
 		// Filter by `accountId`
 		await page.locator('a', { hasText: 'Accounts' }).click();
-		await expect(tableNotice).not.toBeVisible();
+		await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
 		expect(await tableRow.first().textContent()).toMatch("Alice's Limited Rewards");
 		expect(await tableRow.first().textContent()).toMatch('672');
 
