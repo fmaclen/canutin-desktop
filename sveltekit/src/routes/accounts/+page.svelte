@@ -14,7 +14,6 @@
 	import { toCamelCase } from '$lib/helpers/misc';
 	import { formatCurrency, formatInUTC } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
-	import type { AccountResponse } from '../accounts.json/+server';
 	import type { PageData } from './$types';
 
 	const title = 'Accounts';

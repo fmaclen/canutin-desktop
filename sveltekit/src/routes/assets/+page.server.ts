@@ -28,9 +28,11 @@ export const load = async () => {
 			const lastBalanceStatement =
 				asset.assetBalanceStatements[asset.assetBalanceStatements.length - 1];
 
+			const lastUpdated = lastBalanceStatement?.createdAt || asset.updatedAt;
+
 			return {
 				...asset,
-				lastUpdated: getUnixTime(lastBalanceStatement.createdAt),
+				lastUpdated: getUnixTime(lastUpdated),
 				value: await getAssetCurrentBalance(asset),
 				quantity: lastBalanceStatement?.quantity || 0,
 				cost: lastBalanceStatement?.cost || 0

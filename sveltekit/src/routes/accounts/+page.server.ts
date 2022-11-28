@@ -33,7 +33,7 @@ export const load = async () => {
 
 			const lastUpdated =
 				account.isAutoCalculated || transactionCount === 0
-					? getUnixTime(latestBalanceStatement.createdAt)
+					? getUnixTime(latestBalanceStatement?.createdAt || account.updatedAt)
 					: getUnixTime(account.transactions[transactionCount - 1].date);
 
 			return {
