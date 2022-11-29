@@ -1,10 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
+import { databaseSeed, databaseWipe, delay, setEnvironmentVariable } from './fixtures/helpers.js';
 
 test.describe('Access key', () => {
+	const fakeAccessKey = 'top-secret-key-123';
+
 	test('Access to UI can be restricted by setting an access key', async ({ baseURL, page }) => {
 		await databaseWipe(baseURL!);
-		await databaseSeed(baseURL!);
 
 		// Check cookies aren't set
 		const context = page.context();
@@ -15,13 +16,10 @@ test.describe('Access key', () => {
 		await page.locator('a', { hasText: 'Settings' }).click();
 		await expect(page.locator('section', { hasText: 'Access key' })).toBeVisible();
 
-		const formNotice = page.locator(
-			'div[data-test-id=settings-accessKey-form] .formNotice__notice'
-		);
+		const formNotice = page.locator('div[data-test-id=settings-accessKey-form] .formNotice__notice'); // prettier-ignore
 		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
 		expect(await formNotice.textContent()).toMatch('Access key is disabled');
 
-		const fakeAccessKey = 'top-secret-key-123';
 		const accessKeyButtons = 'div[data-test-id=settings-accessKey-form] button';
 		const submitButton = page.locator(accessKeyButtons, { hasText: 'Enable' });
 		const updateButton = page.locator(accessKeyButtons, { hasText: 'Update' });
@@ -85,7 +83,7 @@ test.describe('Access key', () => {
 
 		// Check other parts of the UI can be accessed with a cookie set
 		await page.locator('a', { hasText: 'The big picture' }).click();
-		expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$185,719');
+		expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$0');
 
 		// Remove access key from cookies
 		await context.clearCookies();
@@ -119,7 +117,7 @@ test.describe('Access key', () => {
 		await continueButton.click();
 		await expect(page.locator('h1', { hasText: 'Access key' })).not.toBeVisible();
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
-		expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$185,719');
+		expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$0');
 
 		// Check cookies have been set (again)
 		cookies = await context.cookies();
@@ -160,21 +158,82 @@ test.describe('Access key', () => {
 		await expect(page.locator('h1', { hasText: 'Access key' })).not.toBeVisible();
 	});
 
-	test('Visiting /accessKey when no access key is set', async ({ baseURL, page }) => {
+	test.describe('Visiting /accessKey', () => {
+		test('When no access key is set', async ({ baseURL, page }) => {
+			await databaseWipe(baseURL!);
+
+			// Check no access key is set
+			await page.goto('/');
+			await page.locator('a', { hasText: 'Settings' }).click();
+			const formNotice = page.locator(
+				'div[data-test-id=settings-accessKey-form] .formNotice__notice'
+			);
+			expect(await formNotice.textContent()).toMatch('Access key is disabled');
+			await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
+
+			// Check it redirects to "The big picture"
+			await page.goto('/accessKey');
+			await expect(page.locator('h1', { hasText: 'Access key' })).not.toBeVisible();
+			await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
+		});
+
+		test('When access key is set', async ({ baseURL, page }) => {
+			await databaseWipe(baseURL!);
+
+			// Set access key
+			await page.goto('/');
+			await page.locator('a', { hasText: 'Settings' }).click();
+			await page.locator('input[name=accessKey]').fill(fakeAccessKey);
+			await page.locator('div[data-test-id=settings-accessKey-form] button', { hasText: 'Enable' }).click(); // prettier-ignore
+			const formNotice = page.locator('div[data-test-id=settings-accessKey-form] .formNotice__notice'); // prettier-ignore
+			await expect(formNotice).toHaveClass(/formNotice__notice--positive/);
+			expect(await formNotice.textContent()).toMatch('Access key is enabled');
+
+			// Check the cookie has been set
+			await delay(); // Assertion is faster than the cookie being set
+			let cookies = await page.context().cookies();
+			expect(cookies).toHaveLength(1);
+			expect(cookies[0].value).toMatch(fakeAccessKey);
+			await page.locator('a', { hasText: 'The big picture' }).click();
+			expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$0');
+
+			// Check if cookies are reset when visitng /accessKey
+			await page.goto('/accessKey');
+			await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
+			cookies = await page.context().cookies();
+			expect(cookies).toHaveLength(1);
+			expect(cookies[0].value).toMatch('');
+		});
+	});
+
+	test('Visiting /devTools is only accessible in tests when access key is set', async ({
+		baseURL,
+		page
+	}) => {
 		await databaseWipe(baseURL!);
 
-		// Check no access key is set
-		await page.goto('/');
-		await page.locator('a', { hasText: 'Settings' }).click();
-		const formNotice = page.locator(
-			'div[data-test-id=settings-accessKey-form] .formNotice__notice'
-		);
-		expect(await formNotice.textContent()).toMatch('Access key is disabled');
-		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
+		// Set access key
+		await page.goto('/devTools');
+		await expect(page.locator('h1', { hasText: 'Developer tools' })).toBeVisible();
 
-		// Check it redirects to "The big picture"
-		await page.goto('/accessKey');
+		await page.locator('a', { hasText: 'Settings' }).click();
+		await page.locator('input[name=accessKey]').fill(fakeAccessKey);
+		await page.locator('div[data-test-id=settings-accessKey-form] button', { hasText: 'Enable' }).click(); // prettier-ignore
+		const formNotice = page.locator('div[data-test-id=settings-accessKey-form] .formNotice__notice'); // prettier-ignore
+		await expect(formNotice).toHaveClass(/formNotice__notice--positive/);
+		expect(await formNotice.textContent()).toMatch('Access key is enabled');
+
+		// Clear cookies and try to access devTools
+		await page.context().clearCookies();
+		await page.goto('/devTools');
+		await expect(page.locator('h1', { hasText: 'Developer tools' })).toBeVisible();
 		await expect(page.locator('h1', { hasText: 'Access key' })).not.toBeVisible();
-		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
+
+		// Disable `IS_TEST` environment variable
+		await setEnvironmentVariable(baseURL!, 'IS_TEST', 'false');
+
+		await page.reload();
+		await expect(page.locator('h1', { hasText: 'Developer tools' })).not.toBeVisible();
+		await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
 	});
 });
