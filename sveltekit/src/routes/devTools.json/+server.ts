@@ -5,6 +5,7 @@ import canutinFileFixture from '../../../tests/fixtures/canutinFile-maximum-data
 import prisma from '$lib/helpers/prisma';
 import seedDemoData from '$lib/seed';
 import { env } from '$env/dynamic/private';
+import { isEnvTest } from '$lib/helpers/tests';
 import { DeveloperFunctions } from '$lib/helpers/constants';
 import type { CanutinFile } from '$lib/helpers/import';
 
@@ -17,8 +18,8 @@ export const POST = async ({ url }: { url: URL }) => {
 	const functionType = getFunctionType(url);
 
 	const setEnvironmentVariable = (name: string, value: string) => {
-		// Don't allow setting environment variables unless it's part of a test
-		if (process.env.NODE_ENV && ['CI', 'development'].includes(process.env.NODE_ENV)) return;
+		// Don't allow setting environment variables unless it's in the context of a test
+		if (!isEnvTest()) return;
 
 		process.env[`${name}`] = value;
 		env[`${name}`] = value;

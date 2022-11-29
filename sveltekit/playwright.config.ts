@@ -18,6 +18,7 @@ const config: PlaywrightTestConfig = {
 		command: 'npm run build && npm run preview',
 		port: 4173,
 		env: {
+			IS_TEST: 'true', // Would have liked to use NODE_ENV=test but it gets overwritten to `development`
 			ELECTRON_SWITCHED_VAULT: 'true',
 			DATABASE_URL: `file:${pathToTestVault}`,
 			APP_VERSION: 'v0.0.0-test'

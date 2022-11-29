@@ -1,7 +1,9 @@
 import type { Handle } from '@sveltejs/kit';
+
 import { env } from '$env/dynamic/private';
 import { dev } from '$app/environment';
 import { isRequestAuthorized } from './routes/accessKey.json/+server';
+import { isEnvTest } from '$lib/helpers/tests';
 
 const redirectTo = (origin: string, route: string) => {
 	return Response.redirect(`${origin}${route}`, 307);
@@ -18,7 +20,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const skipCheckPaths = ['/vault', '/accessKey'];
 
 	// We use `/devTools` in development or tests to bypass the `/vault` check logic
-	if (['development', 'CI'].includes(env.NODE_ENV)) skipCheckPaths.push('/devTools');
+	if (isEnvTest()) skipCheckPaths.push('/devTools');
 
 	if (!skipCheckPaths.some((path) => event.url.pathname.includes(path))) {
 		// Vault
