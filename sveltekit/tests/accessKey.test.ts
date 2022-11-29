@@ -1,0 +1,180 @@
+import { expect, test } from '@playwright/test';
+import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
+
+test.describe('Access key', () => {
+	test('Access to UI can be restricted by setting an access key', async ({ baseURL, page }) => {
+		await databaseWipe(baseURL!);
+		await databaseSeed(baseURL!);
+
+		// Check cookies aren't set
+		const context = page.context();
+		let cookies = await context.cookies();
+		expect(cookies).toHaveLength(0);
+
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Settings' }).click();
+		await expect(page.locator('section', { hasText: 'Access key' })).toBeVisible();
+
+		const formNotice = page.locator(
+			'div[data-test-id=settings-accessKey-form] .formNotice__notice'
+		);
+		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
+		expect(await formNotice.textContent()).toMatch('Access key is disabled');
+
+		const fakeAccessKey = 'top-secret-key-123';
+		const accessKeyButtons = 'div[data-test-id=settings-accessKey-form] button';
+		const submitButton = page.locator(accessKeyButtons, { hasText: 'Enable' });
+		const updateButton = page.locator(accessKeyButtons, { hasText: 'Update' });
+		const resetButton = page.locator(accessKeyButtons, { hasText: 'Reset' });
+		const generateButton = page.locator(accessKeyButtons, { hasText: 'Generate' });
+		const copyButton = page.locator(accessKeyButtons, { hasText: 'Copy' });
+		const accessKeyInput = page.locator('.formInput__input[name=accessKey]');
+
+		await expect(accessKeyInput).toHaveAttribute('type', 'password');
+		await expect(accessKeyInput).toHaveValue('');
+		await expect(submitButton).toBeDisabled();
+		await expect(resetButton).toBeDisabled();
+		await expect(updateButton).not.toBeVisible();
+		await expect(generateButton).not.toBeDisabled();
+		await expect(copyButton).not.toBeVisible();
+
+		// Check the UI is updated when an access key is filled in
+		await accessKeyInput.fill(fakeAccessKey);
+		await expect(submitButton).not.toBeDisabled();
+		await expect(resetButton).toBeDisabled();
+		await expect(updateButton).not.toBeVisible();
+		await expect(generateButton).not.toBeVisible();
+		await expect(copyButton).not.toBeDisabled();
+
+		await accessKeyInput.fill('');
+		await expect(generateButton).not.toBeDisabled();
+		await expect(copyButton).not.toBeVisible();
+
+		// Generate a new access key
+		await generateButton.click();
+		await expect(generateButton).not.toBeVisible();
+		await expect(copyButton).not.toBeDisabled();
+
+		// Check the generated access key matches the expected format (UUID v4)
+		// https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID
+		const UUIDv4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+		expect(await accessKeyInput.inputValue()).toMatch(UUIDv4Regex);
+
+		// Check clipboard is empty
+		await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+		let clipboard = await page.evaluate(() => navigator.clipboard.readText());
+		expect(clipboard).toMatch('');
+
+		await copyButton.click();
+		clipboard = await page.evaluate(() => navigator.clipboard.readText());
+		expect(clipboard).toMatch(UUIDv4Regex);
+
+		// Set access key
+		await submitButton.click();
+		await expect(updateButton).toBeVisible();
+		await expect(resetButton).not.toBeDisabled();
+		await expect(submitButton).not.toBeVisible();
+		await expect(formNotice).toHaveClass(/formNotice__notice--positive/);
+		expect(await formNotice.textContent()).toMatch('Access key is enabled');
+
+		// Check cookies are set
+		cookies = await context.cookies();
+		expect(cookies).toHaveLength(1);
+		expect(cookies[0].name).toMatch('_canutin-accessKey');
+		expect(cookies[0].value).toMatch(clipboard);
+
+		// Check other parts of the UI can be accessed with a cookie set
+		await page.locator('a', { hasText: 'The big picture' }).click();
+		expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$185,719');
+
+		// Remove access key from cookies
+		await context.clearCookies();
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+		await expect(page.locator('h1', { hasText: 'Balance sheet' })).not.toBeVisible();
+		await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
+
+		// Sidebar links should be disabled
+		expect(await page.locator('.layout__a--disabled').count()).toBe(8);
+
+		// Manually enter a URL to make check it redirects to the access key page
+		await page.goto('/transactions');
+		await expect(page.locator('h1', { hasText: 'Transactions' })).not.toBeVisible();
+		await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
+
+		// Enter access key
+		const continueButton = page.locator('button', { hasText: 'Continue' });
+		await expect(accessKeyInput).toHaveAttribute('type', 'password');
+		await expect(accessKeyInput).toHaveValue('');
+		await expect(continueButton).toBeDisabled();
+
+		await accessKeyInput.fill(fakeAccessKey);
+		await expect(continueButton).not.toBeDisabled();
+
+		// Check access key is incorrect
+		await continueButton.click();
+		await expect( page.locator('.formInput__error', { hasText: 'Incorrect access key' })).toBeVisible(); // prettier-ignore
+
+		// It reidrects after setting the access key
+		await accessKeyInput.fill(clipboard);
+		await continueButton.click();
+		await expect(page.locator('h1', { hasText: 'Access key' })).not.toBeVisible();
+		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
+		expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$185,719');
+
+		// Check cookies have been set (again)
+		cookies = await context.cookies();
+		expect(cookies).toHaveLength(1);
+		expect(cookies[0].value).toMatch(clipboard);
+
+		// Update access key
+		await page.locator('a', { hasText: 'Settings' }).click();
+		await accessKeyInput.fill(fakeAccessKey);
+		await updateButton.click();
+
+		// Check cookies have been updated and access key is still enabled
+		await delay(); // Assertion is faster than the cookie being set
+		cookies = await context.cookies();
+		expect(cookies).toHaveLength(1);
+		expect(cookies[0].value).toMatch(fakeAccessKey);
+		await expect(formNotice).toHaveClass(/formNotice__notice--positive/);
+		expect(await formNotice.textContent()).toMatch('Access key is enabled');
+
+		// Reset access key
+		await page.locator('a', { hasText: 'Settings' }).click();
+		await expect(resetButton).not.toBeDisabled();
+
+		// Prepare to confirm the dialog prompt
+		page.on('dialog', (dialog) => {
+			expect(dialog.message()).toMatch('Are you sure you want to reset the access key?');
+
+			dialog.accept();
+		});
+
+		await resetButton.click();
+		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
+		expect(await formNotice.textContent()).toMatch('Access key is disabled');
+
+		// Check there is no access key set
+		await page.goto('/transactions');
+		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
+		await expect(page.locator('h1', { hasText: 'Access key' })).not.toBeVisible();
+	});
+
+	test('Visiting /accessKey when no access key is set', async ({ baseURL, page }) => {
+		await databaseWipe(baseURL!);
+
+		// Check no access key is set
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Settings' }).click();
+		const formNotice = page.locator(
+			'div[data-test-id=settings-accessKey-form] .formNotice__notice'
+		);
+		expect(await formNotice.textContent()).toMatch('Access key is disabled');
+		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
+
+		// Check it redirects to "The big picture"
+		await page.goto('/accessKey');
+		await expect(page.locator('h1', { hasText: 'Access key' })).not.toBeVisible();
+		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
+	});
+});

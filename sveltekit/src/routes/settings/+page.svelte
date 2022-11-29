@@ -25,7 +25,7 @@
 	const title = 'Settings';
 
 	export let data: PageData;
-	$: ({ syncStatus, syncSettings, accessKeySettings } = data);
+	$: ({ syncStatus, syncSettings, accessKey } = data);
 
 	const setStatusBar = (message: string, appearance: Appearance) => {
 		isLoading = false;
@@ -134,8 +134,8 @@
 	}));
 
 	onMount(async () => {
-		accessKeyValue = accessKeySettings.accessKey ? accessKeySettings.accessKey : '';
-		isAccessKeyEnabled = accessKeySettings.accessKey !== undefined;
+		accessKeyValue = accessKey ? accessKey : '';
+		isAccessKeyEnabled = accessKey !== undefined;
 
 		syncSettings.forEach((setting) => {
 			if (!setting) return;
@@ -190,9 +190,16 @@
 						<div class="accessKeyGenerateField">
 							<FormInput type="password" name="accessKey" bind:value={accessKeyValue} />
 							{#if accessKeyValue}
-								<Button on:click={() => navigator.clipboard.writeText(accessKeyValue)}>Copy</Button>
+								<Button
+									type="button"
+									on:click={() => navigator.clipboard.writeText(accessKeyValue)}
+								>
+									Copy
+								</Button>
 							{:else}
-								<Button on:click={() => (accessKeyValue = crypto.randomUUID())}>Generate</Button>
+								<Button type="button" on:click={() => (accessKeyValue = crypto.randomUUID())}>
+									Generate
+								</Button>
 							{/if}
 						</div>
 					</FormField>

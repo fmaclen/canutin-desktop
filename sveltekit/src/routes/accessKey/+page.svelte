@@ -33,7 +33,7 @@
 			$isAppReadyStore = true;
 			await goto('/');
 		} catch (e) {
-			error = 'Invalid access key';
+			error = 'Incorrect access key';
 		}
 	};
 
