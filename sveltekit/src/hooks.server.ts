@@ -2,8 +2,8 @@ import type { Handle } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
 import { dev } from '$app/environment';
-import { isRequestAuthorized } from './routes/accessKey.json/+server';
 import { isEnvTest } from '$lib/helpers/tests';
+import { isRequestAuthorized } from '$lib/helpers/accessKey.server';
 
 const redirectTo = (origin: string, route: string) => {
 	return Response.redirect(`${origin}${route}`, 307);

@@ -212,10 +212,11 @@ test.describe('Access key', () => {
 	}) => {
 		await databaseWipe(baseURL!);
 
-		// Set access key
+		// Check default /devTools behavior
 		await page.goto('/devTools');
 		await expect(page.locator('h1', { hasText: 'Developer tools' })).toBeVisible();
 
+		// Set access key
 		await page.locator('a', { hasText: 'Settings' }).click();
 		await page.locator('input[name=accessKey]').fill(fakeAccessKey);
 		await page.locator('div[data-test-id=settings-accessKey-form] button', { hasText: 'Enable' }).click(); // prettier-ignore
@@ -230,10 +231,37 @@ test.describe('Access key', () => {
 		await expect(page.locator('h1', { hasText: 'Access key' })).not.toBeVisible();
 
 		// Disable `IS_TEST` environment variable
-		await setEnvironmentVariable(baseURL!, 'IS_TEST', 'false');
+		// await setEnvironmentVariable(baseURL!, 'IS_TEST', 'false');
 
-		await page.reload();
-		await expect(page.locator('h1', { hasText: 'Developer tools' })).not.toBeVisible();
+		// await page.reload();
+		// await expect(page.locator('h1', { hasText: 'Developer tools' })).not.toBeVisible();
+		// await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
+
+		// await setEnvironmentVariable(baseURL!, 'IS_TEST', 'true');
+	});
+
+	test('Visiting /vault redirects to access key page when one is set without the correct cookies', async ({
+		baseURL,
+		page
+	}) => {
+		await databaseWipe(baseURL!);
+
+		// Check default /vault behavior
+		await page.goto('/vault');
+		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
+
+		// Set access key
+		await page.locator('a', { hasText: 'Settings' }).click();
+		await page.locator('input[name=accessKey]').fill(fakeAccessKey);
+		await page.locator('div[data-test-id=settings-accessKey-form] button', { hasText: 'Enable' }).click(); // prettier-ignore
+		const formNotice = page.locator('div[data-test-id=settings-accessKey-form] .formNotice__notice'); // prettier-ignore
+		await expect(formNotice).toHaveClass(/formNotice__notice--positive/);
+		expect(await formNotice.textContent()).toMatch('Access key is enabled');
+
+		// Clear cookies and try to access devTools
+		await page.context().clearCookies();
+		await page.goto('/vault');
 		await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
+		await expect(page.locator('h1', { hasText: 'The big picture' })).not.toBeVisible();
 	});
 });
