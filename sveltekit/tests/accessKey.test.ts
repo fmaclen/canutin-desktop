@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { databaseSeed, databaseWipe, delay, setEnvironmentVariable } from './fixtures/helpers.js';
+import { databaseWipe, delay, setEnvironmentVariable } from './fixtures/helpers.js';
 
 test.describe('Access key', () => {
 	const fakeAccessKey = 'top-secret-key-123';
@@ -212,15 +212,20 @@ test.describe('Access key', () => {
 	}) => {
 		await databaseWipe(baseURL!);
 
+		// Go to homepage to initialize the vault
+		await page.goto('/');
+
 		// Check default /devTools behavior
 		await page.goto('/devTools');
 		await expect(page.locator('h1', { hasText: 'Developer tools' })).toBeVisible();
 
 		// Set access key
-		await page.locator('a', { hasText: 'Settings' }).click();
-		await page.locator('input[name=accessKey]').fill(fakeAccessKey);
-		await page.locator('div[data-test-id=settings-accessKey-form] button', { hasText: 'Enable' }).click(); // prettier-ignore
 		const formNotice = page.locator('div[data-test-id=settings-accessKey-form] .formNotice__notice'); // prettier-ignore
+		const inputAccessKey = page.locator('input[name=accessKey]');
+
+		await page.locator('a', { hasText: 'Settings' }).click();
+		await inputAccessKey.fill(fakeAccessKey);
+		await page.locator('div[data-test-id=settings-accessKey-form] button', { hasText: 'Enable' }).click(); // prettier-ignore
 		await expect(formNotice).toHaveClass(/formNotice__notice--positive/);
 		expect(await formNotice.textContent()).toMatch('Access key is enabled');
 
@@ -231,13 +236,34 @@ test.describe('Access key', () => {
 		await expect(page.locator('h1', { hasText: 'Access key' })).not.toBeVisible();
 
 		// Disable `IS_TEST` environment variable
-		// await setEnvironmentVariable(baseURL!, 'IS_TEST', 'false');
+		await setEnvironmentVariable(baseURL!, 'IS_TEST', 'false');
 
-		// await page.reload();
-		// await expect(page.locator('h1', { hasText: 'Developer tools' })).not.toBeVisible();
-		// await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
+		await page.reload();
+		await expect(page.locator('h1', { hasText: 'Developer tools' })).not.toBeVisible();
+		await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
 
-		// await setEnvironmentVariable(baseURL!, 'IS_TEST', 'true');
+		// The `devTools.json` endpoint should be inaccesible when a key is set and no cookie is passed
+		await databaseWipe(baseURL!);
+		await page.goto('/');
+		await expect(page.locator('h1', { hasText: 'The big picture' })).not.toBeVisible();
+		await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
+
+		// Reset access key
+		await inputAccessKey.fill(fakeAccessKey);
+		await page.locator('button', { hasText: 'Continue' }).click();
+		await page.locator('a', { hasText: 'Settings' }).click();
+
+		page.on('dialog', (dialog) => {
+			expect(dialog.message()).toMatch('Are you sure you want to reset the access key?');
+
+			dialog.accept();
+		});
+		await page.locator('button', { hasText: 'Reset' }).click();
+		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
+		expect(await formNotice.textContent()).toMatch('Access key is disabled');
+
+		// Restore `IS_TEST` environment variable
+		await setEnvironmentVariable(baseURL!, 'IS_TEST', 'true');
 	});
 
 	test('Visiting /vault redirects to access key page when one is set without the correct cookies', async ({

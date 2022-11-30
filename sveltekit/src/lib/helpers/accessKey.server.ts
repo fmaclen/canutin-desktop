@@ -25,9 +25,13 @@ export const getVaultAccessKey = async () => {
 };
 
 export const isRequestAuthorized = async (request: Request) => {
-	const cookie = request.headers.get('cookie');
-	const requestAccessKey = cookie?.split(ACCESS_KEY_COOKIE_NAME)[1];
 	const vaultAccessKey = await getVaultAccessKey();
 
-	return vaultAccessKey === null || vaultAccessKey?.value === requestAccessKey;
+	// If no access key is set, no need to check the cookies
+	if (vaultAccessKey === null) return true;
+
+	const cookie = request.headers.get('cookie');
+	const requestAccessKey = cookie?.split(ACCESS_KEY_COOKIE_NAME)[1];
+
+	return vaultAccessKey?.value === requestAccessKey;
 };
