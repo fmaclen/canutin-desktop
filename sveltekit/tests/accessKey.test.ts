@@ -296,5 +296,19 @@ test.describe('Access key', () => {
 		await page.goto('/vault');
 		await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
 		await expect(page.locator('h1', { hasText: 'The big picture' })).not.toBeVisible();
+
+		// Reset access key
+		await page.locator('input[name=accessKey]').fill(fakeAccessKey);
+		await page.locator('button', { hasText: 'Continue' }).click();
+		await page.locator('a', { hasText: 'Settings' }).click();
+
+		page.on('dialog', (dialog) => {
+			expect(dialog.message()).toMatch('Are you sure you want to reset the access key?');
+
+			dialog.accept();
+		});
+		await page.locator('button', { hasText: 'Reset' }).click();
+		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
+		expect(await formNotice.textContent()).toMatch('Access key is disabled');
 	});
 });
