@@ -155,6 +155,9 @@ test.describe('Access key', () => {
 		await resetButton.click();
 		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
 		expect(await formNotice.textContent()).toMatch('Access key is disabled');
+		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
+		await expect(statusBar).toHaveClass(/statusBar--active/);
+		expect(await statusBar.textContent()).toMatch('Access key has been removed');
 
 		// Check there is no access key set
 		await page.goto('/transactions');

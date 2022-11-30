@@ -68,7 +68,7 @@
 			document.cookie = getAccessKeyCookie('', 0); // Resets existing cookie
 			accessKeyValue = '';
 			isAccessKeyEnabled = false;
-			setStatusBar('Access key has been removed', Appearance.POSITIVE);
+			setStatusBar('Access key has been removed', Appearance.ACTIVE);
 		}
 	};
 
