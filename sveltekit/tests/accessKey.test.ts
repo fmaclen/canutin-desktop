@@ -67,6 +67,8 @@ test.describe('Access key', () => {
 		clipboard = await page.evaluate(() => navigator.clipboard.readText());
 		expect(clipboard).toMatch(UUIDv4Regex);
 
+		const statusBar = page.locator('.statusBar');
+
 		// Set access key
 		await submitButton.click();
 		await expect(updateButton).toBeVisible();
@@ -74,6 +76,8 @@ test.describe('Access key', () => {
 		await expect(submitButton).not.toBeVisible();
 		await expect(formNotice).toHaveClass(/formNotice__notice--positive/);
 		expect(await formNotice.textContent()).toMatch('Access key is enabled');
+		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		expect(await statusBar.textContent()).toMatch('Access key has been set');
 
 		// Check cookies are set
 		cookies = await context.cookies();
