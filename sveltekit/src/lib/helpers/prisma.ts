@@ -13,8 +13,8 @@ const platformToExecutables: any = {
 		queryEngine: '.prisma/client/query_engine-windows.dll.node'
 	},
 	linux: {
-		migrationEngine: '@prisma/engines/migration-engine-debian-openssl-1.1.x',
-		queryEngine: '.prisma/client/libquery_engine-debian-openssl-1.1.x.so.node'
+		migrationEngine: '@prisma/engines/migration-engine-debian-openssl-3.0.x',
+		queryEngine: '.prisma/client/libquery_engine-debian-openssl-3.0.x.so.node'
 	},
 	darwin: {
 		migrationEngine: '@prisma/engines/migration-engine-darwin',
