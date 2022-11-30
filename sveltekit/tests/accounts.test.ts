@@ -421,6 +421,7 @@ test.describe('Accounts', () => {
 		const cardTransactions = page.locator('.card', { hasText: 'Transactions' });
 		const cardNetBalance = page.locator('.card', { hasText: 'Net balance' });
 
+		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
 		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
 		expect(await cardTransactions.textContent()).toMatch('1');
 		expect(await cardNetBalance.textContent()).toMatch('$15.00');
