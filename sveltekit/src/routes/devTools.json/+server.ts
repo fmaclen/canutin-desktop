@@ -5,7 +5,7 @@ import canutinFileFixture from '../../../tests/fixtures/canutinFile-maximum-data
 import prisma from '$lib/helpers/prisma';
 import seedDemoData from '$lib/seed';
 import { env } from '$env/dynamic/private';
-import { isEnvTest } from '$lib/helpers/tests';
+import { isEnvTest } from '$lib/helpers/tests.server';
 import { DeveloperFunctions } from '$lib/helpers/constants';
 import type { CanutinFile } from '$lib/helpers/import';
 

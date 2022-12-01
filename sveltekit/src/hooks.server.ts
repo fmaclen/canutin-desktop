@@ -2,7 +2,7 @@ import type { Handle } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
 import { dev } from '$app/environment';
-import { isEnvTest } from '$lib/helpers/tests';
+import { isEnvTest } from '$lib/helpers/tests.server';
 import { isRequestAuthorized } from '$lib/helpers/accessKey.server';
 
 const redirectTo = (origin: string, route: string) => {
