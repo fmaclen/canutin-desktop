@@ -245,7 +245,7 @@ test.describe('Access key', () => {
 		// Disable `IS_TEST` environment variable
 		await setEnvironmentVariable(baseURL!, 'IS_TEST', 'false');
 
-		await page.reload();
+		await page.goto('/devTools');
 		await expect(page.locator('h1', { hasText: 'Developer tools' })).not.toBeVisible();
 		await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
 
