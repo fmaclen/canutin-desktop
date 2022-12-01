@@ -243,16 +243,11 @@ test.describe('Access key', () => {
 		await expect(page.locator('h1', { hasText: 'Access key' })).not.toBeVisible();
 
 		// Disable `IS_TEST` environment variable
+		await setEnvironmentVariable(baseURL!, 'TEST_ACCESS_KEY', 'true');
 		await setEnvironmentVariable(baseURL!, 'IS_TEST', 'false');
 
 		await page.goto('/devTools');
 		await expect(page.locator('h1', { hasText: 'Developer tools' })).not.toBeVisible();
-		await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
-
-		// The `devTools.json` endpoint should be inaccesible when a key is set and no cookie is passed
-		await databaseWipe(baseURL!);
-		await page.goto('/');
-		await expect(page.locator('h1', { hasText: 'The big picture' })).not.toBeVisible();
 		await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
 
 		// Reset access key
@@ -271,6 +266,7 @@ test.describe('Access key', () => {
 
 		// Restore `IS_TEST` environment variable
 		await setEnvironmentVariable(baseURL!, 'IS_TEST', 'true');
+		await setEnvironmentVariable(baseURL!, 'TEST_ACCESS_KEY', 'false');
 	});
 
 	test('Visiting /vault redirects to access key page when one is set without the correct cookies', async ({

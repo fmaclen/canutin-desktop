@@ -21,6 +21,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	// We use `/devTools` in development or tests to bypass the `/vault` check logic
 	if (isEnvTest()) skipCheckPaths.push('/devTools');
+	if (env.TEST_ACCESS_KEY === 'true') skipCheckPaths.push('/devTools.json');
 
 	if (!skipCheckPaths.some((path) => event.url.pathname.includes(path))) {
 		// Vault
