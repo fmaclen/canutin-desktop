@@ -10,7 +10,7 @@
     "dev": "electron-esbuild dev",
     "build:all": "npm run build:electron && npm run build:sveltekit",
     "build:electron": "electron-esbuild build",
-    "build:sveltekit": "cd sveltekit && npm run build && cd .. && node scripts/sveltekit-package.js",
+    "build:sveltekit": "cd sveltekit && npm run build && cd .. && node scripts/sveltekit-package-electron.js",
     "test": "jest --watchAll",
     "package": "npm run build:all && electron-builder",
     "package:github": "node scripts/package-github.js"

@@ -1,0 +1,35 @@
+#!/bin/bash
+
+echo "
+                                        
+                                        
+                      ..,;:;,..         
+                  .':lkKNWWWNKxc.       
+                .'oKNWNkoccld0WWO;.     
+              .'oKWWW0:.    ..oXM0,     
+            .'oKWMMXOc.       .kWNl.    
+          .'oKWMMMMNKl.       'OMNc.    
+        .'oKWMMMMMMMWKo'.  ..;kWWx.     
+      .'oKWMMMMMMMMMMMWXkxdx0NWKl.      
+     .:0WMMMMMMMMMMMMMMMMMMMWKo'.       
+     ;KMMMMMMMMMMMMMMMMMMMWKo'.         
+    .oNMMMMMMMMMMMMMMMMMWKo'.           
+    .cXMMMMMMMMMMMMMMMWKo'.             
+     .dNMMMMMMMMMMMWNKo'.               
+      .cONMMMMMMMN0o:'.                 
+        .;ldkkkxo:..                    
+            ...                         
+                                        
+                                        
+"
+
+echo "-> Loading environment variables from `.env` file"
+export $(xargs <.env)
+
+echo "----> DATABASE_URL: $DATABASE_URL"
+echo "----> HOST: $HOST"
+echo "----> PORT: $PORT"
+
+echo ""
+echo "-> Starting server"
+node index.js

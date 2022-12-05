@@ -36,6 +36,18 @@ jobs:
       - name: Prepare package.json for release
         run: npm run package:github
 
+      - name: Package Linux server
+        if: matrix.os == 'ubuntu-latest'
+        run: ./scripts/sveltekit-package-server.sh
+        env:
+          APP_VERSION: ${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Release Linux server
+        if: matrix.os == 'ubuntu-latest'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./dist/canutin-server_*.tar.gz
+
       - name: Build & release Electron app
         uses: samuelmeuli/action-electron-builder@v1.6.0
         with:
