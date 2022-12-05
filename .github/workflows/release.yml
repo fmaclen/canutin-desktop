@@ -8,7 +8,7 @@ jobs:
   Release:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     name: Release (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
