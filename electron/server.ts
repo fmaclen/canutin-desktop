@@ -43,7 +43,7 @@ class Server {
         PORT: this.port,
         SVELTEKIT_PATH: svelteKitPath,
         DATABASE_URL: `file:${newVaultPath ? newVaultPath : this.vaultPath}`,
-        ELECTRON_SWITCHED_VAULT: "true",
+        SHOULD_CHECK_VAULT: "true",
         APP_VERSION: isDev
           ? require("../package.json").version
           : app.getVersion(),

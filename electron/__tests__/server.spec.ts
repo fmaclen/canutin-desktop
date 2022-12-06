@@ -13,7 +13,7 @@ describe("Server", () => {
     HOST: "127.0.0.1",
     SVELTEKIT_PATH: fakePathToSvelteKitIndex,
     DATABASE_URL: `file:${fakePathToVault}`,
-    ELECTRON_SWITCHED_VAULT: "true",
+    SHOULD_CHECK_VAULT: "true",
     APP_VERSION: require("../../package.json").version,
   };
 

@@ -19,7 +19,7 @@ const config: PlaywrightTestConfig = {
 		port: 4173,
 		env: {
 			IS_TEST: 'true', // Would have liked to use NODE_ENV=test but it gets overwritten to `development`
-			ELECTRON_SWITCHED_VAULT: 'true',
+			SHOULD_CHECK_VAULT: 'true',
 			DATABASE_URL: `file:${pathToTestVault}`,
 			APP_VERSION: 'v0.0.0-test'
 		}
