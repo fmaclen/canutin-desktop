@@ -7,12 +7,7 @@
 // release workflow to match the version in the tagged commit.
 
 // Get the version from the tagged commit
-const version = require("child_process")
-  .execSync("git describe --tags --abbrev=0")
-  .toString()
-  .replace(/\n/, "");
-
-console.info(`\n-> Latest tag detected: ${version}`);
+const version = process.env.APP_VERSION;
 
 // Check version matches semantic versioning (without the leading "v")
 // REGEX source: https://gist.github.com/jhorsman/62eeea161a13b80e39f5249281e17c39?permalink_comment_id=3034996#gistcomment-3034996
@@ -24,20 +19,20 @@ const isVersionValid =
 if (isVersionValid) {
   console.info(`\n-> Updating version in package.json\n`);
 
-  // Get the package.json contents and update version
-  const pathToPackageJson = require("path").join(
-    __dirname,
-    "..",
-    "package.json"
-  );
-  const packageJson = require(pathToPackageJson);
-  packageJson.version = version;
+  // Get the package.json contents
+  const pathToElectronPackageJson = require("path").join(__dirname, "..", "package.json"); // prettier-ignore
+  const pathToSvelteKitPackageJson = require("path").join(__dirname, "..", "resources", "sveltekit", "package.json"); // prettier-ignore
+
+  const electronPackageJson = require(pathToElectronPackageJson);
+  const svelteKitPackageJson = require(pathToSvelteKitPackageJson);
+
+  // Update the version on both package.json files
+  electronPackageJson.version = version;
+  svelteKitPackageJson.version = version;
 
   // Write the updated package.json
-  require("fs").writeFileSync(
-    pathToPackageJson,
-    JSON.stringify(packageJson, null, 2)
-  );
+  require("fs").writeFileSync(pathToElectronPackageJson, JSON.stringify(electronPackageJson, null, 2)); // prettier-ignore
+  require("fs").writeFileSync(pathToSvelteKitPackageJson, JSON.stringify(svelteKitPackageJson, null, 2)); // prettier-ignore
 } else {
   throw new Error(`'${version}' is not a valid semantically versioned tag`);
 }
