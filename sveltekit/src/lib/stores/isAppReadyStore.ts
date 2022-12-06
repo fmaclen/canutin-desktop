@@ -6,6 +6,6 @@ import { writable } from 'svelte/store';
 // except the store can only be updated from the front-end and because we are throwing
 // a redirect to `/` the load function in `/vault/+page.svelte`'s where we would
 // hypothetically update the store never runs.
-const isVaultReadyStore = writable(true);
+const isAppReadyStore = writable(true);
 
-export default isVaultReadyStore;
+export default isAppReadyStore;

@@ -24,7 +24,7 @@ export const load = async () => {
 		};
 
 	// Update the flag so we don't migrate again
-	env.ELECTRON_SWITCHED_VAULT = 'false';
+	env.SHOULD_CHECK_VAULT = 'false';
 
 	// Redirect to `The big picture` because vault is migrated and seeded
 	throw redirect(307, '/');

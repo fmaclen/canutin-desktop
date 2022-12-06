@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
@@ -17,16 +18,62 @@
 	import syncStatusStore from '$lib/stores/syncStatusStore';
 	import { SyncSettings, Appearance, EventFrequency } from '$lib/helpers/constants';
 	import type { ImportSync } from '$lib/helpers/import';
+	import { getAccessKeyCookie } from '$lib/helpers/accessKey';
 	import { api } from '$lib/helpers/misc';
 	import type { PageData } from './$types';
 
 	const title = 'Settings';
 
-	let isLoading: boolean = false;
-
 	export let data: PageData;
-	$: ({ syncStatus, syncSettings } = data);
+	$: ({ syncStatus, syncSettings, accessKey } = data);
 
+	const setStatusBar = (message: string, appearance: Appearance) => {
+		isLoading = false;
+		$statusBarStore = {
+			message,
+			appearance
+		};
+	};
+
+	// Acess key
+	let accessKeyValue = '';
+	$: isAccessKeyEnabled = false;
+
+	const handleAccessKeyForm = async (event: any) => {
+		try {
+			const response = await api({
+				endpoint: 'accessKey',
+				method: 'PATCH',
+				payload: event?.target?.accessKey?.value
+			});
+
+			document.cookie = getAccessKeyCookie(response.accessKey);
+			isAccessKeyEnabled = true;
+			setStatusBar('Access key has been set', Appearance.POSITIVE);
+		} catch (e) {
+			await goto('/accessKey');
+		}
+	};
+
+	const handleAccessKeyReset = async () => {
+		const confirmDeletion = window.confirm('Are you sure you want to reset the access key?');
+		if (!confirmDeletion) return;
+
+		const response = await api({
+			endpoint: 'accessKey',
+			method: 'DELETE'
+		});
+
+		if (response.accessKey === null) {
+			document.cookie = getAccessKeyCookie('', 0); // Resets existing cookie
+			accessKeyValue = '';
+			isAccessKeyEnabled = false;
+			setStatusBar('Access key has been removed', Appearance.ACTIVE);
+		}
+	};
+
+	// Sync
+	let isLoading: boolean = false;
 	$syncStatusStore = syncStatus || $syncStatusStore;
 	$: isSyncEnabled = $syncStatusStore.isSyncEnabled;
 	$: canutinFileUrlValue = '';
@@ -39,14 +86,6 @@
 		$statusBarStore = {
 			message,
 			appearance: Appearance.ACTIVE
-		};
-	};
-
-	const setResultStatus = (message: string, appearance: Appearance) => {
-		isLoading = false;
-		$statusBarStore = {
-			message,
-			appearance
 		};
 	};
 
@@ -74,7 +113,7 @@
 		});
 
 		// Update the status bar
-		setResultStatus(
+		setStatusBar(
 			response?.error
 				? response?.error
 				: response?.warning
@@ -95,6 +134,9 @@
 	}));
 
 	onMount(async () => {
+		accessKeyValue = accessKey ? accessKey : '';
+		isAccessKeyEnabled = accessKey !== undefined;
+
 		syncSettings.forEach((setting) => {
 			if (!setting) return;
 			switch (setting.name) {
@@ -120,8 +162,65 @@
 </svelte:head>
 
 <ScrollView {title}>
+	<Section title="Access key">
+		<div slot="CONTENT" data-test-id="settings-accessKey-form">
+			<Form on:submit={handleAccessKeyForm}>
+				<FormFieldset>
+					<FormField name="status" label="Status">
+						<FormNotice>
+							<FormNoticeNotice
+								appearance={isAccessKeyEnabled ? Appearance.POSITIVE : Appearance.WARNING}
+							>
+								<FormNoticeP>
+									<strong>Access key is {isAccessKeyEnabled ? 'enabled' : 'disabled'}</strong>
+								</FormNoticeP>
+								<FormNoticeP>
+									Setting an access key will prevent unauthorized access to the vault data through
+									the web interface or API endpoints.
+								</FormNoticeP>
+								<FormNoticeP>
+									This action does not encrypt the vault data or the data in transit.
+								</FormNoticeP>
+							</FormNoticeNotice>
+						</FormNotice>
+					</FormField>
+				</FormFieldset>
+				<FormFieldset>
+					<FormField name="accessKey" label="Key">
+						<div class="accessKeyGenerateField">
+							<FormInput type="password" name="accessKey" bind:value={accessKeyValue} />
+							{#if accessKeyValue}
+								<Button
+									type="button"
+									on:click={() => navigator.clipboard.writeText(accessKeyValue)}
+								>
+									Copy
+								</Button>
+							{:else}
+								<Button type="button" on:click={() => (accessKeyValue = crypto.randomUUID())}>
+									Generate
+								</Button>
+							{/if}
+						</div>
+					</FormField>
+				</FormFieldset>
+				<FormFooter>
+					<Button disabled={!isAccessKeyEnabled} on:click={handleAccessKeyReset} type="button">
+						Reset
+					</Button>
+					<Button
+						disabled={!accessKeyValue}
+						appearance={isAccessKeyEnabled ? undefined : Appearance.ACTIVE}
+					>
+						{isAccessKeyEnabled ? 'Update' : 'Enable'}
+					</Button>
+				</FormFooter>
+			</Form>
+		</div>
+	</Section>
+
 	<Section title="Sync">
-		<div slot="CONTENT" class="import">
+		<div slot="CONTENT" data-test-id="settings-sync-form">
 			<Form on:submit={handleSyncForm}>
 				<FormFieldset>
 					<FormField name="status" label="Status">
@@ -132,13 +231,14 @@
 								<FormNoticeP>
 									<strong>Sync is {isSyncEnabled ? 'enabled' : 'disabled'}</strong>
 								</FormNoticeP>
-								{#if !isSyncEnabled}
-									<FormNoticeP>
-										Enable syncing by providing a URL that can be fetched as a CanutinFile JSON
-										payload. On every sync the vault will be updated with any new data found,
-										duplicates will be ignored.
-									</FormNoticeP>
-								{/if}
+								<FormNoticeP>
+									Syncing allows data to be fetched as a CanutinFile JSON payload from an external
+									server.
+								</FormNoticeP>
+								<FormNoticeP>
+									On every sync the vault will be updated with any new data found, duplicates will
+									be ignored.
+								</FormNoticeP>
 							</FormNoticeNotice>
 						</FormNotice>
 					</FormField>
@@ -175,7 +275,10 @@
 					</FormField>
 				</FormFieldset>
 				<FormFooter>
-					<Button appearance={Appearance.ACTIVE} disabled={!canutinFileUrlValue}>
+					<Button
+						disabled={!canutinFileUrlValue}
+						appearance={isSyncEnabled ? undefined : Appearance.ACTIVE}
+					>
 						{isSyncEnabled ? 'Update' : 'Enable'}
 					</Button>
 				</FormFooter>
@@ -183,3 +286,11 @@
 		</div>
 	</Section>
 </ScrollView>
+
+<style lang="scss">
+	div.accessKeyGenerateField {
+		display: grid;
+		grid-template-columns: auto max-content;
+		column-gap: 8px;
+	}
+</style>

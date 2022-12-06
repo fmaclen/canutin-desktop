@@ -5,6 +5,7 @@ import canutinFileFixture from '../../../tests/fixtures/canutinFile-maximum-data
 import prisma from '$lib/helpers/prisma';
 import seedDemoData from '$lib/seed';
 import { env } from '$env/dynamic/private';
+import { isEnvTest } from '$lib/helpers/tests.server';
 import { DeveloperFunctions } from '$lib/helpers/constants';
 import type { CanutinFile } from '$lib/helpers/import';
 
@@ -17,8 +18,8 @@ export const POST = async ({ url }: { url: URL }) => {
 	const functionType = getFunctionType(url);
 
 	const setEnvironmentVariable = (name: string, value: string) => {
-		// Don't allow setting environment variables unless it's part of a test
-		if (process.env.NODE_ENV && ['CI', 'test'].includes(process.env.NODE_ENV)) return;
+		// Don't allow setting environment variables unless it's in the context of a test
+		if (!isEnvTest() && env.TEST_ACCESS_KEY !== 'true') return;
 
 		process.env[`${name}`] = value;
 		env[`${name}`] = value;
@@ -55,7 +56,7 @@ export const POST = async ({ url }: { url: URL }) => {
 			const dbUrlParam = url.searchParams.get('dbUrl');
 			const dbUrl = dbUrlParam ? dbUrlParam : env.DATABASE_URL;
 
-			setEnvironmentVariable('ELECTRON_SWITCHED_VAULT', 'true');
+			setEnvironmentVariable('SHOULD_CHECK_VAULT', 'true');
 			dbUrl && setEnvironmentVariable('DATABASE_URL', dbUrl);
 			break;
 		}

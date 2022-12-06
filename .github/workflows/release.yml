@@ -17,28 +17,57 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
 
+      - name: Bump version and push tag
+        id: tag_version
+        uses: cycjimmy/semantic-release-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Only continue with these steps if the commit is tagged
+
+      - name: Install Electron dependencies
+        if: ${{ steps.tag_version.outputs.new_release_git_tag }}
+        run: npm ci
+
       - name: Install SvelteKit dependencies
+        if: ${{ steps.tag_version.outputs.new_release_git_tag }}
         working-directory: ./sveltekit
         run: npm ci
 
       - name: Install Prisma's dependencies
+        if: ${{ steps.tag_version.outputs.new_release_git_tag }}
         working-directory: ./sveltekit
         run: npx prisma generate
 
-      - name: Install Electron dependencies
-        run: npm ci
+      - name: "Generate Sveltekit build"
+        if: ${{ steps.tag_version.outputs.new_release_git_tag }}
+        run: npm run build:sveltekit
 
-      - name: Run semantic release
-        run: npx semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Prepare package.json for release
+      - name: Update package.json's with app version
+        if: ${{ steps.tag_version.outputs.new_release_git_tag }}
         run: npm run package:github
+        env:
+          APP_VERSION: ${{ steps.tag_version.outputs.new_release_git_tag }}
 
       - name: Build & release Electron app
+        if: ${{ steps.tag_version.outputs.new_release_git_tag }}
         uses: samuelmeuli/action-electron-builder@v1.6.0
         with:
           github_token: ${{ secrets.github_token }}
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-          build_script_name: "build:all"
+          build_script_name: "build:electron"
+          release: true
+
+      - name: Package Linux server
+        # - Needs to run after the Electron build because it relies on the files and directories created in that step.
+        # - Only create a release for the Linux server when action runs in Ubuntu.
+        if: ${{ matrix.os == 'ubuntu-latest' && steps.tag_version.outputs.new_release_git_tag }}
+        run: npm run package:linux-server
+        env:
+          APP_VERSION: ${{ steps.tag_version.outputs.new_release_git_tag }}
+
+      - name: Release Linux server
+        if: ${{ matrix.os == 'ubuntu-latest' && steps.tag_version.outputs.new_release_git_tag }}
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag_version.outputs.new_release_git_tag }}
+          files: ./dist/canutin-server_*.tar.gz

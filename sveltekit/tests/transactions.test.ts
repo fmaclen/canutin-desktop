@@ -295,10 +295,11 @@ test.describe('Transactions', () => {
 
 		// Check `accountId` filter is applied
 		await page.locator('a', { hasText: '672' }).click();
+		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
 		await expect(tableNotice).not.toBeVisible();
+		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
 		expect(await cardTransactions.textContent()).toMatch('672');
 		expect(await cardNetBalance.textContent()).toMatch('$437.73');
-		expect(await keywordInput.inputValue()).toMatch(/accountId:\d+/); // e.g. "accountId:123"
 		expect(await formSelect.inputValue()).toBe('7'); // Lifetime
 		await expect(clearFiltersButton).not.toBeDisabled();
 

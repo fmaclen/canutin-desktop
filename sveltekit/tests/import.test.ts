@@ -306,6 +306,7 @@ test.describe('Import CanutinFile', () => {
 
 		// Check that the transactions are not duplicated
 		await page.locator('a', { hasText: 'Transactions' }).click();
+		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
 		expect(await tableRows.count()).toBe(1);
 
 		await formSelect.selectOption('7'); // Lifetime
