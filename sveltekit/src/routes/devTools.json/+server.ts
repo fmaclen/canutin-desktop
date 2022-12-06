@@ -56,7 +56,7 @@ export const POST = async ({ url }: { url: URL }) => {
 			const dbUrlParam = url.searchParams.get('dbUrl');
 			const dbUrl = dbUrlParam ? dbUrlParam : env.DATABASE_URL;
 
-			setEnvironmentVariable('ELECTRON_SWITCHED_VAULT', 'true');
+			setEnvironmentVariable('SHOULD_CHECK_VAULT', 'true');
 			dbUrl && setEnvironmentVariable('DATABASE_URL', dbUrl);
 			break;
 		}

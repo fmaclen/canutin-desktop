@@ -26,9 +26,10 @@ echo "
 echo "-> Loading environment variables from `.env` file"
 export $(xargs <.env)
 
-echo "----> DATABASE_URL: $DATABASE_URL"
 echo "----> HOST: $HOST"
 echo "----> PORT: $PORT"
+echo "----> DATABASE_URL: $DATABASE_URL"
+echo "----> SHOULD_CHECK_VAULT: $SHOULD_CHECK_VAULT"
 
 echo ""
 echo "-> Starting server"
