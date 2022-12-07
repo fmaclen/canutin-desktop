@@ -1,8 +1,8 @@
 import Values from 'values.js';
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 import type { ChartDataset } from 'chart.js';
 
-import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
+import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models.server';
 import { sub, eachWeekOfInterval, endOfWeek } from 'date-fns';
 import { BalanceGroup, SortOrder } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';

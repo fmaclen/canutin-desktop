@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 import { AccessKeySettings } from '$lib/helpers/constants';
 import { getVaultAccessKey, isRequestAuthorized } from '$lib/helpers/accessKey.server';
 

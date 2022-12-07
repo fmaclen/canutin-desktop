@@ -1,5 +1,5 @@
 import { SortOrder } from '$lib/helpers/constants';
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 
 export const load = async () => {
 	const earliestTransaction = await prisma.transaction.findFirst({

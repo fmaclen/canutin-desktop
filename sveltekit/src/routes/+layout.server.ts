@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/private';
 
-import { getSyncStatus } from '$lib/helpers/import';
+import { getSyncStatus } from '$lib/helpers/import.server';
 
 export const load = async () => {
 	return {

@@ -1,6 +1,9 @@
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 import { AccessKeySettings, ACCESS_KEY_COOKIE_NAME } from '$lib/helpers/constants';
-import type { AccessKeyStatusStore } from '$lib/stores/accessKeyStatusStore';
+
+interface AcessKey {
+	accessKey: string | undefined;
+}
 
 export const getVaultAccessKey = async () => {
 	return await prisma.setting.findUnique({
@@ -9,7 +12,7 @@ export const getVaultAccessKey = async () => {
 	});
 };
 
-export const getAccessKeySettings = async (): Promise<AccessKeyStatusStore> => {
+export const getAccessKeySettings = async (): Promise<AcessKey> => {
 	const accessKey = await getVaultAccessKey();
 
 	return {

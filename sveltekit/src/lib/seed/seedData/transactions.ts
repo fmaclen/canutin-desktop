@@ -1,4 +1,4 @@
-import { getTransactionCategoryId } from '$lib/helpers/models';
+import { getTransactionCategoryId } from '$lib/helpers/models.server';
 import { addDays, startOfMonth, subMonths } from 'date-fns';
 
 const MONTHS_IN_SET = 24;

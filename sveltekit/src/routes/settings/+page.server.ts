@@ -1,7 +1,7 @@
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 import type { Setting } from '@prisma/client';
 import { SyncSettings } from '$lib/helpers/constants';
-import { getSyncStatus } from '$lib/helpers/import';
+import { getSyncStatus } from '$lib/helpers/import.server';
 import { getAccessKeySettings } from '$lib/helpers/accessKey.server';
 
 export const load = async () => {
