@@ -3,12 +3,8 @@ import type { RequestEvent } from '@sveltejs/kit';
 
 import prisma from '$lib/helpers/prisma.server';
 import { SyncSettings } from '$lib/helpers/constants';
-import {
-	importFromCanutinFile,
-	getSyncStatus,
-	type ImportSummary,
-	type ImportSync
-} from '$lib/helpers/import';
+import { importFromCanutinFile, getSyncStatus } from '$lib/helpers/import.server';
+import type { ImportSummary, ImportSync } from '$lib/helpers/import';
 
 const fetchCanutinFile = async (syncUrl: string, syncCookie?: string, syncJwt?: string) => {
 	try {
