@@ -1,5 +1,5 @@
 import prisma from '$lib/helpers/prisma.server';
-import { getSelectTransactionCategories, getSelectAccounts } from '$lib/helpers/forms';
+import { getSelectTransactionCategories, getSelectAccounts } from '$lib/helpers/forms.server';
 import { notFound } from '$lib/helpers/misc';
 import { redirect } from '@sveltejs/kit';
 

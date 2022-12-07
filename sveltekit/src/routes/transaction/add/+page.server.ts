@@ -1,4 +1,4 @@
-import { getSelectTransactionCategories, getSelectAccounts } from '$lib/helpers/forms';
+import { getSelectTransactionCategories, getSelectAccounts } from '$lib/helpers/forms.server';
 
 export const load = async () => {
 	const selectAccounts = await getSelectAccounts();

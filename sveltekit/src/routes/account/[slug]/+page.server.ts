@@ -1,12 +1,13 @@
 import prisma from '$lib/helpers/prisma.server';
-import { getSelectAccountTypes, selectBalanceGroups } from '$lib/helpers/forms';
-import type { Account } from '@prisma/client';
+import { getSelectAccountTypes } from '$lib/helpers/forms.server';
+import { selectBalanceGroups } from '$lib/helpers/forms';
 import { SortOrder } from '$lib/helpers/constants';
 import { notFound } from '$lib/helpers/misc';
 import { handlePeriodEnd, setChartDatasetColor } from '$lib/helpers/charts';
-import type { ChartDataset } from 'chart.js';
 import { eachWeekOfInterval, startOfWeek } from 'date-fns';
 import { getAccountCurrentBalance } from '$lib/helpers/models.server';
+import type { ChartDataset } from 'chart.js';
+import type { Account } from '@prisma/client';
 
 interface Params {
 	slug: string | null;
