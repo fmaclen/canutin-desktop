@@ -1,4 +1,4 @@
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 import { getSelectAccountTypes, selectBalanceGroups } from '$lib/helpers/forms';
 import type { Account } from '@prisma/client';
 import { SortOrder } from '$lib/helpers/constants';

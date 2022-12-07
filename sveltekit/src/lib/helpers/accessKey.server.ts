@@ -1,4 +1,4 @@
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 import { AccessKeySettings, ACCESS_KEY_COOKIE_NAME } from '$lib/helpers/constants';
 
 interface AcessKey {

@@ -1,6 +1,6 @@
 import { getUnixTime } from 'date-fns';
 
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 import type { Account, AccountType } from '@prisma/client';
 import { getAccountCurrentBalance } from '$lib/helpers/models';
 

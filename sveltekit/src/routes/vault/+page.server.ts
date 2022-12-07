@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-import { validateVaultMigration, validateVaultSeed } from '$lib/helpers/prisma';
+import { validateVaultMigration, validateVaultSeed } from '$lib/helpers/prisma.server';
 
 export const load = async () => {
 	const isMigrated = await validateVaultMigration();

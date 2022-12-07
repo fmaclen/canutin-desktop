@@ -1,5 +1,5 @@
 import { BalanceGroup, getBalanceGroupLabel, SortOrder } from '$lib/helpers/constants';
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 
 export interface CRUDResponse {
 	payload?: any; /// e.g. Prisma.BatchPayload | Account | Asset | Transaction | number | etc...

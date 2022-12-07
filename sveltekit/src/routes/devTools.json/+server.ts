@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 
 import canutinFileFixture from '../../../tests/fixtures/canutinFile-maximum-data.json';
 
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 import seedDemoData from '$lib/seed';
 import { env } from '$env/dynamic/private';
 import { isEnvTest } from '$lib/helpers/tests.server';

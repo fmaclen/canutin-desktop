@@ -1,4 +1,4 @@
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 import type { Account } from '@prisma/client';
 import type { Asset } from '@prisma/client';
 import { fromUnixTime } from 'date-fns';

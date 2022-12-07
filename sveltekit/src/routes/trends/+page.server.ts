@@ -1,5 +1,5 @@
 import Values from 'values.js';
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 import type { ChartDataset } from 'chart.js';
 
 import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';

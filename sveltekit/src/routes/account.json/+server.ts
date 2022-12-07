@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { Prisma } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
-import prisma, { crudResponse, handleError } from '$lib/helpers/prisma';
+import prisma, { crudResponse, handleError } from '$lib/helpers/prisma.server';
 
 // Create new account
 export const POST = async ({ request }: RequestEvent) => {

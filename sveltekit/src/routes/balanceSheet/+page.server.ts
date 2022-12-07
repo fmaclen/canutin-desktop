@@ -1,4 +1,4 @@
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 import { getBalanceGroupLabel, SortOrder, BalanceGroup } from '$lib/helpers/constants';
 import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models';
 import { sortByKey } from '$lib/helpers/misc';

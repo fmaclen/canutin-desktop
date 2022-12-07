@@ -1,7 +1,7 @@
 import { getUnixTime } from 'date-fns';
 import { json } from '@sveltejs/kit';
 
-import { getPrismaModelNames } from '$lib/helpers/prisma';
+import { getPrismaModelNames } from '$lib/helpers/prisma.server';
 import { SortOrder } from '$lib/helpers/constants';
 import { PrismaClient } from '@prisma/client';
 

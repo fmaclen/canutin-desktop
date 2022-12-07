@@ -1,7 +1,7 @@
 import { fromUnixTime } from 'date-fns';
 import { Prisma } from '@prisma/client';
 
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 import {
 	formatTransactionDescription,
 	formatTransactionDate,

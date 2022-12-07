@@ -3,7 +3,7 @@ import {
 	getQuantifiableAssetTypes,
 	selectBalanceGroups
 } from '$lib/helpers/forms';
-import prisma from '$lib/helpers/prisma';
+import prisma from '$lib/helpers/prisma.server';
 import type { Asset } from '@prisma/client';
 import { SortOrder } from '$lib/helpers/constants';
 import { notFound } from '$lib/helpers/misc';

@@ -8,7 +8,7 @@ import type {
 	TransactionCategory,
 	TransactionImport
 } from '@prisma/client';
-import prisma, { crudResponse, handleError } from '$lib/helpers/prisma';
+import prisma, { crudResponse, handleError } from '$lib/helpers/prisma.server';
 import { SortOrder } from '$lib/helpers/constants';
 
 export interface TransactionResponse extends Omit<Transaction, 'date'> {
