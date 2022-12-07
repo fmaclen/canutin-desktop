@@ -1,7 +1,11 @@
 #!/bin/bash
 
-echo "
-                                        
+COLOR_BLUE_START="\033[0;34m"
+COLOR_GREEN_START="\033[1;32m"
+COLOR_END="\033[0m"
+
+echo -e "
+${COLOR_BLUE_START}
                                         
                       ..,;:;,..         
                   .':lkKNWWWNKxc.       
@@ -20,16 +24,20 @@ echo "
         .;ldkkkxo:..                    
             ...                         
                                         
-                                        
+${COLOR_END}
 "
 
-echo "-> Loading environment variables from `.env` file"
+# Set environment variables from `.env` file
 export $(xargs <.env)
 
-echo "----> HOST: $HOST"
-echo "----> PORT: $PORT"
-echo "----> DATABASE_URL: $DATABASE_URL"
-echo "----> SHOULD_CHECK_VAULT: $SHOULD_CHECK_VAULT"
+# Set version from package.json
+APP_VERSION=$(node -p "require('./package.json').version")
+
+echo -e "----> HOST: ${COLOR_GREEN_START} $HOST ${COLOR_END}"
+echo -e "----> PORT: ${COLOR_GREEN_START} $PORT ${COLOR_END}"
+echo -e "----> DATABASE_URL: ${COLOR_GREEN_START} $DATABASE_URL ${COLOR_END}"
+echo -e "----> SHOULD_CHECK_VAULT: ${COLOR_GREEN_START} $SHOULD_CHECK_VAULT ${COLOR_END}"
+echo -e "----> APP_VERSION: ${COLOR_GREEN_START} $APP_VERSION ${COLOR_END}"
 
 echo ""
 echo "-> Starting server"
