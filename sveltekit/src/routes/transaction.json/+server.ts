@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { Prisma } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
 import prisma, { handleError, crudResponse } from '$lib/helpers/prisma.server';
-import { formatTransactionDate, formatTransactionDescription } from '$lib/helpers/models';
+import { formatTransactionDate, formatTransactionDescription } from '$lib/helpers/models.server';
 
 // Create new transaction
 export const POST = async ({ request }: RequestEvent) => {

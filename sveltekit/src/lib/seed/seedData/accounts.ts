@@ -1,5 +1,5 @@
 import { BalanceGroup } from '$lib/helpers/constants';
-import { getModelType } from '$lib/helpers/models';
+import { getModelType } from '$lib/helpers/models.server';
 
 export const accountCheckingDetails = {
 	name: "Bob's Laughable-Yield Checking",

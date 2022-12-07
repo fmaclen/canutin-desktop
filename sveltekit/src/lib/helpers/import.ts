@@ -7,7 +7,7 @@ import {
 	formatTransactionDate,
 	getModelType,
 	getTransactionCategoryId
-} from '$lib/helpers/models';
+} from '$lib/helpers/models.server';
 import { SyncSettings } from './constants';
 import type { SyncStatusStore } from '$lib/stores/syncStatusStore';
 

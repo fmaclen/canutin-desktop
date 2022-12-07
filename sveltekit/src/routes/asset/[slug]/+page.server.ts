@@ -10,7 +10,7 @@ import { notFound } from '$lib/helpers/misc';
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import type { ChartDataset } from 'chart.js';
 import { eachWeekOfInterval, startOfWeek } from 'date-fns';
-import { getAssetCurrentBalance } from '$lib/helpers/models';
+import { getAssetCurrentBalance } from '$lib/helpers/models.server';
 import { handlePeriodEnd } from '$lib/helpers/charts';
 
 interface Params {

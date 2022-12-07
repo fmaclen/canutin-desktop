@@ -6,7 +6,7 @@ import { notFound } from '$lib/helpers/misc';
 import { handlePeriodEnd, setChartDatasetColor } from '$lib/helpers/charts';
 import type { ChartDataset } from 'chart.js';
 import { eachWeekOfInterval, startOfWeek } from 'date-fns';
-import { getAccountCurrentBalance } from '$lib/helpers/models';
+import { getAccountCurrentBalance } from '$lib/helpers/models.server';
 
 interface Params {
 	slug: string | null;
