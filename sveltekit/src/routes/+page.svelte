@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { endOfMonth, format, fromUnixTime } from 'date-fns';
+	import { endOfMonth, format, fromUnixTime, startOfMonth } from 'date-fns';
 	import type { PageData } from './$types';
 
 	import ScrollView from '$lib/components/ScrollView.svelte';
@@ -87,7 +87,7 @@
 					<a
 						on:mouseenter={() => setActivePeriod(period)}
 						href="/transactions
-							?periodFrom={format(month, 'yyyy-MM-dd')}
+							?periodFrom={format(startOfMonth(month), 'yyyy-MM-dd')}
 							&periodTo={format(endOfMonth(month), 'yyyy-MM-dd')}
 							&periodLabel={format(month, 'MMMM yyyy')}
 						"
