@@ -17,6 +17,7 @@
 	import { Appearance } from '$lib/helpers/constants';
 	import { api } from '$lib/helpers/misc';
 	import type { PageData } from './$types';
+	import FlashAlert from '$lib/components/FlashAlert.svelte';
 
 	export let data: PageData;
 	$: disabledLink = !$isAppReadyStore && 'layout__a--disabled'; // Disabled links
@@ -143,6 +144,8 @@
 		}, 1000);
 	});
 </script>
+
+<FlashAlert />
 
 <div class="layout">
 	<a class="layout__logo" href="/">
