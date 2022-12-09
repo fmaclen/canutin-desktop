@@ -1,9 +1,9 @@
 import path from 'path';
 import fs from 'fs';
 import fetch from 'node-fetch';
-import type { TestInfo } from '@playwright/test';
+import { expect, type Page, type TestInfo } from '@playwright/test';
 
-import { DeveloperFunctions } from '../../src/lib/helpers/constants.js';
+import { Appearance, DeveloperFunctions } from '../../src/lib/helpers/constants.js';
 
 export const pathToTestVault = path.join(process.cwd(), 'tests', 'tmp', 'Canutin.vault.test');
 
@@ -72,4 +72,33 @@ export const MAX_DIFF_PIXEL_RATIO = 0.075;
 // REF: https://github.com/microsoft/playwright/issues/7575#issuecomment-1240566545
 export const setSnapshotPath = (testInfo: TestInfo) => {
 	testInfo.snapshotPath = (name: string) => `${testInfo.file}-snapshots/${name}`;
+};
+
+export const expectToastAndDismiss = async (
+	page: Page,
+	message: string,
+	appearance?: Appearance
+) => {
+	const toast = page.locator('.toastLi');
+	expect(await toast.textContent()).toMatch(message);
+
+	switch (appearance) {
+		case Appearance.ACTIVE:
+			await expect(toast).toHaveClass(/toastLi--active/);
+			break;
+		case Appearance.NEGATIVE:
+			await expect(toast).toHaveClass(/toastLi--negative/);
+			break;
+		case Appearance.POSITIVE:
+			await expect(toast).toHaveClass(/toastLi--positive/);
+			break;
+		default:
+			await expect(toast).not.toHaveClass(/toastLi--/);
+	}
+
+	const toastDismissButton = page.locator('._toastBtn');
+	await toastDismissButton.click();
+
+	await delay(); // Wait for the toast outro animation to complete
+	await expect(toast).not.toBeVisible();
 };

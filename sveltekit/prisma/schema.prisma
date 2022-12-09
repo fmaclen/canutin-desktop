@@ -76,6 +76,16 @@ model AssetType {
   assets    Asset[]
 }
 
+model Event {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  message      String
+  dismissAfter Int      @default(5000)
+  appearance   String?
+  status       String?
+}
+
 model Transaction {
   id                  Int                 @id @default(autoincrement())
   createdAt           DateTime            @default(now())

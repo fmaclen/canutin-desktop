@@ -46,6 +46,7 @@ export const POST = async ({ url }: { url: URL }) => {
 		case DeveloperFunctions.DB_WIPE:
 			await wipeAccountsAssets();
 			await prisma.setting.deleteMany();
+			await prisma.event.deleteMany();
 			break;
 
 		case DeveloperFunctions.DB_SEED:

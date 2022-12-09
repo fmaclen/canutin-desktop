@@ -1,7 +1,8 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import { expect, test } from '@playwright/test';
-import { databaseWipe, delay } from './fixtures/helpers.js';
+import { databaseWipe, delay, expectToastAndDismiss } from './fixtures/helpers.js';
+import { Appearance } from '$lib/helpers/constants.js';
 
 test.describe('Import CanutinFile', () => {
 	test.beforeEach(async ({ baseURL }) => {
@@ -24,11 +25,8 @@ test.describe('Import CanutinFile', () => {
 			'./tests/fixtures/canutinFile-insufficient-data.json'
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
-
-		expect(await page.locator('.statusBar--negative').textContent()).toMatch(
-			'The CanutinFile provided is invalid'
-		);
 		expect(await importStatus.count()).toBe(0);
+		await expectToastAndDismiss(page, 'The CanutinFile provided is invalid', Appearance.NEGATIVE);
 
 		// Import some data
 		await page.setInputFiles(
@@ -36,25 +34,7 @@ test.describe('Import CanutinFile', () => {
 			'./tests/fixtures/canutinFile-minimum-data.json'
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
-		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).not.toHaveClass(/statusBar--negative/);
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).toMatch('Import was successful');
-
-		// The successful notice can be dismissed
-		const dismissButton = page.locator('.button', { hasText: 'Dismiss' });
-		expect(dismissButton).toBeVisible();
-
-		await dismissButton.click();
-		expect(dismissButton).not.toBeVisible();
-		await expect(statusBar).not.toHaveClass(/statusBar--negative/);
-		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).not.toMatch('Import was successful');
-
-		await delay();
-		expect(await statusBar.textContent()).toMatch(
-			'Vault data was last updated less than 5 seconds ago'
-		);
+		await expectToastAndDismiss(page, 'Import was successful', Appearance.POSITIVE);
 
 		let importStatusSection = page.locator('data-test-id=accounts-import-summary');
 		expect(await importStatusSection.textContent()).toMatch('Created 1');
@@ -95,7 +75,7 @@ test.describe('Import CanutinFile', () => {
 			'./tests/fixtures/canutinFile-maximum-data.json'
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
-		await expect(statusBar).not.toHaveClass(/statusBar--negative/);
+		await expectToastAndDismiss(page, 'Import was successful', Appearance.POSITIVE);
 
 		importStatusSection = page.locator('data-test-id=accounts-import-summary');
 		expect(await importStatusSection.textContent()).toMatch('Created 1');
@@ -156,7 +136,7 @@ test.describe('Import CanutinFile', () => {
 			'./tests/fixtures/canutinFile-only-accounts.json'
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
-		await expect(page.locator('.statusBar')).not.toHaveClass(/statusBar--negative/);
+		await expectToastAndDismiss(page, 'Import was successful', Appearance.POSITIVE);
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
 		expect(await page.textContent('.card__value--netWorth')).toBe('$849');
@@ -168,7 +148,7 @@ test.describe('Import CanutinFile', () => {
 		await page.locator('a', { hasText: 'Import file' }).click();
 		await page.setInputFiles('input[type="file"]', './tests/fixtures/canutinFile-only-assets.json');
 		await page.locator('button', { hasText: 'Upload' }).click();
-		await expect(page.locator('.statusBar')).not.toHaveClass(/statusBar--negative/);
+		await expectToastAndDismiss(page, 'Import was successful', Appearance.POSITIVE);
 
 		await page.locator('a', { hasText: 'The big picture' }).click();
 		expect(await page.textContent('.card__value--netWorth')).toBe('$75,991');
@@ -208,6 +188,7 @@ test.describe('Import CanutinFile', () => {
 			expect(importSummary.error).toBe('The CanutinFile provided is invalid');
 			expect(importSummary.importedAccounts).toBeDefined();
 			expect(importSummary.importedAssets).toBeDefined();
+			await expectToastAndDismiss(page, 'The CanutinFile provided is invalid', Appearance.NEGATIVE);
 
 			await page.reload();
 			expect(await page.textContent('.card__value--netWorth')).toBe('$0');
@@ -228,6 +209,7 @@ test.describe('Import CanutinFile', () => {
 			expect(importSummary.error).not.toBeDefined();
 			expect(importSummary.importedAccounts).toBeDefined();
 			expect(importSummary.importedAssets).toBeDefined();
+			await expectToastAndDismiss(page, 'Import was successful', Appearance.POSITIVE);
 
 			await page.reload();
 			expect(await page.textContent('.card__value--netWorth')).toBe('$7,571');
@@ -244,11 +226,7 @@ test.describe('Import CanutinFile', () => {
 			'./tests/fixtures/canutinFile-maximum-data.json'
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
-		const dismissButton = page.locator('.button', { hasText: 'Dismiss' });
-		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
-
-		await dismissButton.click();
+		await expectToastAndDismiss(page, 'Import was successful', Appearance.POSITIVE);
 
 		// Check that the transactions are imported
 		const formSelect = page.locator('.formSelect__select');
@@ -277,6 +255,8 @@ test.describe('Import CanutinFile', () => {
 		for (let i = 1; i < '3,500.25'.length; i++) await page.keyboard.press('Backspace');
 		await page.keyboard.type('9999', { delay: 25 });
 		await page.locator('button', { hasText: 'Save' }).click();
+
+		const dismissButton = page.locator('.button', { hasText: 'Dismiss' });
 		await dismissButton.click();
 		expect(await tableRows.count()).toBe(1);
 
@@ -293,8 +273,6 @@ test.describe('Import CanutinFile', () => {
 		expect(await cardNetBalance.textContent()).toMatch('-$2,900.50');
 
 		// Import again
-		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
-
 		await page.locator('a.layout__a', { hasText: 'Add or update data' }).click();
 		await page.locator('a', { hasText: 'Import file' }).click();
 		await page.setInputFiles(
@@ -302,7 +280,7 @@ test.describe('Import CanutinFile', () => {
 			'./tests/fixtures/canutinFile-maximum-data.json'
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		await expectToastAndDismiss(page, 'Import was successful', Appearance.POSITIVE);
 
 		// Check that the transactions are not duplicated
 		await page.locator('a', { hasText: 'Transactions' }).click();
@@ -331,13 +309,11 @@ test.describe('Import CanutinFile', () => {
 			'./tests/fixtures/canutinFile-duplicated-transactions.json'
 		);
 		await page.locator('button', { hasText: 'Upload' }).click();
-		const dismissButton = page.locator('.button', { hasText: 'Dismiss' });
-		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		await expectToastAndDismiss(page, 'Import was successful', Appearance.POSITIVE);
+
 		expect(await page.locator('section.section', { hasText: 'Accounts' }).first().textContent()).toMatch('Created 1'); // prettier-ignore
 		expect(await page.locator('section.section', { hasText: 'Accounts Transactions' }).textContent()).toMatch('Duplicates (Skipped) 2'); // prettier-ignore
 
-		await dismissButton.click();
 		await page.locator('a', { hasText: 'Transactions' }).click();
 
 		const formInput = page.locator('.formInput__input');
