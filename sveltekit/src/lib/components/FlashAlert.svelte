@@ -6,7 +6,7 @@
 	import { Appearance, EventStatus } from '$lib/helpers/constants';
 	import { api } from '$lib/helpers/misc';
 
-	// HACK: only `svelte-toast` can render HTML around the message in a toast.
+	// HACK: only way `svelte-toast` can render HTML around the message in a toast.
 	// This implementation adds a loading icon next to the message.
 	const addLoadingIcon = (message: string) => {
 		return `
@@ -36,22 +36,33 @@
 		`;
 	};
 
-	const getColorTheme = (appearance: Appearance) => {
+	const setColorTheme = (appearance: Appearance | null) => {
 		switch (appearance) {
 			case Appearance.ACTIVE:
-				return { '--toastBackground': 'var(--color-bluePrimary)' };
+				return {
+					classes: ['toastLi', 'toastLi--active'],
+					theme: { '--toastBackground': 'var(--color-bluePrimary)' }
+				};
 			case Appearance.POSITIVE:
-				return { '--toastBackground': 'var(--color-greenPrimary)' };
+				return {
+					classes: ['toastLi', 'toastLi--positive'],
+					theme: { '--toastBackground': 'var(--color-greenPrimary)' }
+				};
 			case Appearance.NEGATIVE:
-				return { '--toastBackground': 'var(--color-redPrimary)' };
+				return {
+					classes: ['toastLi', 'toastLi--negative'],
+					theme: { '--toastBackground': 'var(--color-redPrimary)' }
+				};
 			default:
-				return { '--toastBackground': 'var(--color-black-alpha65)' };
+				return {
+					classes: ['toastLi'],
+					theme: { '--toastBackground': 'var(--color-black-alpha65)' }
+				};
 		}
 	};
 
 	const ONE_SECOND_IN_MILLISECONDS = 1000;
-
-	const ongoingEvents: [number, number][] = [];
+	const ongoingEvents: [number, number][] = []; // Queue of ongoing events
 
 	const getEvents = async () => {
 		const events: Event[] = await api({ endpoint: 'event' });
@@ -66,15 +77,18 @@
 
 		// Push new events to the toast queue
 		for (const event of events) {
+			// Skip events that are already in the ongoing events queue
 			if (ongoingEvents.some((activeEventId) => activeEventId[1] === event.id)) continue;
 
+			const shouldAutoDismiss = event.dismissAfter !== 0;
 			const isEventOngoing = event.status === EventStatus.ONGOING;
+
 			const toastId = toast.push(isEventOngoing ? addLoadingIcon(event.message) : event.message, {
-				initial: event.dismissAfter > 0 ? 1 : 0,
-				duration: event.dismissAfter > 0 ? event.dismissAfter : undefined,
+				initial: shouldAutoDismiss ? 1 : 0,
+				duration: shouldAutoDismiss ? event.dismissAfter : undefined,
 				reversed: true,
 				dismissable: !isEventOngoing,
-				theme: event !== null ? getColorTheme(event.appearance) : undefined
+				...setColorTheme(event.appearance as Appearance | null)
 			});
 
 			// Push ongoing events to the ongoing events queue
@@ -93,13 +107,24 @@
 	});
 </script>
 
-<SvelteToast />
+<div class="toastContainer">
+	<SvelteToast />
+
+	<!-- 
+		HACK: The following elements supresses the SvelteKit warning `No scopable elements
+		found in template` because it's unaware we are injecting the actual elements into
+		<SvelteToast />. We hide these elements with a CSS modifier.
+	-->
+	<div class="toastLoadingMsg toastLoadingMsg--hidden" />
+	<p class="toastLoadingMsg__p toastLoadingMsg__p--hidden" />
+	<svg class="toastLoadingMsg__icon toastLoadingMsg__icon--hidden" />
+</div>
 
 <style lang="scss">
 	:global(._toastContainer) {
 		--toastContainerTop: none;
 		--toastContainerBottom: 64px;
-		--toastContainerRight: 20px;
+		--toastContainerRight: 16px;
 
 		display: flex;
 		flex-direction: column;
@@ -126,18 +151,27 @@
 		--toastMsgPadding: 12px;
 	}
 
-	:global(.toastLoadingMsg) {
+	:global(div.toastLoadingMsg) {
 		display: flex;
 		column-gap: 8px;
 		flex-direction: row-reverse;
 		justify-content: space-between;
 	}
-	:global(.toastLoadingMsg__icon) {
+
+	:global(svg.toastLoadingMsg__icon) {
 		width: 16px;
 		height: 16px;
 	}
 
-	:global(.toastLoadingMsg__p) {
+	:global(p.toastLoadingMsg__p) {
 		margin: 0;
+	}
+
+	div.toastLoadingMsg,
+	p.toastLoadingMsg__p,
+	svg.toastLoadingMsg__icon {
+		&--hidden {
+			display: none;
+		}
 	}
 </style>
