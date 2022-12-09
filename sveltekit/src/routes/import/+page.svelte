@@ -11,7 +11,6 @@
 	import FormFieldset from '$lib/components/FormFieldset.svelte';
 	import FormField from '$lib/components/FormField.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
 	import FormFooter from '$lib/components/FormFooter.svelte';
 	import { api } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
@@ -36,22 +35,12 @@
 
 		// Set the loading state
 		isLoading = true;
-		$statusBarStore = {
-			message: 'Processing import...',
-			appearance: Appearance.ACTIVE
-		};
 
 		const reader = new FileReader();
 		reader.onload = async (event: ProgressEvent<FileReader>) => {
 			const canutinFile = JSON.parse(event?.target?.result as string);
 			importSummary = await api({ endpoint: 'import', method: 'POST', payload: canutinFile });
-
-			// Update the status bar
-			isLoading = false;
-			$statusBarStore = {
-				message: importSummary?.error ? importSummary.error : 'Import was successful',
-				appearance: importSummary?.error ? Appearance.NEGATIVE : Appearance.POSITIVE
-			};
+			if (importSummary) isLoading = false;
 		};
 
 		reader.readAsText(chosenFile);
@@ -82,7 +71,7 @@
 					</FormField>
 				</FormFieldset>
 				<FormFooter>
-					<Button appearance={Appearance.ACTIVE}>Upload</Button>
+					<Button appearance={Appearance.ACTIVE} disabled={isLoading}>Upload</Button>
 				</FormFooter>
 			</Form>
 		</div>
