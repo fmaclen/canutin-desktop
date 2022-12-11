@@ -4,9 +4,7 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import AssetForm from '../AssetForm.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
 	import { api } from '$lib/helpers/misc';
-	import { Appearance } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { CRUDResponse } from '$lib/helpers/forms';
 
@@ -39,18 +37,7 @@
 		};
 		asset = await api({ endpoint: 'asset', method: 'POST', payload });
 
-		if (asset.error) {
-			$statusBarStore = {
-				message: asset.error,
-				appearance: Appearance.NEGATIVE
-			};
-		} else {
-			$statusBarStore = {
-				message: 'The asset was added successfully',
-				appearance: Appearance.POSITIVE
-			};
-			await goto(referrer);
-		}
+		if (!asset.error) await goto(referrer);
 	};
 
 	const title = 'Add asset';

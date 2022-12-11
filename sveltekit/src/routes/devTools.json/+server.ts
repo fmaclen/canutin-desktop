@@ -64,14 +64,17 @@ export const POST = async ({ url }: { url: URL }) => {
 			break;
 
 		case DeveloperFunctions.DB_SEED: {
-			const processingEvent = await createLoadingEvent('Seeding database');
+			console.warn('\n\nshouldCreateEvent', shouldCreateEvent, '\n\n');
+			const processingEvent = shouldCreateEvent
+				? await createLoadingEvent('Seeding database')
+				: undefined;
 			try {
 				await seedDemoData();
 				shouldCreateEvent && (await createSuccessEvent('Database was seeded successfully'));
 			} catch (_e) {
 				shouldCreateEvent && (await createErrorEvent('Database could not be seeded'));
 			}
-			shouldCreateEvent && (await markEventAsRead(processingEvent.id));
+			processingEvent && (await markEventAsRead(processingEvent.id));
 			break;
 		}
 

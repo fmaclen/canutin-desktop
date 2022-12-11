@@ -40,18 +40,7 @@
 		};
 		asset = await api({ endpoint: 'asset', method: 'PATCH', payload });
 
-		if (asset.error) {
-			$statusBarStore = {
-				message: asset.error,
-				appearance: Appearance.NEGATIVE
-			};
-		} else {
-			$statusBarStore = {
-				message: 'The asset was updated successfully',
-				appearance: Appearance.POSITIVE
-			};
-			await goto(referrer);
-		}
+		if (!asset.error) await goto(referrer);
 	};
 
 	const handleDelete = async () => {
@@ -66,18 +55,7 @@
 			payload: data.asset.id
 		});
 
-		if (deletedAsset.error) {
-			$statusBarStore = {
-				message: deletedAsset.error,
-				appearance: Appearance.NEGATIVE
-			};
-		} else {
-			$statusBarStore = {
-				message: `The asset —${data.asset.name}— was deleted successfully`,
-				appearance: Appearance.ACTIVE
-			};
-			await goto(referrer);
-		}
+		if (!deletedAsset.error) await goto(referrer);
 	};
 </script>
 
