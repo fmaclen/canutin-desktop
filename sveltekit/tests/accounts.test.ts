@@ -5,6 +5,7 @@ import {
 	databaseWipe,
 	delay,
 	MAX_DIFF_PIXEL_RATIO,
+	prepareToAcceptDialog,
 	setSnapshotPath
 } from './fixtures/helpers.js';
 
@@ -257,16 +258,11 @@ test.describe('Accounts', () => {
 			"The account —Bob's Laughable-Yield Checking— was deleted successfully"
 		);
 
-		// Prepare to confirm the dialog prompt
-		page.on('dialog', (dialog) => {
-			expect(dialog.message()).toMatch(
-				"Are you sure you want to delete the account and all of it's associated transactions?"
-			);
-
-			dialog.accept();
-		});
-
 		// Proceed to delete account
+		await prepareToAcceptDialog(
+			page,
+			"Are you sure you want to delete the account and all of it's associated transactions?"
+		);
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message confirms account deletion

@@ -1,5 +1,10 @@
 import { expect, test } from '@playwright/test';
-import { databaseWipe, delay, setEnvironmentVariable } from './fixtures/helpers.js';
+import {
+	databaseWipe,
+	delay,
+	prepareToAcceptDialog,
+	setEnvironmentVariable
+} from './fixtures/helpers.js';
 
 test.describe('Access key', () => {
 	const fakeAccessKey = 'top-secret-key-123';
@@ -146,11 +151,7 @@ test.describe('Access key', () => {
 		await expect(resetButton).not.toBeDisabled();
 
 		// Prepare to confirm the dialog prompt
-		page.on('dialog', (dialog) => {
-			expect(dialog.message()).toMatch('Are you sure you want to reset the access key?');
-
-			dialog.accept();
-		});
+		await prepareToAcceptDialog(page, 'Are you sure you want to reset the access key?');
 
 		await resetButton.click();
 		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
@@ -254,12 +255,7 @@ test.describe('Access key', () => {
 		await inputAccessKey.fill(fakeAccessKey);
 		await page.locator('button', { hasText: 'Continue' }).click();
 		await page.locator('a', { hasText: 'Settings' }).click();
-
-		page.on('dialog', (dialog) => {
-			expect(dialog.message()).toMatch('Are you sure you want to reset the access key?');
-
-			dialog.accept();
-		});
+		await prepareToAcceptDialog(page, 'Are you sure you want to reset the access key?');
 		await page.locator('button', { hasText: 'Reset' }).click();
 		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
 		expect(await formNotice.textContent()).toMatch('Access key is disabled');
@@ -297,12 +293,7 @@ test.describe('Access key', () => {
 		await page.locator('input[name=accessKey]').fill(fakeAccessKey);
 		await page.locator('button', { hasText: 'Continue' }).click();
 		await page.locator('a', { hasText: 'Settings' }).click();
-
-		page.on('dialog', (dialog) => {
-			expect(dialog.message()).toMatch('Are you sure you want to reset the access key?');
-
-			dialog.accept();
-		});
+		await prepareToAcceptDialog(page, 'Are you sure you want to reset the access key?');
 		await page.locator('button', { hasText: 'Reset' }).click();
 		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
 		expect(await formNotice.textContent()).toMatch('Access key is disabled');

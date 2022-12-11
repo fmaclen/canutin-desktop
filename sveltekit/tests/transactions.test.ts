@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { format, addDays, startOfMonth, subMonths } from 'date-fns';
 
-import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
+import { databaseSeed, databaseWipe, delay, prepareToAcceptDialog } from './fixtures/helpers.js';
 
 // This date is set by the seed data at `src/lib/seed/seedData/transactions.ts`.
 const latestTransactionDate = addDays(startOfMonth(new Date()), 27);
@@ -532,14 +532,8 @@ test.describe('Transactions', () => {
 			'The transaction "Hølm Home" was deleted successfully'
 		);
 
-		// Prepare to confirm the dialog prompt
-		page.on('dialog', (dialog) => {
-			expect(dialog.message()).toMatch('Are you sure you want to delete the transaction?');
-
-			dialog.accept();
-		});
-
 		// Proceed to delete transaction
+		await prepareToAcceptDialog(page, 'Are you sure you want to delete the transaction?');
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message confirms transaction deletion
@@ -670,17 +664,11 @@ test.describe('Transactions', () => {
 				'Permanently delete all 109 transactions'
 			);
 
-			// Prepare to confirm the dialog prompt
-			page.on('dialog', (dialog) => {
-				expect(dialog.message()).toMatch('Are you sure you want to delete the 109 transactions?');
-
-				dialog.accept();
-			});
-
+			await prepareToAcceptDialog(page, 'Are you sure you want to delete the 109 transactions?');
 			await expect(statusBar).not.toHaveClass(/statusBar--active/);
 
+			// Proceed to delete the transactions
 			await page.locator('button', { hasText: 'Delete' }).click();
-
 			await expect(statusBar).toHaveClass(/statusBar--active/);
 			expect(await statusBar.textContent()).toMatch('109 transactions were deleted successfully');
 

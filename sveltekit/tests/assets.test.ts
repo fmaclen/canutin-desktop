@@ -5,6 +5,7 @@ import {
 	databaseWipe,
 	delay,
 	MAX_DIFF_PIXEL_RATIO,
+	prepareToAcceptDialog,
 	setSnapshotPath
 } from './fixtures/helpers.js';
 
@@ -179,14 +180,8 @@ test.describe('Assets', () => {
 			'The asset "1998 Fiat Multipla" was deleted successfully'
 		);
 
-		// Prepare to confirm the dialog prompt
-		page.on('dialog', (dialog) => {
-			expect(dialog.message()).toMatch('Are you sure you want to delete the asset?');
-
-			dialog.accept();
-		});
-
 		// Proceed to delete asset
+		await prepareToAcceptDialog(page, 'Are you sure you want to delete the asset?');
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message confirms asset deletion
