@@ -79,7 +79,7 @@ test.describe('Assets', () => {
 		// Update the asset
 		await quantityInput.fill('4.20');
 		await costInput.focus();
-		await page.keyboard.type('69', { delay: 25 });
+		await page.keyboard.type('69', { delay: 110 });
 		await expect(valueInput).toBeDisabled();
 		await expect(valueInput).toHaveValue('$289.8');
 		expect(await statusBar.textContent()).not.toMatch('The asset was updated successfully');
