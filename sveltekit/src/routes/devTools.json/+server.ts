@@ -41,8 +41,7 @@ export const POST = async ({ url }: { url: URL }) => {
 	};
 
 	// Don't create events in tests (except ifit's from the devTools tests)
-	const shouldCreateEvent = true;
-	// const shouldCreateEvent = env.TEST_DEV_TOOLS !== 'true' || !isEnvTest();
+	const shouldCreateEvent = (isEnvTest() && env.TEST_DEV_TOOLS === 'true') || !isEnvTest();
 
 	switch (functionType) {
 		case DeveloperFunctions.DB_WIPE_TRANSACTIONS:
