@@ -253,7 +253,7 @@ test.describe('Import CanutinFile', () => {
 		await page.locator('.formInputCheckbox', { hasText: 'Excluded from totals' }).click();
 		await page.locator('.formCurrencyInput input[name="formatted-value"]').focus();
 		for (let i = 1; i < '3,500.25'.length; i++) await page.keyboard.press('Backspace');
-		await page.keyboard.type('9999', { delay: 110 });
+		await page.keyboard.type('9999', { delay: 25 });
 		await page.locator('button', { hasText: 'Save' }).click();
 
 		const dismissButton = page.locator('.button', { hasText: 'Dismiss' });

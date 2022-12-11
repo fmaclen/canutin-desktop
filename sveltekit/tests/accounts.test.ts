@@ -61,7 +61,7 @@ test.describe('Accounts', () => {
 
 		// Add a new account
 		await currencyInput.focus();
-		await page.keyboard.type('420.69', { delay: 110 });
+		await page.keyboard.type('420.69', { delay: 25 });
 		await expect(currencyInput).toHaveValue('$420.69');
 
 		await page.locator('button', { hasText: 'Add' }).click();
@@ -176,7 +176,7 @@ test.describe('Accounts', () => {
 		await accountIdSelect.selectOption({ label: "Alice's Savings" });
 		await descriptionInput.fill('Evergreen Market');
 		await currencyInput.focus();
-		await page.keyboard.type('420.69', { delay: 110 });
+		await page.keyboard.type('420.69', { delay: 25 });
 		await page.locator('button', { hasText: 'Add' }).click();
 
 		const statusBar = page.locator('.statusBar');
@@ -202,7 +202,7 @@ test.describe('Accounts', () => {
 		await accountIdSelect.selectOption({ label: "Alice's Savings" });
 		await descriptionInput.fill('Transfer from Ransack Bank');
 		await currencyInput.focus();
-		await page.keyboard.type('-420.69', { delay: 110 });
+		await page.keyboard.type('-420.69', { delay: 25 });
 		await isExcludedCheckbox.check();
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(statusBar).toHaveClass(/statusBar--positive/);
@@ -322,7 +322,7 @@ test.describe('Accounts', () => {
 		await accountTypeSelect.selectOption({ label: 'Savings' });
 		await balanceGroupSelect.selectOption({ label: 'Cash' });
 		await currencyInput.focus();
-		await page.keyboard.type('420.69', { delay: 110 });
+		await page.keyboard.type('420.69', { delay: 25 });
 		await page.locator('button', { hasText: 'Add' }).click();
 
 		// Check the account is listed
@@ -364,7 +364,7 @@ test.describe('Accounts', () => {
 		await page.locator('.formSelect__select[name=accountId]').selectOption({ label: "Bob's Limited Rewards" }); // prettier-ignore
 		await page.locator('.formInput__input[name=description]').fill('Evergreen Market');
 		await currencyInput.focus();
-		await page.keyboard.type('999', { delay: 110 });
+		await page.keyboard.type('999', { delay: 25 });
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
 
@@ -379,7 +379,7 @@ test.describe('Accounts', () => {
 		await page.locator('.formSelect__select[name=accountId]').selectOption({ label: "Alice's Savings" }); // prettier-ignore
 		await page.locator('.formInput__input[name=description]').fill('NetTV');
 		await currencyInput.focus();
-		await page.keyboard.type('15', { delay: 110 });
+		await page.keyboard.type('15', { delay: 25 });
 		await page.locator('button', { hasText: 'Add' }).click();
 		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
 		await expect(noTransactionsTableNotice).not.toBeVisible();
