@@ -4,9 +4,13 @@
 	import Button from '$lib/components/Button.svelte';
 	import Notice from '$lib/components/Notice.svelte';
 	import Code from '$lib/components/Code.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
 	import syncStatusStore from '$lib/stores/syncStatusStore';
-	import { Appearance, DeveloperFunctions } from '$lib/helpers/constants';
+	import {
+		Appearance,
+		DeveloperFunctions,
+		ONE_SECOND_IN_MS,
+		UNDOABLE_ACTION
+	} from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 
 	const title = 'Developer tools';
@@ -15,6 +19,19 @@
 	let isLoading = false;
 
 	const submitFunction = async (functionType: DeveloperFunctions) => {
+		const isDeletionFunction = [
+			DeveloperFunctions.DB_WIPE,
+			DeveloperFunctions.DB_WIPE_TRANSACTIONS,
+			DeveloperFunctions.DB_WIPE_ACCOUNTS_ASSETS
+		].includes(functionType);
+
+		if (isDeletionFunction) {
+			const confirmDeletion = window.confirm(
+				`${UNDOABLE_ACTION}You are about to permanently delete data from the vault:\n\n${data.dbUrl}\n\nAre you sure you want to continue?`
+			);
+			if (!confirmDeletion) return;
+		}
+
 		isLoading = true;
 		const response = await fetch(`/devTools.json?functionType=${functionType}`, {
 			method: 'POST',
@@ -22,29 +39,12 @@
 				'Content-Type': 'application/json'
 			}
 		});
-		response.ok ? setStatusSuccess() : setStatusError();
-		return response;
-	};
 
-	const setStatusSuccess = () => {
-		$statusBarStore = {
-			message: 'Database action was performed, likely without errors',
-			appearance: Appearance.POSITIVE
-		};
-		isLoading = false;
-	};
+		// These processes are really quick so we induce a longer delay before we enable the UI again
+		if (response) setTimeout(() => (isLoading = false), ONE_SECOND_IN_MS);
 
-	const setStatusError = () => {
-		$statusBarStore = {
-			message: "Something went wrong and it's likely the action wasn't performed",
-			appearance: Appearance.NEGATIVE
-		};
-		isLoading = false;
-	};
-
-	const databaseWipe = async () => {
-		const response = await submitFunction(DeveloperFunctions.DB_WIPE);
-		if (response.ok) {
+		// Reset the sync status if we've wiped the database
+		if (response.ok && functionType === DeveloperFunctions.DB_WIPE) {
 			$syncStatusStore = {
 				isSyncSetup: false,
 				isSyncEnabled: false
@@ -70,20 +70,27 @@
 
 			<nav class="nav">
 				<Button
-					on:click={() => submitFunction(DeveloperFunctions.DB_WIPE_ACCOUNTS_ASSETS)}
-					appearance={Appearance.NEGATIVE}
-					disabled={isLoading}
-				>
-					Delete accounts & assets
-				</Button>
-				<Button
 					on:click={() => submitFunction(DeveloperFunctions.DB_WIPE_TRANSACTIONS)}
 					appearance={Appearance.NEGATIVE}
 					disabled={isLoading}
 				>
-					Delete transactions
+					Delete transactions only
 				</Button>
-				<Button on:click={databaseWipe} appearance={Appearance.NEGATIVE} disabled={isLoading}>
+				<Button
+					on:click={() => submitFunction(DeveloperFunctions.DB_WIPE_ACCOUNTS_ASSETS)}
+					appearance={Appearance.NEGATIVE}
+					disabled={isLoading}
+				>
+					Delete accounts, transactions & assets
+				</Button>
+			</nav>
+
+			<nav class="nav">
+				<Button
+					on:click={() => submitFunction(DeveloperFunctions.DB_WIPE)}
+					appearance={Appearance.NEGATIVE}
+					disabled={isLoading}
+				>
 					Delete all data
 				</Button>
 			</nav>

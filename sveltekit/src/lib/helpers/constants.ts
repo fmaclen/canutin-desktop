@@ -1,3 +1,7 @@
+export const ONE_SECOND_IN_MS = 1000;
+export const ACCESS_KEY_COOKIE_NAME = '_canutin-accessKey=';
+export const UNDOABLE_ACTION = "🚩 This action can't be undone\n";
+
 export enum BalanceGroup {
 	CASH,
 	DEBT,
@@ -68,10 +72,6 @@ export enum SyncSettings {
 export enum AccessKeySettings {
 	ACCESS_KEY = 'ACCESS_KEY'
 }
-
-export const ACCESS_KEY_COOKIE_NAME = '_canutin-accessKey=';
-
-export const UNDOABLE_ACTION = "🚩 This action can't be undone\n";
 
 export enum EventStatus {
 	READ = 'read',

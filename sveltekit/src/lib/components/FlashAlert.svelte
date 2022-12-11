@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import type { Event } from '@prisma/client';
 
-	import { Appearance, EventStatus } from '$lib/helpers/constants';
+	import { Appearance, EventStatus, ONE_SECOND_IN_MS } from '$lib/helpers/constants';
 	import { api } from '$lib/helpers/misc';
 
 	// HACK: only way `svelte-toast` can render HTML around the message in a toast.
@@ -61,7 +61,6 @@
 		}
 	};
 
-	const ONE_SECOND_IN_MILLISECONDS = 1000;
 	const ongoingEvents: [number, number][] = []; // Queue of ongoing events
 
 	const getEvents = async () => {
@@ -99,7 +98,7 @@
 		setTimeout(async () => {
 			// Recursively call the function
 			getEvents();
-		}, ONE_SECOND_IN_MILLISECONDS);
+		}, ONE_SECOND_IN_MS);
 	};
 
 	onMount(() => {

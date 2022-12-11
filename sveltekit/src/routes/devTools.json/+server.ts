@@ -6,7 +6,13 @@ import prisma from '$lib/helpers/prisma.server';
 import seedDemoData from '$lib/seed';
 import { env } from '$env/dynamic/private';
 import { isEnvTest } from '$lib/helpers/tests.server';
-import { DeveloperFunctions } from '$lib/helpers/constants';
+import { Appearance, DeveloperFunctions } from '$lib/helpers/constants';
+import {
+	createErrorEvent,
+	createLoadingEvent,
+	createSuccessEvent,
+	markEventAsRead
+} from '$lib/helpers/events.server';
 import type { CanutinFile } from '$lib/helpers/import';
 
 const getFunctionType = (url: URL) => {
@@ -34,24 +40,41 @@ export const POST = async ({ url }: { url: URL }) => {
 		await prisma.transaction.deleteMany();
 	};
 
+	// Don't create events in tests (except ifit's from the devTools tests)
+	const shouldCreateEvent = true;
+	// const shouldCreateEvent = env.TEST_DEV_TOOLS !== 'true' || !isEnvTest();
+
 	switch (functionType) {
 		case DeveloperFunctions.DB_WIPE_TRANSACTIONS:
 			await wipeTransactions();
+			shouldCreateEvent &&
+				(await createSuccessEvent('All transactions have been deleted', Appearance.ACTIVE));
 			break;
 
 		case DeveloperFunctions.DB_WIPE_ACCOUNTS_ASSETS:
 			await wipeAccountsAssets();
+			shouldCreateEvent && await createSuccessEvent('All accounts, transactions & assets have been deleted', Appearance.ACTIVE); // prettier-ignore
 			break;
 
 		case DeveloperFunctions.DB_WIPE:
 			await wipeAccountsAssets();
 			await prisma.setting.deleteMany();
 			await prisma.event.deleteMany();
+			shouldCreateEvent &&
+				(await createSuccessEvent('Database was wiped successfully', Appearance.ACTIVE));
 			break;
 
-		case DeveloperFunctions.DB_SEED:
-			await seedDemoData();
+		case DeveloperFunctions.DB_SEED: {
+			const processingEvent = await createLoadingEvent('Seeding database');
+			try {
+				await seedDemoData();
+				shouldCreateEvent && (await createSuccessEvent('Database was seeded successfully'));
+			} catch (_e) {
+				shouldCreateEvent && (await createErrorEvent('Database could not be seeded'));
+			}
+			shouldCreateEvent && (await markEventAsRead(processingEvent.id));
 			break;
+		}
 
 		case DeveloperFunctions.DB_SET_URL: {
 			const dbUrlParam = url.searchParams.get('dbUrl');
