@@ -54,7 +54,7 @@ test.describe('Developer tools', () => {
 			await expectToastAndDismiss(page, 'Database could not be seeded', Appearance.NEGATIVE);
 
 			// Delete all accounts and assets
-			await prepareToAcceptDialog(page, 'Are you sure you want to continue?');
+			await prepareToAcceptDialog(page, 'You are about to permanently delete data from the vault');
 
 			await page.locator('button', { hasText: 'Delete accounts, transactions & assets' }).click();
 			await expectToastAndDismiss(page, 'All accounts, transactions & assets have been deleted', Appearance.ACTIVE); // prettier-ignore
@@ -75,7 +75,7 @@ test.describe('Developer tools', () => {
 
 			// Delete all Transactions
 			await page.goto('/devTools');
-			await prepareToAcceptDialog(page, 'Are you sure you want to continue?');
+			await prepareToAcceptDialog(page, 'You are about to permanently delete data from the vault');
 
 			await page.locator('button', { hasText: 'Delete transactions only' }).click();
 			await expectToastAndDismiss(page, 'All transactions have been deleted', Appearance.ACTIVE); // prettier-ignore
@@ -123,7 +123,7 @@ test.describe('Developer tools', () => {
 
 			// Delete all data
 			await page.goto('/devTools');
-			await prepareToAcceptDialog(page, 'Are you sure you want to continue?');
+			await prepareToAcceptDialog(page, 'You are about to permanently delete data from the vault');
 
 			await delay();
 			await page.locator('button', { hasText: 'Delete all data' }).click();

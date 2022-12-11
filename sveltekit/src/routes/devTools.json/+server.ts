@@ -40,7 +40,7 @@ export const POST = async ({ url }: { url: URL }) => {
 		await prisma.transaction.deleteMany();
 	};
 
-	// Don't create events in tests (except ifit's from the devTools tests)
+	// Don't create events in tests (except if it's from the devTools tests)
 	const shouldCreateEvent = (isEnvTest() && env.TEST_DEV_TOOLS === 'true') || !isEnvTest();
 
 	switch (functionType) {
