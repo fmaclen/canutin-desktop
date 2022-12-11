@@ -5,9 +5,8 @@
 	import Section from '$lib/components/Section.svelte';
 	import AssetForm from '../AssetForm.svelte';
 	import DangerZone from '$lib/components/DangerZone.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
 	import { api } from '$lib/helpers/misc';
-	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
+	import { UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { CRUDResponse } from '$lib/helpers/forms';
 	import ChartBalanceHistory from '$lib/components/ChartBalanceHistory.svelte';
