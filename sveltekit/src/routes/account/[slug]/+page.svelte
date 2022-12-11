@@ -4,9 +4,8 @@
 	import Section from '$lib/components/Section.svelte';
 	import AccountForm from '../AccountForm.svelte';
 	import DangerZone from '$lib/components/DangerZone.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
 	import { api } from '$lib/helpers/misc';
-	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
+	import { UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { Prisma } from '@prisma/client';
 	import type { CRUDResponse } from '$lib/helpers/forms';
@@ -35,18 +34,9 @@
 		};
 		account = await api({ endpoint: 'account', method: 'PATCH', payload });
 
-		if (account.error) {
-			$statusBarStore = {
-				message: account.error,
-				appearance: Appearance.NEGATIVE
-			};
-		} else {
-			$statusBarStore = {
-				message: 'The account was updated successfully',
-				appearance: Appearance.POSITIVE
-			};
-			await goto(referrer);
-		}
+		console.log(account);
+
+		if (!account.error) await goto(referrer);
 	};
 
 	const handleDelete = async () => {
@@ -61,18 +51,7 @@
 			payload: data.account.id
 		});
 
-		if (deletedAccount.error) {
-			$statusBarStore = {
-				message: deletedAccount.error,
-				appearance: Appearance.NEGATIVE
-			};
-		} else {
-			$statusBarStore = {
-				message: `The account —${data.account.name}— was deleted successfully`,
-				appearance: Appearance.ACTIVE
-			};
-			await goto(referrer);
-		}
+		if (!deletedAccount.error) await goto(referrer);
 	};
 </script>
 

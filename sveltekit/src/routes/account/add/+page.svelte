@@ -4,9 +4,7 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import AccountForm from '../AccountForm.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
 	import { api } from '$lib/helpers/misc';
-	import { Appearance } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { CRUDResponse } from '$lib/helpers/forms';
 
@@ -32,18 +30,7 @@
 		};
 		account = await api({ endpoint: 'account', method: 'POST', payload });
 
-		if (account.error) {
-			$statusBarStore = {
-				message: account.error,
-				appearance: Appearance.NEGATIVE
-			};
-		} else {
-			$statusBarStore = {
-				message: 'The account was added successfully',
-				appearance: Appearance.POSITIVE
-			};
-			await goto(referrer);
-		}
+		if (!account.error) await goto(referrer);
 	};
 
 	const title = 'Add account';

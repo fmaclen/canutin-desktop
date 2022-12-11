@@ -155,7 +155,18 @@ test.describe('Layout', () => {
 		await expect(page.locator('h1', { hasText: 'Transaction' })).toBeVisible();
 	});
 
-	test('Status bar with positive notices auto-dismiss', async ({ page }) => {
+	// FIXME:
+	//
+	//
+	//
+	//
+	// Remove this test when we completely remove `$statusBarStore` or update if we still
+	// need it.
+	//
+	//
+	//
+	//
+	test.skip('Status bar with positive notices auto-dismiss', async ({ page }) => {
 		await page.goto('/');
 		await page
 			.locator('.layout__aside a', {
