@@ -155,40 +155,6 @@ test.describe('Layout', () => {
 		await expect(page.locator('h1', { hasText: 'Transaction' })).toBeVisible();
 	});
 
-	// FIXME:
-	//
-	//
-	//
-	//
-	// Remove this test when we completely remove `$statusBarStore` or update if we still
-	// need it.
-	//
-	//
-	//
-	//
-	test.skip('Status bar with positive notices auto-dismiss', async ({ page }) => {
-		await page.goto('/');
-		await page
-			.locator('.layout__aside a', {
-				hasText: 'Add or update data'
-			})
-			.click();
-		await page.locator('a.wizard__a', { hasText: 'Account' }).click();
-
-		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
-
-		await page.locator('.formInput__input[name=name]').fill("Bob's Test Account");
-		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).toMatch('The account was added successfully');
-
-		// Wait for 7 seconds to make sure the notice auto-dismisses
-		await delay(7000);
-		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).not.toMatch('The account was added successfully');
-	});
-
 	test.describe('Checks for app updates', () => {
 		test.afterEach(async ({ baseURL }) => {
 			// Reset APP_VERSION to the default value

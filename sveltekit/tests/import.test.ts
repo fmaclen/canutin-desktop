@@ -255,9 +255,7 @@ test.describe('Import CanutinFile', () => {
 		for (let i = 1; i < '3,500.25'.length; i++) await page.keyboard.press('Backspace');
 		await page.keyboard.type('9999', { delay: 25 });
 		await page.locator('button', { hasText: 'Save' }).click();
-
-		const dismissButton = page.locator('.button', { hasText: 'Dismiss' });
-		await dismissButton.click();
+		await expectToastAndDismiss(page, 'Initech Payroll was updated', Appearance.POSITIVE);
 		expect(await tableRows.count()).toBe(1);
 
 		await formSelect.selectOption('7'); // Lifetime

@@ -170,9 +170,6 @@ test.describe('Accounts', () => {
 		await page.keyboard.type('420.69', { delay: 25 });
 		await page.locator('button', { hasText: 'Add' }).click();
 
-		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
-
 		const formSelect = page.locator('.formSelect__select[name=periods]');
 		const formInput = page.locator('.formInput__input');
 		await formSelect.selectOption('7'); // Lifetime
@@ -180,6 +177,7 @@ test.describe('Accounts', () => {
 		await formInput.click();
 		await delay();
 		await page.locator('button', { hasText: 'Dismiss' }).click();
+		await expectToastAndDismiss(page, 'Evergreen Market was created', Appearance.POSITIVE); // prettier-ignore
 		await expect(page.locator('.table__td--notice')).not.toBeVisible();
 
 		const tableRows = page.locator('.table__tr');
@@ -196,7 +194,7 @@ test.describe('Accounts', () => {
 		await page.keyboard.type('-420.69', { delay: 25 });
 		await isExcludedCheckbox.check();
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		await expectToastAndDismiss(page, 'Transfer from Ransack Bank was created', Appearance.POSITIVE); // prettier-ignore
 
 		await formSelect.selectOption('7'); // Lifetime
 		await formSelect.dispatchEvent('change');
