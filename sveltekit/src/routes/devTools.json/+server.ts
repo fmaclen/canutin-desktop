@@ -64,7 +64,6 @@ export const POST = async ({ url }: { url: URL }) => {
 			break;
 
 		case DeveloperFunctions.DB_SEED: {
-			console.warn('\n\nshouldCreateEvent', shouldCreateEvent, '\n\n');
 			const processingEvent = shouldCreateEvent
 				? await createLoadingEvent('Seeding database')
 				: undefined;

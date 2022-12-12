@@ -81,14 +81,6 @@
 	$: cookieValue = '';
 	$: jwtValue = '';
 
-	const setLoadingStatus = (message: string) => {
-		isLoading = true;
-		$statusBarStore = {
-			message,
-			appearance: Appearance.ACTIVE
-		};
-	};
-
 	const handleSyncForm = async (event: any) => {
 		const canutinFileUrl = event.target.canutinFileUrl?.value;
 		const frequency = event.target.frequency?.value;
@@ -104,7 +96,8 @@
 			jwt
 		};
 
-		setLoadingStatus('Checking the CanutinFile URL...');
+		isLoading = true;
+		// setLoadingStatus('Checking the CanutinFile URL...');
 
 		const response = await api({
 			endpoint: 'sync',
@@ -113,19 +106,6 @@
 		});
 
 		// Update the status bar
-		setStatusBar(
-			response?.error
-				? response?.error
-				: response?.warning
-				? response.warning
-				: 'Sync was enabled succesfully',
-			response?.error
-				? Appearance.NEGATIVE
-				: response?.warning
-				? Appearance.WARNING
-				: Appearance.POSITIVE
-		);
-
 		$syncStatusStore = response?.syncStatus || $syncStatusStore;
 	};
 

@@ -34,8 +34,6 @@
 		};
 		account = await api({ endpoint: 'account', method: 'PATCH', payload });
 
-		console.log(account);
-
 		if (!account.error) await goto(referrer);
 	};
 

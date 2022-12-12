@@ -2,9 +2,15 @@ import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 
 import prisma from '$lib/helpers/prisma.server';
-import { SyncSettings } from '$lib/helpers/constants';
+import { Appearance, SyncSettings } from '$lib/helpers/constants';
 import { importFromCanutinFile, getSyncStatus } from '$lib/helpers/import.server';
 import type { ImportSummary, ImportSync } from '$lib/helpers/import';
+import {
+	createErrorEvent,
+	createLoadingEvent,
+	createSuccessEvent,
+	markEventAsRead
+} from '$lib/helpers/events.server';
 
 const fetchCanutinFile = async (syncUrl: string, syncCookie?: string, syncJwt?: string) => {
 	try {
@@ -16,13 +22,14 @@ const fetchCanutinFile = async (syncUrl: string, syncCookie?: string, syncJwt?: 
 			},
 			method: 'GET'
 		});
-		return await response.json();
+		return response.json();
 	} catch (_e) {
-		return { warning: "Couldn't fetch data from the sync URL" };
+		return json({ warning: "Couldn't fetch data from the sync URL" });
 	}
 };
 
 export const GET = async () => {
+	const processingEvent = await createLoadingEvent(`Syncing`);
 	const syncStatus = await getSyncStatus();
 	const { isSyncEnabled } = syncStatus;
 
@@ -44,10 +51,30 @@ export const GET = async () => {
 
 	// Import data and return the result
 	const importSummary: ImportSummary = await importFromCanutinFile(canutinFile);
+
+	if (importSummary.importedAccounts) {
+		const accountsCreatedOrUpdated =
+			importSummary?.importedAccounts?.created?.length +
+			importSummary?.importedAccounts?.updated?.length;
+		const assetsCreatedOrUpdated =
+			importSummary?.importedAccounts?.created?.length +
+			importSummary?.importedAccounts?.updated?.length;
+
+		// Hide loading event
+		await markEventAsRead(processingEvent.id);
+
+		// Event should be dismissed by the user
+		await createSuccessEvent(
+			`Sync updated ${accountsCreatedOrUpdated} accounts and ${assetsCreatedOrUpdated} assets`,
+			Appearance.POSITIVE
+		);
+	}
 	return json({ syncStatus, ...importSummary });
 };
 
 export const POST = async ({ request }: RequestEvent) => {
+	const processingEvent = await createLoadingEvent(`Connecting to CanutinFile URL...`);
+
 	const payload = (await request.json()) as ImportSync;
 
 	const setSyncDisabled = async () => {
@@ -74,10 +101,12 @@ export const POST = async ({ request }: RequestEvent) => {
 			// Disable sync because there were no `accounts` or `assets` returned from the server
 			await setSyncDisabled();
 			const syncStatus = await getSyncStatus();
-			return json({
-				warning: "Coudn't fetch a CanutinFile JSON from the provided URL",
-				syncStatus
-			});
+			await markEventAsRead(processingEvent.id);
+			await createSuccessEvent(
+				`Coudn't fetch a CanutinFile JSON from the provided URL`,
+				Appearance.NEGATIVE
+			);
+			return json(syncStatus);
 		} else {
 			const settings = [];
 
@@ -105,9 +134,13 @@ export const POST = async ({ request }: RequestEvent) => {
 				});
 			}
 			const syncStatus = await getSyncStatus();
+			await markEventAsRead(processingEvent.id);
+			await createSuccessEvent(`Sync is now enabled`, Appearance.POSITIVE);
 			return json({ syncStatus });
 		}
 	} catch (_e) {
+		await markEventAsRead(processingEvent.id);
+		await createErrorEvent(`Couldn't connect to CanutinFile URL`);
 		await setSyncDisabled();
 		const syncStatus = await getSyncStatus();
 		return json({

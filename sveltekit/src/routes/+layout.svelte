@@ -92,30 +92,8 @@
 
 	const sync = async () => {
 		isSyncing = true;
-		$statusBarStore = {
-			message: 'Syncing...',
-			appearance: Appearance.ACTIVE
-		};
-
 		const response = await api({ endpoint: 'sync' });
 		$syncStatusStore = response?.syncStatus || $syncStatusStore;
-
-		if (response.warning) {
-			$statusBarStore = {
-				message: response.warning,
-				appearance: Appearance.WARNING
-			};
-		} else {
-			const accountsCreatedOrUpdated =
-				response?.importedAccounts?.created?.length + response?.importedAccounts?.updated?.length;
-			const assetsCreatedOrUpdated =
-				response?.importedAssets?.created?.length + response?.importedAssets?.updated?.length;
-
-			$statusBarStore = {
-				message: `Sync updated ${accountsCreatedOrUpdated} accounts and ${assetsCreatedOrUpdated} assets`,
-				appearance: Appearance.POSITIVE
-			};
-		}
 		isSyncing = false;
 	};
 
