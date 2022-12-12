@@ -9,7 +9,6 @@
 	import FormFieldset from '$lib/components/FormFieldset.svelte';
 	import FormField from '$lib/components/FormField.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
 	import FormFooter from '$lib/components/FormFooter.svelte';
 	import FormNotice from '$lib/components/FormNotice.svelte';
 	import FormNoticeNotice from '$lib/components/FormNoticeNotice.svelte';

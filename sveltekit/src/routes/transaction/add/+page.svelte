@@ -4,14 +4,11 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import TransactionForm from '../TransactionForm.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
 	import { api } from '$lib/helpers/misc';
-	import { Appearance } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { CRUDResponse } from '$lib/helpers/forms';
 
 	export let data: PageData;
-	let transaction: CRUDResponse;
 
 	const handleSubmit = async (event: any) => {
 		const payload: Prisma.TransactionUncheckedCreateInput = {
@@ -23,20 +20,13 @@
 			isExcluded: event.target.isExcluded?.checked ? true : false,
 			isPending: event.target.isPending?.checked ? true : false
 		};
-		transaction = await api({ endpoint: 'transaction', method: 'POST', payload });
+		const crudResponse = (await api({
+			endpoint: 'transaction',
+			method: 'POST',
+			payload
+		})) as CRUDResponse;
 
-		if (transaction.error) {
-			$statusBarStore = {
-				message: transaction.error,
-				appearance: Appearance.NEGATIVE
-			};
-		} else {
-			$statusBarStore = {
-				message: 'The transaction was added successfully',
-				appearance: Appearance.POSITIVE
-			};
-			await goto(`/transactions?highlight=${transaction.id}`);
-		}
+		if (!crudResponse.error) await goto(`/transactions?highlight=${crudResponse.payload}`);
 	};
 
 	const title = 'Add transaction';

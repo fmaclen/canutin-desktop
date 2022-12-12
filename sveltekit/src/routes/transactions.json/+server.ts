@@ -9,7 +9,8 @@ import type {
 	TransactionImport
 } from '@prisma/client';
 import prisma, { crudResponse, handleError } from '$lib/helpers/prisma.server';
-import { SortOrder } from '$lib/helpers/constants';
+import { Appearance, SortOrder } from '$lib/helpers/constants';
+import { createSuccessEvent } from '$lib/helpers/events.server';
 
 export interface TransactionResponse extends Omit<Transaction, 'date'> {
 	date: number;
@@ -189,6 +190,7 @@ export const PATCH = async ({ request }: RequestEvent) => {
 			data: updatedProps
 		});
 
+		await createSuccessEvent(`${updatedTransactions.count} transactions were updated`);
 		return crudResponse({ payload: updatedTransactions });
 	} catch (error) {
 		return crudResponse(handleError(error, 'transactions'));
@@ -209,6 +211,10 @@ export const DELETE = async ({ request }: RequestEvent) => {
 			}
 		});
 
+		await createSuccessEvent(
+			`${transactionCount.count} transactions were deleted`,
+			Appearance.ACTIVE
+		);
 		return crudResponse({ payload: transactionCount });
 	} catch (error) {
 		return crudResponse(handleError(error, 'transactions'));

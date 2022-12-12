@@ -1,7 +1,14 @@
+import { Appearance } from '$lib/helpers/constants.js';
 import { expect, test } from '@playwright/test';
 import { format, addDays, startOfMonth, subMonths } from 'date-fns';
 
-import { databaseSeed, databaseWipe, delay, prepareToAcceptDialog } from './fixtures/helpers.js';
+import {
+	databaseSeed,
+	databaseWipe,
+	delay,
+	expectToastAndDismiss,
+	prepareToAcceptDialog
+} from './fixtures/helpers.js';
 
 // This date is set by the seed data at `src/lib/seed/seedData/transactions.ts`.
 const latestTransactionDate = addDays(startOfMonth(new Date()), 27);
@@ -425,6 +432,7 @@ test.describe('Transactions', () => {
 		await nameInput.fill("Bob's Laughable-Yield Checking");
 		// await isAutoCalculatedCheckbox.check();
 		await addButton.click();
+		await expectToastAndDismiss(page, "Bob's Laughable-Yield Checking was created successfully", Appearance.POSITIVE); // prettier-ignore
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$0');
 		expect(await balanceTypeGroup.textContent()).toMatch('Checking');
@@ -463,6 +471,7 @@ test.describe('Transactions', () => {
 		await amountInput.focus();
 		await page.keyboard.type('-420.69', { delay: 25 });
 		await addButton.click();
+		await expectToastAndDismiss(page, 'Toilet Paper Depot was created successfully', Appearance.POSITIVE); // prettier-ignore
 
 		const netBalanceCard = page.locator('.card', { hasText: 'Net balance' });
 		expect(await netBalanceCard.textContent()).not.toMatch('-$420.69');
@@ -526,21 +535,12 @@ test.describe('Transactions', () => {
 			'Permanently delete transaction Hølm Home'
 		);
 
-		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).not.toHaveClass(/statusBar--active/);
-		expect(await statusBar.textContent()).not.toMatch(
-			'The transaction "Hølm Home" was deleted successfully'
-		);
-
 		// Proceed to delete transaction
 		await prepareToAcceptDialog(page, 'Are you sure you want to delete the transaction?');
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message confirms transaction deletion
-		await expect(statusBar).toHaveClass(/statusBar--active/);
-		expect(await statusBar.textContent()).toMatch(
-			'The transaction —Hølm Home— was deleted successfully'
-		);
+		await expectToastAndDismiss(page, 'Hølm Home was deleted', Appearance.ACTIVE);
 		await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
 
 		// Check the transaction is no longer present in Balance sheeet
@@ -553,10 +553,7 @@ test.describe('Transactions', () => {
 		// Deleting an account that doesn't exist should fail
 		await databaseWipe(baseURL!);
 		await page.locator('button', { hasText: 'Delete' }).click();
-
-		// Check status message shows an error
-		await expect(statusBar).toHaveClass(/statusBar--negative/);
-		expect(await statusBar.textContent()).toMatch("The transaction doesn't exist");
+		await expectToastAndDismiss(page, "The transaction doesn't exist", Appearance.NEGATIVE);
 	});
 
 	test.describe('Batch-edit', async () => {
@@ -603,6 +600,7 @@ test.describe('Transactions', () => {
 			const transaction = page.locator('a', { hasText: 'Patriot Insurance' });
 			await transaction.first().click();
 			await page.locator('button', { hasText: 'Save' }).click();
+			await expectToastAndDismiss(page, 'Patriot Insurance was updated', Appearance.POSITIVE);
 			await expect(transaction.first()).toBeVisible();
 			expect(await highlightedRows.count()).toBe(1);
 			await expect(batchEditor).not.toBeVisible();
@@ -624,6 +622,7 @@ test.describe('Transactions', () => {
 			await page.locator('a', { hasText: 'Edit together' }).click();
 			await expect(page.locator('h1', { hasText: 'Patriot Insurance' })).toBeVisible();
 			await page.locator('button', { hasText: 'Save' }).click();
+			await expectToastAndDismiss(page, 'Patriot Insurance was updated', Appearance.POSITIVE);
 
 			// Batch-editing two or more transactions takes you to the batch-edit page
 			await selectCheckboxes.nth(0).check();
@@ -637,8 +636,6 @@ test.describe('Transactions', () => {
 		});
 
 		test('Edit and delete multiple transactions', async ({ page }) => {
-			const statusBar = page.locator('.statusBar');
-			const dismissButton = page.locator('button', { hasText: 'Dismiss' });
 			const tableNotice = page.locator('.table__td--notice');
 			const tableRows = page.locator('.table__tr');
 			const selectAllCheckbox = page.locator('th input.batchEditor-checkbox__input');
@@ -665,14 +662,10 @@ test.describe('Transactions', () => {
 			);
 
 			await prepareToAcceptDialog(page, 'Are you sure you want to delete the 109 transactions?');
-			await expect(statusBar).not.toHaveClass(/statusBar--active/);
 
 			// Proceed to delete the transactions
 			await page.locator('button', { hasText: 'Delete' }).click();
-			await expect(statusBar).toHaveClass(/statusBar--active/);
-			expect(await statusBar.textContent()).toMatch('109 transactions were deleted successfully');
-
-			await dismissButton.click();
+			await expectToastAndDismiss(page, '109 transactions were deleted', Appearance.ACTIVE);
 
 			// Check initial values for the first transaction
 			await expect(tableNotice).not.toBeVisible();
@@ -803,15 +796,8 @@ test.describe('Transactions', () => {
 			await expect(amountInput).toBeVisible();
 
 			await amountInput.type('999');
-
-			await expect(statusBar).not.toHaveClass(/statusBar--positive/);
-
 			await applyButton.click();
-
-			await expect(statusBar).toHaveClass(/statusBar--positive/);
-			expect(await statusBar.textContent()).toMatch('The 2 transactions were updated successfully');
-
-			await dismissButton.click();
+			await expectToastAndDismiss(page, '2 transactions were updated', Appearance.POSITIVE); // prettier-ignore
 
 			// Check the first transaction was edited
 			expect(await tableRows.nth(0).textContent()).toMatch('Accidentes? Llámenos 1-800-877-7770');
@@ -837,11 +823,7 @@ test.describe('Transactions', () => {
 			await page.locator('a', { hasText: 'Accidentes? Llámenos 1-800-877-7770' }).first().click();
 			await dateSelect.selectOption({ label: '29' });
 			await page.locator('button', { hasText: 'Save' }).click();
-
-			await expect(statusBar).toHaveClass(/statusBar--positive/);
-			expect(await statusBar.textContent()).toMatch('The transaction was updated successfully');
-
-			await dismissButton.click();
+			await expectToastAndDismiss(page, 'Accidentes? Llámenos 1-800-877-7770 was updated', Appearance.POSITIVE); // prettier-ignore
 			expect(await tableRows.nth(0).textContent()).toMatch('29');
 			expect(await tableRows.nth(1).textContent()).toMatch('28');
 
@@ -898,8 +880,7 @@ test.describe('Transactions', () => {
 			expect(await amountInput.inputValue()).toMatch('$999');
 
 			await applyButton.click();
-			await expect(statusBar).toHaveClass(/statusBar--positive/);
-			expect(await statusBar.textContent()).toMatch('The 2 transactions were updated successfully');
+			await expectToastAndDismiss(page, ' 2 transactions were updated', Appearance.POSITIVE);
 
 			const formSelect = page.locator('.formSelect__select');
 			const formInput = page.locator('.formInput__input');
