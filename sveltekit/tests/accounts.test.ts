@@ -175,8 +175,6 @@ test.describe('Accounts', () => {
 		await formSelect.selectOption('7'); // Lifetime
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
-		await delay();
-		await page.locator('button', { hasText: 'Dismiss' }).click();
 		await expectToastAndDismiss(page, 'Evergreen Market was created', Appearance.POSITIVE); // prettier-ignore
 		await expect(page.locator('.table__td--notice')).not.toBeVisible();
 
