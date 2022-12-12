@@ -27,14 +27,6 @@
 	export let data: PageData;
 	$: ({ syncStatus, syncSettings, accessKey } = data);
 
-	const setStatusBar = (message: string, appearance: Appearance) => {
-		isLoading = false;
-		$statusBarStore = {
-			message,
-			appearance
-		};
-	};
-
 	// Acess key
 	let accessKeyValue = '';
 	$: isAccessKeyEnabled = false;
@@ -49,7 +41,6 @@
 
 			document.cookie = getAccessKeyCookie(response.accessKey);
 			isAccessKeyEnabled = true;
-			setStatusBar('Access key has been set', Appearance.POSITIVE);
 		} catch (e) {
 			await goto('/accessKey');
 		}
@@ -68,12 +59,11 @@
 			document.cookie = getAccessKeyCookie('', 0); // Resets existing cookie
 			accessKeyValue = '';
 			isAccessKeyEnabled = false;
-			setStatusBar('Access key has been removed', Appearance.ACTIVE);
 		}
 	};
 
 	// Sync
-	let isLoading: boolean = false;
+	let isSyncLoading: boolean = false;
 	$syncStatusStore = syncStatus || $syncStatusStore;
 	$: isSyncEnabled = $syncStatusStore.isSyncEnabled;
 	$: canutinFileUrlValue = '';
@@ -96,8 +86,7 @@
 			jwt
 		};
 
-		isLoading = true;
-		// setLoadingStatus('Checking the CanutinFile URL...');
+		isSyncLoading = true;
 
 		const response = await api({
 			endpoint: 'sync',
@@ -107,6 +96,7 @@
 
 		// Update the status bar
 		$syncStatusStore = response?.syncStatus || $syncStatusStore;
+		isSyncLoading = false;
 	};
 
 	const frequencyOptions = Object.values(EventFrequency).map((value) => ({
@@ -256,7 +246,7 @@
 				</FormFieldset>
 				<FormFooter>
 					<Button
-						disabled={!canutinFileUrlValue}
+						disabled={!canutinFileUrlValue || isSyncLoading}
 						appearance={isSyncEnabled ? undefined : Appearance.ACTIVE}
 					>
 						{isSyncEnabled ? 'Update' : 'Enable'}

@@ -15,7 +15,7 @@ export const POST = async ({ request }: RequestEvent) => {
 	if (vaultAccessKey?.value !== requestAccessKey)
 		return new Response(ACCESS_KEY_UNAUTHORIZED, { status: 401 });
 
-	createSuccessEvent(`Access key has been set`, Appearance.POSITIVE);
+	createSuccessEvent(`Access key is authorized`, Appearance.POSITIVE);
 	return json({ accessKey: requestAccessKey });
 };
 
