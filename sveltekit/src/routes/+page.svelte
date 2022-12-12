@@ -8,12 +8,10 @@
 	import Link from '$lib/components/Link.svelte';
 	import ChartBar from '$lib/components/ChartBar.svelte';
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
-	import isAppReadyStore from '$lib/stores/isAppReadyStore';
 	import { formatCurrency } from '$lib/helpers/misc';
 	import { BalanceGroup, TrailingCashflowPeriods } from '$lib/helpers/constants';
 	import { balanceGroupAppearance, CardAppearance } from '$lib/components/Card';
 	import type { PeriodCashflow } from './+page.server';
-	import { onMount } from 'svelte';
 
 	const title = 'The big picture';
 
@@ -41,12 +39,6 @@
 				? TrailingCashflowPeriods.LAST_12_MONTHS
 				: TrailingCashflowPeriods.LAST_6_MONTHS;
 	};
-
-	onMount(() => {
-		// If this component is rendered it means the vault and accessKey checks have passed
-		// and the app is ready to be used.
-		$isAppReadyStore = true;
-	});
 </script>
 
 <svelte:head>

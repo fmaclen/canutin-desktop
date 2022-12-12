@@ -1,5 +1,11 @@
 import { writable } from 'svelte/store';
 
-const isAppReadyStore = writable(false);
+// NOTE:
+// It'd probably be better to set the default value to `false` and only set it to
+// `true` after we check that the vault is migrated and seeded in `/vault/+page.server.ts`
+// except the store can only be updated from the front-end and because we are throwing
+// a redirect to `/` the load function in `/vault/+page.svelte`'s where we would
+// hypothetically update the store never runs.
+const isAppReadyStore = writable(true);
 
 export default isAppReadyStore;

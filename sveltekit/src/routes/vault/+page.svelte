@@ -4,10 +4,12 @@
 	import Notice from '$lib/components/Notice.svelte';
 	import Code from '$lib/components/Code.svelte';
 	import type { PageData } from './$types';
+	import isAppReadyStore from '$lib/stores/isAppReadyStore';
 
 	const title = 'Vault';
 
 	export let data: PageData;
+	$isAppReadyStore = false;
 </script>
 
 <svelte:head>
