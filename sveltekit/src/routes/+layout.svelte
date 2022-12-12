@@ -10,6 +10,7 @@
 
 	import StatusBar from '$lib/components/StatusBar.svelte';
 	import ButtonTag from '$lib/components/ButtonTag.svelte';
+	import FlashAlert from '$lib/components/FlashAlert.svelte';
 	import statusBarStore from '$lib/stores/statusBarStore';
 	import lastUpdateCheckStore from '$lib/stores/lastUpdateCheckStore';
 	import syncStatusStore from '$lib/stores/syncStatusStore';
@@ -17,7 +18,6 @@
 	import { Appearance } from '$lib/helpers/constants';
 	import { api } from '$lib/helpers/misc';
 	import type { PageData } from './$types';
-	import FlashAlert from '$lib/components/FlashAlert.svelte';
 
 	export let data: PageData;
 	$: disabledLink = !$isAppReadyStore && 'layout__a--disabled'; // Disabled links
@@ -123,7 +123,9 @@
 	});
 </script>
 
-<FlashAlert />
+{#if $isAppReadyStore}
+	<FlashAlert />
+{/if}
 
 <div class="layout">
 	<a class="layout__logo" href="/">

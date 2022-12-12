@@ -17,7 +17,6 @@
 
 	const title = 'Access key';
 
-	$isAppReadyStore = false;
 	let accessKeyValue = '';
 	let error = '';
 
@@ -30,7 +29,6 @@
 			});
 
 			document.cookie = getAccessKeyCookie(response.accessKey);
-			$isAppReadyStore = true;
 			await goto('/');
 		} catch (e) {
 			error = 'Incorrect access key';
