@@ -432,7 +432,7 @@ test.describe('Transactions', () => {
 		await nameInput.fill("Bob's Laughable-Yield Checking");
 		// await isAutoCalculatedCheckbox.check();
 		await addButton.click();
-		await expectToastAndDismiss(page, "Bob's Laughable-Yield Checking was created successfully", Appearance.POSITIVE); // prettier-ignore
+		await expectToastAndDismiss(page, "Bob's Laughable-Yield Checking was created", Appearance.POSITIVE); // prettier-ignore
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$0');
 		expect(await balanceTypeGroup.textContent()).toMatch('Checking');
@@ -471,7 +471,7 @@ test.describe('Transactions', () => {
 		await amountInput.focus();
 		await page.keyboard.type('-420.69', { delay: 25 });
 		await addButton.click();
-		await expectToastAndDismiss(page, 'Toilet Paper Depot was created successfully', Appearance.POSITIVE); // prettier-ignore
+		await expectToastAndDismiss(page, 'Toilet Paper Depot was created', Appearance.POSITIVE); // prettier-ignore
 
 		const netBalanceCard = page.locator('.card', { hasText: 'Net balance' });
 		expect(await netBalanceCard.textContent()).not.toMatch('-$420.69');

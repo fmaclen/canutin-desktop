@@ -63,7 +63,7 @@ test.describe('Accounts', () => {
 		await expect(currencyInput).toHaveValue('$420.69');
 
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expectToastAndDismiss(page, 'Fiat Auto Loan was created successfully', Appearance.POSITIVE); // prettier-ignore
+		await expectToastAndDismiss(page, 'Fiat Auto Loan was created', Appearance.POSITIVE); // prettier-ignore
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		expect(await balanceTypeGroup.count()).toBe(1);
 		expect(await balanceTypeGroup.textContent()).toMatch('Auto Loan');
@@ -79,7 +79,7 @@ test.describe('Accounts', () => {
 		await expect(institutionInput).toHaveValue('Ransack Bank Auto Loans');
 		await expect(currencyInput).toHaveValue('$420.69');
 
-		// Check the account was created successfully
+		// Check the account was created
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 
@@ -94,7 +94,7 @@ test.describe('Accounts', () => {
 		await expect(currencyInput).toBeDisabled();
 		await page.locator('button', { hasText: 'Save' }).click();
 
-		// Check the account was updated successfully
+		// Check the account was updated
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		expect(await balanceTypeGroup.count()).toBe(1);
 		expect(await balanceTypeGroup.textContent()).toMatch('Auto loan');
@@ -112,7 +112,7 @@ test.describe('Accounts', () => {
 		// Check an account can't be edited to have the same name as another account
 		await nameInput.fill("Alice's Savings");
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expectToastAndDismiss(page, "Alice's Savings was created successfully", Appearance.POSITIVE); // prettier-ignore
+		await expectToastAndDismiss(page, "Alice's Savings was created", Appearance.POSITIVE); // prettier-ignore
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 
 		await page.locator('a', { hasText: "Alice's Savings" }).click();

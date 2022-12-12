@@ -18,7 +18,7 @@ export const POST = async ({ request }: RequestEvent) => {
 				...payload
 			}
 		});
-		await createSuccessEvent(`${account.name} was created successfully`);
+		await createSuccessEvent(`${account.name} was created`);
 		return json({ id: account.id }); // FIXME: should return crudResponse
 	} catch (error) {
 		return handleAccountError(error);
@@ -40,7 +40,7 @@ export const PATCH = async ({ request }: RequestEvent) => {
 				...payload
 			}
 		});
-		await createSuccessEvent(`${account.name} was updated successfully`);
+		await createSuccessEvent(`${account.name} was updated`);
 		return json({ id: account.id }); // FIXME: should return crudResponse
 	} catch (error) {
 		return handleAccountError(error);

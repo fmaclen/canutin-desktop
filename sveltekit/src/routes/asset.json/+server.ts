@@ -18,7 +18,7 @@ export const POST = async ({ request }: RequestEvent) => {
 				...payload
 			}
 		});
-		await createSuccessEvent(`${asset.name} was created successfully`);
+		await createSuccessEvent(`${asset.name} was created`);
 		return json({ id: asset.id }); // FIXME: should return crudResponse
 	} catch (error) {
 		return handleAssetError(error);
@@ -40,7 +40,7 @@ export const PATCH = async ({ request }: RequestEvent) => {
 				...payload
 			}
 		});
-		await createSuccessEvent(`${asset.name} was updated successfully`);
+		await createSuccessEvent(`${asset.name} was updated`);
 		return json({ id: asset.id }); // FIXME: should return crudResponse
 	} catch (error) {
 		return handleAssetError(error);

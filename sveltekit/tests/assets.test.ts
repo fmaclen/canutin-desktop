@@ -51,9 +51,9 @@ test.describe('Assets', () => {
 
 		await symbolInput.fill('GME');
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expectToastAndDismiss(page, "GameStop was created successfully", Appearance.POSITIVE); // prettier-ignore
+		await expectToastAndDismiss(page, "GameStop was created", Appearance.POSITIVE); // prettier-ignore
 
-		// Check the asset was created successfully
+		// Check the asset was created
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		expect(await balanceTypeGroup.textContent()).toMatch('GameStop');
 		expect(await balanceTypeGroup.textContent()).toMatch('$0');
@@ -80,9 +80,9 @@ test.describe('Assets', () => {
 		await expect(valueInput).toHaveValue('$289.8');
 
 		await page.locator('button', { hasText: 'Save' }).click();
-		await expectToastAndDismiss(page, "GameStop was updated successfully", Appearance.POSITIVE); // prettier-ignore
+		await expectToastAndDismiss(page, "GameStop was updated", Appearance.POSITIVE); // prettier-ignore
 
-		// Check the account was updated successfully
+		// Check the account was updated
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 		expect(await balanceTypeGroup.count()).toBe(1);
 		expect(await balanceTypeGroup.textContent()).toMatch('Security');
@@ -115,7 +115,7 @@ test.describe('Assets', () => {
 		await expect(valueInput).toHaveValue('$289.8');
 		await expect(isSoldCheckbox).toBeChecked();
 
-		// Check the asset type was updated successfully
+		// Check the asset type was updated
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		expect(await balanceTypeGroup.count()).toBe(1);
@@ -134,7 +134,7 @@ test.describe('Assets', () => {
 		// Check an asset can't be edited to have the same name as another asset
 		await nameInput.fill('AMC Entertainment Holdings Inc');
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expectToastAndDismiss(page, "AMC Entertainment Holdings Inc was created successfully", Appearance.POSITIVE); // prettier-ignore
+		await expectToastAndDismiss(page, "AMC Entertainment Holdings Inc was created", Appearance.POSITIVE); // prettier-ignore
 
 		await page.locator('a', { hasText: 'AMC Entertainment Holdings Inc' }).click();
 		await expect(page.locator('h1', { hasText: 'AMC Entertainment Holdings Inc' })).toBeVisible();

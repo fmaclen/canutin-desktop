@@ -31,7 +31,7 @@ export const POST = async ({ request }: RequestEvent) => {
 			}
 		});
 
-		await createSuccessEvent(`${transaction.description} was created successfully`);
+		await createSuccessEvent(`${transaction.description} was created`);
 		return crudResponse({ payload: transaction.id });
 	} catch (error) {
 		return handleTransactionError(error);
