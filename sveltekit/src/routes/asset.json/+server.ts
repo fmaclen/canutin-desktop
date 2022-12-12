@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { Prisma } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
 import prisma, { handleError, crudResponse } from '$lib/helpers/prisma.server';
-import { createSuccessEvent } from '$lib/helpers/events.server';
+import { createErrorEvent, createSuccessEvent } from '$lib/helpers/events.server';
 import { Appearance } from '$lib/helpers/constants';
 
 // Create new asset
@@ -18,7 +18,7 @@ export const POST = async ({ request }: RequestEvent) => {
 				...payload
 			}
 		});
-		createSuccessEvent(`${asset.name} was created successfully`, Appearance.POSITIVE);
+		await createSuccessEvent(`${asset.name} was created successfully`);
 		return json({ id: asset.id }); // FIXME: should return crudResponse
 	} catch (error) {
 		return handleAssetError(error);
@@ -40,7 +40,7 @@ export const PATCH = async ({ request }: RequestEvent) => {
 				...payload
 			}
 		});
-		createSuccessEvent(`${asset.name} was updated successfully`, Appearance.POSITIVE);
+		await createSuccessEvent(`${asset.name} was updated successfully`);
 		return json({ id: asset.id }); // FIXME: should return crudResponse
 	} catch (error) {
 		return handleAssetError(error);
@@ -54,15 +54,15 @@ export const DELETE = async ({ request }: RequestEvent) => {
 		const asset = await prisma.asset.delete({
 			where: { id: payload }
 		});
-		createSuccessEvent(`${asset.name} was deleted`, Appearance.ACTIVE);
+		await createSuccessEvent(`${asset.name} was deleted`, Appearance.ACTIVE);
 		return json({ id: asset.id }); // FIXME: should return crudResponse
 	} catch (error) {
 		return handleAssetError(error);
 	}
 };
 
-const handleAssetError = (error: any) => {
+const handleAssetError = async (error: any) => {
 	const errorResponse = handleError(error, 'asset');
-	createSuccessEvent(errorResponse.error, Appearance.NEGATIVE);
+	await createErrorEvent(errorResponse.error);
 	return crudResponse(errorResponse);
 };

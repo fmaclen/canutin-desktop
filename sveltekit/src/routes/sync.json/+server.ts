@@ -135,7 +135,7 @@ export const POST = async ({ request }: RequestEvent) => {
 			}
 			const syncStatus = await getSyncStatus();
 			await markEventAsRead(processingEvent.id);
-			await createSuccessEvent(`Sync is now enabled`, Appearance.POSITIVE);
+			await createSuccessEvent(`Sync is now enabled`);
 			return json({ syncStatus });
 		}
 	} catch (_e) {
