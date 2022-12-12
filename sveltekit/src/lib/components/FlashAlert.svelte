@@ -64,40 +64,48 @@
 	const ongoingEvents: [number, number][] = []; // Queue of ongoing events
 
 	const getEvents = async () => {
-		const events: Event[] = await api({ endpoint: 'event' });
+		try {
+			const events: Event[] = await api({ endpoint: 'event' });
 
-		// Remove old events from the ongoing events and toast queues
-		for (const [toastId, eventId] of ongoingEvents) {
-			if (events.some((event) => event.id === eventId)) continue;
+			// Remove old events from the ongoing events and toast queues
+			for (const [toastId, eventId] of ongoingEvents) {
+				if (events.some((event) => event.id === eventId)) continue;
 
-			toast.pop(toastId);
-			ongoingEvents.splice(ongoingEvents.indexOf([toastId, eventId]), 1);
-		}
+				toast.pop(toastId);
+				ongoingEvents.splice(ongoingEvents.indexOf([toastId, eventId]), 1);
+			}
 
-		// Push new events to the toast queue
-		for (const event of events) {
-			// Skip events that are already in the ongoing events queue
-			if (ongoingEvents.some((activeEventId) => activeEventId[1] === event.id)) continue;
+			// Push new events to the toast queue
+			for (const event of events) {
+				// Skip events that are already in the ongoing events queue
+				if (ongoingEvents.some((activeEventId) => activeEventId[1] === event.id)) continue;
 
-			const shouldAutoDismiss = event.dismissAfter !== 0;
-			const isEventOngoing = event.status === EventStatus.ONGOING;
+				const shouldAutoDismiss = event.dismissAfter !== 0;
+				const isEventOngoing = event.status === EventStatus.ONGOING;
 
-			const toastId = toast.push(isEventOngoing ? addLoadingIcon(event.message) : event.message, {
-				initial: shouldAutoDismiss ? 1 : 0,
-				duration: shouldAutoDismiss ? event.dismissAfter : undefined,
-				reversed: true,
-				dismissable: !isEventOngoing,
-				...setColorTheme(event.appearance as Appearance | null)
-			});
+				const toastId = toast.push(isEventOngoing ? addLoadingIcon(event.message) : event.message, {
+					initial: shouldAutoDismiss ? 1 : 0,
+					duration: shouldAutoDismiss ? event.dismissAfter : undefined,
+					reversed: true,
+					dismissable: !isEventOngoing,
+					...setColorTheme(event.appearance as Appearance | null)
+				});
 
-			// Push ongoing events to the ongoing events queue
-			if (isEventOngoing) ongoingEvents.push([toastId, event.id]);
+				// Push ongoing events to the ongoing events queue
+				if (isEventOngoing) ongoingEvents.push([toastId, event.id]);
+			}
+		} catch (error) {
+			// NOTE: If we don't catch the error it would break the polling loop
+			// FIXME:
+			// When this is called and the user is not logged in, hooks redirects the request
+			// redirects to `/accessKey` which returns an HTML response and throws an error
+			// in the client console.
+			// REF https://github.com/Canutin/desktop/issues/163
 		}
 
 		// Poll the API every second
 		setTimeout(async () => {
-			// Recursively call the function
-			getEvents();
+			getEvents(); // Recursively call the function
 		}, ONE_SECOND_IN_MS);
 	};
 
