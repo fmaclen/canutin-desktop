@@ -5,9 +5,8 @@
 	import Section from '$lib/components/Section.svelte';
 	import AssetForm from '../AssetForm.svelte';
 	import DangerZone from '$lib/components/DangerZone.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
 	import { api } from '$lib/helpers/misc';
-	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
+	import { UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { CRUDResponse } from '$lib/helpers/forms';
 	import ChartBalanceHistory from '$lib/components/ChartBalanceHistory.svelte';
@@ -40,18 +39,7 @@
 		};
 		asset = await api({ endpoint: 'asset', method: 'PATCH', payload });
 
-		if (asset.error) {
-			$statusBarStore = {
-				message: asset.error,
-				appearance: Appearance.NEGATIVE
-			};
-		} else {
-			$statusBarStore = {
-				message: 'The asset was updated successfully',
-				appearance: Appearance.POSITIVE
-			};
-			await goto(referrer);
-		}
+		if (!asset.error) await goto(referrer);
 	};
 
 	const handleDelete = async () => {
@@ -66,18 +54,7 @@
 			payload: data.asset.id
 		});
 
-		if (deletedAsset.error) {
-			$statusBarStore = {
-				message: deletedAsset.error,
-				appearance: Appearance.NEGATIVE
-			};
-		} else {
-			$statusBarStore = {
-				message: `The asset —${data.asset.name}— was deleted successfully`,
-				appearance: Appearance.ACTIVE
-			};
-			await goto(referrer);
-		}
+		if (!deletedAsset.error) await goto(referrer);
 	};
 </script>
 

@@ -17,7 +17,6 @@
 	import Button from '$lib/components/Button.svelte';
 	import DangerZone from '$lib/components/DangerZone.svelte';
 	import Link from '$lib/components/Link.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
 	import { api } from '$lib/helpers/misc';
 	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
@@ -82,24 +81,13 @@
 			updatedProps
 		};
 
-		const updatedTransactions = (await api({
+		const crudResponse = (await api({
 			endpoint: 'transactions',
 			method: 'PATCH',
 			payload
 		})) as CRUDResponse;
 
-		if (updatedTransactions.error) {
-			$statusBarStore = {
-				message: updatedTransactions.error,
-				appearance: Appearance.NEGATIVE
-			};
-		} else {
-			$statusBarStore = {
-				message: `The ${batchTransactions.length} transactions were updated successfully`,
-				appearance: Appearance.POSITIVE
-			};
-			await goto('/transactions');
-		}
+		if (!crudResponse.error) await goto('/transactions');
 	};
 
 	const handleDelete = async () => {
@@ -108,24 +96,13 @@
 		);
 		if (!confirmDeletion) return;
 
-		const response: CRUDResponse = await api({
+		const crudResponse = (await api({
 			endpoint: 'transactions',
 			method: 'DELETE',
 			payload: data.batchTransactions
-		});
+		})) as CRUDResponse;
 
-		if (response.error) {
-			$statusBarStore = {
-				message: response.error,
-				appearance: Appearance.NEGATIVE
-			};
-		} else {
-			$statusBarStore = {
-				message: `${response.payload.count} transactions were deleted successfully`,
-				appearance: Appearance.ACTIVE
-			};
-			await goto('/transactions');
-		}
+		if (!crudResponse.error) await goto('/transactions');
 	};
 </script>
 

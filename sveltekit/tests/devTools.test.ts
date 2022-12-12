@@ -1,12 +1,29 @@
 import { expect, test } from '@playwright/test';
-import { DeveloperFunctions } from '../src/lib/helpers/constants.js';
-import { databaseSeed, databaseWipe, delay } from './fixtures/helpers.js';
+import { Appearance, DeveloperFunctions } from '../src/lib/helpers/constants.js';
+import {
+	databaseSeed,
+	databaseWipe,
+	delay,
+	expectToastAndDismiss,
+	prepareToAcceptDialog,
+	setEnvironmentVariable
+} from './fixtures/helpers.js';
 
 test.describe('Developer tools', () => {
 	// FIXME: this test fails in CI, probably due to a race condition
 	if (process.env.NODE_ENV !== 'CI') {
-		test.beforeEach(async ({ baseURL }) => {
+		test.beforeAll(async ({ baseURL }) => {
+			await setEnvironmentVariable(baseURL!, 'TEST_DEV_TOOLS', 'true');
+		});
+
+		test.afterAll(async ({ baseURL }) => {
+			await setEnvironmentVariable(baseURL!, 'TEST_DEV_TOOLS', 'false');
+		});
+
+		test.beforeEach(async ({ baseURL, page }) => {
 			await databaseWipe(baseURL!);
+			await page.goto('/');
+			await expectToastAndDismiss(page, 'Database was wiped successfully', Appearance.ACTIVE);
 		});
 
 		test('Sidebar link is not visible in production', async ({ page }) => {
@@ -24,31 +41,23 @@ test.describe('Developer tools', () => {
 
 			// Seed DB
 			await page.locator('button', { hasText: 'Seed demo data' }).click();
-			const statusBar = page.locator('.statusBar');
-			await delay();
-			await expect(statusBar).toHaveClass(/statusBar--positive/);
-			expect(await statusBar.textContent()).toMatch(
-				'Database action was performed, likely without errors'
-			);
-
-			await page.locator('button', { hasText: 'Dismiss' }).click();
-			expect(await statusBar.textContent()).not.toMatch(
-				'Database action was performed, likely without errors'
-			);
+			await expectToastAndDismiss(page, 'Database was seeded successfully', Appearance.POSITIVE);
 
 			await page.goto('/');
 			expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch(
 				'$185,719'
 			);
 
-			// Delete all accounts and assets
+			// Seeding again without deleting data should fail
 			await page.goto('/devTools');
-			await page.locator('button', { hasText: 'Delete accounts & assets' }).click();
-			await delay();
-			await expect(statusBar).toHaveClass(/statusBar--positive/);
-			expect(await statusBar.textContent()).toMatch(
-				'Database action was performed, likely without errors'
-			);
+			await page.locator('button', { hasText: 'Seed demo data' }).click();
+			await expectToastAndDismiss(page, 'Database could not be seeded', Appearance.NEGATIVE);
+
+			// Delete all accounts and assets
+			await prepareToAcceptDialog(page, 'You are about to permanently delete data from the vault');
+
+			await page.locator('button', { hasText: 'Delete accounts, transactions & assets' }).click();
+			await expectToastAndDismiss(page, 'All accounts, transactions & assets have been deleted', Appearance.ACTIVE); // prettier-ignore
 
 			await page.goto('/');
 			expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$0');
@@ -56,26 +65,27 @@ test.describe('Developer tools', () => {
 
 		test('Delete only transactions', async ({ baseURL, page }) => {
 			await databaseSeed(baseURL!);
-			await page.goto('/transactions');
+
+			await page.goto('/');
+			await expectToastAndDismiss(page, 'Database was seeded successfully', Appearance.POSITIVE); // prettier-ignore
+
+			await page.locator('a', { hasText: 'Transactions' }).click();
 			await delay();
 			expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('111');
 
 			// Delete all Transactions
-			const statusBar = page.locator('.statusBar');
 			await page.goto('/devTools');
-			await page.locator('button', { hasText: 'Delete transactions' }).click();
-			await delay();
-			await expect(statusBar).toHaveClass(/statusBar--positive/);
-			expect(await statusBar.textContent()).toMatch(
-				'Database action was performed, likely without errors'
-			);
+			await prepareToAcceptDialog(page, 'You are about to permanently delete data from the vault');
+
+			await page.locator('button', { hasText: 'Delete transactions only' }).click();
+			await expectToastAndDismiss(page, 'All transactions have been deleted', Appearance.ACTIVE); // prettier-ignore
 
 			await page.goto('/transactions');
 			await delay();
 			expect(await page.locator('.card', { hasText: 'Transactions' }).textContent()).toMatch('0');
 		});
 
-		test('Deleting all data including sync settings', async ({ baseURL, page }) => {
+		test('Deleting all data including settings and events', async ({ baseURL, page }) => {
 			await page.goto('/');
 			await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 			expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$0');
@@ -113,7 +123,12 @@ test.describe('Developer tools', () => {
 
 			// Delete all data
 			await page.goto('/devTools');
+			await prepareToAcceptDialog(page, 'You are about to permanently delete data from the vault');
+
+			await delay();
 			await page.locator('button', { hasText: 'Delete all data' }).click();
+			await expectToastAndDismiss(page, 'Database was wiped successfully', Appearance.ACTIVE);
+
 			await page.locator('a', { hasText: 'The big picture' }).click();
 			expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$0');
 			await expect(sidebarSyncButton).not.toBeVisible();

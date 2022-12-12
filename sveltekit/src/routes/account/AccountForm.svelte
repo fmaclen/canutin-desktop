@@ -16,7 +16,7 @@
 	export let account: Account | null = null;
 	export let selectAccountTypes: FormSelectOption[];
 	export let selectBalanceGroups: FormSelectOption[];
-	export let latestBalance: number;
+	export let latestBalance: number = 0;
 	export let submitButtonLabel: string;
 
 	let name = account ? account.name : '';

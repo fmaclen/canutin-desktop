@@ -79,8 +79,8 @@ export const expectToastAndDismiss = async (
 	message: string,
 	appearance?: Appearance
 ) => {
-	const toast = page.locator('.toastLi');
-	expect(await toast.textContent()).toMatch(message);
+	const toast = page.locator('.toastLi', { hasText: message });
+	await expect(toast).toBeVisible();
 
 	switch (appearance) {
 		case Appearance.ACTIVE:
@@ -96,9 +96,20 @@ export const expectToastAndDismiss = async (
 			await expect(toast).not.toHaveClass(/toastLi--/);
 	}
 
-	const toastDismissButton = page.locator('._toastBtn');
-	await toastDismissButton.click();
+	// Events that have a loading state will not have a dismiss button
+	const isDismissable = !(await toast.locator('.toastLoadingMsg__icon').isVisible());
+	if (isDismissable) {
+		const toastDismissButton = toast.locator('._toastBtn');
+		await toastDismissButton.click();
+	}
 
-	await delay(); // Wait for the toast outro animation to complete
 	await expect(toast).not.toBeVisible();
+};
+
+export const prepareToAcceptDialog = async (page: Page, message: string) => {
+	page.on('dialog', (dialog) => {
+		expect(dialog.message()).toMatch(message);
+
+		dialog.accept();
+	});
 };

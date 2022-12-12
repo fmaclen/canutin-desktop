@@ -1,5 +1,12 @@
+import { Appearance } from '$lib/helpers/constants.js';
 import { expect, test } from '@playwright/test';
-import { databaseWipe, delay, setEnvironmentVariable } from './fixtures/helpers.js';
+import {
+	databaseWipe,
+	delay,
+	expectToastAndDismiss,
+	prepareToAcceptDialog,
+	setEnvironmentVariable
+} from './fixtures/helpers.js';
 
 test.describe('Access key', () => {
 	const fakeAccessKey = 'top-secret-key-123';
@@ -67,8 +74,6 @@ test.describe('Access key', () => {
 		clipboard = await page.evaluate(() => navigator.clipboard.readText());
 		expect(clipboard).toMatch(UUIDv4Regex);
 
-		const statusBar = page.locator('.statusBar');
-
 		// Set access key
 		await submitButton.click();
 		await expect(updateButton).toBeVisible();
@@ -76,8 +81,7 @@ test.describe('Access key', () => {
 		await expect(submitButton).not.toBeVisible();
 		await expect(formNotice).toHaveClass(/formNotice__notice--positive/);
 		expect(await formNotice.textContent()).toMatch('Access key is enabled');
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).toMatch('Access key has been set');
+		await expectToastAndDismiss(page, 'Access key has been set', Appearance.POSITIVE);
 
 		// Check cookies are set
 		cookies = await context.cookies();
@@ -119,6 +123,8 @@ test.describe('Access key', () => {
 		// It reidrects after setting the access key
 		await accessKeyInput.fill(clipboard);
 		await continueButton.click();
+		await expectToastAndDismiss(page, 'Access key is authorized', Appearance.ACTIVE);
+
 		await expect(page.locator('h1', { hasText: 'Access key' })).not.toBeVisible();
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 		expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$0');
@@ -132,6 +138,7 @@ test.describe('Access key', () => {
 		await page.locator('a', { hasText: 'Settings' }).click();
 		await accessKeyInput.fill(fakeAccessKey);
 		await updateButton.click();
+		await expectToastAndDismiss(page, 'Access key has been set', Appearance.POSITIVE);
 
 		// Check cookies have been updated and access key is still enabled
 		await delay(); // Assertion is faster than the cookie being set
@@ -146,18 +153,12 @@ test.describe('Access key', () => {
 		await expect(resetButton).not.toBeDisabled();
 
 		// Prepare to confirm the dialog prompt
-		page.on('dialog', (dialog) => {
-			expect(dialog.message()).toMatch('Are you sure you want to reset the access key?');
-
-			dialog.accept();
-		});
+		await prepareToAcceptDialog(page, 'Are you sure you want to reset the access key?');
 
 		await resetButton.click();
 		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
 		expect(await formNotice.textContent()).toMatch('Access key is disabled');
-		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
-		await expect(statusBar).toHaveClass(/statusBar--active/);
-		expect(await statusBar.textContent()).toMatch('Access key has been removed');
+		await expectToastAndDismiss(page, 'Access key has been removed', Appearance.ACTIVE);
 
 		// Check there is no access key set
 		await page.goto('/transactions');
@@ -254,12 +255,7 @@ test.describe('Access key', () => {
 		await inputAccessKey.fill(fakeAccessKey);
 		await page.locator('button', { hasText: 'Continue' }).click();
 		await page.locator('a', { hasText: 'Settings' }).click();
-
-		page.on('dialog', (dialog) => {
-			expect(dialog.message()).toMatch('Are you sure you want to reset the access key?');
-
-			dialog.accept();
-		});
+		await prepareToAcceptDialog(page, 'Are you sure you want to reset the access key?');
 		await page.locator('button', { hasText: 'Reset' }).click();
 		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
 		expect(await formNotice.textContent()).toMatch('Access key is disabled');
@@ -297,12 +293,7 @@ test.describe('Access key', () => {
 		await page.locator('input[name=accessKey]').fill(fakeAccessKey);
 		await page.locator('button', { hasText: 'Continue' }).click();
 		await page.locator('a', { hasText: 'Settings' }).click();
-
-		page.on('dialog', (dialog) => {
-			expect(dialog.message()).toMatch('Are you sure you want to reset the access key?');
-
-			dialog.accept();
-		});
+		await prepareToAcceptDialog(page, 'Are you sure you want to reset the access key?');
 		await page.locator('button', { hasText: 'Reset' }).click();
 		await expect(formNotice).toHaveClass(/formNotice__notice--warning/);
 		expect(await formNotice.textContent()).toMatch('Access key is disabled');

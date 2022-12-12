@@ -1,10 +1,13 @@
+import { Appearance } from '$lib/helpers/constants.js';
 import { expect, test } from '@playwright/test';
 import { format } from 'date-fns';
 import {
 	databaseSeed,
 	databaseWipe,
 	delay,
+	expectToastAndDismiss,
 	MAX_DIFF_PIXEL_RATIO,
+	prepareToAcceptDialog,
 	setSnapshotPath
 } from './fixtures/helpers.js';
 
@@ -54,18 +57,13 @@ test.describe('Accounts', () => {
 		await institutionInput.fill('Ransack Bank Auto Loans');
 		await expect(page.locator('button', { hasText: 'Add' })).not.toBeDisabled();
 
-		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).not.toMatch('The account was added successfully');
-
 		// Add a new account
 		await currencyInput.focus();
 		await page.keyboard.type('420.69', { delay: 25 });
 		await expect(currencyInput).toHaveValue('$420.69');
 
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).toMatch('The account was added successfully');
+		await expectToastAndDismiss(page, 'Fiat Auto Loan was created', Appearance.POSITIVE); // prettier-ignore
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		expect(await balanceTypeGroup.count()).toBe(1);
 		expect(await balanceTypeGroup.textContent()).toMatch('Auto Loan');
@@ -81,7 +79,7 @@ test.describe('Accounts', () => {
 		await expect(institutionInput).toHaveValue('Ransack Bank Auto Loans');
 		await expect(currencyInput).toHaveValue('$420.69');
 
-		// Check the account was created successfully
+		// Check the account was created
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 
@@ -96,7 +94,7 @@ test.describe('Accounts', () => {
 		await expect(currencyInput).toBeDisabled();
 		await page.locator('button', { hasText: 'Save' }).click();
 
-		// Check the account was updated successfully
+		// Check the account was updated
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		expect(await balanceTypeGroup.count()).toBe(1);
 		expect(await balanceTypeGroup.textContent()).toMatch('Auto loan');
@@ -106,20 +104,15 @@ test.describe('Accounts', () => {
 		// Check a new account with the same name can't be created
 		await page.locator('a', { hasText: 'Add account' }).click();
 		await expect(page.locator('h1', { hasText: 'Add account' })).toBeVisible();
-		await expect(statusBar).not.toHaveClass(/statusBar--negative/);
 
 		await nameInput.fill('Fiat Financial Services');
-		await page.locator('button', { hasText: 'Dismiss' }).click();
-		await delay();
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--negative/);
-		expect(await statusBar.textContent()).toMatch('An account with the same name already exists');
+		await expectToastAndDismiss(page, 'An account with the same name already exists', Appearance.NEGATIVE); // prettier-ignore
 
 		// Check an account can't be edited to have the same name as another account
 		await nameInput.fill("Alice's Savings");
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).toMatch('The account was added successfully');
+		await expectToastAndDismiss(page, "Alice's Savings was created", Appearance.POSITIVE); // prettier-ignore
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 
 		await page.locator('a', { hasText: "Alice's Savings" }).click();
@@ -128,8 +121,7 @@ test.describe('Accounts', () => {
 
 		await nameInput.fill('Fiat Financial Services');
 		await page.locator('button', { hasText: 'Save' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--negative/);
-		expect(await statusBar.textContent()).toMatch('An account with the same name already exists');
+		await expectToastAndDismiss(page, 'An account with the same name already exists', Appearance.NEGATIVE); // prettier-ignore
 	});
 
 	test('Auto-calculated accounts show the correct balance', async ({ page }) => {
@@ -178,16 +170,12 @@ test.describe('Accounts', () => {
 		await page.keyboard.type('420.69', { delay: 25 });
 		await page.locator('button', { hasText: 'Add' }).click();
 
-		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
-
 		const formSelect = page.locator('.formSelect__select[name=periods]');
 		const formInput = page.locator('.formInput__input');
 		await formSelect.selectOption('7'); // Lifetime
 		await formSelect.dispatchEvent('change');
 		await formInput.click();
-		await delay();
-		await page.locator('button', { hasText: 'Dismiss' }).click();
+		await expectToastAndDismiss(page, 'Evergreen Market was created', Appearance.POSITIVE); // prettier-ignore
 		await expect(page.locator('.table__td--notice')).not.toBeVisible();
 
 		const tableRows = page.locator('.table__tr');
@@ -204,7 +192,7 @@ test.describe('Accounts', () => {
 		await page.keyboard.type('-420.69', { delay: 25 });
 		await isExcludedCheckbox.check();
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
+		await expectToastAndDismiss(page, 'Transfer from Ransack Bank was created', Appearance.POSITIVE); // prettier-ignore
 
 		await formSelect.selectOption('7'); // Lifetime
 		await formSelect.dispatchEvent('change');
@@ -251,29 +239,15 @@ test.describe('Accounts', () => {
 			"Permanently delete account Bob's Laughable-Yield Checking (including transactions)"
 		);
 
-		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).not.toHaveClass(/statusBar--active/);
-		expect(await statusBar.textContent()).not.toMatch(
-			"The account —Bob's Laughable-Yield Checking— was deleted successfully"
-		);
-
-		// Prepare to confirm the dialog prompt
-		page.on('dialog', (dialog) => {
-			expect(dialog.message()).toMatch(
-				"Are you sure you want to delete the account and all of it's associated transactions?"
-			);
-
-			dialog.accept();
-		});
-
 		// Proceed to delete account
+		await prepareToAcceptDialog(
+			page,
+			"Are you sure you want to delete the account and all of it's associated transactions?"
+		);
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message confirms account deletion
-		await expect(statusBar).toHaveClass(/statusBar--active/);
-		expect(await statusBar.textContent()).toMatch(
-			"The account —Bob's Laughable-Yield Checking— was deleted successfully"
-		);
+		await expectToastAndDismiss(page, "Bob's Laughable-Yield Checking was deleted", Appearance.ACTIVE); // prettier-ignore
 
 		// Check it redirects to Balance sheeet and the account is no longer listed
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
@@ -293,8 +267,7 @@ test.describe('Accounts', () => {
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message shows an error
-		await expect(statusBar).toHaveClass(/statusBar--negative/);
-		expect(await statusBar.textContent()).toMatch("The account doesn't exist");
+		await expectToastAndDismiss(page, "The account doesn't exist", Appearance.NEGATIVE); // prettier-ignore
 	});
 
 	test('Accounts page is rendered correctly', async ({ page }) => {

@@ -1,6 +1,6 @@
-import { DeveloperFunctions } from '../src/lib/helpers/constants.js';
+import { Appearance, DeveloperFunctions } from '../src/lib/helpers/constants.js';
 import { expect, test } from '@playwright/test';
-import { databaseWipe } from './fixtures/helpers.js';
+import { databaseWipe, expectToastAndDismiss } from './fixtures/helpers.js';
 
 test.describe('Sync CanutinFile', () => {
 	test.beforeEach(async ({ baseURL }) => {
@@ -59,25 +59,19 @@ test.describe('Sync CanutinFile', () => {
 
 		// Submit form with only a URL when the server expects a cookie and JWT
 		await submitButton.click();
-		expect(await page.locator('.statusBar--warning').textContent()).toMatch(
-			"Coudn't fetch a CanutinFile JSON from the provided URL"
-		);
+		await expectToastAndDismiss(page, "Coudn't fetch a CanutinFile JSON from the provided URL", Appearance.NEGATIVE); // prettier-ignore
 
 		// Submit form with only a cookie
 		await cookieInput.fill('accessToken=1234abc; userId=1234; Path=/; HttpOnly;');
 		await submitButton.click();
-		expect(await page.locator('.statusBar--warning').textContent()).toMatch(
-			"Coudn't fetch a CanutinFile JSON from the provided URL"
-		);
+		await expectToastAndDismiss(page, "Coudn't fetch a CanutinFile JSON from the provided URL", Appearance.NEGATIVE); // prettier-ignore
 
 		// Submit form with a JWT
 		await jwtInput.fill(
 			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
 		);
 		await submitButton.click();
-		expect(await page.locator('.statusBar--positive').textContent()).toMatch(
-			'Sync was enabled succesfully'
-		);
+		await expectToastAndDismiss(page, "Sync is now enabled", Appearance.POSITIVE); // prettier-ignore
 
 		// Check the notice has changed
 		const formNotice = page.locator('div[data-test-id=settings-sync-form] .formNotice__notice');
@@ -101,10 +95,7 @@ test.describe('Sync CanutinFile', () => {
 		// Trigger a sync
 		await sidebarSyncButton.click();
 		await expect(sidebarSyncButton).toBeDisabled();
-		expect(await page.locator('.statusBar--active').textContent()).toMatch('Syncing...');
-		expect(await page.locator('.statusBar--positive').textContent()).toMatch(
-			'Sync updated 2 accounts and 2 assets'
-		);
+		await expectToastAndDismiss(page, "Sync updated 2 accounts and 2 assets", Appearance.POSITIVE); // prettier-ignore
 		await expect(sidebarSyncButton).not.toBeDisabled();
 
 		// Check the server response was imported correctly

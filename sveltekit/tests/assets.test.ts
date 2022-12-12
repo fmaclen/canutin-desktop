@@ -1,10 +1,12 @@
+import { Appearance } from '$lib/helpers/constants.js';
 import { expect, test } from '@playwright/test';
 import { format } from 'date-fns';
 import {
 	databaseSeed,
 	databaseWipe,
-	delay,
+	expectToastAndDismiss,
 	MAX_DIFF_PIXEL_RATIO,
+	prepareToAcceptDialog,
 	setSnapshotPath
 } from './fixtures/helpers.js';
 
@@ -48,16 +50,10 @@ test.describe('Assets', () => {
 		await expect(page.locator('section', { hasText: 'Update asset' })).not.toBeVisible();
 
 		await symbolInput.fill('GME');
-		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).not.toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).not.toMatch('The asset was added successfully');
-
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).toMatch('The asset was added successfully');
+		await expectToastAndDismiss(page, "GameStop was created", Appearance.POSITIVE); // prettier-ignore
 
-		// Check the asset was created successfully
-		await page.locator('button', { hasText: 'Dismiss' }).click();
+		// Check the asset was created
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		expect(await balanceTypeGroup.textContent()).toMatch('GameStop');
 		expect(await balanceTypeGroup.textContent()).toMatch('$0');
@@ -82,14 +78,11 @@ test.describe('Assets', () => {
 		await page.keyboard.type('69', { delay: 25 });
 		await expect(valueInput).toBeDisabled();
 		await expect(valueInput).toHaveValue('$289.8');
-		expect(await statusBar.textContent()).not.toMatch('The asset was updated successfully');
 
 		await page.locator('button', { hasText: 'Save' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).toMatch('The asset was updated successfully');
+		await expectToastAndDismiss(page, "GameStop was updated", Appearance.POSITIVE); // prettier-ignore
 
-		// Check the account was updated successfully
-		await page.locator('button', { hasText: 'Dismiss' }).click();
+		// Check the account was updated
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 		expect(await balanceTypeGroup.count()).toBe(1);
 		expect(await balanceTypeGroup.textContent()).toMatch('Security');
@@ -122,7 +115,7 @@ test.describe('Assets', () => {
 		await expect(valueInput).toHaveValue('$289.8');
 		await expect(isSoldCheckbox).toBeChecked();
 
-		// Check the asset type was updated successfully
+		// Check the asset type was updated
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		expect(await balanceTypeGroup.count()).toBe(1);
@@ -133,20 +126,15 @@ test.describe('Assets', () => {
 		// Another asset with the same name can't be created
 		await page.locator('a', { hasText: 'Add asset' }).click();
 		await expect(page.locator('h1', { hasText: 'Add asset' })).toBeVisible();
-		await expect(statusBar).not.toHaveClass(/statusBar--negative/);
 
 		await nameInput.fill('GameStop');
-		await page.locator('button', { hasText: 'Dismiss' }).click();
-		await delay();
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--negative/);
-		expect(await statusBar.textContent()).toMatch('An asset with the same name already exists');
+		await expectToastAndDismiss(page, 'An asset with the same name already exists', Appearance.NEGATIVE); // prettier-ignore
 
 		// Check an asset can't be edited to have the same name as another asset
 		await nameInput.fill('AMC Entertainment Holdings Inc');
 		await page.locator('button', { hasText: 'Add' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--positive/);
-		expect(await statusBar.textContent()).toMatch('The asset was added successfully');
+		await expectToastAndDismiss(page, "AMC Entertainment Holdings Inc was created", Appearance.POSITIVE); // prettier-ignore
 
 		await page.locator('a', { hasText: 'AMC Entertainment Holdings Inc' }).click();
 		await expect(page.locator('h1', { hasText: 'AMC Entertainment Holdings Inc' })).toBeVisible();
@@ -154,8 +142,7 @@ test.describe('Assets', () => {
 		// Rename using an existing asset name
 		await nameInput.fill('GameStop');
 		await page.locator('button', { hasText: 'Save' }).click();
-		await expect(statusBar).toHaveClass(/statusBar--negative/);
-		expect(await statusBar.textContent()).toMatch('An asset with the same name already exists');
+		await expectToastAndDismiss(page, 'An asset with the same name already exists', Appearance.NEGATIVE); // prettier-ignore
 	});
 
 	test('Asset can be deleted', async ({ baseURL, page }) => {
@@ -173,27 +160,12 @@ test.describe('Assets', () => {
 			'Permanently delete asset 1998 Fiat Multipla'
 		);
 
-		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).not.toHaveClass(/statusBar--active/);
-		expect(await statusBar.textContent()).not.toMatch(
-			'The asset "1998 Fiat Multipla" was deleted successfully'
-		);
-
-		// Prepare to confirm the dialog prompt
-		page.on('dialog', (dialog) => {
-			expect(dialog.message()).toMatch('Are you sure you want to delete the asset?');
-
-			dialog.accept();
-		});
-
 		// Proceed to delete asset
+		await prepareToAcceptDialog(page, 'Are you sure you want to delete the asset?');
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message confirms asset deletion
-		await expect(statusBar).toHaveClass(/statusBar--active/);
-		expect(await statusBar.textContent()).toMatch(
-			'The asset —1998 Fiat Multipla— was deleted successfully'
-		);
+		await expectToastAndDismiss(page, "1998 Fiat Multipla was deleted", Appearance.ACTIVE); // prettier-ignore
 
 		// Check it redirects to Balance sheeet and the asset is no longer listed
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
@@ -207,8 +179,7 @@ test.describe('Assets', () => {
 		await page.locator('button', { hasText: 'Delete' }).click();
 
 		// Check status message shows an error
-		await expect(statusBar).toHaveClass(/statusBar--negative/);
-		expect(await statusBar.textContent()).toMatch("The asset doesn't exist");
+		await expectToastAndDismiss(page, "The asset doesn't exist", Appearance.NEGATIVE); // prettier-ignore
 	});
 
 	test('Assets page is rendered correctly', async ({ page }) => {

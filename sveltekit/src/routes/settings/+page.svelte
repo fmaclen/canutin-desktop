@@ -9,7 +9,6 @@
 	import FormFieldset from '$lib/components/FormFieldset.svelte';
 	import FormField from '$lib/components/FormField.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
 	import FormFooter from '$lib/components/FormFooter.svelte';
 	import FormNotice from '$lib/components/FormNotice.svelte';
 	import FormNoticeNotice from '$lib/components/FormNoticeNotice.svelte';
@@ -27,14 +26,6 @@
 	export let data: PageData;
 	$: ({ syncStatus, syncSettings, accessKey } = data);
 
-	const setStatusBar = (message: string, appearance: Appearance) => {
-		isLoading = false;
-		$statusBarStore = {
-			message,
-			appearance
-		};
-	};
-
 	// Acess key
 	let accessKeyValue = '';
 	$: isAccessKeyEnabled = false;
@@ -49,7 +40,6 @@
 
 			document.cookie = getAccessKeyCookie(response.accessKey);
 			isAccessKeyEnabled = true;
-			setStatusBar('Access key has been set', Appearance.POSITIVE);
 		} catch (e) {
 			await goto('/accessKey');
 		}
@@ -68,26 +58,17 @@
 			document.cookie = getAccessKeyCookie('', 0); // Resets existing cookie
 			accessKeyValue = '';
 			isAccessKeyEnabled = false;
-			setStatusBar('Access key has been removed', Appearance.ACTIVE);
 		}
 	};
 
 	// Sync
-	let isLoading: boolean = false;
+	let isSyncLoading: boolean = false;
 	$syncStatusStore = syncStatus || $syncStatusStore;
 	$: isSyncEnabled = $syncStatusStore.isSyncEnabled;
 	$: canutinFileUrlValue = '';
 	$: frequencyValue = 0;
 	$: cookieValue = '';
 	$: jwtValue = '';
-
-	const setLoadingStatus = (message: string) => {
-		isLoading = true;
-		$statusBarStore = {
-			message,
-			appearance: Appearance.ACTIVE
-		};
-	};
 
 	const handleSyncForm = async (event: any) => {
 		const canutinFileUrl = event.target.canutinFileUrl?.value;
@@ -104,7 +85,7 @@
 			jwt
 		};
 
-		setLoadingStatus('Checking the CanutinFile URL...');
+		isSyncLoading = true;
 
 		const response = await api({
 			endpoint: 'sync',
@@ -113,20 +94,8 @@
 		});
 
 		// Update the status bar
-		setStatusBar(
-			response?.error
-				? response?.error
-				: response?.warning
-				? response.warning
-				: 'Sync was enabled succesfully',
-			response?.error
-				? Appearance.NEGATIVE
-				: response?.warning
-				? Appearance.WARNING
-				: Appearance.POSITIVE
-		);
-
 		$syncStatusStore = response?.syncStatus || $syncStatusStore;
+		isSyncLoading = false;
 	};
 
 	const frequencyOptions = Object.values(EventFrequency).map((value) => ({
@@ -276,7 +245,7 @@
 				</FormFieldset>
 				<FormFooter>
 					<Button
-						disabled={!canutinFileUrlValue}
+						disabled={!canutinFileUrlValue || isSyncLoading}
 						appearance={isSyncEnabled ? undefined : Appearance.ACTIVE}
 					>
 						{isSyncEnabled ? 'Update' : 'Enable'}
