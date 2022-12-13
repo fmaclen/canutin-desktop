@@ -10,24 +10,25 @@
 
 	import StatusBar from '$lib/components/StatusBar.svelte';
 	import ButtonTag from '$lib/components/ButtonTag.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
 	import lastUpdateCheckStore from '$lib/stores/lastUpdateCheckStore';
 	import syncStatusStore from '$lib/stores/syncStatusStore';
 	import isAppReadyStore from '$lib/stores/isAppReadyStore';
-	import { Appearance } from '$lib/helpers/constants';
-	import { api } from '$lib/helpers/misc';
-	import type { PageData } from './$types';
 	import FlashAlert from '$lib/components/FlashAlert.svelte';
+	import { api } from '$lib/helpers/misc';
+	import { toast } from '@zerodevx/svelte-toast';
+	import { setColorTheme } from '$lib/components/FlashAlert';
+	import { Appearance } from '$lib/helpers/constants';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
 	$: disabledLink = !$isAppReadyStore && 'layout__a--disabled'; // Disabled links
 	$: pathname = $page.url.pathname;
 
 	const getAppLastestVersion = async (isUserRequested: boolean = false) => {
-		// Don't check for updates if the app is in an error state
-		if ($statusBarStore.isError) return;
-
+		const GITHUB_RELEASES_API = 'https://api.github.com/repos/canutin/desktop/releases';
+		const GITHUB_RELEASES_URL = 'https://github.com/canutin/desktop/releases';
 		const THREE_DAYS_IN_SECONDS = 259200;
+
 		const currentTime = getUnixTime(new Date());
 		const threeDaysAgoInSeconds = getUnixTime(new Date()) - THREE_DAYS_IN_SECONDS;
 
@@ -40,38 +41,37 @@
 		if ($lastUpdateCheckStore < threeDaysAgoInSeconds) {
 			try {
 				// Get the latest version from GitHub
-				const response = await (
-					await fetch('https://api.github.com/repos/canutin/desktop/releases')
-				).json();
+				const response = await (await fetch(GITHUB_RELEASES_API)).json();
 				const latestVersion = response[0]?.tag_name?.replace('v', '');
 
 				// Update status bar with latest version
 				if (latestVersion && semver.lt(data.appVersion, latestVersion)) {
-					$statusBarStore = {
-						message: `A newer version is available (${latestVersion})`,
-						appearance: Appearance.ACTIVE,
-						secondaryActions: [
-							{
-								label: 'Download',
-								href: 'https://github.com/canutin/desktop/releases',
-								target: '_blank'
-							}
-						]
-					};
+					toast.push(
+						`A newer version is available. <a class="toastLink" href="${GITHUB_RELEASES_URL}" target="_blank">Download ${latestVersion}</a>`,
+						{
+							initial: 0,
+							reversed: true,
+							...setColorTheme(Appearance.ACTIVE)
+						}
+					);
 				} else {
 					if (isUserRequested) {
-						$statusBarStore = {
-							message: `The current version is the latest (${data.appVersion})`,
-							appearance: Appearance.POSITIVE
-						};
+						toast.push(`The current version is the latest (${data.appVersion})`, {
+							initial: 1,
+							duration: 5000,
+							reversed: true,
+							...setColorTheme(Appearance.POSITIVE)
+						});
 					}
 				}
 			} catch (_e) {
 				if (isUserRequested) {
-					$statusBarStore = {
-						message: `There was a problem checking for updates, try again later`,
-						appearance: Appearance.WARNING
-					};
+					toast.push('There was a problem checking for updates, try again later', {
+						initial: 1,
+						duration: 5000,
+						reversed: true,
+						...setColorTheme(Appearance.NEGATIVE)
+					});
 				}
 			}
 			$lastUpdateCheckStore = currentTime; // Set the last updated date

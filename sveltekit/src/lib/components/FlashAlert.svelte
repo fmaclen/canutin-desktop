@@ -5,6 +5,7 @@
 
 	import { Appearance, EventStatus, ONE_SECOND_IN_MS } from '$lib/helpers/constants';
 	import { api } from '$lib/helpers/misc';
+	import { setColorTheme } from './FlashAlert';
 
 	// HACK: only way `svelte-toast` can render HTML around the message in a toast.
 	// This implementation adds a loading icon next to the message.
@@ -34,31 +35,6 @@
 				</p>
 			</div>
 		`;
-	};
-
-	const setColorTheme = (appearance: Appearance | null) => {
-		switch (appearance) {
-			case Appearance.ACTIVE:
-				return {
-					classes: ['toastLi', 'toastLi--active'],
-					theme: { '--toastBackground': 'var(--color-bluePrimary)' }
-				};
-			case Appearance.POSITIVE:
-				return {
-					classes: ['toastLi', 'toastLi--positive'],
-					theme: { '--toastBackground': 'var(--color-greenPrimary)' }
-				};
-			case Appearance.NEGATIVE:
-				return {
-					classes: ['toastLi', 'toastLi--negative'],
-					theme: { '--toastBackground': 'var(--color-redPrimary)' }
-				};
-			default:
-				return {
-					classes: ['toastLi'],
-					theme: { '--toastBackground': 'var(--color-black-alpha65)' }
-				};
-		}
 	};
 
 	const ongoingEvents: [number, number][] = []; // Queue of ongoing events
@@ -172,6 +148,16 @@
 
 	:global(p.toastLoadingMsg__p) {
 		margin: 0;
+	}
+
+	:global(a.toastLink) {
+		color: var(--color-white);
+		border-bottom: 1px solid var(--color-white-alpha10);
+		text-decoration: none;
+	}
+
+	:global(a.toastLink:hover) {
+		border-bottom-color: var(--color-white-alpha50);
 	}
 
 	div.toastLoadingMsg,
