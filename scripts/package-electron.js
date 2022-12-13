@@ -1,6 +1,6 @@
 // This script prepares the SvelteKit build to be packaged with Electron.
 
-console.info(`\n-> Packaging SvelteKit for production\n`);
+console.info(`\n-> Packaging SvelteKit for Electron\n`);
 
 const path = require("path");
 const rimraf = require("rimraf");

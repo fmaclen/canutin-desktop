@@ -50,7 +50,12 @@ jobs:
         run: npm run build:sveltekit
 
       - name: Update package.json's with app version
-        run: npm run package:github
+        run: npm run package:release
+        env:
+          APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
+
+      - name: Collect all files needed for Electron release
+        run: npm run package:electron
         env:
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
@@ -61,15 +66,14 @@ jobs:
           build_script_name: "build:electron"
           release: true
 
-      - name: Package Linux server
-        # - Needs to run after the Electron build because it relies on the files and directories created in that step.
-        # - Only create a release for the Linux server when action runs in Ubuntu.
+      - name: Collect all files needed for server release
+        # Only create a release for the server when action runs in Ubuntu.
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: npm run package:linux-server
         env:
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
-      - name: Release Linux server
+      - name: Release server package
         if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: softprops/action-gh-release@v1
         with:
