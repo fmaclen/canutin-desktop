@@ -2,6 +2,7 @@
 	import { fromUnixTime } from 'date-fns';
 	import { onMount } from 'svelte';
 
+	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Link from '$lib/components/Link.svelte';
@@ -114,9 +115,7 @@
 	});
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-</svelte:head>
+<Head {title} />
 
 <ScrollView {title}>
 	<nav slot="NAV">

@@ -1,4 +1,5 @@
 <script>
+	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import iconSync from '$lib/assets/icon-sync.svg';
@@ -10,9 +11,7 @@
 	const title = 'Add or update data';
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-</svelte:head>
+<Head {title} />
 
 <ScrollView {title} isFullscreen={true}>
 	<nav class="wizard">

@@ -1,6 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import { dev } from '$app/environment';
+	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Notice from '$lib/components/Notice.svelte';
@@ -9,9 +10,7 @@
 	const title = `${$page.status === 404 ? 'Not found' : 'Something went wrong'}`;
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-</svelte:head>
+<Head title={[`Error ${$page.status}`, title]} />
 
 <ScrollView {title} isFullscreen={true}>
 	<Section title={`Error ${$page.status.toString()}`}>
@@ -25,7 +24,7 @@
 			{#if dev}
 				<p class="errorMessage">
 					<Code>
-						{$page.error.message}
+						{$page?.error?.message}
 					</Code>
 				</p>
 			{/if}

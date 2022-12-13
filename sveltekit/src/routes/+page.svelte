@@ -2,6 +2,7 @@
 	import { endOfMonth, format, fromUnixTime, startOfMonth } from 'date-fns';
 	import type { PageData } from './$types';
 
+	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Card from '$lib/components/Card.svelte';
@@ -41,9 +42,7 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-</svelte:head>
+<Head {title} />
 
 <ScrollView {title}>
 	<nav slot="NAV">

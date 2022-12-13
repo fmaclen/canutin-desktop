@@ -75,6 +75,9 @@ test.describe('Layout', () => {
 		);
 		await expect(page.locator('p.errorMessage')).not.toBeVisible();
 
+		// Check that the title is formatted correctly
+		expect(await page.title()).toBe('Error 404 · Not found · Canutin');
+
 		// Error 500
 		// This tests runs against the production build so we can't trigger a internal
 		// server error but in `dev` we can by visiting `/500` which intercetps what

@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { Prisma } from '@prisma/client';
+
+	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import TransactionForm from '../TransactionForm.svelte';
 	import { api } from '$lib/helpers/misc';
-	import type { PageData } from './$types';
 	import type { CRUDResponse } from '$lib/helpers/forms';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
 
@@ -32,9 +34,7 @@
 	const title = 'Add transaction';
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-</svelte:head>
+<Head {title} />
 
 <ScrollView {title}>
 	<Section title="New transaction">
