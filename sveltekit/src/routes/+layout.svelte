@@ -2,7 +2,7 @@
 	import semver from 'semver';
 	import { getUnixTime } from 'date-fns';
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { navigating, page } from '$app/stores';
 	import { dev } from '$app/environment';
 
 	import logo from '$lib/assets/canutin-iso-logo.svg';
@@ -23,6 +23,9 @@
 	export let data: PageData;
 	$: disabledLink = !$isAppReadyStore && 'layout__a--disabled'; // Disabled links
 	$: pathname = $page.url.pathname;
+
+	let isNavigating: boolean = true;
+	navigating.subscribe((value) => (isNavigating = value !== null));
 
 	const getAppLastestVersion = async (isUserRequested: boolean = false) => {
 		const GITHUB_RELEASES_API = 'https://api.github.com/repos/canutin/desktop/releases';
@@ -125,7 +128,7 @@
 
 <FlashAlert />
 
-<div class="layout">
+<div class="layout {isNavigating && 'layout--is-navigating'}">
 	<a class="layout__logo" href="/">
 		<img class="layout__img" src={logo} alt="Canutin logo" />
 	</a>
@@ -272,6 +275,17 @@
 			'side-bar status-bar';
 		height: 100vh;
 		overflow-y: hidden;
+
+		// HACK:
+		// We are overriding the styles every link and button with a "busy" cursor
+		// to signify the app is navigating between pages.
+		// Ideally at some point we can rely on the browser's native way of signaling
+		// that the server is busy.
+		&--is-navigating,
+		&--is-navigating :global(a),
+		&--is-navigating :global(button) {
+			cursor: wait !important; // Ugh...
+		}
 	}
 
 	div.layout__title-bar {
