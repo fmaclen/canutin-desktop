@@ -105,10 +105,10 @@ export const POST = async ({ request }: RequestEvent) => {
 			await createSuccessEvent(
 				`Coudn't fetch a CanutinFile JSON from the provided URL`,
 				Appearance.NEGATIVE
-			);
+			); // FIXME: don't have a test for this error message
 			return json(syncStatus);
 		} else {
-			const settings = [];
+			const settings: { name: string; value: string }[] = [];
 
 			// Required fields
 			settings.push({ name: SyncSettings.SYNC_ENABLED, value: '1' });
@@ -117,7 +117,7 @@ export const POST = async ({ request }: RequestEvent) => {
 
 			// Optional fields
 			if (cookie) settings.push({ name: SyncSettings.SYNC_COOKIE, value: cookie });
-			if (jwt) settings.push({ name: SyncSettings.SYNC_JWT, value: payload.jwt });
+			if (jwt) settings.push({ name: SyncSettings.SYNC_JWT, value: jwt });
 
 			// Save sync settings to the database
 			for (const setting of settings) {
