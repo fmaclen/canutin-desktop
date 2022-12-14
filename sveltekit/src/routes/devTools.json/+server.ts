@@ -6,7 +6,12 @@ import prisma from '$lib/helpers/prisma.server';
 import seedDemoData from '$lib/seed';
 import { env } from '$env/dynamic/private';
 import { isEnvTest } from '$lib/helpers/tests.server';
-import { Appearance, DeveloperFunctions } from '$lib/helpers/constants';
+import {
+	Appearance,
+	DeveloperFunctions,
+	UNAUTHORIZED_RESPONSE_MESSAGE,
+	UNAUTHORIZED_RESPONSE_STATUS
+} from '$lib/helpers/constants';
 import {
 	createErrorEvent,
 	createLoadingEvent,
@@ -101,10 +106,6 @@ export const POST = async ({ url }: { url: URL }) => {
 
 // This endpoint returns a fake CanutinFile response and it's meant to be used in tests
 export const GET = async ({ request, url }: { request: Request; url: URL }) => {
-	// Check if the request is coming from a test
-	const functionType = getFunctionType(url);
-	const isTestRequest = functionType === DeveloperFunctions.CANUTIN_FILE_SYNC_TEST;
-
 	// Check if the request has cookies and authorization headers set
 	const cookieHeader = request.headers.get('cookie');
 	const hasCookies = cookieHeader !== null && cookieHeader !== '';
@@ -114,8 +115,9 @@ export const GET = async ({ request, url }: { request: Request; url: URL }) => {
 		authorizationHeader !== '' &&
 		authorizationHeader.includes('Bearer');
 
-	if (!isTestRequest || !hasCookies || !hasJwtBearer)
-		return json({ error: 'Not authorized' }, { status: 401 });
+	// First check if the request is not coming from a test
+	if (!isEnvTest() || !hasCookies || !hasJwtBearer)
+		return new Response(UNAUTHORIZED_RESPONSE_MESSAGE, UNAUTHORIZED_RESPONSE_STATUS);
 
 	// Return a valid CanutinFile response
 	return json(canutinFileFixture as CanutinFile);

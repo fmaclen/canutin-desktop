@@ -4,6 +4,10 @@ import { env } from '$env/dynamic/private';
 import { dev } from '$app/environment';
 import { isEnvTest } from '$lib/helpers/tests.server';
 import { isRequestAuthorized } from '$lib/helpers/accessKey.server';
+import {
+	UNAUTHORIZED_RESPONSE_MESSAGE,
+	UNAUTHORIZED_RESPONSE_STATUS
+} from '$lib/helpers/constants';
 
 const redirectTo = (origin: string, route: string) => {
 	return Response.redirect(`${origin}${route}`, 307);
@@ -33,14 +37,25 @@ export const handle: Handle = async ({ event, resolve }) => {
 		// The check is performed by the `/vault` route so we need to redirect any request
 		// to that path when the flag `SHOULD_CHECK_VAULT=true` is set.
 
+		// Check if the request is meant for a JSON endpoint
+		const isRequestJson = event.url.pathname.includes('.json');
+
 		const shouldVaultBeChecked = env.SHOULD_CHECK_VAULT === 'true';
-		if (shouldVaultBeChecked) return redirectTo(event.url.origin, '/vault');
+		if (shouldVaultBeChecked) {
+			return isRequestJson
+				? new Response('Not ready', { status: 500 }) // FIXME: 500 is not the correct status code to return
+				: redirectTo(event.url.origin, '/vault');
+		}
 
 		// Access key
 		//
 		// If the vault is protected by an access key we need to check if the request has the correct key
 		const isAuthorized = await isRequestAuthorized(event.request);
-		if (!isAuthorized) return redirectTo(event.url.origin, '/accessKey');
+		if (!isAuthorized) {
+			return isRequestJson
+				? new Response(UNAUTHORIZED_RESPONSE_MESSAGE, UNAUTHORIZED_RESPONSE_STATUS)
+				: redirectTo(event.url.origin, '/accessKey');
+		}
 	}
 
 	// No need to redirect anywhere, continue as normal
