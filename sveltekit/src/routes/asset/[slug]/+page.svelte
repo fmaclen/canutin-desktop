@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
 	import type { Prisma } from '@prisma/client';
+
+	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import AssetForm from '../AssetForm.svelte';
+	import ChartBalanceHistory from '$lib/components/ChartBalanceHistory.svelte';
 	import DangerZone from '$lib/components/DangerZone.svelte';
 	import { api } from '$lib/helpers/misc';
 	import { UNDOABLE_ACTION } from '$lib/helpers/constants';
-	import type { PageData } from './$types';
 	import type { CRUDResponse } from '$lib/helpers/forms';
-	import ChartBalanceHistory from '$lib/components/ChartBalanceHistory.svelte';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
 	const title = data.asset.name;
@@ -58,9 +60,7 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-</svelte:head>
+<Head title={[title, 'Asset']} />
 
 <ScrollView {title}>
 	<ChartBalanceHistory balanceHistoryDataset={data.balanceHistoryDataset} labels={data.labels} />

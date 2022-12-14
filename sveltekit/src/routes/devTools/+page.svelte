@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Button from '$lib/components/Button.svelte';
@@ -53,9 +54,7 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-</svelte:head>
+<Head {title} />
 
 <ScrollView {title}>
 	<Section title="Database">

@@ -1,10 +1,11 @@
 <script lang="ts">
+	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Notice from '$lib/components/Notice.svelte';
 	import Code from '$lib/components/Code.svelte';
-	import type { PageData } from './$types';
 	import isAppReadyStore from '$lib/stores/isAppReadyStore';
+	import type { PageData } from './$types';
 
 	const title = 'Vault';
 
@@ -12,9 +13,7 @@
 	$isAppReadyStore = false;
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-</svelte:head>
+<Head title={[title, 'Error']} />
 
 <ScrollView {title} isFullscreen={true}>
 	<Section title="Error">
