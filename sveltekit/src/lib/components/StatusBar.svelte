@@ -9,11 +9,11 @@
 
 	// Set how long ago the vault was updated in the status bar
 	const getVaultLastUpdate = async (onMount: boolean = false) => {
-		const data = await api({ endpoint: 'vault' });
+		const response = await api({ endpoint: 'vault' });
 
-		if (data) {
+		if (response) {
 			statusMessage = `Vault data was last updated ${formatDistance(
-				fromUnixTime(data.lastDataUpdate),
+				fromUnixTime(response.lastDataUpdate),
 				new Date(),
 				{ includeSeconds: true, addSuffix: true }
 			)}`;

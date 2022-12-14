@@ -212,7 +212,6 @@ test.describe('Layout', () => {
 			await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
 			let currentVersionTag = page.locator('button.buttonTag', { hasText: 'v0.0.0-test' });
-			await expectToastAndDismiss(page, 'A newer version is available', Appearance.ACTIVE);
 			await expect(currentVersionTag).toBeVisible();
 
 			// Check for updates
@@ -263,9 +262,8 @@ test.describe('Layout', () => {
 		await context.setOffline(true);
 		await delay();
 		await currentVersionTag.click();
-		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).toHaveClass(/statusBar--warning/);
-		expect(await statusBar.textContent()).toMatch(
+		await expectToastAndDismiss(
+			page,
 			'There was a problem checking for updates, try again later',
 			Appearance.NEGATIVE
 		);
