@@ -2,30 +2,21 @@
 	import { formatDistance, fromUnixTime } from 'date-fns';
 	import { onMount } from 'svelte';
 
-	import Button from './Button.svelte';
-	import Link from './Link.svelte';
-	import statusBarStore from '$lib/stores/statusBarStore';
 	import isAppReadyStore from '$lib/stores/isAppReadyStore';
 	import { api } from '$lib/helpers/misc';
-	import { Appearance } from '$lib/helpers/constants';
 
-	$: ({ message, appearance, secondaryActions } = $statusBarStore);
+	let statusMessage: string = 'Canutin';
 
 	// Set how long ago the vault was updated in the status bar
 	const getVaultLastUpdate = async (onMount: boolean = false) => {
-		if ($statusBarStore.isError) return;
+		const response = await api({ endpoint: 'vault' });
 
-		// Prevent changing the statusBar when there is another one present
-		if (!$statusBarStore.appearance) {
-			const data = await api({ endpoint: 'vault' });
-
-			$statusBarStore = {
-				message: `Vault data was last updated ${formatDistance(
-					fromUnixTime(data.lastDataUpdate),
-					new Date(),
-					{ includeSeconds: true, addSuffix: true }
-				)}`
-			};
+		if (response) {
+			statusMessage = `Vault data was last updated ${formatDistance(
+				fromUnixTime(response.lastDataUpdate),
+				new Date(),
+				{ includeSeconds: true, addSuffix: true }
+			)}`;
 		}
 
 		// Recursively update status bar message every 5 minutes but only when
@@ -40,41 +31,12 @@
 
 	// Set the default status bar message when layout is mounted
 	onMount(async () => {
-		$isAppReadyStore && (await getVaultLastUpdate(true));
+		if ($isAppReadyStore) await getVaultLastUpdate(true);
 	});
-
-	const dismissStatus = () => {
-		$statusBarStore = {
-			message: 'Canutin'
-		};
-		getVaultLastUpdate();
-	};
-
-	$: {
-		// Auto-dismiss positive alerts after 7 seconds
-		if ($statusBarStore.appearance === Appearance.POSITIVE) {
-			const SEVEN_SECONDS_IN_MILLISECONDS = 7000;
-			setTimeout(async () => {
-				dismissStatus();
-			}, SEVEN_SECONDS_IN_MILLISECONDS);
-		}
-	}
 </script>
 
-<div class="statusBar {appearance && `statusBar--${appearance}`}">
-	<p class="statusBar__p">
-		{message}
-
-		{#if secondaryActions}
-			{#each secondaryActions as action}
-				<Link href={action.href} target={action.target}>{action.label}</Link>
-			{/each}
-		{/if}
-	</p>
-
-	{#if appearance}
-		<Button on:click={dismissStatus}>Dismiss</Button>
-	{/if}
+<div class="statusBar">
+	<p class="statusBar__p">{statusMessage}</p>
 </div>
 
 <style lang="scss">
@@ -88,53 +50,6 @@
 		height: 100%;
 		box-sizing: border-box;
 		color: var(--color-grey50);
-
-		&--active,
-		&--positive,
-		&--negative,
-		&--warning {
-			border-right: 1px solid var(--color-border);
-		}
-
-		&--active {
-			color: var(--color-bluePrimary);
-			background-color: var(--color-blueSecondary);
-		}
-
-		&--positive {
-			color: var(--color-greenPrimary);
-			background-color: var(--color-greenSecondary);
-
-			&:after {
-				content: '';
-				position: absolute;
-				top: -1px;
-				left: 0;
-				right: 0;
-				height: 1px;
-				background-color: var(--color-greenPrimary);
-				animation: autoDismiss 7s ease-out;
-			}
-
-			@keyframes autoDismiss {
-				0% {
-					right: 100%;
-				}
-				100% {
-					right: 0;
-				}
-			}
-		}
-
-		&--negative {
-			color: var(--color-redPrimary);
-			background-color: var(--color-redSecondary);
-		}
-
-		&--warning {
-			color: var(--color-yellowPrimary);
-			background-color: var(--color-yellowSecondary);
-		}
 	}
 
 	p.statusBar__p {

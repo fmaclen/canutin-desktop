@@ -1,5 +1,6 @@
+import { Appearance } from '$lib/helpers/constants.js';
 import { expect, test } from '@playwright/test';
-import { delay, setEnvironmentVariable } from './fixtures/helpers.js';
+import { delay, expectToastAndDismiss, setEnvironmentVariable } from './fixtures/helpers.js';
 
 test.describe('Layout', () => {
 	test('Sidebar renders correctly', async ({ page }) => {
@@ -190,13 +191,10 @@ test.describe('Layout', () => {
 			await page.goto('/');
 			await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
 
+			// It should have checked for updates without user input
 			const currentVersionTag = page.locator('button.buttonTag', { hasText: 'v0.0.0-test' });
 			await expect(currentVersionTag).toBeVisible();
-
-			// It should have checked for updates
-			const statusBar = page.locator('.statusBar');
-			await expect(statusBar).toHaveClass(/statusBar--active/);
-			expect(await statusBar.textContent()).toMatch('A newer version is available');
+			await expectToastAndDismiss(page, 'A newer version is available', Appearance.ACTIVE);
 
 			// It should have updated the `lastUpdateCheck` date
 			storage = await page.context().storageState();
@@ -212,10 +210,8 @@ test.describe('Layout', () => {
 		test('Upon user request', async ({ baseURL, page, context }) => {
 			await page.goto('/');
 			await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
-			const statusBar = page.locator('.statusBar');
+
 			let currentVersionTag = page.locator('button.buttonTag', { hasText: 'v0.0.0-test' });
-			await expect(statusBar).not.toHaveClass(/statusBar--active/);
-			expect(await statusBar.textContent()).not.toMatch('A newer version is available');
 			await expect(currentVersionTag).toBeVisible();
 
 			// Check for updates
@@ -223,8 +219,7 @@ test.describe('Layout', () => {
 			let lastUpdateCheck = storage.origins[0]?.localStorage[0];
 			const originalLastUpdateCheck = lastUpdateCheck?.value;
 			await currentVersionTag.click();
-			await expect(statusBar).toHaveClass(/statusBar--active/);
-			expect(await statusBar.textContent()).toMatch('A newer version is available');
+			await expectToastAndDismiss(page, 'A newer version is available', Appearance.ACTIVE);
 
 			storage = await context.storageState();
 			lastUpdateCheck = storage.origins[0]?.localStorage[0];
@@ -239,8 +234,7 @@ test.describe('Layout', () => {
 
 			await currentVersionTag.click();
 			// This may break if the latest version is ever above 4.2.0 :)
-			await expect(statusBar).toHaveClass(/statusBar--positive/);
-			expect(await statusBar.textContent()).toMatch('The current version is the latest');
+			await expectToastAndDismiss(page, 'The current version is the latest', Appearance.POSITIVE);
 
 			// Set it to a wrongly-formatted version to cause an error
 			await setEnvironmentVariable(baseURL!, 'APP_VERSION', 'not-semver');
@@ -249,9 +243,10 @@ test.describe('Layout', () => {
 			await expect(currentVersionTag).toBeVisible();
 
 			await currentVersionTag.click();
-			await expect(statusBar).toHaveClass(/statusBar--warning/);
-			expect(await statusBar.textContent()).toMatch(
-				'There was a problem checking for updates, try again later'
+			await expectToastAndDismiss(
+				page,
+				'There was a problem checking for updates, try again later',
+				Appearance.NEGATIVE
 			);
 		});
 	});
@@ -267,10 +262,10 @@ test.describe('Layout', () => {
 		await context.setOffline(true);
 		await delay();
 		await currentVersionTag.click();
-		const statusBar = page.locator('.statusBar');
-		await expect(statusBar).toHaveClass(/statusBar--warning/);
-		expect(await statusBar.textContent()).toMatch(
-			'There was a problem checking for updates, try again later'
+		await expectToastAndDismiss(
+			page,
+			'There was a problem checking for updates, try again later',
+			Appearance.NEGATIVE
 		);
 
 		const storage = await context.storageState();
