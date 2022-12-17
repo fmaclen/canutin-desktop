@@ -24,8 +24,8 @@ const config: PlaywrightTestConfig = {
 		}
 	},
 	use: {
-		trace: isEnvCI ? 'off' : 'retain-on-failure',
-		screenshot: isEnvCI ? 'off' : 'only-on-failure',
+		trace: 'retain-on-failure',
+		screenshot: 'only-on-failure',
 		storageState: {
 			cookies: [],
 			origins: [
