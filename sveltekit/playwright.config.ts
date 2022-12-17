@@ -14,7 +14,7 @@ const projectBrowser = [
 const config: PlaywrightTestConfig = {
 	retries: isEnvCI ? 3 : 0,
 	webServer: {
-		command: 'npm run build && npm run preview',
+		command: 'npx prisma migrate dev && npm run build && npm run preview',
 		port: 4173,
 		env: {
 			IS_TEST: 'true', // Would have liked to use NODE_ENV=test but it gets overwritten to `development`
