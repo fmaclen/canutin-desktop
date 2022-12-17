@@ -48,6 +48,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         if: always()
+        working-directory: ./sveltekit
         with:
           name: ${{ matrix.browser }}-${{ matrix.os }}-test-results
           path: test-results
