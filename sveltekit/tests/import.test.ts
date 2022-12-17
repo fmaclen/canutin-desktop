@@ -2,7 +2,7 @@ import fs from 'fs';
 import fetch from 'node-fetch';
 import { expect, test } from '@playwright/test';
 import { databaseWipe, delay, expectToastAndDismiss } from './fixtures/helpers.js';
-import { Appearance } from '$lib/helpers/constants.js';
+import { Appearance } from '../src/lib/helpers/constants.js';
 
 test.describe('Import CanutinFile', () => {
 	test.beforeEach(async ({ baseURL }) => {
