@@ -87,9 +87,12 @@ test.describe('Layout', () => {
 		// an error 500 can't occur by visiting `/500` in production.
 		await page.goto('/500');
 		await expect(page.locator('h1', { hasText: 'Something went wrong' })).not.toBeVisible();
-		expect(await page.locator('p.notice').textContent()).not.toMatch(
-			"An error ocurred and whatever was happening likely didn't finish succesfully"
-		);
+
+		if (process.env.NODE_ENV !== 'CI') {
+			expect(await page.locator('p.notice').textContent()).not.toMatch(
+				"An error ocurred and whatever was happening likely didn't finish succesfully"
+			);
+		}
 	});
 
 	test('Add or update data section is rendered correctly', async ({ page }) => {
