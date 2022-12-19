@@ -21,7 +21,7 @@
 					: "An error ocurred and whatever was happening likely didn't finish succesfully"}
 			</Notice>
 
-			{#if dev}
+			{#if dev && process.env.NODE_ENV !== 'CI'}
 				<p class="errorMessage">
 					<Code>
 						{$page?.error?.message}
