@@ -4,18 +4,12 @@ console.info(`\n-> Packaging SvelteKit for standalone server\n`);
 
 const path = require("path");
 const rimraf = require("rimraf");
-const { readdirSync, unlinkSync, copySync } = require("fs-extra");
-// const execSync = require("child_process").execSync;
+const { copySync } = require("fs-extra");
+const { execSync } = require("child_process");
 
 const svelteKitDevPath = path.join(__dirname, "..", "sveltekit");
-const serverProdPath = path.join(
-  __dirname,
-  "..",
-  "dist",
-  "linux-server",
-  "canutin"
-);
-const linuxServerDevPath = path.join(__dirname, "..", "linux-server");
+const serverProdPath = path.join(__dirname, "..", "dist", "server", "canutin");
+const linuxServerDevPath = path.join(__dirname, "..", "server");
 
 // Remove directory /resources/sveltekit and it's files
 rimraf(serverProdPath, () => {
@@ -23,9 +17,6 @@ rimraf(serverProdPath, () => {
   copySync(path.join(svelteKitDevPath, "build"), serverProdPath);
 
   // Copy Prisma's migrations and schema to /resources/sveltekit
-
-  // FIXME:
-  // Don't include *.vault files
   copySync(
     path.join(svelteKitDevPath, "prisma"),
     path.join(serverProdPath, "prisma")
@@ -44,23 +35,18 @@ rimraf(serverProdPath, () => {
   );
 
   // Copy server dependencies
+  copySync(path.join(linuxServerDevPath), path.join(serverProdPath));
 
-  // FIXME:
-  // See if we can copy all the files at the same time
-  copySync(
-    path.join(linuxServerDevPath, ".env.sample"),
-    path.join(serverProdPath, ".env.sample")
-  );
-  copySync(
-    path.join(linuxServerDevPath, ".gitignore"),
-    path.join(serverProdPath, ".gitignore")
-  );
-  copySync(
-    path.join(linuxServerDevPath, "README.md"),
-    path.join(serverProdPath, "README.md")
-  );
-  copySync(
-    path.join(linuxServerDevPath, "start"),
-    path.join(serverProdPath, "start")
+  // Create tar ball
+  execSync(
+    `tar -czf canutin-server_${process.env.APP_VERSION}.tar.gz -C ${serverProdPath} .`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Couldn't create a tar ball: ${error}`);
+        return;
+      }
+      console.info(`stdout: ${stdout}`);
+      console.info(`stderr: ${stderr}`);
+    }
   );
 });

@@ -13,7 +13,7 @@
     "build:sveltekit": "cd sveltekit && npm run build",
     "test": "jest --watchAll",
     "package:release": "node scripts/package-release.js",
-    "package:electron": "node scripts/sveltekit-package-electron.js && electron-builder",
+    "package:electron": "node scripts/package-electron.js && electron-builder",
     "package:server": "node scripts/package-server.js"
   },
   "devDependencies": {

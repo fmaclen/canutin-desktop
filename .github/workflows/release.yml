@@ -46,16 +46,13 @@ jobs:
         working-directory: ./sveltekit
         run: npx prisma generate
 
-      - name: "Generate Sveltekit build"
-        run: npm run build:sveltekit
-
-      - name: Update package.json's with app version
-        run: npm run package:release
+      - name: "Generate Electron & Sveltekit build"
+        run: npm run build:all
         env:
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
-      - name: Collect all files needed for Electron release
-        run: npm run package:electron
+      - name: Update package.json's with app version
+        run: npm run package:release
         env:
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
@@ -63,13 +60,13 @@ jobs:
         uses: samuelmeuli/action-electron-builder@v1.6.0
         with:
           github_token: ${{ secrets.github_token }}
-          build_script_name: "build:electron"
+          build_script_name: "package:electron"
           release: true
 
       - name: Collect all files needed for server release
         # Only create a release for the server when action runs in Ubuntu.
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: npm run package:linux-server
+        run: npm run package:server
         env:
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
