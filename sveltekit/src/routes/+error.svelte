@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/stores';
-	import { building, dev } from '$app/environment';
+	import { dev } from '$app/environment';
 	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
@@ -21,7 +21,7 @@
 					: "An error ocurred and whatever was happening likely didn't finish succesfully"}
 			</Notice>
 
-			{#if dev && !building}
+			{#if dev}
 				<p class="errorMessage">
 					<Code>
 						{$page?.error?.message}
