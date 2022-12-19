@@ -1,5 +1,5 @@
 import { fromUnixTime } from 'date-fns';
-import { Prisma } from '@prisma/client';
+import { Prisma, type Setting } from '@prisma/client';
 
 import prisma from '$lib/helpers/prisma.server';
 import {
@@ -11,6 +11,7 @@ import {
 import { SyncSettings } from './constants';
 import type { SyncStatusStore } from '$lib/stores/syncStatusStore';
 import type { CanutinFile, ImportedAccounts, ImportedAssets } from './import';
+import { env } from '$env/dynamic/private';
 
 export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 	const importedAccounts: ImportedAccounts = {
@@ -218,9 +219,19 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 };
 
 export const getSyncStatus = async (): Promise<SyncStatusStore> => {
-	const syncEnabled = await prisma.setting.findFirst({
-		where: { name: SyncSettings.SYNC_ENABLED }
-	});
+	let syncEnabled: Setting | null = null;
+
+	try {
+		syncEnabled = await prisma.setting.findFirst({
+			where: { name: SyncSettings.SYNC_ENABLED }
+		});
+	} catch (error) {
+		if (env.SHOULD_CHECK_VAULT === 'true')
+			console.error(
+				"\n\n-> Couldn't get sync status, likely because `SHOULD_CHECK_VAULT=true` and vault is not ready yet\n\n"
+			);
+		console.error(error);
+	}
 
 	return {
 		isSyncSetup: syncEnabled !== null ? true : false,
