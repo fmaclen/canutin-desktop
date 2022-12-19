@@ -12,10 +12,9 @@ const projectBrowser = [
 ];
 
 const config: PlaywrightTestConfig = {
-	globalSetup: './tests/fixtures/global-setup.ts',
 	retries: isEnvCI ? 3 : 0,
 	webServer: {
-		command: 'npm run build && npm run preview',
+		command: 'npx prisma migrate dev && npm run build && npm run preview',
 		port: 4173,
 		env: {
 			IS_TEST: 'true', // Would have liked to use NODE_ENV=test but it gets overwritten to `development`
@@ -25,8 +24,8 @@ const config: PlaywrightTestConfig = {
 		}
 	},
 	use: {
-		trace: isEnvCI ? 'off' : 'retain-on-failure',
-		screenshot: isEnvCI ? 'off' : 'only-on-failure',
+		trace: 'retain-on-failure',
+		screenshot: 'only-on-failure',
 		storageState: {
 			cookies: [],
 			origins: [

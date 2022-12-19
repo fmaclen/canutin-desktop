@@ -1,4 +1,4 @@
-import { Appearance } from '$lib/helpers/constants.js';
+import { Appearance } from '../src/lib/helpers/constants.js';
 import { expect, test } from '@playwright/test';
 import { format } from 'date-fns';
 import {
