@@ -8,34 +8,34 @@ const { copySync } = require("fs-extra");
 const { execSync } = require("child_process");
 
 const svelteKitDevPath = path.join(__dirname, "..", "sveltekit");
-const serverProdPath = path.join(__dirname, "..", "dist", "server", "canutin");
-const linuxServerDevPath = path.join(__dirname, "..", "server");
+const serverProdPath = path.join(__dirname, "..", "dist", "server");
+const serverDevPath = path.join(__dirname, "..", "server");
 
-// Remove directory /resources/sveltekit and it's files
+// Remove directory /dist/server and it's files
 rimraf(serverProdPath, () => {
-  // Copy /sveltekit/build to /resources/sveltekit
+  // Copy /sveltekit/build to /dist/server
   copySync(path.join(svelteKitDevPath, "build"), serverProdPath);
 
-  // Copy Prisma's migrations and schema to /resources/sveltekit
+  // Copy Prisma's migrations and schema to /dist/server
   copySync(
     path.join(svelteKitDevPath, "prisma"),
     path.join(serverProdPath, "prisma")
   );
 
-  // Copy /sveltekit/package.json to /resources/sveltekit
+  // Copy /sveltekit/package.json to /dist/server
   copySync(
     path.join(svelteKitDevPath, "package.json"),
     path.join(serverProdPath, "package.json")
   );
 
-  // Copy /sveltekit/package-lock.json to /resources/sveltekit
+  // Copy /sveltekit/package-lock.json to /dist/server
   copySync(
     path.join(svelteKitDevPath, "package-lock.json"),
     path.join(serverProdPath, "package-lock.json")
   );
 
   // Copy server dependencies
-  copySync(path.join(linuxServerDevPath), path.join(serverProdPath));
+  copySync(path.join(serverDevPath), path.join(serverProdPath));
 
   // Create tar ball
   execSync(

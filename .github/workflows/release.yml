@@ -46,7 +46,7 @@ jobs:
         working-directory: ./sveltekit
         run: npx prisma generate
 
-      - name: "Generate Electron & Sveltekit build"
+      - name: "Generate Electron & Sveltekit builds"
         run: npm run build:all
         env:
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
