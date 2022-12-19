@@ -15,6 +15,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 
+	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
@@ -240,9 +241,7 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-</svelte:head>
+<Head {title} />
 
 <ScrollView {title}>
 	<nav slot="NAV">

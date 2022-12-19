@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
+	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import isAppReadyStore from '$lib/stores/isAppReadyStore';
@@ -42,9 +43,7 @@
 	});
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-</svelte:head>
+<Head {title} />
 
 <ScrollView {title} isFullscreen={true}>
 	<Section title="Enter key to continue">

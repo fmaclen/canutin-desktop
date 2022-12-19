@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { Prisma } from '@prisma/client';
+
+	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import Form from '$lib/components/Form.svelte';
@@ -19,9 +21,9 @@
 	import Link from '$lib/components/Link.svelte';
 	import { api } from '$lib/helpers/misc';
 	import { Appearance, UNDOABLE_ACTION } from '$lib/helpers/constants';
-	import type { PageData } from './$types';
 	import type { CRUDResponse } from '$lib/helpers/forms';
 	import type { BatchEditResponse } from 'src/routes/transactions.json/+server';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
 
@@ -106,9 +108,7 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-</svelte:head>
+<Head title={[title, `${batchTransactions.length} transactions selected`]} />
 
 <ScrollView {title}>
 	<Section title="Update {batchTransactions.length} transactions">

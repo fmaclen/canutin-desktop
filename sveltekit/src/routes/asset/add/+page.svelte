@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { afterNavigate, goto } from '$app/navigation';
 	import type { Prisma } from '@prisma/client';
+	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import AssetForm from '../AssetForm.svelte';
@@ -43,9 +44,7 @@
 	const title = 'Add asset';
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-</svelte:head>
+<Head {title} />
 
 <ScrollView {title}>
 	<Section title="New asset">

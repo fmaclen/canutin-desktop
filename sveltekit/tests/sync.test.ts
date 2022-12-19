@@ -59,12 +59,12 @@ test.describe('Sync CanutinFile', () => {
 
 		// Submit form with only a URL when the server expects a cookie and JWT
 		await submitButton.click();
-		await expectToastAndDismiss(page, "Coudn't fetch a CanutinFile JSON from the provided URL", Appearance.NEGATIVE); // prettier-ignore
+		await expectToastAndDismiss(page, "Couldn't connect to CanutinFile URL", Appearance.NEGATIVE); // prettier-ignore
 
 		// Submit form with only a cookie
 		await cookieInput.fill('accessToken=1234abc; userId=1234; Path=/; HttpOnly;');
 		await submitButton.click();
-		await expectToastAndDismiss(page, "Coudn't fetch a CanutinFile JSON from the provided URL", Appearance.NEGATIVE); // prettier-ignore
+		await expectToastAndDismiss(page, "Couldn't connect to CanutinFile URL", Appearance.NEGATIVE); // prettier-ignore
 
 		// Submit form with a JWT
 		await jwtInput.fill(

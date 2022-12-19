@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import ChartJs from '$lib/components/ChartJS.svelte';
@@ -9,9 +10,7 @@
 	export let data: PageData;
 </script>
 
-<svelte:head>
-	<title>{title}</title>
-</svelte:head>
+<Head {title} />
 
 <ScrollView {title}>
 	<Section title="Net worth">

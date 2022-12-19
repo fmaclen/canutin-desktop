@@ -1,5 +1,7 @@
 export const ONE_SECOND_IN_MS = 1000;
 export const ACCESS_KEY_COOKIE_NAME = '_canutin-accessKey=';
+export const UNAUTHORIZED_RESPONSE_MESSAGE = 'Unauthorized';
+export const UNAUTHORIZED_RESPONSE_STATUS = { status: 401 };
 export const UNDOABLE_ACTION = "🚩 This action can't be undone\n";
 
 export enum BalanceGroup {

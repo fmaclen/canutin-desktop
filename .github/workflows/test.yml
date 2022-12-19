@@ -50,4 +50,4 @@ jobs:
         if: always()
         with:
           name: ${{ matrix.browser }}-${{ matrix.os }}-test-results
-          path: test-results
+          path: sveltekit/test-results/
