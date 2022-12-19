@@ -40,6 +40,8 @@
 				? TrailingCashflowPeriods.LAST_12_MONTHS
 				: TrailingCashflowPeriods.LAST_6_MONTHS;
 	};
+
+	const timezoneOffset = new Date().getTimezoneOffset() * 60;
 </script>
 
 <Head {title} />
@@ -81,7 +83,7 @@
 						isActive ||
 						isCurrentPeriod ||
 						[chart.highestSurplus, chart.lowestSurplus].includes(period.surplus)}
-					{@const month = fromUnixTime(period.month)}
+					{@const month = fromUnixTime(period.month + timezoneOffset)}
 					{@const isJanuary = month.getMonth() === 0}
 					<a
 						on:mouseenter={() => setActivePeriod(period)}

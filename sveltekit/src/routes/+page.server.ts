@@ -159,7 +159,7 @@ const getCashflow = async (): Promise<Cashflow> => {
 				income: 0,
 				expenses: 0,
 				surplus: 0,
-				month: getUnixTime(month),
+				month: getUnixTime(dateInUTC(month)),
 				chartRatio: 0
 			});
 		}
