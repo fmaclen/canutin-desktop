@@ -44,11 +44,16 @@ jobs:
 
       - name: Install Prisma's dependencies
         working-directory: ./sveltekit
-        run: npx prisma generate
+        run: npx prisma generate && npx prisma migrate dev
+        env:
+          # Need to migrate and seed a temporary database required for the
+          # SvelteKit build process to finish.
+          DATABASE_URL: "file:./Canutin.temp.vault"
 
       - name: "Generate Electron & Sveltekit builds"
         run: npm run build:all
         env:
+          DATABASE_URL: "file:./Canutin.temp.vault"
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
       - name: Update package.json's with app version
