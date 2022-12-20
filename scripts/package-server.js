@@ -4,7 +4,7 @@ console.info(`\n-> Packaging SvelteKit for standalone server\n`);
 
 const path = require("path");
 const rimraf = require("rimraf");
-const { copySync } = require("fs-extra");
+const { copySync, moveSync } = require("fs-extra");
 const { execSync } = require("child_process");
 
 const svelteKitDevPath = path.join(__dirname, "..", "sveltekit");
@@ -38,8 +38,9 @@ rimraf(serverProdPath, () => {
   copySync(path.join(serverDevPath), path.join(serverProdPath));
 
   // Create tar ball
+  const filename = `canutin-server_${process.env.APP_VERSION}.tar.gz`;
   execSync(
-    `tar -czf canutin-server_${process.env.APP_VERSION}.tar.gz -C ${serverProdPath} .`,
+    `tar -czf ${filename} -C ${serverProdPath} .`,
     (error, stdout, stderr) => {
       if (error) {
         console.error(`Couldn't create a tar ball: ${error}`);
@@ -48,5 +49,11 @@ rimraf(serverProdPath, () => {
       console.info(`stdout: ${stdout}`);
       console.info(`stderr: ${stderr}`);
     }
+  );
+
+  // Move tar ball to /dist
+  moveSync(
+    path.join(__dirname, "..", filename),
+    path.join(__dirname, "..", "dist", filename)
   );
 });

@@ -14,6 +14,7 @@ describe("Server", () => {
     SVELTEKIT_PATH: fakePathToSvelteKitIndex,
     DATABASE_URL: `file:${fakePathToVault}`,
     SHOULD_CHECK_VAULT: "true",
+    IS_ELECTRON: "true",
     APP_VERSION: require("../../package.json").version,
   };
 

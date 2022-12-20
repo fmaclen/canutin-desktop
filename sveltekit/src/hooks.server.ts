@@ -10,7 +10,10 @@ import {
 } from '$lib/helpers/constants';
 
 const redirectTo = (origin: string, route: string) => {
-	return Response.redirect(`${origin}${route}`, 307);
+	// When the app runs as an Electron app it doesn't have an SSL certificate
+	const url = new URL(origin);
+	url.protocol = process.env.IS_ELECTRON === 'true' ? 'http:' : 'https:';
+	return Response.redirect(`${url.origin}${route}`, 307);
 };
 
 export const handle: Handle = async ({ event, resolve }) => {
