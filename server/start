@@ -26,6 +26,14 @@ ${COLOR_BLUE_START}
                                         
 ${COLOR_END}
 "
+echo "
+-> Checking dependencies
+"
+# Installing production dependencies
+npm ci --prod
+
+# Generating Prisma's artifacts
+npx prisma generate
 
 # Set environment variables from `.env` file
 export $(xargs <.env)

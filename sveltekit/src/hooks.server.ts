@@ -43,7 +43,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const shouldVaultBeChecked = env.SHOULD_CHECK_VAULT === 'true';
 		if (shouldVaultBeChecked) {
 			return isRequestJson
-				? new Response('Not ready', { status: 500 }) // FIXME: 500 is not the correct status code to return
+				? new Response('Not ready', { status: 202 })
 				: redirectTo(event.url.origin, '/vault');
 		}
 

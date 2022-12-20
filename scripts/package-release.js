@@ -21,7 +21,7 @@ if (isVersionValid) {
 
   // Get the package.json contents
   const pathToElectronPackageJson = require("path").join(__dirname, "..", "package.json"); // prettier-ignore
-  const pathToSvelteKitPackageJson = require("path").join(__dirname, "..", "resources", "sveltekit", "package.json"); // prettier-ignore
+  const pathToSvelteKitPackageJson = require("path").join(__dirname, "..", "sveltekit", "package.json"); // prettier-ignore
 
   const electronPackageJson = require(pathToElectronPackageJson);
   const svelteKitPackageJson = require(pathToSvelteKitPackageJson);
