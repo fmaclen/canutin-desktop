@@ -12,7 +12,7 @@ import {
 const redirectTo = (origin: string, route: string) => {
 	// When the app runs as an Electron app it doesn't have an SSL certificate
 	const url = new URL(origin);
-	url.protocol = process.env.IS_ELECTRON === 'true' ? 'http:' : 'https:';
+	url.protocol = process.env.USE_HTTP === 'true' ? 'http:' : 'https:';
 	return Response.redirect(`${url.origin}${route}`, 307);
 };
 

@@ -43,9 +43,9 @@ jobs:
         working-directory: ./sveltekit
         run: npm test
         env:
-          IS_ELECTRON: "true"
           NODE_ENV: CI
           BROWSER: ${{ matrix.browser }}
+          USE_HTTP: "true"
 
       - uses: actions/upload-artifact@v3
         if: always()
