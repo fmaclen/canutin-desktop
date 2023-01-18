@@ -43,6 +43,7 @@ jobs:
         working-directory: ./sveltekit
         run: npm test
         env:
+          IS_ELECTRON: "true"
           NODE_ENV: CI
           BROWSER: ${{ matrix.browser }}
 
