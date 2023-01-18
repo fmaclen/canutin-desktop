@@ -32,16 +32,16 @@
 
 	{#if trend === 'positive' || trend === 'negative'}
 		<div class="chart__bar {trend && `chart__bar--${trend}`}">
-			<p class="chart__label {isLabelVisible && 'chart__label--visible'}">
-				{value}
-			</p>
-
 			<div
 				class="chart__graph {isActive &&
 					!isCurrentPeriod &&
 					'chart__graph--active'} {isCurrentPeriod && 'chart__graph--currentPeriod'}"
 				style={`${barHeight} ${barBackground}`}
-			/>
+			>
+				<p class="chart__label {isLabelVisible && 'chart__label--visible'}">
+					{value}
+				</p>
+			</div>
 		</div>
 	{:else}
 		<div class="chart__barPlaceholder" />
@@ -62,6 +62,7 @@
 		height: 50vh;
 		min-height: 256px;
 		max-height: 320px;
+		padding: 32px 0;
 		box-sizing: border-box;
 	}
 
@@ -69,21 +70,21 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		min-height: 32px;
-		overflow: hidden;
 		color: var(--color-grey50);
 		border: none;
 
 		&--positive {
 			color: var(--color-greenPrimary);
+			height: 100%;
 
 			p.chart__label {
-				margin-top: auto;
+				top: -32px;
+				padding-bottom: 12px;
 			}
 
 			div.chart__graph {
-				padding-top: 8px;
 				border-top: 3px solid var(--color-greenPrimary);
+				margin-top: auto;
 
 				&:not(div.chart__graph--currentPeriod, div.chart__graph--active) {
 					background-color: var(--color-greenSecondary);
@@ -96,15 +97,17 @@
 		}
 
 		&--negative {
-			flex-direction: column-reverse;
 			color: var(--color-redPrimary);
+			height: 100%;
 
 			p.chart__label {
-				margin-bottom: auto;
+				bottom: -32px;
+				padding-top: 12px;
 			}
 
 			div.chart__graph {
 				border-bottom: 3px solid var(--color-redPrimary);
+				margin-bottom: auto;
 
 				&:not(div.chart__graph--currentPeriod, div.chart__graph--active) {
 					background-color: var(--color-redSecondary);
@@ -118,6 +121,8 @@
 	}
 
 	div.chart__graph {
+		position: relative;
+
 		&--currentPeriod {
 			background-color: var(--color-white);
 			background-image: var(--background-url);
@@ -126,13 +131,16 @@
 	}
 
 	p.chart__label {
+		position: absolute;
+		width: 100%;
+		box-sizing: border-box;
+		padding: 8px 4px;
 		font-family: var(--font-monospace);
 		font-size: 12px;
-		min-height: 12px;
+		line-height: 1em;
 		margin: 0;
-		padding: 12px 4px 8px 4px;
-		text-align: center;
 		opacity: 0;
+		text-align: center;
 		overflow: hidden;
 		text-overflow: ellipsis;
 
@@ -146,9 +154,5 @@
 		height: 1px;
 		margin: 0;
 		background-color: var(--color-border);
-	}
-
-	div.chart__barPlaceholder {
-		min-height: 32px;
 	}
 </style>
