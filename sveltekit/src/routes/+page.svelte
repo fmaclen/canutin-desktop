@@ -41,7 +41,8 @@
 				: TrailingCashflowPeriods.LAST_6_MONTHS;
 	};
 
-	const timezoneOffset = new Date().getTimezoneOffset() * 60;
+	const ONE_HOUR_IN_SECONDS = 3600; // Add one hour to account for daylight savings
+	const timezoneOffset = (new Date().getTimezoneOffset() * 60) + ONE_HOUR_IN_SECONDS;
 </script>
 
 <Head {title} />
