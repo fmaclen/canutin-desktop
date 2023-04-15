@@ -3,6 +3,11 @@
 <img width="1495" alt="image" src="https://user-images.githubusercontent.com/1434675/201496760-84c132ba-9685-4313-8668-9d72fd52537b.png">
 
 <p align="center">
+  ⚡ <strong>Live demo <a href="https://demo.canutin.com/">https://demo.canutin.com/</a></strong><br/>
+  <em>(data will be wiped frequently)</em>
+</p>
+
+<p align="center">
   💻 <strong>Download the <a href="https://github.com/Canutin/desktop/releases">latest release</a></strong> (Windows, macOS & Linux)
 </p>
 <p align="center">
