@@ -1,5 +1,5 @@
 <script lang="ts">
-		import { PLAUSIBLE_DOMAIN } from '$env/static/private';
+	import { PUBLIC_PLAUSIBLE_DOMAIN } from '$env/static/public';
 
 	export let title: string | string[];
 
@@ -10,7 +10,7 @@
 <svelte:head>
 	<title>{formattedTitle} {SEPARATOR} Canutin</title>
 
-	{#if PLAUSIBLE_DOMAIN}
-		<script defer data-domain={PLAUSIBLE_DOMAIN} src="https://plausible.io/js/script.js" />
+	{#if PUBLIC_PLAUSIBLE_DOMAIN}
+		<script defer data-domain={PUBLIC_PLAUSIBLE_DOMAIN} src="https://plausible.io/js/script.js" />
 	{/if}
 </svelte:head>
