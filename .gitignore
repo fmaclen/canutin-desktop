@@ -6,3 +6,4 @@ resources/sveltekit
 *.vault-journal
 .vscode/settings.json
 *tar.gz
+.env
