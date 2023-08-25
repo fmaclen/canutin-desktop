@@ -46,6 +46,7 @@ jobs:
           NODE_ENV: CI
           BROWSER: ${{ matrix.browser }}
           USE_HTTP: "true"
+          PUBLIC_PLAUSIBLE_DOMAIN: ""
 
       - uses: actions/upload-artifact@v3
         if: always()

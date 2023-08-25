@@ -5,6 +5,9 @@ import { expect, type Page, type TestInfo } from '@playwright/test';
 
 import { Appearance, DeveloperFunctions } from '../../src/lib/helpers/constants.js';
 
+// Waits for the caret position update in `@canutin/sveltekit-currency-input`
+export const DELAY_FOR_DECIMAL_VALUES_IN_MS = 25;
+
 export const pathToTestVault = path.join(process.cwd(), 'tests', 'tmp', 'Canutin.vault.test');
 
 const methodAndHeaders = {
