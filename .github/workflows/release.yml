@@ -55,7 +55,7 @@ jobs:
         env:
           DATABASE_URL: "file:./Canutin.temp.vault"
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
-          PUBLIC_PLAUSIBLE_DOMAIN: ""
+          PUBLIC_PLAUSIBLE_DOMAIN: ${{ secrets.PUBLIC_PLAUSIBLE_DOMAIN }}
 
       - name: Update package.json's with app version
         run: npm run package:release
