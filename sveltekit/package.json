@@ -37,7 +37,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@canutin/svelte-currency-input": "^0.7.2",
+		"@canutin/svelte-currency-input": "^0.9.3",
 		"@prisma/client": "^4.7.1",
 		"@zerodevx/svelte-toast": "1.0.0-rc.1",
 		"chart.js": "^3.9.1",

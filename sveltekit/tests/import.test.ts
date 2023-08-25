@@ -253,7 +253,7 @@ test.describe('Import CanutinFile', () => {
 		await page.locator('.formInputCheckbox', { hasText: 'Excluded from totals' }).click();
 		await page.locator('.formCurrencyInput input[name="formatted-value"]').focus();
 		for (let i = 1; i < '3,500.25'.length; i++) await page.keyboard.press('Backspace');
-		await page.keyboard.type('9999', { delay: 25 });
+		await page.keyboard.type('9999');
 		await page.locator('button', { hasText: 'Save' }).click();
 		await expectToastAndDismiss(page, 'Initech Payroll was updated', Appearance.POSITIVE);
 		expect(await tableRows.count()).toBe(1);

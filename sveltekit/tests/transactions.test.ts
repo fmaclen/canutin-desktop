@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 import { format, addDays, startOfMonth, subMonths } from 'date-fns';
 
 import {
+	DELAY_FOR_DECIMAL_VALUES_IN_MS,
 	databaseSeed,
 	databaseWipe,
 	delay,
@@ -469,7 +470,7 @@ test.describe('Transactions', () => {
 		await monthSelect.selectOption({ label: '3 - Mar' });
 		await dateSelect.selectOption({ label: '15' });
 		await amountInput.focus();
-		await page.keyboard.type('-420.69', { delay: 25 });
+		await page.keyboard.type('-420.69', { delay: DELAY_FOR_DECIMAL_VALUES_IN_MS });
 		await addButton.click();
 		await expectToastAndDismiss(page, 'Toilet Paper Depot was created', Appearance.POSITIVE); // prettier-ignore
 
