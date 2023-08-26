@@ -1,8 +1,9 @@
 name: Build & release
 
 on:
-  push:
-    branches: [main, master]
+  [push]
+  # push:
+  #   branches: [main, master]
 
 jobs:
   tag:
@@ -14,22 +15,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-        with:
-          node-version: 18
 
-      - name: Bump version and push tag
-        id: tag_version
-        uses: cycjimmy/semantic-release-action@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Bump version and push tag
+      #   id: tag_version
+      #   uses: cycjimmy/semantic-release-action@v3
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release:
-    if: ${{ needs.tag.outputs.new_release_git_tag != '' }}
-    needs: tag
+    # if: ${{ needs.tag.outputs.new_release_git_tag != '' }}
+    # needs: tag
     strategy:
       matrix:
+        os: [windows-latest]
         # os: [macos-latest, ubuntu-latest, windows-latest]
-        os: [macos-latest, ubuntu-latest]
 
     name: Release (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
