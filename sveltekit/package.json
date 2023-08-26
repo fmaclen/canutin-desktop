@@ -2,7 +2,7 @@
 	"name": "app",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
+		"build": "vite build --debug",
 		"preview": "vite preview",
 		"test": "npx playwright test",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
