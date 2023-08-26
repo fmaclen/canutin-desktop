@@ -1,6 +1,5 @@
 import path from 'path';
 import fs from 'fs';
-import fetch from 'node-fetch';
 import { expect, type Page, type TestInfo } from '@playwright/test';
 
 import { Appearance, DeveloperFunctions } from '../../src/lib/helpers/constants.js';
