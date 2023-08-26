@@ -52,13 +52,19 @@ jobs:
           # SvelteKit build process to finish.
           DATABASE_URL: "file:./Canutin.temp.vault"
 
-      - name: "Generate Electron & Sveltekit builds"
-        run: npm run build:all
+      - name: "Generate Electron build"
+        run: npm run build:electron
         env:
           DATABASE_URL: "file:./Canutin.temp.vault"
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
           PUBLIC_PLAUSIBLE_DOMAIN: ${{ secrets.PUBLIC_PLAUSIBLE_DOMAIN }}
-          ACTIONS_STEP_DEBUG: true
+
+      - name: "Generate Sveltekit build"
+        run: npm run build:sveltekit
+        env:
+          DATABASE_URL: "file:./Canutin.temp.vault"
+          APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
+          PUBLIC_PLAUSIBLE_DOMAIN: ${{ secrets.PUBLIC_PLAUSIBLE_DOMAIN }}
 
       - name: Update package.json's with app version
         run: npm run package:release
