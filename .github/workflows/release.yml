@@ -28,8 +28,7 @@ jobs:
     needs: tag
     strategy:
       matrix:
-        # os: [macos-latest, ubuntu-latest, windows-latest]
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     name: Release (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
