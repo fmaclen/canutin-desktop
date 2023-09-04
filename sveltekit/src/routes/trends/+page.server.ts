@@ -8,7 +8,7 @@ import {
 	getAssetBalanceDateRange,
 	getAssetCurrentBalance
 } from '$lib/helpers/models.server';
-import { addWeeks, eachWeekOfInterval, endOfWeek, startOfWeek } from 'date-fns';
+import { eachWeekOfInterval } from 'date-fns';
 import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import { startOfTheWeekAfter } from '$lib/helpers/charts';
@@ -32,7 +32,6 @@ const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | nu
 			if (periodStart) earliestBalanceDates.push(periodStart);
 		}
 	}
-
 	if (assets) {
 		for (const asset of assets) {
 			const { periodStart } = await getAssetBalanceDateRange(asset);
@@ -40,8 +39,8 @@ const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | nu
 		}
 	}
 
+	// Get the earliest date of all the accounts and/or assets balances
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
-
 	const weeksInPeriod = eachWeekOfInterval({
 		start: startOfTheWeekAfter(earliestBalanceDates[0]),
 		end: startOfTheWeekAfter(new Date())
@@ -49,11 +48,14 @@ const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | nu
 	for (const weekInPeriod of weeksInPeriod) {
 		labels.push(weekInPeriod.toISOString().slice(0, 10)); // e.g. 2022-12-31
 	}
+
 	return labels;
 };
 
+// Generates an skeleton dataset for each Chart to be shown while we load the rest of the data
 const generateEmptyDataset = (accounts: Account[] | null, assets: Asset[] | null) => {
 	const datasets: ChartDataset[] = [];
+
 	if (accounts) {
 		for (const account of accounts) {
 			datasets.push({ label: account.name, data: [] });
@@ -64,12 +66,13 @@ const generateEmptyDataset = (accounts: Account[] | null, assets: Asset[] | null
 			datasets.push({ label: asset.name, data: [] });
 		}
 	}
+
 	return datasets;
 };
 
 export const load = async () => {
-	const accounts = await prisma.account.findMany(); // prettier-ignore
-	const assets = await prisma.asset.findMany(); // prettier-ignore
+	const accounts = await prisma.account.findMany();
+	const assets = await prisma.asset.findMany();
 
 	const trendCashAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.CASH); // prettier-ignore
 	const trendCashAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.CASH); // prettier-ignore
@@ -77,9 +80,9 @@ export const load = async () => {
 	const trendCash: TrendGroup = {
 		title: BalanceGroup.CASH,
 		labels: trendCashLabels,
-		datasets: generateEmptyDataset(trendCashAccounts, trendCashAssets),
 		accounts: trendCashAccounts,
-		assets: trendCashAssets
+		assets: trendCashAssets,
+		datasets: generateEmptyDataset(trendCashAccounts, trendCashAssets)
 	};
 
 	const trendDebtAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.DEBT); // prettier-ignore
@@ -88,9 +91,9 @@ export const load = async () => {
 	const trendDebt: TrendGroup = {
 		title: BalanceGroup.DEBT,
 		labels: trendDebtLabels,
-		datasets: generateEmptyDataset(trendDebtAccounts, trendDebtAssets),
 		accounts: trendDebtAccounts,
-		assets: trendDebtAssets
+		assets: trendDebtAssets,
+		datasets: generateEmptyDataset(trendDebtAccounts, trendDebtAssets)
 	};
 
 	const trendInvestmentsAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.INVESTMENTS ); // prettier-ignore
@@ -99,9 +102,9 @@ export const load = async () => {
 	const trendInvestments: TrendGroup = {
 		title: BalanceGroup.INVESTMENTS,
 		labels: trendInvestmentsLabels,
-		datasets: generateEmptyDataset(trendInvestmentsAccounts, trendInvestmentsAssets),
 		accounts: trendInvestmentsAccounts,
-		assets: trendInvestmentsAssets
+		assets: trendInvestmentsAssets,
+		datasets: generateEmptyDataset(trendInvestmentsAccounts, trendInvestmentsAssets)
 	};
 
 	const trendOtherAssetsAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.OTHER_ASSETS ); // prettier-ignore
@@ -110,9 +113,9 @@ export const load = async () => {
 	const trendOtherAssets: TrendGroup = {
 		title: BalanceGroup.OTHER_ASSETS,
 		labels: trendOtherAssetsLabels,
-		datasets: generateEmptyDataset(trendOtherAssetsAccounts, trendOtherAssetsAssets),
 		accounts: trendOtherAssetsAccounts,
-		assets: trendOtherAssetsAssets
+		assets: trendOtherAssetsAssets,
+		datasets: generateEmptyDataset(trendOtherAssetsAccounts, trendOtherAssetsAssets)
 	};
 
 	const trendNetWorthLabels = await getDatasetLabels(accounts, assets);
@@ -195,6 +198,7 @@ export const load = async () => {
 			}
 		}
 
+		// For Charts with a color set we apply a shade of that color to each dataset
 		if (color) {
 			const COLOR_WEIGHT = 125;
 			updatedDatasets.sort((a, b) => {
@@ -247,6 +251,7 @@ export const load = async () => {
 		'#5255AC' // var(--color-purplePrimary)
 	);
 
+	// The "Net worth" chart is special because it's an aggregate of all the other datasets
 	const updateNetWorthDataset = async (): Promise<ChartDataset[]> => {
 		const updatedDatasets: ChartDataset[] = structuredClone(trendNetWorth.datasets);
 		const weeksInPeriod = trendNetWorthLabels;
@@ -288,16 +293,15 @@ export const load = async () => {
 				});
 			}
 
-			updateDatasetBalance(updatedDatasets, 'Cash', cashBalance); // prettier-ignore
-			updateDatasetBalance(updatedDatasets, 'Debt', debtBalance); // prettier-ignore
-			updateDatasetBalance(updatedDatasets, 'Investments', investmentsBalance); // prettier-ignore
-			updateDatasetBalance(updatedDatasets, 'Other assets', otherAssetsBalance); // prettier-ignore
-			updateDatasetBalance(updatedDatasets, 'Net worth', netWorthBalance); // prettier-ignore
+			updateDatasetBalance(updatedDatasets, 'Cash', cashBalance);
+			updateDatasetBalance(updatedDatasets, 'Debt', debtBalance);
+			updateDatasetBalance(updatedDatasets, 'Investments', investmentsBalance);
+			updateDatasetBalance(updatedDatasets, 'Other assets', otherAssetsBalance);
+			updateDatasetBalance(updatedDatasets, 'Net worth', netWorthBalance);
 		}
 
 		return updatedDatasets;
 	};
-
 	const trendNetWorthDataset = updateNetWorthDataset();
 
 	return {

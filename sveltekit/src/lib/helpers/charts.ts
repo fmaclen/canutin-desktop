@@ -32,6 +32,6 @@ export const setChartDatasetColor = (dataset: ChartDataset, balanceGroup?: Balan
 };
 
 // Returns the start date of the next week after the given date.
-export const startOfTheWeekAfter = (periodEnd: Date) => {
-	return add(endOfWeek(periodEnd), { days: 1 });
+export const startOfTheWeekAfter = (date: Date) => {
+	return add(endOfWeek(date), { days: 1 });
 };
