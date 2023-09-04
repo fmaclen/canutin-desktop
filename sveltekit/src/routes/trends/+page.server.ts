@@ -8,10 +8,10 @@ import {
 	getAssetBalanceDateRange,
 	getAssetCurrentBalance
 } from '$lib/helpers/models.server';
-import { eachWeekOfInterval, endOfWeek, startOfWeek } from 'date-fns';
+import { addWeeks, eachWeekOfInterval, endOfWeek, startOfWeek } from 'date-fns';
 import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';
-import { handlePeriodEnd } from '$lib/helpers/charts';
+import { handlePeriodInterval } from '$lib/helpers/charts';
 import type { Account, Asset } from '@prisma/client';
 
 interface TrendGroup {
@@ -43,8 +43,8 @@ const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | nu
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
 
 	const weeksInPeriod = eachWeekOfInterval({
-		start: startOfWeek(earliestBalanceDates[0]),
-		end: handlePeriodEnd(new Date())
+		start: handlePeriodInterval(earliestBalanceDates[0]),
+		end: handlePeriodInterval(new Date())
 	});
 	for (const weekInPeriod of weeksInPeriod) {
 		labels.push(weekInPeriod.toISOString().slice(0, 10)); // e.g. 2022-12-31
@@ -288,10 +288,10 @@ export const load = async () => {
 				});
 			}
 
-			updateDatasetBalance(updatedDatasets, 'Cash', cashBalance === 0 ? null : cashBalance); // prettier-ignore
-			updateDatasetBalance(updatedDatasets, 'Debt', debtBalance === 0 ? null : debtBalance); // prettier-ignore
-			updateDatasetBalance(updatedDatasets, 'Investments', investmentsBalance === 0 ? null : investmentsBalance); // prettier-ignore
-			updateDatasetBalance(updatedDatasets, 'Other assets', otherAssetsBalance === 0 ? null : otherAssetsBalance); // prettier-ignore
+			updateDatasetBalance(updatedDatasets, 'Cash', cashBalance); // prettier-ignore
+			updateDatasetBalance(updatedDatasets, 'Debt', debtBalance); // prettier-ignore
+			updateDatasetBalance(updatedDatasets, 'Investments', investmentsBalance); // prettier-ignore
+			updateDatasetBalance(updatedDatasets, 'Other assets', otherAssetsBalance); // prettier-ignore
 			updateDatasetBalance(updatedDatasets, 'Net worth', netWorthBalance); // prettier-ignore
 		}
 

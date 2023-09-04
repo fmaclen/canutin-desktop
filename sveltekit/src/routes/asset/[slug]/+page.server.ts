@@ -8,7 +8,7 @@ import { setChartDatasetColor } from '$lib/helpers/charts';
 import type { ChartDataset } from 'chart.js';
 import { eachWeekOfInterval, startOfWeek } from 'date-fns';
 import { getAssetBalanceDateRange, getAssetCurrentBalance } from '$lib/helpers/models.server';
-import { handlePeriodEnd } from '$lib/helpers/charts';
+import { handlePeriodInterval } from '$lib/helpers/charts';
 
 interface Params {
 	slug: string | null;
@@ -37,7 +37,7 @@ export const load = async ({ params }: { params: Params }) => {
 	if (periodStart && periodEnd) {
 		const weeksInPeriod = eachWeekOfInterval({
 			start: startOfWeek(periodStart),
-			end: handlePeriodEnd(periodEnd)
+			end: handlePeriodInterval(periodEnd)
 		});
 
 		for (const weekInPeriod of weeksInPeriod) {
