@@ -31,15 +31,6 @@ export const proportionBetween = (num1: number, num2: number) => {
 	return Math.round((!(num1 === 0) && !(num2 === 0) ? (num1 * 100) / num2 : 0) * 1e2) / 1e2;
 };
 
-// Calculates the positive or negative percentage difference between two numbers
-export const percentageOf = (baseValue: number, newValue: number): number => {
-	// If the base value is zero, we can't compute a percentage difference in the usual sense
-	if (baseValue === 0) {
-		return newValue === 0 ? 0 : Infinity; // or handle this case differently if you like
-	}
-	return proportionBetween(newValue - baseValue, baseValue);
-};
-
 // Strip timezone from date and set to UTC
 export const dateInUTC = (date: Date) => {
 	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0));

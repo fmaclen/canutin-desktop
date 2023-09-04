@@ -159,10 +159,6 @@
 			padding-top: 8px;
 			padding-bottom: 8px;
 		}
-
-		&--loading {
-			position: relative;
-		}
 	}
 
 	canvas.chart__canvas--loading {
