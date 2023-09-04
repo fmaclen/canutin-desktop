@@ -8,7 +8,7 @@ import {
 	getAssetBalanceDateRange,
 	getAssetCurrentBalance
 } from '$lib/helpers/models.server';
-import { eachWeekOfInterval, startOfWeek } from 'date-fns';
+import { eachWeekOfInterval, endOfWeek, startOfWeek } from 'date-fns';
 import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import { handlePeriodEnd } from '$lib/helpers/charts';
@@ -25,30 +25,26 @@ interface TrendGroup {
 const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | null) => {
 	const labels: string[] = [];
 	const earliestBalanceDates: Date[] = [];
-	const latestBalanceDates: Date[] = [];
 
 	if (accounts) {
 		for (const account of accounts) {
-			const { periodStart, periodEnd } = await getAccountBalanceDateRange(account);
+			const { periodStart } = await getAccountBalanceDateRange(account);
 			if (periodStart) earliestBalanceDates.push(periodStart);
-			if (periodEnd) latestBalanceDates.push(periodEnd);
 		}
 	}
 
 	if (assets) {
 		for (const asset of assets) {
-			const { periodStart, periodEnd } = await getAssetBalanceDateRange(asset);
+			const { periodStart } = await getAssetBalanceDateRange(asset);
 			if (periodStart) earliestBalanceDates.push(periodStart);
-			if (periodEnd) latestBalanceDates.push(periodEnd);
 		}
 	}
 
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
-	latestBalanceDates.sort((a, b) => (a > b ? -1 : 1));
 
 	const weeksInPeriod = eachWeekOfInterval({
 		start: startOfWeek(earliestBalanceDates[0]),
-		end: handlePeriodEnd(latestBalanceDates[0]) // FIXME: should be 'latest balance date'
+		end: handlePeriodEnd(new Date())
 	});
 	for (const weekInPeriod of weeksInPeriod) {
 		labels.push(weekInPeriod.toISOString().slice(0, 10)); // e.g. 2022-12-31
