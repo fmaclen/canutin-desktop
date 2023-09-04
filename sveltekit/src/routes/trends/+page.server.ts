@@ -1,7 +1,6 @@
 import Values from 'values.js';
 import prisma from '$lib/helpers/prisma.server';
 import type { ChartData, ChartDataset } from 'chart.js';
-import fs from 'fs';
 
 import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models.server';
 import {
@@ -68,10 +67,6 @@ const performanceZeroes = {
 	allocation: null
 };
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
 const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | null) => {
 	const labels: string[] = [];
 	const earliestBalanceDates: Date[] = [];
@@ -115,38 +110,6 @@ const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | nu
 	return labels;
 };
 
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-
-// Generate shades of a given color for each dataset
-const COLOR_WEIGHT = 125;
-const setShadedBorderColor = (
-	chartDatasets: ChartDataset[],
-	color: string,
-	orderBy?: SortOrder
-) => {
-	// Before setting a border color we need to sort the dataset in a meaningul way.
-	// Because values can vary a lot, we choose to sort by the most recent value in the dataset.
-	chartDatasets.sort((a, b) => {
-		const aLastValue = (a.data[a.data.length - 1] || 0) as number;
-		const bLastValue = (b.data[b.data.length - 1] || 0) as number;
-
-		// NOTE: in the case of `chartDebt` the sort order is reversed.
-		return orderBy === SortOrder.ASC ? bLastValue - aLastValue : aLastValue - bLastValue;
-	});
-
-	chartDatasets.forEach((chartDataset, i) => {
-		const itemColor = new Values(color).all(COLOR_WEIGHT / chartDatasets.length)[i].hexString();
-		chartDataset.backgroundColor = itemColor;
-		chartDataset.borderColor = itemColor;
-	});
-};
-
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-
 const generateEmptyDataset = (accounts: Account[] | null, assets: Asset[] | null) => {
 	const datasets: ChartDataset[] = [];
 	if (accounts) {
@@ -162,18 +125,7 @@ const generateEmptyDataset = (accounts: Account[] | null, assets: Asset[] | null
 	return datasets;
 };
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
 export const load = async () => {
-	// const oneWeekAgo = subWeeks(today, 1);
-	// const oneMonthAgo = subMonths(today, 1);
-	// const sixMonthsAgo = subMonths(today, 6);
-	// const firstOfCurrentYear = startOfYear(today);
-	// const oneYearAgo = subYears(today, 1);
-	// const fiveYearsAgo = subYears(today, 5);
-
 	const accounts = await prisma.account.findMany(); // prettier-ignore
 	const assets = await prisma.asset.findMany(); // prettier-ignore
 
@@ -270,10 +222,6 @@ export const load = async () => {
 		}
 	});
 
-	//////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////
-
 	const updateDatasetBalance = (
 		datasets: ChartDataset[],
 		label: string,
@@ -305,7 +253,23 @@ export const load = async () => {
 			}
 		}
 
-		if (color) setShadedBorderColor(updatedDatasets, color, orderBy);
+		if (color) {
+			const COLOR_WEIGHT = 125;
+			updatedDatasets.sort((a, b) => {
+				const aLastValue = (a.data[a.data.length - 1] || 0) as number;
+				const bLastValue = (b.data[b.data.length - 1] || 0) as number;
+				// NOTE: in the case of `trendDebtDataset` the sort order is reversed.
+				return orderBy === SortOrder.ASC ? bLastValue - aLastValue : aLastValue - bLastValue;
+			});
+			updatedDatasets.forEach((updatedDataset, i) => {
+				const itemColor = new Values(color)
+					.all(COLOR_WEIGHT / updatedDatasets.length)
+					[i].hexString();
+				updatedDataset.backgroundColor = itemColor;
+				updatedDataset.borderColor = itemColor;
+			});
+		}
+
 		return updatedDatasets;
 	};
 
@@ -340,10 +304,6 @@ export const load = async () => {
 		trendOtherAssetsAssets,
 		'#5255AC' // var(--color-purplePrimary)
 	);
-
-	//////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////
 
 	const updateNetWorthDataset = async (): Promise<ChartDataset[]> => {
 		const updatedDatasets: ChartDataset[] = structuredClone(trendNetWorth.datasets);
