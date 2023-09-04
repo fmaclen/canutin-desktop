@@ -137,12 +137,7 @@
 	$: datasets && chart?.update();
 </script>
 
-<div
-	class="
-		chart
-		{datasets.length > 1 && 'chart--multiple-datasets'}
-	"
->
+<div class="chart {datasets.length > 1 && 'chart--multiple-datasets'}">
 	{#if isLoading}
 		<img src={iconLoading} class="chart__loading" alt="Loading..." />
 	{/if}
