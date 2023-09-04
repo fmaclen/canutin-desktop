@@ -17,6 +17,8 @@
 		return getComputedStyle(document.documentElement).getPropertyValue(variable);
 	};
 
+	let chart: Chart | null;
+
 	onMount(() => {
 		// Getting the font family from a CSS variable
 		const config: ChartConfiguration = {
@@ -127,8 +129,10 @@
 		};
 
 		const context = canvasChart.getContext('2d');
-		context && new Chart(context, config);
+		chart = context && new Chart(context, config);
 	});
+
+	$: datasets && chart?.update();
 </script>
 
 <div class="chart {datasets.length > 1 && 'chart--multiple-datasets'}">

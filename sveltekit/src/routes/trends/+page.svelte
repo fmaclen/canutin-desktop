@@ -12,6 +12,8 @@
 	import type { PageData } from './$types';
 	import { formatCurrency, toCamelCase } from '$lib/helpers/misc';
 	import { SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
+	import { writable } from 'svelte/store';
+	import type { ChartDataset } from 'chart.js';
 
 	const title = 'Trends';
 
@@ -39,6 +41,50 @@
 			column: toCamelCase(tableHeader)
 		};
 	});
+
+	//////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
+
+	function updateDatasets(originalDatasets: any, streamedDatasets: ChartDataset[]): ChartDataset[] {
+		for (const streamedDataset of streamedDatasets) {
+			const dataset = originalDatasets.find(
+				(dataset: ChartDataset) => dataset.label === streamedDataset.label
+			);
+			if (dataset) {
+				dataset.data = streamedDataset.data;
+				dataset.backgroundColor = streamedDataset.backgroundColor;
+				dataset.borderColor = streamedDataset.borderColor;
+			}
+		}
+		return originalDatasets;
+	}
+
+	const cashDatasets = writable<ChartDataset[]>(data.trendCash.datasets);
+	data.streaming.trendCashDataset.then((streamedDatasets: ChartDataset[]) =>
+		cashDatasets.update((data: ChartDataset[]) => updateDatasets(data, streamedDatasets))
+	);
+
+	const debtDatasets = writable<ChartDataset[]>(data.trendDebt.datasets);
+	data.streaming.trendDebtDataset.then((streamedDatasets: ChartDataset[]) =>
+		debtDatasets.update((data: ChartDataset[]) => updateDatasets(data, streamedDatasets))
+	);
+
+	const investmentsDatasets = writable<ChartDataset[]>(data.trendInvestments.datasets);
+	data.streaming.trendInvestmentsDataset.then((streamedDatasets: ChartDataset[]) =>
+		investmentsDatasets.update((data: ChartDataset[]) => updateDatasets(data, streamedDatasets))
+	);
+
+	const otherAssetsDatasets = writable<ChartDataset[]>(data.trendOtherAssets.datasets);
+	data.streaming.trendOtherAssetsDataset.then((streamedDatasets: ChartDataset[]) =>
+		otherAssetsDatasets.update((data: ChartDataset[]) => updateDatasets(data, streamedDatasets))
+	);
+
+	const netWorthDatasets = writable<ChartDataset[]>(data.trendNetWorth.datasets);
+	data.streaming.trendNetWorthDataset.then((streamedDatasets: ChartDataset[]) =>
+		netWorthDatasets.update((data: ChartDataset[]) => updateDatasets(data, streamedDatasets))
+	);
 </script>
 
 <Head {title} />
@@ -46,8 +92,8 @@
 <ScrollView {title}>
 	<Section title="Net worth">
 		<div slot="CONTENT">
-			<ChartJs labels={data.labels} datasets={data.datasetNetWorth} />
-			<Table>
+			<ChartJs labels={data.trendNetWorth.labels} datasets={$netWorthDatasets} />
+			<!-- <Table>
 				<thead>
 					<tr>
 						{#each tableHeaders as tableHeader}
@@ -119,31 +165,31 @@
 						</TableTr>
 					{/each}
 				</tbody>
-			</Table>
+			</Table> -->
 		</div>
 	</Section>
 
 	<Section title="Cash">
 		<div slot="CONTENT">
-			<ChartJs labels={data.labels} datasets={data.datasetCash} />
+			<ChartJs labels={data.trendCash.labels} datasets={$cashDatasets} />
 		</div>
 	</Section>
 
 	<Section title="Debt">
 		<div slot="CONTENT">
-			<ChartJs labels={data.labels} datasets={data.datasetDebt} />
+			<ChartJs labels={data.trendDebt.labels} datasets={$debtDatasets} />
 		</div>
 	</Section>
 
 	<Section title="Investments">
 		<div slot="CONTENT">
-			<ChartJs labels={data.labels} datasets={data.datasetInvestments} />
+			<ChartJs labels={data.trendInvestments.labels} datasets={$investmentsDatasets} />
 		</div>
 	</Section>
 
 	<Section title="Other assets">
 		<div slot="CONTENT">
-			<ChartJs labels={data.labels} datasets={data.datasetOtherAssets} />
+			<ChartJs labels={data.trendOtherAssets.labels} datasets={$otherAssetsDatasets} />
 		</div>
 	</Section>
 </ScrollView>
