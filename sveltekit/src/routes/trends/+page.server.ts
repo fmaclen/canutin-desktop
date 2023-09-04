@@ -1,44 +1,13 @@
 import Values from 'values.js';
 import prisma from '$lib/helpers/prisma.server';
-import type { ChartData, ChartDataset } from 'chart.js';
+import type { ChartDataset } from 'chart.js';
 
 import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models.server';
-import {
-	eachWeekOfInterval,
-	endOfWeek,
-	isSameWeek,
-	startOfWeek,
-	startOfYear,
-	subMonths,
-	subWeeks,
-	subYears
-} from 'date-fns';
+import { eachWeekOfInterval, endOfWeek, startOfWeek } from 'date-fns';
 import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import { handlePeriodEnd } from '$lib/helpers/charts';
-import { percentageOf, proportionBetween } from '$lib/helpers/misc';
 import type { Account, Asset } from '@prisma/client';
-import { selectBalanceGroups } from '../../lib/helpers/forms';
-
-interface PerformanceTable {
-	name: string;
-	currentBalance: number | null;
-	balanceOneWeek: number | null;
-	performanceOneWeek: number | null;
-	balanceOneMonth: number | null;
-	performanceOneMonth: number | null;
-	balanceSixMonths: number | null;
-	performanceSixMonths: number | null;
-	balanceYearToDate: number | null;
-	performanceYearToDate: number | null;
-	balanceOneYear: number | null;
-	performanceOneYear: number | null;
-	balanceFiveYears: number | null;
-	performanceFiveYears: number | null;
-	balanceLifetime: number | null;
-	performanceLifetime: number | null;
-	allocation: number | null;
-}
 
 interface TrendGroup {
 	title: BalanceGroup | 'Net worth';
@@ -47,25 +16,6 @@ interface TrendGroup {
 	accounts: Account[] | null;
 	assets: Asset[] | null;
 }
-
-const performanceZeroes = {
-	currentBalance: null,
-	balanceOneWeek: null,
-	balanceOneMonth: null,
-	balanceSixMonths: null,
-	balanceYearToDate: null,
-	balanceOneYear: null,
-	balanceFiveYears: null,
-	balanceLifetime: null,
-	performanceOneWeek: null,
-	performanceOneMonth: null,
-	performanceSixMonths: null,
-	performanceYearToDate: null,
-	performanceOneYear: null,
-	performanceFiveYears: null,
-	performanceLifetime: null,
-	allocation: null
-};
 
 const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | null) => {
 	const labels: string[] = [];
