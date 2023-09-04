@@ -2,8 +2,13 @@ import Values from 'values.js';
 import prisma from '$lib/helpers/prisma.server';
 import type { ChartDataset } from 'chart.js';
 
-import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models.server';
-import { eachWeekOfInterval, endOfWeek, startOfWeek } from 'date-fns';
+import {
+	getAccountBalanceDateRange,
+	getAccountCurrentBalance,
+	getAssetBalanceDateRange,
+	getAssetCurrentBalance
+} from '$lib/helpers/models.server';
+import { eachWeekOfInterval, startOfWeek } from 'date-fns';
 import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import { handlePeriodEnd } from '$lib/helpers/charts';
@@ -20,39 +25,30 @@ interface TrendGroup {
 const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | null) => {
 	const labels: string[] = [];
 	const earliestBalanceDates: Date[] = [];
+	const latestBalanceDates: Date[] = [];
 
 	if (accounts) {
 		for (const account of accounts) {
-			let earliestBalance;
-			if (account.isAutoCalculated) {
-				earliestBalance = await prisma.transaction.findFirst({
-					where: { accountId: account.id },
-					orderBy: { date: SortOrder.ASC }
-				});
-			} else {
-				earliestBalance = await prisma.accountBalanceStatement.findFirst({
-					where: { accountId: account.id },
-					orderBy: { createdAt: SortOrder.ASC }
-				});
-			}
-			if (earliestBalance) earliestBalanceDates.push(earliestBalance.createdAt);
+			const { periodStart, periodEnd } = await getAccountBalanceDateRange(account);
+			if (periodStart) earliestBalanceDates.push(periodStart);
+			if (periodEnd) latestBalanceDates.push(periodEnd);
 		}
 	}
 
 	if (assets) {
 		for (const asset of assets) {
-			const earliestBalance = await prisma.assetBalanceStatement.findFirst({
-				where: { assetId: asset.id },
-				orderBy: { createdAt: SortOrder.ASC }
-			});
-			if (earliestBalance) earliestBalanceDates.push(earliestBalance.createdAt);
+			const { periodStart, periodEnd } = await getAssetBalanceDateRange(asset);
+			if (periodStart) earliestBalanceDates.push(periodStart);
+			if (periodEnd) latestBalanceDates.push(periodEnd);
 		}
 	}
 
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
+	latestBalanceDates.sort((a, b) => (a > b ? -1 : 1));
+
 	const weeksInPeriod = eachWeekOfInterval({
 		start: startOfWeek(earliestBalanceDates[0]),
-		end: handlePeriodEnd(endOfWeek(new Date())) // FIXME: should be 'latest balance date'
+		end: handlePeriodEnd(latestBalanceDates[0]) // FIXME: should be 'latest balance date'
 	});
 	for (const weekInPeriod of weeksInPeriod) {
 		labels.push(weekInPeriod.toISOString().slice(0, 10)); // e.g. 2022-12-31
@@ -258,6 +254,7 @@ export const load = async () => {
 	const updateNetWorthDataset = async (): Promise<ChartDataset[]> => {
 		const updatedDatasets: ChartDataset[] = structuredClone(trendNetWorth.datasets);
 		const weeksInPeriod = trendNetWorthLabels;
+
 		for (const weekInPeriod of weeksInPeriod) {
 			let netWorthBalance = 0;
 			let cashBalance = 0;

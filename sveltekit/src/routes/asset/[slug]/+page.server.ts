@@ -7,7 +7,7 @@ import { notFound } from '$lib/helpers/misc';
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import type { ChartDataset } from 'chart.js';
 import { eachWeekOfInterval, startOfWeek } from 'date-fns';
-import { getAssetCurrentBalance } from '$lib/helpers/models.server';
+import { getAssetBalanceDateRange, getAssetCurrentBalance } from '$lib/helpers/models.server';
 import { handlePeriodEnd } from '$lib/helpers/charts';
 
 interface Params {
@@ -30,13 +30,10 @@ export const load = async ({ params }: { params: Params }) => {
 	const labels: string[] = [];
 	const balanceHistoryDataset: ChartDataset = { label: asset.name, data: [] };
 
-	const earliestQuery = { where: { assetId: asset.id }, orderBy: { createdAt: SortOrder.ASC } };
 	const latestQuery = { where: { assetId: asset.id }, orderBy: { createdAt: SortOrder.DESC } };
-
 	const lastBalanceStatement = await prisma.assetBalanceStatement.findFirst(latestQuery);
-	const periodStart = await prisma.assetBalanceStatement.findFirst(earliestQuery).then((abs) => abs?.createdAt); // prettier-ignore
-	const periodEnd = lastBalanceStatement?.createdAt;
 
+	const { periodStart, periodEnd } = await getAssetBalanceDateRange(asset);
 	if (periodStart && periodEnd) {
 		const weeksInPeriod = eachWeekOfInterval({
 			start: startOfWeek(periodStart),

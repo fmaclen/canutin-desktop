@@ -144,3 +144,43 @@ export const formatTransactionDate = (date: string | number | Date) => {
 			throw new Error(`Invalid date type: ${typeof date}`);
 	}
 };
+
+// Returns dates for the Account's oldest balance and the newest balance
+export const getAccountBalanceDateRange = async (account: Account) => {
+	let periodStart: Date | undefined;
+	let periodEnd: Date | undefined;
+	const queryByAccount = { where: { accountId: account.id } };
+
+	if (account.isAutoCalculated) {
+		// When the account is auto-calculated, the balance history is based on the earliest and most recent transaction date
+		const earliestQuery = { ...queryByAccount, orderBy: { date: SortOrder.ASC } };
+		const latestQuery = { ...queryByAccount, orderBy: { date: SortOrder.DESC } };
+		periodStart = await prisma.transaction.findFirst(earliestQuery).then((t) => t?.date);
+		periodEnd = await prisma.transaction.findFirst(latestQuery).then((t) => t?.date);
+	} else {
+		// When the account is NOT auto-calculated, the balance history is based on the earliest and most recent balance statement
+		const earliestQuery = { ...queryByAccount, orderBy: { createdAt: SortOrder.ASC } };
+		const latestQuery = { ...queryByAccount, orderBy: { createdAt: SortOrder.DESC } };
+		periodStart = await prisma.accountBalanceStatement.findFirst(earliestQuery).then((abs) => abs?.createdAt); // prettier-ignore
+		periodEnd = await prisma.accountBalanceStatement.findFirst(latestQuery).then((abs) => abs?.createdAt); // prettier-ignore
+	}
+
+	return {
+		periodStart,
+		periodEnd
+	};
+};
+
+// Returns dates for the Asset's oldest balance and the newest balance
+export const getAssetBalanceDateRange = async (asset: Asset) => {
+	const queryByAsset = { where: { assetId: asset.id } };
+	const earliestQuery = { ...queryByAsset, orderBy: { createdAt: SortOrder.ASC } };
+	const latestQuery = { ...queryByAsset, orderBy: { createdAt: SortOrder.DESC } };
+	const periodStart = await prisma.assetBalanceStatement.findFirst(earliestQuery).then((abs) => abs?.createdAt); // prettier-ignore
+	const periodEnd = await prisma.assetBalanceStatement.findFirst(latestQuery).then((abs) => abs?.createdAt); // prettier-ignore
+
+	return {
+		periodStart,
+		periodEnd
+	};
+};
