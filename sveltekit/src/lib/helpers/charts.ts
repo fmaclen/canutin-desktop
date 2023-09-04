@@ -31,8 +31,7 @@ export const setChartDatasetColor = (dataset: ChartDataset, balanceGroup?: Balan
 	}
 };
 
-// Setting the range at the end of the week doesn't include the current week,
-// adding an extra day forces the end of range to include the current week.
-export const handlePeriodEnd = (periodEnd: Date) => {
-	return add(endOfWeek(periodEnd), { days: 1 });
+// Returns the start date of the next week after the given date.
+export const startOfTheWeekAfter = (date: Date) => {
+	return add(endOfWeek(date), { days: 1 });
 };

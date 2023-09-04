@@ -2,160 +2,320 @@ import Values from 'values.js';
 import prisma from '$lib/helpers/prisma.server';
 import type { ChartDataset } from 'chart.js';
 
-import { getAccountCurrentBalance, getAssetCurrentBalance } from '$lib/helpers/models.server';
-import { sub, eachWeekOfInterval, endOfWeek } from 'date-fns';
-import { BalanceGroup, SortOrder } from '$lib/helpers/constants';
+import {
+	getAccountBalanceDateRange,
+	getAccountCurrentBalance,
+	getAssetBalanceDateRange,
+	getAssetCurrentBalance
+} from '$lib/helpers/models.server';
+import { eachWeekOfInterval } from 'date-fns';
+import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';
-import { handlePeriodEnd } from '$lib/helpers/charts';
+import { startOfTheWeekAfter } from '$lib/helpers/charts';
+import type { Account, Asset } from '@prisma/client';
+
+interface TrendGroup {
+	title: BalanceGroup | 'Net worth';
+	labels: string[];
+	datasets: ChartDataset[];
+	accounts: Account[] | null;
+	assets: Asset[] | null;
+}
+
+const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | null) => {
+	const labels: string[] = [];
+	const earliestBalanceDates: Date[] = [];
+
+	if (accounts) {
+		for (const account of accounts) {
+			const { periodStart } = await getAccountBalanceDateRange(account);
+			if (periodStart) earliestBalanceDates.push(periodStart);
+		}
+	}
+	if (assets) {
+		for (const asset of assets) {
+			const { periodStart } = await getAssetBalanceDateRange(asset);
+			if (periodStart) earliestBalanceDates.push(periodStart);
+		}
+	}
+
+	// Get the earliest date of all the accounts and/or assets balances
+	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
+	const weeksInPeriod = eachWeekOfInterval({
+		start: startOfTheWeekAfter(earliestBalanceDates[0]),
+		end: startOfTheWeekAfter(new Date())
+	});
+	for (const weekInPeriod of weeksInPeriod) {
+		labels.push(weekInPeriod.toISOString().slice(0, 10)); // e.g. 2022-12-31
+	}
+
+	return labels;
+};
+
+// Generates an skeleton dataset for each Chart to be shown while we load the rest of the data
+const generateEmptyDataset = (accounts: Account[] | null, assets: Asset[] | null) => {
+	const datasets: ChartDataset[] = [];
+
+	if (accounts) {
+		for (const account of accounts) {
+			datasets.push({ label: account.name, data: [] });
+		}
+	}
+	if (assets) {
+		for (const asset of assets) {
+			datasets.push({ label: asset.name, data: [] });
+		}
+	}
+
+	return datasets;
+};
 
 export const load = async () => {
-	const labels: string[] = [];
-	const datasetNetWorth: ChartDataset[] = [];
-	const datasetCash: ChartDataset[] = [];
-	const datasetDebt: ChartDataset[] = [];
-	const datasetInvestments: ChartDataset[] = [];
-	const datasetOtherAssets: ChartDataset[] = [];
-
-	// Add balance to dataset
-	const balanceToDataset = (label: string, balance: number, balanceGroup?: BalanceGroup) => {
-		const itemData = { label, data: [balance] };
-
-		// Find an existing dataset from it's label (or add it for the first time)
-		const updateDataset = (dataset: ChartDataset[]) => {
-			const currentDataset = dataset.find(({ label }) => label === itemData.label);
-			currentDataset ? currentDataset.data.push(balance) : dataset.push(itemData);
-		};
-
-		switch (balanceGroup) {
-			case BalanceGroup.CASH:
-				updateDataset(datasetCash);
-				break;
-			case BalanceGroup.DEBT:
-				updateDataset(datasetDebt);
-				break;
-			case BalanceGroup.INVESTMENTS:
-				updateDataset(datasetInvestments);
-				break;
-			case BalanceGroup.OTHER_ASSETS:
-				updateDataset(datasetOtherAssets);
-				break;
-			default:
-				updateDataset(datasetNetWorth);
-		}
-	};
-
-	const endOfThisWeek = endOfWeek(new Date());
-	const weeksInPeriod = eachWeekOfInterval({
-		start: sub(endOfThisWeek, { years: 2 }), // Two years ago
-		end: handlePeriodEnd(endOfThisWeek)
-	});
-
 	const accounts = await prisma.account.findMany();
 	const assets = await prisma.asset.findMany();
 
-	for (const weekInPeriod of weeksInPeriod) {
-		labels.push(weekInPeriod.toISOString().slice(0, 10)); // e.g. 2022-12-31
-
-		let netWorthPeriod = 0;
-		let cashPeriod = 0;
-		let debtPeriod = 0;
-		let investmentsPeriod = 0;
-		let otherAssetsPeriod = 0;
-
-		// Calculates balances of balance groups and net worth so they can be added as separate datasets
-		const balanceToBalanceGroupDataset = (balanceGroup: BalanceGroup, balance: number) => {
-			switch (balanceGroup) {
-				case BalanceGroup.CASH:
-					cashPeriod += balance;
-					break;
-				case BalanceGroup.DEBT:
-					debtPeriod += balance;
-					break;
-				case BalanceGroup.INVESTMENTS:
-					investmentsPeriod += balance;
-					break;
-				case BalanceGroup.OTHER_ASSETS:
-					otherAssetsPeriod += balance;
-			}
-			netWorthPeriod = netWorthPeriod + balance;
-		};
-
-		for (const account of accounts) {
-			const { name, balanceGroup } = account;
-			const balance = await getAccountCurrentBalance(account, weekInPeriod);
-			balanceToDataset(name, balance, balanceGroup);
-			balanceToBalanceGroupDataset(balanceGroup, balance);
-		}
-
-		for (const asset of assets) {
-			const { name, balanceGroup } = asset;
-			const balance = await getAssetCurrentBalance(asset, weekInPeriod);
-			balanceToDataset(name, balance, balanceGroup);
-			balanceToBalanceGroupDataset(balanceGroup, balance);
-		}
-
-		balanceToDataset('Net worth', netWorthPeriod);
-		balanceToDataset('Cash', cashPeriod);
-		balanceToDataset('Debt', debtPeriod);
-		balanceToDataset('Investments', investmentsPeriod);
-		balanceToDataset('Other assets', otherAssetsPeriod);
-	}
-
-	// Generate shades of a given color for each dataset
-	const COLOR_WEIGHT = 125;
-	const setShadedBorderColor = (
-		chartDatasets: ChartDataset[],
-		color: string,
-		orderBy?: SortOrder
-	) => {
-		// Before setting a border color we need to sort the dataset in a meaningul way.
-		// Because values can vary a lot, we choose to sort by the most recent value in the dataset.
-		chartDatasets.sort((a, b) => {
-			const aLastValue = (a.data[a.data.length - 1] || 0) as number;
-			const bLastValue = (b.data[b.data.length - 1] || 0) as number;
-
-			// NOTE: in the case of `chartDebt` the sort order is reversed.
-			return orderBy === SortOrder.ASC ? bLastValue - aLastValue : aLastValue - bLastValue;
-		});
-
-		chartDatasets.forEach((chartDataset, i) => {
-			const itemColor = new Values(color).all(COLOR_WEIGHT / chartDatasets.length)[i].hexString();
-			chartDataset.backgroundColor = itemColor;
-			chartDataset.borderColor = itemColor;
-		});
+	const trendCashAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.CASH); // prettier-ignore
+	const trendCashAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.CASH); // prettier-ignore
+	const trendCashLabels = await getDatasetLabels(trendCashAccounts, trendCashAssets); // prettier-ignore
+	const trendCash: TrendGroup = {
+		title: BalanceGroup.CASH,
+		labels: trendCashLabels,
+		accounts: trendCashAccounts,
+		assets: trendCashAssets,
+		datasets: generateEmptyDataset(trendCashAccounts, trendCashAssets)
 	};
 
-	setShadedBorderColor(datasetCash, '#00A36F'); // var(--color-greenPrimary)
-	setShadedBorderColor(datasetDebt, '#e75258', SortOrder.ASC); // var(--color-redPrimary)
-	setShadedBorderColor(datasetInvestments, '#B19B70'); // var(--color-goldPrimary)
-	setShadedBorderColor(datasetOtherAssets, '#5255AC'); // var(--color-purplePrimary)
+	const trendDebtAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.DEBT); // prettier-ignore
+	const trendDebtAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.DEBT); // prettier-ignore
+	const trendDebtLabels = await getDatasetLabels(trendDebtAccounts, trendDebtAssets); // prettier-ignore
+	const trendDebt: TrendGroup = {
+		title: BalanceGroup.DEBT,
+		labels: trendDebtLabels,
+		accounts: trendDebtAccounts,
+		assets: trendDebtAssets,
+		datasets: generateEmptyDataset(trendDebtAccounts, trendDebtAssets)
+	};
 
-	datasetNetWorth.forEach((chartDataset) => {
-		switch (chartDataset.label) {
+	const trendInvestmentsAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.INVESTMENTS ); // prettier-ignore
+	const trendInvestmentsAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.INVESTMENTS ); // prettier-ignore
+	const trendInvestmentsLabels = await getDatasetLabels(trendInvestmentsAccounts, trendInvestmentsAssets); // prettier-ignore
+	const trendInvestments: TrendGroup = {
+		title: BalanceGroup.INVESTMENTS,
+		labels: trendInvestmentsLabels,
+		accounts: trendInvestmentsAccounts,
+		assets: trendInvestmentsAssets,
+		datasets: generateEmptyDataset(trendInvestmentsAccounts, trendInvestmentsAssets)
+	};
+
+	const trendOtherAssetsAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.OTHER_ASSETS ); // prettier-ignore
+	const trendOtherAssetsAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.OTHER_ASSETS ); // prettier-ignore
+	const trendOtherAssetsLabels = await getDatasetLabels(trendOtherAssetsAccounts, trendOtherAssetsAssets); // prettier-ignore
+	const trendOtherAssets: TrendGroup = {
+		title: BalanceGroup.OTHER_ASSETS,
+		labels: trendOtherAssetsLabels,
+		accounts: trendOtherAssetsAccounts,
+		assets: trendOtherAssetsAssets,
+		datasets: generateEmptyDataset(trendOtherAssetsAccounts, trendOtherAssetsAssets)
+	};
+
+	const trendNetWorthLabels = await getDatasetLabels(accounts, assets);
+	const trendNetWorth: TrendGroup = {
+		title: 'Net worth',
+		labels: trendNetWorthLabels,
+		datasets: [
+			{
+				label: 'Net worth',
+				data: []
+			},
+			{
+				label: getBalanceGroupLabel(BalanceGroup.CASH),
+				data: []
+			},
+			{
+				label: getBalanceGroupLabel(BalanceGroup.DEBT),
+				data: []
+			},
+			{
+				label: getBalanceGroupLabel(BalanceGroup.INVESTMENTS),
+				data: []
+			},
+			{
+				label: getBalanceGroupLabel(BalanceGroup.OTHER_ASSETS),
+				data: []
+			}
+		],
+		accounts: accounts,
+		assets: assets
+	};
+	trendNetWorth.datasets.forEach((dataset) => {
+		switch (dataset.label) {
 			case 'Net worth':
-				setChartDatasetColor(chartDataset);
+				setChartDatasetColor(dataset);
 				break;
 			case 'Cash':
-				setChartDatasetColor(chartDataset, BalanceGroup.CASH);
+				setChartDatasetColor(dataset, BalanceGroup.CASH);
 				break;
 			case 'Debt':
-				setChartDatasetColor(chartDataset, BalanceGroup.DEBT);
+				setChartDatasetColor(dataset, BalanceGroup.DEBT);
 				break;
 			case 'Investments':
-				setChartDatasetColor(chartDataset, BalanceGroup.INVESTMENTS);
+				setChartDatasetColor(dataset, BalanceGroup.INVESTMENTS);
 				break;
 			case 'Other assets':
-				setChartDatasetColor(chartDataset, BalanceGroup.OTHER_ASSETS);
+				setChartDatasetColor(dataset, BalanceGroup.OTHER_ASSETS);
 				break;
 		}
 	});
 
+	const updateDatasetBalance = (
+		datasets: ChartDataset[],
+		label: string,
+		balance: number | null
+	) => {
+		const currentDataset = datasets.find((dataset) => dataset.label === label);
+		if (currentDataset) currentDataset.data.push(balance);
+	};
+
+	const updateDataset = async (
+		datasets: ChartDataset[],
+		weeksInPeriod: string[],
+		accounts: Account[],
+		assets: Asset[],
+		color?: string,
+		orderBy?: SortOrder
+	): Promise<ChartDataset[]> => {
+		const updatedDatasets: ChartDataset[] = structuredClone(datasets);
+
+		for (const weekInPeriod of weeksInPeriod) {
+			for (const account of accounts) {
+				const balance = await getAccountCurrentBalance(account, new Date(weekInPeriod));
+				updateDatasetBalance(updatedDatasets, account.name, balance);
+			}
+
+			for (const asset of assets) {
+				const balance = await getAssetCurrentBalance(asset, new Date(weekInPeriod));
+				updateDatasetBalance(updatedDatasets, asset.name, balance);
+			}
+		}
+
+		// For Charts with a color set we apply a shade of that color to each dataset
+		if (color) {
+			const COLOR_WEIGHT = 125;
+			updatedDatasets.sort((a, b) => {
+				const aLastValue = (a.data[a.data.length - 1] || 0) as number;
+				const bLastValue = (b.data[b.data.length - 1] || 0) as number;
+				// NOTE: in the case of `trendDebtDataset` the sort order is reversed.
+				return orderBy === SortOrder.ASC ? bLastValue - aLastValue : aLastValue - bLastValue;
+			});
+			updatedDatasets.forEach((updatedDataset, i) => {
+				const itemColor = new Values(color)
+					.all(COLOR_WEIGHT / updatedDatasets.length)
+					[i].hexString();
+				updatedDataset.backgroundColor = itemColor;
+				updatedDataset.borderColor = itemColor;
+			});
+		}
+
+		return updatedDatasets;
+	};
+
+	const trendCashDataset = updateDataset(
+		trendCash.datasets,
+		trendCashLabels,
+		trendCashAccounts,
+		trendCashAssets,
+		'#00A36F' // var(--color-greenPrimary)
+	);
+	const trendDebtDataset = updateDataset(
+		trendDebt.datasets,
+		trendDebtLabels,
+		trendDebtAccounts,
+		trendDebtAssets,
+		'#e75258', // var(--color-redPrimary)
+		SortOrder.ASC
+	);
+
+	const trendInvestmentsDataset = updateDataset(
+		trendInvestments.datasets,
+		trendInvestmentsLabels,
+		trendInvestmentsAccounts,
+		trendInvestmentsAssets,
+		'#B19B70' // var(--color-goldPrimary)
+	);
+
+	const trendOtherAssetsDataset = updateDataset(
+		trendOtherAssets.datasets,
+		trendOtherAssetsLabels,
+		trendOtherAssetsAccounts,
+		trendOtherAssetsAssets,
+		'#5255AC' // var(--color-purplePrimary)
+	);
+
+	// The "Net worth" chart is special because it's an aggregate of all the other datasets
+	const updateNetWorthDataset = async (): Promise<ChartDataset[]> => {
+		const updatedDatasets: ChartDataset[] = structuredClone(trendNetWorth.datasets);
+		const weeksInPeriod = trendNetWorthLabels;
+
+		for (const weekInPeriod of weeksInPeriod) {
+			let netWorthBalance = 0;
+			let cashBalance = 0;
+			let debtBalance = 0;
+			let investmentsBalance = 0;
+			let otherAssetsBalance = 0;
+
+			const cashDataIndex = trendCashLabels.indexOf(weekInPeriod);
+			const debtDataIndex = trendDebtLabels.indexOf(weekInPeriod);
+			const investmentsDataIndex = trendInvestmentsLabels.indexOf(weekInPeriod);
+			const otherAssetsDataIndex = trendOtherAssetsLabels.indexOf(weekInPeriod);
+
+			if (cashDataIndex !== -1) {
+				(await trendCashDataset).forEach((dataset) => {
+					cashBalance += dataset.data[cashDataIndex] as number;
+					netWorthBalance += dataset.data[cashDataIndex] as number;
+				});
+			}
+			if (debtDataIndex !== -1) {
+				(await trendDebtDataset).forEach((dataset) => {
+					debtBalance += dataset.data[debtDataIndex] as number;
+					netWorthBalance += dataset.data[debtDataIndex] as number;
+				});
+			}
+			if (investmentsDataIndex !== -1) {
+				(await trendInvestmentsDataset).forEach((dataset) => {
+					investmentsBalance += dataset.data[investmentsDataIndex] as number;
+					netWorthBalance += dataset.data[investmentsDataIndex] as number;
+				});
+			}
+			if (otherAssetsDataIndex !== -1) {
+				(await trendOtherAssetsDataset).forEach((dataset) => {
+					otherAssetsBalance += dataset.data[otherAssetsDataIndex] as number;
+					netWorthBalance += dataset.data[otherAssetsDataIndex] as number;
+				});
+			}
+
+			updateDatasetBalance(updatedDatasets, 'Cash', cashBalance);
+			updateDatasetBalance(updatedDatasets, 'Debt', debtBalance);
+			updateDatasetBalance(updatedDatasets, 'Investments', investmentsBalance);
+			updateDatasetBalance(updatedDatasets, 'Other assets', otherAssetsBalance);
+			updateDatasetBalance(updatedDatasets, 'Net worth', netWorthBalance);
+		}
+
+		return updatedDatasets;
+	};
+	const trendNetWorthDataset = updateNetWorthDataset();
+
 	return {
-		labels,
-		datasetNetWorth,
-		datasetCash,
-		datasetDebt,
-		datasetInvestments,
-		datasetOtherAssets
+		trendNetWorth,
+		trendCash,
+		trendDebt,
+		trendInvestments,
+		trendOtherAssets,
+		streaming: {
+			trendCashDataset,
+			trendDebtDataset,
+			trendInvestmentsDataset,
+			trendOtherAssetsDataset,
+			trendNetWorthDataset
+		}
 	};
 };
