@@ -6,9 +6,11 @@
 	import { onMount } from 'svelte';
 	import type { ChartConfiguration, ChartDataset } from 'chart.js';
 	import { formatCurrency } from '$lib/helpers/misc';
+	import iconLoading from '$lib/assets/icon-loading.svg';
 
 	export let labels: string[];
 	export let datasets: ChartDataset[];
+	export let isLoading: boolean = false;
 
 	let canvasChart: HTMLCanvasElement;
 
@@ -135,8 +137,16 @@
 	$: datasets && chart?.update();
 </script>
 
-<div class="chart {datasets.length > 1 && 'chart--multiple-datasets'}">
-	<canvas bind:this={canvasChart} />
+<div
+	class="
+		chart
+		{datasets.length > 1 && 'chart--multiple-datasets'}
+	"
+>
+	{#if isLoading}
+		<img src={iconLoading} class="chart__loading" alt="Loading..." />
+	{/if}
+	<canvas class="chart__canvas {isLoading && 'chart__canvas--loading'}" bind:this={canvasChart} />
 </div>
 
 <style lang="scss">
@@ -148,10 +158,27 @@
 		background-color: var(--color-white);
 		box-shadow: var(--box-shadow);
 		border-radius: 4px;
+		position: relative;
 
 		&--multiple-datasets {
 			padding-top: 8px;
 			padding-bottom: 8px;
 		}
+
+		&--loading {
+			position: relative;
+		}
+	}
+
+	canvas.chart__canvas--loading {
+		opacity: 0.5;
+		filter: grayscale(100%);
+	}
+
+	img.chart__loading {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
 </style>
