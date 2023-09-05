@@ -228,11 +228,3 @@
 		</div>
 	</Section>
 </ScrollView>
-
-<style lang="scss">
-	div.accounts {
-		background-color: var(--color-white);
-		box-shadow: var(--box-shadow);
-		border-radius: 4px;
-	}
-</style>

@@ -8,6 +8,7 @@
 	import { balanceGroupAppearance } from '$lib/components/Card';
 	import { formatCurrency } from '$lib/helpers/misc';
 	import type { PageData } from './$types';
+	import Plate from '../../lib/components/Plate.svelte';
 
 	const title = 'Balance sheet';
 
@@ -38,7 +39,7 @@
 						/>
 
 						{#each balanceSheetItemsByBalanceGroup.balanceItemsTypeGroups as balanceSheetTypeGroup}
-							<div class="balanceSheet__typeGroup">
+							<Plate>
 								<header class="balanceSheet__typeHeader">
 									<p class="balanceSheet__typeName">{balanceSheetTypeGroup.type}</p>
 									<p class="balanceSheet__typeValue">
@@ -61,7 +62,7 @@
 										</li>
 									{/each}
 								</ol>
-							</div>
+							</Plate>
 						{/each}
 					</div>
 				{/each}
@@ -102,12 +103,6 @@
 			padding-left: unset;
 			border-left: unset;
 		}
-	}
-
-	div.balanceSheet__typeGroup {
-		box-shadow: var(--box-shadow);
-		background-color: var(--color-white);
-		border-radius: 4px;
 	}
 
 	header.balanceSheet__typeHeader {

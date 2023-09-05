@@ -101,9 +101,11 @@
 				height: 100%;
 				background-image: linear-gradient(
 					to right,
-					rgba(255, 255, 255, 0),
-					rgba(255, 255, 255, 0.75),
-					rgba(255, 255, 255, 0)
+					rgba(243, 243, 243, 0),
+					rgba(243, 243, 243, 0.75),
+					rgba(243, 243, 243, 1),
+					rgba(243, 243, 243, 0.75),
+					rgba(243, 243, 243, 0)
 				);
 				animation: loading-animation 2s linear infinite;
 			}

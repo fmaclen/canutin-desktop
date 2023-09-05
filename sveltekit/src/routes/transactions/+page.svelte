@@ -36,6 +36,7 @@
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { TransactionResponse } from '../transactions.json/+server';
 	import type { PageData } from './$types';
+	import Plate from '../../lib/components/Plate.svelte';
 
 	export let data: PageData;
 	const title = 'Transactions';
@@ -257,154 +258,150 @@
 			/>
 		</div>
 
-		<div slot="CONTENT" class="transactions">
-			<header class="transactions__header">
-				<div class="transactions__search">
-					<Button
-						disabled={!hasClearableFilters}
-						title="Reset all search terms and date range period"
-						on:click={async () => await clearFilters()}
-					>
-						Clear filters
-					</Button>
-					<FormInput
-						type="text"
-						name="keyword"
-						placeholder="Type to filter by description, amount, category or account"
-						bind:value={keyword}
-						on:keyup={async () => await getTransactions()}
-					/>
-					<FormSelect
-						name="periods"
-						options={periods}
-						bind:value={periodIndex}
-						on:change={async () => {
-							// HACK: there is a race condition (in Firefox) when changing the period.
-							// `periodIndex`, `dateFrom` and `dateTo` are not updated before
-							// getTransactions() is called. Adding a 1ms delay fixes the issue.
-							//
-							// REF https://github.com/Canutin/desktop/issues/119#issuecomment-1293639150
-							setTimeout(async () => {
-								await getTransactions();
-							}, 1);
-						}}
-					/>
-				</div>
+		<div slot="CONTENT">
+			<Plate>
+				<header class="transactions__header">
+					<div class="transactions__search">
+						<Button
+							disabled={!hasClearableFilters}
+							title="Reset all search terms and date range period"
+							on:click={async () => await clearFilters()}
+						>
+							Clear filters
+						</Button>
+						<FormInput
+							type="text"
+							name="keyword"
+							placeholder="Type to filter by description, amount, category or account"
+							bind:value={keyword}
+							on:keyup={async () => await getTransactions()}
+						/>
+						<FormSelect
+							name="periods"
+							options={periods}
+							bind:value={periodIndex}
+							on:change={async () => {
+								// HACK: there is a race condition (in Firefox) when changing the period.
+								// `periodIndex`, `dateFrom` and `dateTo` are not updated before
+								// getTransactions() is called. Adding a 1ms delay fixes the issue.
+								//
+								// REF https://github.com/Canutin/desktop/issues/119#issuecomment-1293639150
+								setTimeout(async () => {
+									await getTransactions();
+								}, 1);
+							}}
+						/>
+					</div>
 
-				<div class="transactions__summary">
-					<Card
-						appearance={CardAppearance.SECONDARY}
-						title="Transactions"
-						value={filteredTransactions?.length}
-					/>
-					<Card
-						appearance={CardAppearance.SECONDARY}
-						title="Net balance"
-						value={formatCurrency(sumTransactions(filteredTransactions), 2, 2)}
-					/>
-				</div>
-			</header>
+					<div class="transactions__summary">
+						<Card
+							appearance={CardAppearance.SECONDARY}
+							title="Transactions"
+							value={filteredTransactions?.length}
+						/>
+						<Card
+							appearance={CardAppearance.SECONDARY}
+							title="Net balance"
+							value={formatCurrency(sumTransactions(filteredTransactions), 2, 2)}
+						/>
+					</div>
+				</header>
 
-			{#if selectedTransactions.length > 0}
-				<nav class="batchEditor" transition:slide|local>
-					<em class="batchEditor__em">{selectedTransactions.length} transactions selected</em>
-					—
-					<Link href={`/transaction/batch/${selectedTransactions.join('-')}`}>Edit together</Link>
-				</nav>
-			{/if}
+				{#if selectedTransactions.length > 0}
+					<nav class="batchEditor" transition:slide|local>
+						<em class="batchEditor__em">{selectedTransactions.length} transactions selected</em>
+						—
+						<Link href={`/transaction/batch/${selectedTransactions.join('-')}`}>Edit together</Link>
+					</nav>
+				{/if}
 
-			<Table>
-				<thead>
-					<tr>
-						<TableTh hasCheckbox={true}>
-							<label class="batchEditor-checkbox">
-								<input
-									class="batchEditor-checkbox__input"
-									name="toggleSelectAll"
-									type="checkbox"
-									on:click={toggleSelectTransactions}
-									checked={allSelected}
-									disabled={transactions.length === 0}
-									indeterminate={someSelected}
-								/>
-							</label>
-						</TableTh>
-
-						{#each tableHeaders as tableHeader}
-							{@const { label, column } = tableHeader}
-							<TableTh isAlignedRight={tableHeader.label === TableHeaders.AMOUNT}>
-								<TableButtonSortable
-									{label}
-									{sortOrder}
-									sortBy={sortBy === column}
-									on:click={async () => await sortTransactionsBy(column)}
-								/>
+				<Table>
+					<thead>
+						<tr>
+							<TableTh hasCheckbox={true}>
+								<label class="batchEditor-checkbox">
+									<input
+										class="batchEditor-checkbox__input"
+										name="toggleSelectAll"
+										type="checkbox"
+										on:click={toggleSelectTransactions}
+										checked={allSelected}
+										disabled={transactions.length === 0}
+										indeterminate={someSelected}
+									/>
+								</label>
 							</TableTh>
-						{/each}
-					</tr>
-				</thead>
-				<tbody>
-					{#if filteredTransactions?.length > 0}
-						{#each filteredTransactions as transaction}
-							{@const { id, date, description, transactionCategory, account, value, isExcluded } =
-								transaction}
-							<TableTr isHighlighted={highlight === id || selectedTransactions.includes(id)}>
-								<TableTd hasCheckbox={true}>
-									<label class="batchEditor-checkbox">
-										<input
-											bind:group={selectedTransactions}
-											checked={selectedTransactions.includes(id)}
-											name={transaction.id.toString()}
-											value={transaction.id}
-											type="checkbox"
-											class="batchEditor-checkbox__input"
-										/>
-									</label>
-								</TableTd>
-								<TableTd hasDate={true}>
-									{formatInUTC(fromUnixTime(date), 'MMM dd, yyyy')}
-								</TableTd>
-								<TableTd>
-									<Link href={`/transaction/${id}`}>{description}</Link>
-								</TableTd>
-								<TableTd hasTag={true}>
-									<ButtonTag on:click={() => setCategoryFilter(transactionCategory.id)}>
-										{transactionCategory.name}
-									</ButtonTag>
-								</TableTd>
-								<TableTd>
-									<Link href={`/account/${transaction.accountId}`}>{account.name}</Link>
-								</TableTd>
-								<TableTd isAlignedRight={true} hasTotal={true} isPositive={value > 0}>
-									<span
-										class={isExcluded ? `table__excluded` : null}
-										title={isExcluded
-											? "This transaction is excluded from 'The big picture' and 'Balance sheet' totals"
-											: null}
-									>
-										{formatCurrency(value, 2, 2)}
-									</span>
-								</TableTd>
+
+							{#each tableHeaders as tableHeader}
+								{@const { label, column } = tableHeader}
+								<TableTh isAlignedRight={tableHeader.label === TableHeaders.AMOUNT}>
+									<TableButtonSortable
+										{label}
+										{sortOrder}
+										sortBy={sortBy === column}
+										on:click={async () => await sortTransactionsBy(column)}
+									/>
+								</TableTh>
+							{/each}
+						</tr>
+					</thead>
+					<tbody>
+						{#if filteredTransactions?.length > 0}
+							{#each filteredTransactions as transaction}
+								{@const { id, date, description, transactionCategory, account, value, isExcluded } =
+									transaction}
+								<TableTr isHighlighted={highlight === id || selectedTransactions.includes(id)}>
+									<TableTd hasCheckbox={true}>
+										<label class="batchEditor-checkbox">
+											<input
+												bind:group={selectedTransactions}
+												checked={selectedTransactions.includes(id)}
+												name={transaction.id.toString()}
+												value={transaction.id}
+												type="checkbox"
+												class="batchEditor-checkbox__input"
+											/>
+										</label>
+									</TableTd>
+									<TableTd hasDate={true}>
+										{formatInUTC(fromUnixTime(date), 'MMM dd, yyyy')}
+									</TableTd>
+									<TableTd>
+										<Link href={`/transaction/${id}`}>{description}</Link>
+									</TableTd>
+									<TableTd hasTag={true}>
+										<ButtonTag on:click={() => setCategoryFilter(transactionCategory.id)}>
+											{transactionCategory.name}
+										</ButtonTag>
+									</TableTd>
+									<TableTd>
+										<Link href={`/account/${transaction.accountId}`}>{account.name}</Link>
+									</TableTd>
+									<TableTd isAlignedRight={true} hasTotal={true} isPositive={value > 0}>
+										<span
+											class={isExcluded ? `table__excluded` : null}
+											title={isExcluded
+												? "This transaction is excluded from 'The big picture' and 'Balance sheet' totals"
+												: null}
+										>
+											{formatCurrency(value, 2, 2)}
+										</span>
+									</TableTd>
+								</TableTr>
+							{/each}
+						{:else}
+							<TableTr>
+								<TableTd isNotice={true}>No transactions found</TableTd>
 							</TableTr>
-						{/each}
-					{:else}
-						<TableTr>
-							<TableTd isNotice={true}>No transactions found</TableTd>
-						</TableTr>
-					{/if}
-				</tbody>
-			</Table>
+						{/if}
+					</tbody>
+				</Table>
+			</Plate>
 		</div>
 	</Section>
 </ScrollView>
 
 <style lang="scss">
-	div.transactions {
-		background-color: var(--color-white);
-		box-shadow: var(--box-shadow);
-		border-radius: 4px;
-	}
-
 	header.transactions__header {
 		display: flex;
 		flex-direction: column;
