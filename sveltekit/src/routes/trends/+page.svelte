@@ -14,6 +14,7 @@
 	import type { ChartDataset } from 'chart.js';
 	import { formatCurrency, formatPercentage, toCamelCase } from '$lib/helpers/misc';
 	import { SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
+	import Plate from '../../lib/components/Plate.svelte';
 
 	const title = 'Trends';
 
@@ -106,155 +107,190 @@
 <ScrollView {title}>
 	<Section title="Net worth">
 		<div slot="CONTENT">
-			<ChartJs
-				labels={data.trendNetWorth.labels}
-				datasets={$netWorthDatasets}
-				isLoading={netWorthDatasetsIsLoading}
-			/>
-			<!-- {#await data.streamed.trendNetWorthTableData}
-				loading...
-			{:then value}
-				{value[0].balanceLifetime}
-			{/await} -->
-			{#if trendNetWorthTableIsLoading}
-				Loading...
-			{/if}
-			<Table>
-				<thead>
-					<tr>
-						{#each tableHeaders as tableHeader}
-							{@const { label, column } = tableHeader}
-							<TableTh
-								isAlignedRight={[
-									TableHeaders.ONE_WEEK,
-									TableHeaders.ONE_MONTH,
-									TableHeaders.SIX_MONTHS,
-									TableHeaders.YEAR_TO_DATE,
-									TableHeaders.ONE_YEAR,
-									TableHeaders.FIVE_YEARS,
-									TableHeaders.LIFETIME,
-									TableHeaders.ALLOCATION
-								].includes(tableHeader.label)}
-							>
-								<TableButtonSortable {label} {sortOrder} sortBy={sortBy === column} />
-							</TableTh>
+			<Plate>
+				<ChartJs
+					labels={data.trendNetWorth.labels}
+					datasets={$netWorthDatasets}
+					isLoading={netWorthDatasetsIsLoading}
+				/>
+				<Table>
+					<thead>
+						<tr>
+							{#each tableHeaders as tableHeader}
+								{@const { label, column } = tableHeader}
+								<TableTh
+									isAlignedRight={[
+										TableHeaders.ONE_WEEK,
+										TableHeaders.ONE_MONTH,
+										TableHeaders.SIX_MONTHS,
+										TableHeaders.YEAR_TO_DATE,
+										TableHeaders.ONE_YEAR,
+										TableHeaders.FIVE_YEARS,
+										TableHeaders.LIFETIME,
+										TableHeaders.ALLOCATION
+									].includes(tableHeader.label)}
+								>
+									<TableButtonSortable {label} {sortOrder} sortBy={sortBy === column} />
+								</TableTh>
+							{/each}
+						</tr>
+					</thead>
+					<tbody>
+						{#each $netWorthTable as balanceType}
+							<TableTr>
+								<TableTd>
+									{typeof balanceType.name === 'string'
+										? balanceType.name
+										: getBalanceGroupLabel(balanceType.name)}
+								</TableTd>
+								<TableTd
+									hasTotal={true}
+									isAlignedRight={true}
+									isLoading={trendNetWorthTableIsLoading}
+								>
+									{#if balanceType.balanceOneWeek}
+										<u title={formatCurrency(balanceType.balanceOneWeek, 2, 2)}>
+											{balanceType.performanceOneWeek &&
+												formatPercentage(balanceType.performanceOneWeek, 2)}
+										</u>
+									{/if}
+								</TableTd>
+								<TableTd
+									hasTotal={true}
+									isAlignedRight={true}
+									isLoading={trendNetWorthTableIsLoading}
+								>
+									{#if balanceType.balanceOneMonth}
+										<u title={formatCurrency(balanceType.balanceOneMonth, 2, 2)}>
+											{balanceType.performanceOneMonth &&
+												formatPercentage(balanceType.performanceOneMonth, 2)}
+										</u>
+									{/if}
+								</TableTd>
+								<TableTd
+									hasTotal={true}
+									isAlignedRight={true}
+									isLoading={trendNetWorthTableIsLoading}
+								>
+									{#if balanceType.balanceSixMonths}
+										<u title={formatCurrency(balanceType.balanceSixMonths, 2, 2)}>
+											{balanceType.performanceSixMonths &&
+												formatPercentage(balanceType.performanceSixMonths, 2)}
+										</u>
+									{/if}
+								</TableTd>
+								<TableTd
+									hasTotal={true}
+									isAlignedRight={true}
+									isLoading={trendNetWorthTableIsLoading}
+								>
+									{#if balanceType.balanceYearToDate}
+										<u title={formatCurrency(balanceType.balanceYearToDate, 2, 2)}>
+											{balanceType.performanceYearToDate &&
+												formatPercentage(balanceType.performanceYearToDate, 2)}
+										</u>
+									{/if}
+								</TableTd>
+								<TableTd
+									hasTotal={true}
+									isAlignedRight={true}
+									isLoading={trendNetWorthTableIsLoading}
+								>
+									{#if balanceType.balanceOneYear}
+										<u title={formatCurrency(balanceType.balanceOneYear, 2, 2)}>
+											{balanceType.performanceOneYear &&
+												formatPercentage(balanceType.performanceOneYear, 2)}
+										</u>
+									{/if}
+								</TableTd>
+								<TableTd
+									hasTotal={true}
+									isAlignedRight={true}
+									isLoading={trendNetWorthTableIsLoading}
+								>
+									{#if balanceType.balanceFiveYears}
+										<u title={formatCurrency(balanceType.balanceFiveYears, 2, 2)}>
+											{balanceType.performanceFiveYears &&
+												formatPercentage(balanceType.performanceFiveYears)}
+										</u>
+									{/if}
+								</TableTd>
+								<TableTd
+									hasTotal={true}
+									isAlignedRight={true}
+									isLoading={trendNetWorthTableIsLoading}
+								>
+									{#if balanceType.balanceLifetime}
+										<u title={formatCurrency(balanceType.balanceLifetime, 2, 2)}>
+											{balanceType.performanceLifetime &&
+												formatPercentage(balanceType.performanceLifetime, 2)}
+										</u>
+									{/if}
+								</TableTd>
+								<TableTd
+									hasTotal={true}
+									isAlignedRight={true}
+									isLoading={trendNetWorthTableIsLoading}
+								>
+									{#if balanceType.currentBalance}
+										<u title={formatCurrency(balanceType.currentBalance, 2, 2)}>
+											{balanceType.allocation && formatPercentage(balanceType.allocation, 2)}
+										</u>
+									{/if}
+								</TableTd>
+							</TableTr>
 						{/each}
-					</tr>
-				</thead>
-				<tbody>
-					{#each $netWorthTable as balanceType}
-						<TableTr>
-							<TableTd>
-								{typeof balanceType.name === 'string'
-									? balanceType.name
-									: getBalanceGroupLabel(balanceType.name)}
-							</TableTd>
-							<TableTd hasTotal={true} isAlignedRight={true}>
-								{#if balanceType.balanceOneWeek}
-									<u title={formatCurrency(balanceType.balanceOneWeek, 2, 2)}>
-										{balanceType.performanceOneWeek &&
-											formatPercentage(balanceType.performanceOneWeek, 2)}
-									</u>
-								{/if}
-							</TableTd>
-							<TableTd hasTotal={true} isAlignedRight={true}>
-								{#if balanceType.balanceOneMonth}
-									<u title={formatCurrency(balanceType.balanceOneMonth, 2, 2)}>
-										{balanceType.performanceOneMonth &&
-											formatPercentage(balanceType.performanceOneMonth, 2)}
-									</u>
-								{/if}
-							</TableTd>
-							<TableTd hasTotal={true} isAlignedRight={true}>
-								{#if balanceType.balanceSixMonths}
-									<u title={formatCurrency(balanceType.balanceSixMonths, 2, 2)}>
-										{balanceType.performanceSixMonths &&
-											formatPercentage(balanceType.performanceSixMonths, 2)}
-									</u>
-								{/if}
-							</TableTd>
-							<TableTd hasTotal={true} isAlignedRight={true}>
-								{#if balanceType.balanceYearToDate}
-									<u title={formatCurrency(balanceType.balanceYearToDate, 2, 2)}>
-										{balanceType.performanceYearToDate &&
-											formatPercentage(balanceType.performanceYearToDate, 2)}
-									</u>
-								{/if}
-							</TableTd>
-							<TableTd hasTotal={true} isAlignedRight={true}>
-								{#if balanceType.balanceOneYear}
-									<u title={formatCurrency(balanceType.balanceOneYear, 2, 2)}>
-										{balanceType.performanceOneYear &&
-											formatPercentage(balanceType.performanceOneYear, 2)}
-									</u>
-								{/if}
-							</TableTd>
-							<TableTd hasTotal={true} isAlignedRight={true}>
-								{#if balanceType.balanceFiveYears}
-									<u title={formatCurrency(balanceType.balanceFiveYears, 2, 2)}>
-										{balanceType.performanceFiveYears &&
-											formatPercentage(balanceType.performanceFiveYears)}
-									</u>
-								{/if}
-							</TableTd>
-							<TableTd hasTotal={true} isAlignedRight={true}>
-								{#if balanceType.balanceLifetime}
-									<u title={formatCurrency(balanceType.balanceLifetime, 2, 2)}>
-										{balanceType.performanceLifetime &&
-											formatPercentage(balanceType.performanceLifetime, 2)}
-									</u>
-								{/if}
-							</TableTd>
-							<TableTd hasTotal={true} isAlignedRight={true}>
-								{#if balanceType.currentBalance}
-									{formatCurrency(balanceType.currentBalance, 2, 2)}
-									({balanceType.allocation && formatPercentage(balanceType.allocation, 2)})
-								{/if}
-							</TableTd>
-						</TableTr>
-					{/each}
-				</tbody>
-			</Table>
+					</tbody>
+				</Table>
+			</Plate>
 		</div>
 	</Section>
 
 	<Section title="Cash">
 		<div slot="CONTENT">
-			<ChartJs
-				labels={data.trendCash.labels}
-				datasets={$cashDatasets}
-				isLoading={cashDatasetsIsLoading}
-			/>
+			<Plate>
+				<ChartJs
+					labels={data.trendCash.labels}
+					datasets={$cashDatasets}
+					isLoading={cashDatasetsIsLoading}
+				/>
+			</Plate>
 		</div>
 	</Section>
 
 	<Section title="Debt">
 		<div slot="CONTENT">
-			<ChartJs
-				labels={data.trendDebt.labels}
-				datasets={$debtDatasets}
-				isLoading={debtDatasetsIsLoading}
-			/>
+			<Plate>
+				<ChartJs
+					labels={data.trendDebt.labels}
+					datasets={$debtDatasets}
+					isLoading={debtDatasetsIsLoading}
+				/>
+			</Plate>
 		</div>
 	</Section>
 
 	<Section title="Investments">
 		<div slot="CONTENT">
-			<ChartJs
-				labels={data.trendInvestments.labels}
-				datasets={$investmentsDatasets}
-				isLoading={investmentsDatasetsIsLoading}
-			/>
+			<Plate>
+				<ChartJs
+					labels={data.trendInvestments.labels}
+					datasets={$investmentsDatasets}
+					isLoading={investmentsDatasetsIsLoading}
+				/>
+			</Plate>
 		</div>
 	</Section>
 
 	<Section title="Other assets">
 		<div slot="CONTENT">
-			<ChartJs
-				labels={data.trendOtherAssets.labels}
-				datasets={$otherAssetsDatasets}
-				isLoading={otherAssetsDatasetsIsLoading}
-			/>
+			<Plate>
+				<ChartJs
+					labels={data.trendOtherAssets.labels}
+					datasets={$otherAssetsDatasets}
+					isLoading={otherAssetsDatasetsIsLoading}
+				/>
+			</Plate>
 		</div>
 	</Section>
 </ScrollView>

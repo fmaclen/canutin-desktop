@@ -1,4 +1,6 @@
 <script lang="ts">
+	import iconLoading from '$lib/assets/icon-loading.svg';
+
 	export let hasCheckbox: boolean = false;
 	export let hasDate: boolean = false;
 	export let hasTotal: boolean = false;
@@ -6,6 +8,7 @@
 	export let isPositive: boolean = false;
 	export let isNotice: boolean = false;
 	export let isAlignedRight: boolean = false;
+	export let isLoading: boolean = false;
 </script>
 
 <td
@@ -17,10 +20,13 @@
 		{isPositive && 'table__td--positive'}
 		{isNotice && 'table__td--notice'}
 		{isAlignedRight && 'table__td--align-right'}
+		{isLoading && 'table__td--loading'}
 	"
 	colspan={isNotice ? 999 : undefined}
 >
-	<slot />
+	{#if !isLoading}
+		<slot />
+	{/if}
 </td>
 
 <style lang="scss">
@@ -69,6 +75,38 @@
 
 		&--align-right {
 			text-align: right;
+		}
+
+		&--loading {
+			position: relative;
+			overflow: hidden;
+			background-color: var(--color-neutral-200);
+			color: var(--color-neutral-400);
+
+			@keyframes loading-animation {
+				0% {
+					left: -100%; // Initial position
+				}
+
+				100% {
+					left: 100%; // Final position
+				}
+			}
+
+			&::after {
+				content: '';
+				position: absolute;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				background-image: linear-gradient(
+					to right,
+					rgba(255, 255, 255, 0),
+					rgba(255, 255, 255, 0.75),
+					rgba(255, 255, 255, 0)
+				);
+				animation: loading-animation 2s linear infinite;
+			}
 		}
 	}
 </style>

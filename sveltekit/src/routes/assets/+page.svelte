@@ -16,6 +16,7 @@
 	import { formatCurrency, formatInUTC } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
+	import Plate from '../../lib/components/Plate.svelte';
 
 	const title = 'Assets';
 
@@ -123,104 +124,107 @@
 		<Link href="/import">Import</Link>
 	</nav>
 	<Section title="All assets / {assets.length}">
-		<div slot="CONTENT" class="assets">
-			<Table>
-				<thead>
-					<tr>
-						{#each tableHeaders as tableHeader}
-							{@const { label, column } = tableHeader}
-							<TableTh
-								isAlignedRight={[
-									TableHeaders.QUANTITY,
-									TableHeaders.COST,
-									TableHeaders.VALUE,
-									TableHeaders.LAST_UPDATED
-								].includes(tableHeader.label)}
-							>
-								<TableButtonSortable
-									{label}
-									{sortOrder}
-									sortBy={sortBy === column}
-									on:click={async () => await sortAssetsBy(column)}
-								/>
-							</TableTh>
-						{/each}
-					</tr>
-				</thead>
-				<tbody>
-					{#if assets?.length > 0}
-						{#each assets as asset}
-							{@const { id, assetType, symbol, isSold, name, cost, quantity, value, lastUpdated } =
-								asset}
+		<div slot="CONTENT">
+			<Plate>
+				<Table>
+					<thead>
+						<tr>
+							{#each tableHeaders as tableHeader}
+								{@const { label, column } = tableHeader}
+								<TableTh
+									isAlignedRight={[
+										TableHeaders.QUANTITY,
+										TableHeaders.COST,
+										TableHeaders.VALUE,
+										TableHeaders.LAST_UPDATED
+									].includes(tableHeader.label)}
+								>
+									<TableButtonSortable
+										{label}
+										{sortOrder}
+										sortBy={sortBy === column}
+										on:click={async () => await sortAssetsBy(column)}
+									/>
+								</TableTh>
+							{/each}
+						</tr>
+					</thead>
+					<tbody>
+						{#if assets?.length > 0}
+							{#each assets as asset}
+								{@const {
+									id,
+									assetType,
+									symbol,
+									isSold,
+									name,
+									cost,
+									quantity,
+									value,
+									lastUpdated
+								} = asset}
+								<TableTr>
+									<TableTd>
+										<Link href={`/asset/${id}`}>{name}</Link>
+									</TableTd>
+
+									<TableTd>
+										{assetType.name}
+									</TableTd>
+
+									{#if assetsSold > 0}
+										<TableTd>
+											{#if isSold}
+												Sold
+											{:else}
+												<TableNoValue />
+											{/if}
+										</TableTd>
+									{/if}
+
+									{#if assetsQuantifiable > 0}
+										<TableTd>
+											{#if symbol}
+												{symbol}
+											{:else}
+												<TableNoValue />
+											{/if}
+										</TableTd>
+
+										<TableTd hasTotal={true} isAlignedRight={true}>
+											{#if quantity}
+												{quantity}
+											{:else}
+												<TableNoValue />
+											{/if}
+										</TableTd>
+
+										<TableTd hasTotal={true} isAlignedRight={true}>
+											{#if cost}
+												{formatCurrency(cost, 2, 2)}
+											{:else}
+												<TableNoValue />
+											{/if}
+										</TableTd>
+									{/if}
+
+									<TableTd hasTotal={true} isAlignedRight={true} isPositive={value > 0}>
+										{formatCurrency(value, 2, 2)}
+									</TableTd>
+
+									<TableTd hasDate={true} isAlignedRight={true}>
+										{formatInUTC(fromUnixTime(lastUpdated), 'MMM dd, yyyy')}
+									</TableTd>
+								</TableTr>
+							{/each}
+						{:else}
 							<TableTr>
-								<TableTd>
-									<Link href={`/asset/${id}`}>{name}</Link>
-								</TableTd>
-
-								<TableTd>
-									{assetType.name}
-								</TableTd>
-
-								{#if assetsSold > 0}
-									<TableTd>
-										{#if isSold}
-											Sold
-										{:else}
-											<TableNoValue />
-										{/if}
-									</TableTd>
-								{/if}
-
-								{#if assetsQuantifiable > 0}
-									<TableTd>
-										{#if symbol}
-											{symbol}
-										{:else}
-											<TableNoValue />
-										{/if}
-									</TableTd>
-
-									<TableTd hasTotal={true} isAlignedRight={true}>
-										{#if quantity}
-											{quantity}
-										{:else}
-											<TableNoValue />
-										{/if}
-									</TableTd>
-
-									<TableTd hasTotal={true} isAlignedRight={true}>
-										{#if cost}
-											{formatCurrency(cost, 2, 2)}
-										{:else}
-											<TableNoValue />
-										{/if}
-									</TableTd>
-								{/if}
-
-								<TableTd hasTotal={true} isAlignedRight={true} isPositive={value > 0}>
-									{formatCurrency(value, 2, 2)}
-								</TableTd>
-
-								<TableTd hasDate={true} isAlignedRight={true}>
-									{formatInUTC(fromUnixTime(lastUpdated), 'MMM dd, yyyy')}
-								</TableTd>
+								<TableTd isNotice={true}>No assets found</TableTd>
 							</TableTr>
-						{/each}
-					{:else}
-						<TableTr>
-							<TableTd isNotice={true}>No assets found</TableTd>
-						</TableTr>
-					{/if}
-				</tbody>
-			</Table>
+						{/if}
+					</tbody>
+				</Table>
+			</Plate>
 		</div>
 	</Section>
 </ScrollView>
-
-<style lang="scss">
-	div.assets {
-		background-color: var(--color-white);
-		box-shadow: var(--box-shadow);
-		border-radius: 4px;
-	}
-</style>

@@ -16,6 +16,7 @@
 	import { formatCurrency, formatInUTC } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
+	import Plate from '../../lib/components/Plate.svelte';
 
 	const title = 'Accounts';
 
@@ -124,104 +125,106 @@
 		<Link href="/import">Import</Link>
 	</nav>
 	<Section title="All accounts / {accounts.length}">
-		<div slot="CONTENT" class="accounts">
-			<Table>
-				<thead>
-					<tr>
-						{#each tableHeaders as tableHeader}
-							{@const { label, column } = tableHeader}
-							<TableTh
-								isAlignedRight={[TableHeaders.BALANCE, TableHeaders.LAST_UPDATED].includes(
-									tableHeader.label
-								)}
-							>
-								<TableButtonSortable
-									{label}
-									{sortOrder}
-									sortBy={sortBy === column}
-									on:click={async () => await sortAccountsBy(column)}
-								/>
-							</TableTh>
-						{/each}
-					</tr>
-				</thead>
-				<tbody>
-					{#if accounts?.length > 0}
-						{#each accounts as account}
-							{@const {
-								id,
-								lastUpdated,
-								balance,
-								name,
-								institution,
-								accountType,
-								isAutoCalculated,
-								isClosed,
-								transactionCount
-							} = account}
+		<div slot="CONTENT">
+			<Plate>
+				<Table>
+					<thead>
+						<tr>
+							{#each tableHeaders as tableHeader}
+								{@const { label, column } = tableHeader}
+								<TableTh
+									isAlignedRight={[TableHeaders.BALANCE, TableHeaders.LAST_UPDATED].includes(
+										tableHeader.label
+									)}
+								>
+									<TableButtonSortable
+										{label}
+										{sortOrder}
+										sortBy={sortBy === column}
+										on:click={async () => await sortAccountsBy(column)}
+									/>
+								</TableTh>
+							{/each}
+						</tr>
+					</thead>
+					<tbody>
+						{#if accounts?.length > 0}
+							{#each accounts as account}
+								{@const {
+									id,
+									lastUpdated,
+									balance,
+									name,
+									institution,
+									accountType,
+									isAutoCalculated,
+									isClosed,
+									transactionCount
+								} = account}
+								<TableTr>
+									<TableTd>
+										<Link href={`/account/${id}`}>{name}</Link>
+									</TableTd>
+
+									<TableTd>
+										{#if institution}
+											{institution}
+										{:else}
+											<TableNoValue />
+										{/if}
+									</TableTd>
+
+									<TableTd>
+										{accountType.name}
+									</TableTd>
+
+									<TableTd>
+										{#if transactionCount > 0}
+											<Link href={`/transactions?keyword=accountId:${id}&periodPreset=Lifetime`}>
+												{transactionCount}
+											</Link>
+										{:else}
+											<TableNoValue />
+										{/if}
+									</TableTd>
+
+									{#if accountsClosed > 0}
+										<TableTd>
+											{#if isClosed}
+												Closed
+											{:else}
+												<TableNoValue />
+											{/if}
+										</TableTd>
+									{/if}
+
+									{#if accountsAutoCalculated > 0}
+										<TableTd>
+											{#if isAutoCalculated}
+												Auto-calculated
+											{:else}
+												<TableNoValue />
+											{/if}
+										</TableTd>
+									{/if}
+
+									<TableTd hasTotal={true} isPositive={balance > 0} isAlignedRight={true}>
+										{formatCurrency(balance, 2, 2)}
+									</TableTd>
+
+									<TableTd hasDate={true} isAlignedRight={true}>
+										{formatInUTC(fromUnixTime(lastUpdated), 'MMM dd, yyyy')}
+									</TableTd>
+								</TableTr>
+							{/each}
+						{:else}
 							<TableTr>
-								<TableTd>
-									<Link href={`/account/${id}`}>{name}</Link>
-								</TableTd>
-
-								<TableTd>
-									{#if institution}
-										{institution}
-									{:else}
-										<TableNoValue />
-									{/if}
-								</TableTd>
-
-								<TableTd>
-									{accountType.name}
-								</TableTd>
-
-								<TableTd>
-									{#if transactionCount > 0}
-										<Link href={`/transactions?keyword=accountId:${id}&periodPreset=Lifetime`}>
-											{transactionCount}
-										</Link>
-									{:else}
-										<TableNoValue />
-									{/if}
-								</TableTd>
-
-								{#if accountsClosed > 0}
-									<TableTd>
-										{#if isClosed}
-											Closed
-										{:else}
-											<TableNoValue />
-										{/if}
-									</TableTd>
-								{/if}
-
-								{#if accountsAutoCalculated > 0}
-									<TableTd>
-										{#if isAutoCalculated}
-											Auto-calculated
-										{:else}
-											<TableNoValue />
-										{/if}
-									</TableTd>
-								{/if}
-
-								<TableTd hasTotal={true} isPositive={balance > 0} isAlignedRight={true}>
-									{formatCurrency(balance, 2, 2)}
-								</TableTd>
-
-								<TableTd hasDate={true} isAlignedRight={true}>
-									{formatInUTC(fromUnixTime(lastUpdated), 'MMM dd, yyyy')}
-								</TableTd>
+								<TableTd isNotice={true}>No accounts found</TableTd>
 							</TableTr>
-						{/each}
-					{:else}
-						<TableTr>
-							<TableTd isNotice={true}>No accounts found</TableTd>
-						</TableTr>
-					{/if}
-				</tbody>
-			</Table>
+						{/if}
+					</tbody>
+				</Table>
+			</Plate>
 		</div>
 	</Section>
 </ScrollView>
