@@ -25,18 +25,19 @@
 	import Link from '$lib/components/Link.svelte';
 	import FormInput from '$lib/components/FormInput.svelte';
 	import FormSelect from '$lib/components/FormSelect.svelte';
+	import Plate from '$lib/components/Plate.svelte';
 	import Table from '$lib/components/Table.svelte';
 	import TableTh from '$lib/components/TableTh.svelte';
 	import TableTr from '$lib/components/TableTr.svelte';
 	import TableTd from '$lib/components/TableTd.svelte';
 	import TableButtonSortable from '$lib/components/TableButtonSortable.svelte';
+	import TableValue from '$lib/components/TableValue.svelte';
 	import { api, toCamelCase } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
 	import { dateInUTC, formatCurrency, formatInUTC } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { TransactionResponse } from '../transactions.json/+server';
 	import type { PageData } from './$types';
-	import Plate from '../../lib/components/Plate.svelte';
 
 	export let data: PageData;
 	const title = 'Transactions';
@@ -363,8 +364,10 @@
 											/>
 										</label>
 									</TableTd>
-									<TableTd hasDate={true}>
-										{formatInUTC(fromUnixTime(date), 'MMM dd, yyyy')}
+									<TableTd>
+										<TableValue isDate={true}>
+											{formatInUTC(fromUnixTime(date), 'MMM dd, yyyy')}
+										</TableValue>
 									</TableTd>
 									<TableTd>
 										<Link href={`/transaction/${id}`}>{description}</Link>
@@ -377,15 +380,17 @@
 									<TableTd>
 										<Link href={`/account/${transaction.accountId}`}>{account.name}</Link>
 									</TableTd>
-									<TableTd isAlignedRight={true} hasTotal={true} isPositive={value > 0}>
-										<span
-											class={isExcluded ? `table__excluded` : null}
+									<TableTd isAlignedRight={true}>
+										<TableValue
+											isNumeric={true}
+											isPositive={value > 0}
+											{isExcluded}
 											title={isExcluded
 												? "This transaction is excluded from 'The big picture' and 'Balance sheet' totals"
-												: null}
+												: undefined}
 										>
 											{formatCurrency(value, 2, 2)}
-										</span>
+										</TableValue>
 									</TableTd>
 								</TableTr>
 							{/each}
@@ -422,13 +427,6 @@
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		column-gap: 8px;
-	}
-
-	span.table__excluded {
-		display: inline-block;
-		color: var(--color-grey40);
-		border-bottom: 1px dashed var(--color-grey10);
-		cursor: help;
 	}
 
 	// Batch-editor

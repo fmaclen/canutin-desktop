@@ -3,18 +3,19 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import ChartJs from '$lib/components/ChartJS.svelte';
+	import Plate from '$lib/components/Plate.svelte';
 	import Table from '$lib/components/Table.svelte';
 	import TableTh from '$lib/components/TableTh.svelte';
 	import TableTr from '$lib/components/TableTr.svelte';
 	import TableTd from '$lib/components/TableTd.svelte';
-	import TableButtonSortable from '$lib/components/TableButtonSortable.svelte';
+	import TableValue from '$lib/components/TableValue.svelte';
 	import TableNoValue from '$lib/components/TableNoValue.svelte';
+	import TableButtonSortable from '$lib/components/TableButtonSortable.svelte';
 	import type { PageData } from './$types';
 	import { writable } from 'svelte/store';
 	import type { ChartDataset } from 'chart.js';
 	import { formatCurrency, formatPercentage, toCamelCase } from '$lib/helpers/misc';
 	import { SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
-	import Plate from '../../lib/components/Plate.svelte';
 
 	const title = 'Trends';
 
@@ -143,99 +144,122 @@
 										? balanceType.name
 										: getBalanceGroupLabel(balanceType.name)}
 								</TableTd>
-								<TableTd
-									hasTotal={true}
-									isAlignedRight={true}
-									isLoading={trendNetWorthTableIsLoading}
-								>
-									{#if balanceType.balanceOneWeek}
-										<u title={formatCurrency(balanceType.balanceOneWeek, 2, 2)}>
-											{balanceType.performanceOneWeek &&
-												formatPercentage(balanceType.performanceOneWeek, 2)}
-										</u>
+								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+									{#if balanceType.balanceOneWeek && balanceType.performanceOneWeek}
+										<TableValue
+											title={formatCurrency(balanceType.balanceOneWeek, 2, 2)}
+											isPositive={balanceType.performanceOneWeek > 0}
+											isNegative={balanceType.performanceOneWeek < 0}
+											isNumeric={true}
+											isTrend={true}
+										>
+											{formatPercentage(balanceType.performanceOneWeek, 2)}
+										</TableValue>
+									{:else}
+										<TableNoValue />
 									{/if}
 								</TableTd>
-								<TableTd
-									hasTotal={true}
-									isAlignedRight={true}
-									isLoading={trendNetWorthTableIsLoading}
-								>
-									{#if balanceType.balanceOneMonth}
-										<u title={formatCurrency(balanceType.balanceOneMonth, 2, 2)}>
-											{balanceType.performanceOneMonth &&
-												formatPercentage(balanceType.performanceOneMonth, 2)}
-										</u>
+								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+									{#if balanceType.balanceOneMonth && balanceType.performanceOneMonth}
+										<TableValue
+											title={formatCurrency(balanceType.balanceOneMonth, 2, 2)}
+											isPositive={balanceType.performanceOneMonth > 0}
+											isNegative={balanceType.performanceOneMonth < 0}
+											isNumeric={true}
+											isTrend={true}
+										>
+											{formatPercentage(balanceType.performanceOneMonth, 2)}
+										</TableValue>
+									{:else}
+										<TableNoValue />
 									{/if}
 								</TableTd>
-								<TableTd
-									hasTotal={true}
-									isAlignedRight={true}
-									isLoading={trendNetWorthTableIsLoading}
-								>
-									{#if balanceType.balanceSixMonths}
-										<u title={formatCurrency(balanceType.balanceSixMonths, 2, 2)}>
-											{balanceType.performanceSixMonths &&
-												formatPercentage(balanceType.performanceSixMonths, 2)}
-										</u>
+								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+									{#if balanceType.balanceSixMonths && balanceType.performanceSixMonths}
+										<TableValue
+											title={formatCurrency(balanceType.balanceSixMonths, 2, 2)}
+											isPositive={balanceType.performanceSixMonths > 0}
+											isNegative={balanceType.performanceSixMonths < 0}
+											isNumeric={true}
+											isTrend={true}
+										>
+											{formatPercentage(balanceType.performanceSixMonths, 2)}
+										</TableValue>
+									{:else}
+										<TableNoValue />
 									{/if}
 								</TableTd>
-								<TableTd
-									hasTotal={true}
-									isAlignedRight={true}
-									isLoading={trendNetWorthTableIsLoading}
-								>
-									{#if balanceType.balanceYearToDate}
-										<u title={formatCurrency(balanceType.balanceYearToDate, 2, 2)}>
-											{balanceType.performanceYearToDate &&
-												formatPercentage(balanceType.performanceYearToDate, 2)}
-										</u>
+								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+									{#if balanceType.balanceYearToDate && balanceType.performanceYearToDate}
+										<TableValue
+											title={formatCurrency(balanceType.balanceYearToDate, 2, 2)}
+											isPositive={balanceType.performanceYearToDate > 0}
+											isNegative={balanceType.performanceYearToDate < 0}
+											isNumeric={true}
+											isTrend={true}
+										>
+											{formatPercentage(balanceType.performanceYearToDate, 2)}
+										</TableValue>
+									{:else}
+										<TableNoValue />
 									{/if}
 								</TableTd>
-								<TableTd
-									hasTotal={true}
-									isAlignedRight={true}
-									isLoading={trendNetWorthTableIsLoading}
-								>
-									{#if balanceType.balanceOneYear}
-										<u title={formatCurrency(balanceType.balanceOneYear, 2, 2)}>
-											{balanceType.performanceOneYear &&
-												formatPercentage(balanceType.performanceOneYear, 2)}
-										</u>
+								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+									{#if balanceType.balanceOneYear && balanceType.performanceOneYear}
+										<TableValue
+											title={formatCurrency(balanceType.balanceOneYear, 2, 2)}
+											isPositive={balanceType.performanceOneYear > 0}
+											isNegative={balanceType.performanceOneYear < 0}
+											isNumeric={true}
+											isTrend={true}
+										>
+											{formatPercentage(balanceType.performanceOneYear, 2)}
+										</TableValue>
+									{:else}
+										<TableNoValue />
 									{/if}
 								</TableTd>
-								<TableTd
-									hasTotal={true}
-									isAlignedRight={true}
-									isLoading={trendNetWorthTableIsLoading}
-								>
-									{#if balanceType.balanceFiveYears}
-										<u title={formatCurrency(balanceType.balanceFiveYears, 2, 2)}>
-											{balanceType.performanceFiveYears &&
-												formatPercentage(balanceType.performanceFiveYears)}
-										</u>
+								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+									{#if balanceType.balanceFiveYears && balanceType.performanceFiveYears}
+										<TableValue
+											title={formatCurrency(balanceType.balanceFiveYears, 2, 2)}
+											isPositive={balanceType.performanceFiveYears > 0}
+											isNegative={balanceType.performanceFiveYears < 0}
+											isNumeric={true}
+											isTrend={true}
+										>
+											{formatPercentage(balanceType.performanceFiveYears)}
+										</TableValue>
+									{:else}
+										<TableNoValue />
 									{/if}
 								</TableTd>
-								<TableTd
-									hasTotal={true}
-									isAlignedRight={true}
-									isLoading={trendNetWorthTableIsLoading}
-								>
-									{#if balanceType.balanceLifetime}
-										<u title={formatCurrency(balanceType.balanceLifetime, 2, 2)}>
-											{balanceType.performanceLifetime &&
-												formatPercentage(balanceType.performanceLifetime, 2)}
-										</u>
+								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+									{#if balanceType.balanceLifetime && balanceType.performanceLifetime}
+										<TableValue
+											title={formatCurrency(balanceType.balanceLifetime, 2, 2)}
+											isPositive={balanceType.performanceLifetime > 0}
+											isNegative={balanceType.performanceLifetime < 0}
+											isNumeric={true}
+											isTrend={true}
+										>
+											{formatPercentage(balanceType.performanceLifetime, 2)}
+										</TableValue>
+									{:else}
+										<TableNoValue />
 									{/if}
 								</TableTd>
-								<TableTd
-									hasTotal={true}
-									isAlignedRight={true}
-									isLoading={trendNetWorthTableIsLoading}
-								>
+								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
 									{#if balanceType.currentBalance}
-										<u title={formatCurrency(balanceType.currentBalance, 2, 2)}>
+										<TableValue
+											title={formatCurrency(balanceType.currentBalance, 2, 2)}
+											isNumeric={true}
+											isExcluded={balanceType.name == 'Net worth'}
+										>
 											{balanceType.allocation && formatPercentage(balanceType.allocation, 2)}
-										</u>
+										</TableValue>
+									{:else}
+										<TableNoValue />
 									{/if}
 								</TableTd>
 							</TableTr>

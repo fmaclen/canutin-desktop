@@ -2,10 +2,7 @@
 	import iconLoading from '$lib/assets/icon-loading.svg';
 
 	export let hasCheckbox: boolean = false;
-	export let hasDate: boolean = false;
-	export let hasTotal: boolean = false;
 	export let hasTag: boolean = false;
-	export let isPositive: boolean = false;
 	export let isNotice: boolean = false;
 	export let isAlignedRight: boolean = false;
 	export let isLoading: boolean = false;
@@ -14,10 +11,7 @@
 <td
 	class="table__td
 		{hasCheckbox && 'table__td--checkbox'}
-		{hasDate && 'table__td--date'}
-		{hasTotal && 'table__td--total'}
 		{hasTag && 'table__td--with-tag'}
-		{isPositive && 'table__td--positive'}
 		{isNotice && 'table__td--notice'}
 		{isAlignedRight && 'table__td--align-right'}
 		{isLoading && 'table__td--loading'}
@@ -43,22 +37,6 @@
 		&--checkbox:first-child:not(.table__td--notice) {
 			padding: unset;
 			width: max-content;
-		}
-
-		&--date {
-			font-family: var(--font-monospace);
-			text-transform: uppercase;
-			font-size: 11px;
-			line-height: 16px;
-		}
-
-		&--total {
-			font-family: var(--font-monospace);
-			line-height: 16px;
-		}
-
-		&--positive {
-			color: var(--color-greenPrimary);
 		}
 
 		&--notice {
