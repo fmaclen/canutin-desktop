@@ -11,12 +11,12 @@
 
 <Section title="Balance history">
 	<div slot="CONTENT">
-		<Plate>
-			{#if balanceHistoryDataset.data.length > 0}
+		{#if balanceHistoryDataset.data.length > 0}
+			<Plate>
 				<ChartJs {labels} datasets={[balanceHistoryDataset]} />
-			{:else}
-				<Notice>Balance history doesn't have enough data points to graph</Notice>
-			{/if}
-		</Plate>
+			</Plate>
+		{:else}
+			<Notice>Balance history doesn't have enough data points to graph</Notice>
+		{/if}
 	</div>
 </Section>
