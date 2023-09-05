@@ -1,6 +1,4 @@
 <script lang="ts">
-	import iconLoading from '$lib/assets/icon-loading.svg';
-
 	export let hasCheckbox: boolean = false;
 	export let hasTag: boolean = false;
 	export let isNotice: boolean = false;
