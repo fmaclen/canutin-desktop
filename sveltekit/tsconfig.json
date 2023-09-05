@@ -8,7 +8,6 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"sourceMap": true,
-		"strict": true,
-		"ignoreDeprecations": "5.0" // REF https://github.com/sveltejs/kit/issues/8650#issuecomment-1607282327
+		"strict": true
 	}
 }
