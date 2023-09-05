@@ -20,6 +20,13 @@ export const formatCurrency = (
 	}).format(value);
 };
 
+export const formatPercentage = (value: number, maximumFractionDigits?: number) => {
+	return new Intl.NumberFormat(LOCALE, {
+		style: 'percent',
+		maximumFractionDigits: maximumFractionDigits || 0
+	}).format(value / 100);
+};
+
 export const sortByKey = (array: any[], key: string, order: SortOrder) => {
 	order == SortOrder.DESC
 		? array.sort((a, b) => (Math.abs(a[key]) > Math.abs(b[key]) ? 1 : -1))

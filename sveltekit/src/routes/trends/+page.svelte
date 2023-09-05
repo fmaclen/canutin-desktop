@@ -12,7 +12,7 @@
 	import type { PageData } from './$types';
 	import { writable } from 'svelte/store';
 	import type { ChartDataset } from 'chart.js';
-	import { formatCurrency, toCamelCase } from '$lib/helpers/misc';
+	import { formatCurrency, formatPercentage, toCamelCase } from '$lib/helpers/misc';
 	import { SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 
 	const title = 'Trends';
@@ -152,56 +152,63 @@
 							<TableTd hasTotal={true} isAlignedRight={true}>
 								{#if balanceType.balanceOneWeek}
 									<u title={formatCurrency(balanceType.balanceOneWeek, 2, 2)}>
-										{balanceType.performanceOneWeek}%
+										{balanceType.performanceOneWeek &&
+											formatPercentage(balanceType.performanceOneWeek, 2)}
 									</u>
 								{/if}
 							</TableTd>
 							<TableTd hasTotal={true} isAlignedRight={true}>
 								{#if balanceType.balanceOneMonth}
 									<u title={formatCurrency(balanceType.balanceOneMonth, 2, 2)}>
-										{balanceType.performanceOneMonth}%
+										{balanceType.performanceOneMonth &&
+											formatPercentage(balanceType.performanceOneMonth, 2)}
 									</u>
 								{/if}
 							</TableTd>
 							<TableTd hasTotal={true} isAlignedRight={true}>
 								{#if balanceType.balanceSixMonths}
 									<u title={formatCurrency(balanceType.balanceSixMonths, 2, 2)}>
-										{balanceType.performanceSixMonths}%
+										{balanceType.performanceSixMonths &&
+											formatPercentage(balanceType.performanceSixMonths, 2)}
 									</u>
 								{/if}
 							</TableTd>
 							<TableTd hasTotal={true} isAlignedRight={true}>
 								{#if balanceType.balanceYearToDate}
 									<u title={formatCurrency(balanceType.balanceYearToDate, 2, 2)}>
-										{balanceType.performanceYearToDate}%
+										{balanceType.performanceYearToDate &&
+											formatPercentage(balanceType.performanceYearToDate, 2)}
 									</u>
 								{/if}
 							</TableTd>
 							<TableTd hasTotal={true} isAlignedRight={true}>
 								{#if balanceType.balanceOneYear}
 									<u title={formatCurrency(balanceType.balanceOneYear, 2, 2)}>
-										{balanceType.performanceOneYear}%
+										{balanceType.performanceOneYear &&
+											formatPercentage(balanceType.performanceOneYear, 2)}
 									</u>
 								{/if}
 							</TableTd>
 							<TableTd hasTotal={true} isAlignedRight={true}>
 								{#if balanceType.balanceFiveYears}
 									<u title={formatCurrency(balanceType.balanceFiveYears, 2, 2)}>
-										{balanceType.performanceFiveYears}%
+										{balanceType.performanceFiveYears &&
+											formatPercentage(balanceType.performanceFiveYears)}
 									</u>
 								{/if}
 							</TableTd>
 							<TableTd hasTotal={true} isAlignedRight={true}>
 								{#if balanceType.balanceLifetime}
 									<u title={formatCurrency(balanceType.balanceLifetime, 2, 2)}>
-										{balanceType.performanceLifetime}%
+										{balanceType.performanceLifetime &&
+											formatPercentage(balanceType.performanceLifetime, 2)}
 									</u>
 								{/if}
 							</TableTd>
 							<TableTd hasTotal={true} isAlignedRight={true}>
 								{#if balanceType.currentBalance}
 									{formatCurrency(balanceType.currentBalance, 2, 2)}
-									({balanceType.allocation}%)
+									({balanceType.allocation && formatPercentage(balanceType.allocation, 2)})
 								{/if}
 							</TableTd>
 						</TableTr>
