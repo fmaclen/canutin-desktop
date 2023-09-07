@@ -89,7 +89,7 @@
 		YEAR_TO_DATE = 'Year to date',
 		ONE_YEAR = '1 year',
 		FIVE_YEARS = '5 years',
-		LIFETIME = 'Lifetime',
+		MAX = 'Max',
 		ALLOCATION = 'Allocation'
 	}
 	// Default params
@@ -127,7 +127,7 @@
 										TableHeaders.YEAR_TO_DATE,
 										TableHeaders.ONE_YEAR,
 										TableHeaders.FIVE_YEARS,
-										TableHeaders.LIFETIME,
+										TableHeaders.MAX,
 										TableHeaders.ALLOCATION
 									].includes(tableHeader.label)}
 								>
@@ -235,15 +235,15 @@
 									{/if}
 								</TableTd>
 								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									{#if balanceType.balanceLifetime && balanceType.performanceLifetime}
+									{#if balanceType.balanceMax && balanceType.performanceMax}
 										<TableValue
-											title={formatCurrency(balanceType.balanceLifetime, 2, 2)}
-											isPositive={balanceType.performanceLifetime > 0}
-											isNegative={balanceType.performanceLifetime < 0}
+											title={formatCurrency(balanceType.balanceMax, 2, 2)}
+											isPositive={balanceType.performanceMax > 0}
+											isNegative={balanceType.performanceMax < 0}
 											isNumeric={true}
 											isTrend={true}
 										>
-											{formatPercentage(balanceType.performanceLifetime, 2)}
+											{formatPercentage(balanceType.performanceMax, 2)}
 										</TableValue>
 									{:else}
 										<TableNoValue />

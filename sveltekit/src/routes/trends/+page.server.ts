@@ -45,8 +45,8 @@ interface TrendNetWorthTable {
 	performanceOneYear: number | null;
 	balanceFiveYears: number | null;
 	performanceFiveYears: number | null;
-	balanceLifetime: number | null;
-	performanceLifetime: number | null;
+	balanceMax: number | null;
+	performanceMax: number | null;
 	allocation: number | null;
 }
 
@@ -58,14 +58,14 @@ const netWorthTableEmpty = {
 	balanceYearToDate: null,
 	balanceOneYear: null,
 	balanceFiveYears: null,
-	balanceLifetime: null,
+	balanceMax: null,
 	performanceOneWeek: null,
 	performanceOneMonth: null,
 	performanceSixMonths: null,
 	performanceYearToDate: null,
 	performanceOneYear: null,
 	performanceFiveYears: null,
-	performanceLifetime: null,
+	performanceMax: null,
 	allocation: null
 };
 
@@ -391,11 +391,11 @@ export const load = async () => {
 			const otherAssetsPeriod = otherAssetsDataset[weeksInPeriod.indexOf(weekInPeriod)];
 
 			if (isSameWeek(currentWeek, new Date(weeksInPeriod[0]))) {
-				rowNetWorth.balanceLifetime = netWorthPeriod;
-				rowCash.balanceLifetime = cashPeriod;
-				rowDebt.balanceLifetime = debtPeriod;
-				rowInvestments.balanceLifetime = investmentsPeriod;
-				rowOtherAssets.balanceLifetime = otherAssetsPeriod;
+				rowNetWorth.balanceMax = netWorthPeriod;
+				rowCash.balanceMax = cashPeriod;
+				rowDebt.balanceMax = debtPeriod;
+				rowInvestments.balanceMax = investmentsPeriod;
+				rowOtherAssets.balanceMax = otherAssetsPeriod;
 			}
 			if (isSameWeek(currentWeek, oneWeekAgo)) {
 				rowNetWorth.balanceOneWeek = netWorthPeriod;
@@ -461,7 +461,7 @@ export const load = async () => {
 				balanceYearToDate,
 				balanceOneYear,
 				balanceFiveYears,
-				balanceLifetime,
+				balanceMax,
 				currentBalance
 			} = trend;
 			if (currentBalance === null) break;
@@ -471,7 +471,7 @@ export const load = async () => {
 			if (balanceYearToDate) trend.performanceYearToDate = proportionBetween(currentBalance - balanceYearToDate, balanceYearToDate); // prettier-ignore
 			if (balanceOneYear) trend.performanceOneYear = proportionBetween(currentBalance - balanceOneYear, balanceOneYear); // prettier-ignore
 			if (balanceFiveYears) trend.performanceFiveYears = proportionBetween(currentBalance - balanceFiveYears, balanceFiveYears); // prettier-ignore
-			if (balanceLifetime) trend.performanceLifetime = proportionBetween(currentBalance - balanceLifetime, balanceLifetime); // prettier-ignore
+			if (balanceMax) trend.performanceMax = proportionBetween(currentBalance - balanceMax, balanceMax); // prettier-ignore
 		}
 
 		return trendNetWorthTable;
