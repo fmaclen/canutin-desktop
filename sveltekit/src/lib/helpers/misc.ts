@@ -38,6 +38,12 @@ export const proportionBetween = (num1: number, num2: number) => {
 	return Math.round((!(num1 === 0) && !(num2 === 0) ? (num1 * 100) / num2 : 0) * 1e2) / 1e2;
 };
 
+export const growthPercentage = (initialAmount: number, finalAmount: number): number => {
+	if (initialAmount === 0)
+		throw new Error('Initial amount cannot be zero when calculating growth percentage.');
+	return ((finalAmount - initialAmount) / Math.abs(initialAmount)) * 100;
+};
+
 // Strip timezone from date and set to UTC
 export const dateInUTC = (date: Date) => {
 	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0));

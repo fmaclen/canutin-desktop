@@ -20,7 +20,7 @@ import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/cons
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import { startOfTheWeekAfter } from '$lib/helpers/charts';
 import type { Account, Asset } from '@prisma/client';
-import { proportionBetween } from '../../lib/helpers/misc';
+import { growthPercentage, proportionBetween } from '../../lib/helpers/misc';
 
 interface TrendGroup {
 	title: BalanceGroup | 'Net worth';
@@ -468,13 +468,13 @@ export const load = async () => {
 				currentBalance
 			} = trend;
 			if (currentBalance === null) break;
-			if (balanceOneWeek) trend.performanceOneWeek = proportionBetween(currentBalance - balanceOneWeek, balanceOneWeek); // prettier-ignore
-			if (balanceOneMonth) trend.performanceOneMonth = proportionBetween(currentBalance - balanceOneMonth, balanceOneMonth); // prettier-ignore
-			if (balanceSixMonths) trend.performanceSixMonths = proportionBetween(currentBalance - balanceSixMonths, balanceSixMonths); // prettier-ignore
-			if (balanceYearToDate) trend.performanceYearToDate = proportionBetween(currentBalance - balanceYearToDate, balanceYearToDate); // prettier-ignore
-			if (balanceOneYear) trend.performanceOneYear = proportionBetween(currentBalance - balanceOneYear, balanceOneYear); // prettier-ignore
-			if (balanceFiveYears) trend.performanceFiveYears = proportionBetween(currentBalance - balanceFiveYears, balanceFiveYears); // prettier-ignore
-			if (balanceMax) trend.performanceMax = proportionBetween(currentBalance - balanceMax, balanceMax); // prettier-ignore
+			if (balanceOneWeek) trend.performanceOneWeek = growthPercentage(balanceOneWeek, currentBalance); // prettier-ignore
+			if (balanceOneMonth) trend.performanceOneMonth = growthPercentage(balanceOneMonth, currentBalance); // prettier-ignore
+			if (balanceSixMonths) trend.performanceSixMonths = growthPercentage(balanceSixMonths, currentBalance); // prettier-ignore
+			if (balanceYearToDate) trend.performanceYearToDate = growthPercentage(balanceYearToDate, currentBalance); // prettier-ignore
+			if (balanceOneYear) trend.performanceOneYear = growthPercentage(balanceOneYear, currentBalance); // prettier-ignore
+			if (balanceFiveYears) trend.performanceFiveYears = growthPercentage(balanceFiveYears, currentBalance); // prettier-ignore
+			if (balanceMax) trend.performanceMax = growthPercentage(balanceMax, currentBalance); // prettier-ignore
 		}
 
 		return trendNetWorthTable;

@@ -5,7 +5,6 @@
 	export let isNegative: boolean = false;
 	export let isNumeric: boolean = false;
 	export let isDate: boolean = false;
-	export let isTrend: boolean = false;
 </script>
 
 <span
@@ -16,7 +15,6 @@
 		{isNegative && `tableValue--negative`}
 		{isNumeric && `tableValue--numeric`}
 		{isDate && `tableValue--date`}
-		{isTrend && `tableValue--trend`}
 	"
 	{title}
 >
@@ -44,17 +42,6 @@
 
 		&--negative {
 			color: var(--color-redPrimary);
-		}
-
-		&--trend {
-			&.tableValue--positive::before {
-				content: '+';
-			}
-
-			// NOTE: the `-` is already in the value
-			/* &.tableValue--negative::before {
-				content: '-';
-			} */
 		}
 
 		&--numeric {
