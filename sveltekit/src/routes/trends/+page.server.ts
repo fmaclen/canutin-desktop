@@ -289,7 +289,6 @@ export const load = async () => {
 		'#e75258', // var(--color-redPrimary)
 		SortOrder.ASC
 	);
-
 	const trendInvestmentsDataset = updateDataset(
 		trendInvestments.datasets,
 		trendInvestmentsLabels,
@@ -297,7 +296,6 @@ export const load = async () => {
 		trendInvestmentsAssets,
 		'#B19B70' // var(--color-goldPrimary)
 	);
-
 	const trendOtherAssetsDataset = updateDataset(
 		trendOtherAssets.datasets,
 		trendOtherAssetsLabels,
@@ -312,46 +310,51 @@ export const load = async () => {
 		const weeksInPeriod = trendNetWorthLabels;
 
 		for (const weekInPeriod of weeksInPeriod) {
+			const cashDataIndex = trendCashLabels.indexOf(weekInPeriod);
+			const debtDataIndex = trendDebtLabels.indexOf(weekInPeriod);
+			const investmentsDataIndex = trendInvestmentsLabels.indexOf(weekInPeriod);
+			const otherAssetsDataIndex = trendOtherAssetsLabels.indexOf(weekInPeriod);
+
+			const hasCashBalance = cashDataIndex !== -1;
+			const hasDebtBalance = debtDataIndex !== -1;
+			const hasInvestmentsBalance = investmentsDataIndex !== -1;
+			const hasOtherAssetsBalance = otherAssetsDataIndex !== -1;
+
 			let netWorthBalance = 0;
 			let cashBalance = 0;
 			let debtBalance = 0;
 			let investmentsBalance = 0;
 			let otherAssetsBalance = 0;
 
-			const cashDataIndex = trendCashLabels.indexOf(weekInPeriod);
-			const debtDataIndex = trendDebtLabels.indexOf(weekInPeriod);
-			const investmentsDataIndex = trendInvestmentsLabels.indexOf(weekInPeriod);
-			const otherAssetsDataIndex = trendOtherAssetsLabels.indexOf(weekInPeriod);
-
-			if (cashDataIndex !== -1) {
+			if (hasCashBalance) {
 				(await trendCashDataset).forEach((dataset) => {
 					cashBalance += dataset.data[cashDataIndex] as number;
 					netWorthBalance += dataset.data[cashDataIndex] as number;
 				});
 			}
-			if (debtDataIndex !== -1) {
+			if (hasDebtBalance) {
 				(await trendDebtDataset).forEach((dataset) => {
 					debtBalance += dataset.data[debtDataIndex] as number;
 					netWorthBalance += dataset.data[debtDataIndex] as number;
 				});
 			}
-			if (investmentsDataIndex !== -1) {
+			if (hasInvestmentsBalance) {
 				(await trendInvestmentsDataset).forEach((dataset) => {
 					investmentsBalance += dataset.data[investmentsDataIndex] as number;
 					netWorthBalance += dataset.data[investmentsDataIndex] as number;
 				});
 			}
-			if (otherAssetsDataIndex !== -1) {
+			if (hasOtherAssetsBalance) {
 				(await trendOtherAssetsDataset).forEach((dataset) => {
 					otherAssetsBalance += dataset.data[otherAssetsDataIndex] as number;
 					netWorthBalance += dataset.data[otherAssetsDataIndex] as number;
 				});
 			}
 
-			updateDatasetBalance(updatedDatasets, 'Cash', cashBalance);
-			updateDatasetBalance(updatedDatasets, 'Debt', debtBalance);
-			updateDatasetBalance(updatedDatasets, 'Investments', investmentsBalance);
-			updateDatasetBalance(updatedDatasets, 'Other assets', otherAssetsBalance);
+			updateDatasetBalance(updatedDatasets, 'Cash', hasCashBalance ? cashBalance : null);
+			updateDatasetBalance(updatedDatasets, 'Debt', hasDebtBalance ? debtBalance : null);
+			updateDatasetBalance(updatedDatasets, 'Investments', hasInvestmentsBalance ? investmentsBalance : null); // prettier-ignore
+			updateDatasetBalance(updatedDatasets, 'Other assets', hasOtherAssetsBalance ? otherAssetsBalance : null); // prettier-ignore
 			updateDatasetBalance(updatedDatasets, 'Net worth', netWorthBalance);
 		}
 
@@ -392,10 +395,10 @@ export const load = async () => {
 
 			if (isSameWeek(currentWeek, new Date(weeksInPeriod[0]))) {
 				rowNetWorth.balanceMax = netWorthPeriod;
-				rowCash.balanceMax = cashPeriod;
-				rowDebt.balanceMax = debtPeriod;
-				rowInvestments.balanceMax = investmentsPeriod;
-				rowOtherAssets.balanceMax = otherAssetsPeriod;
+				rowCash.balanceMax = cashDataset.find((balance) => balance !== null) || null;
+				rowDebt.balanceMax = debtDataset.find((balance) => balance !== null) || null;
+				rowInvestments.balanceMax = investmentsDataset.find((balance) => balance !== null) || null;
+				rowOtherAssets.balanceMax = otherAssetsDataset.find((balance) => balance !== null) || null;
 			}
 			if (isSameWeek(currentWeek, oneWeekAgo)) {
 				rowNetWorth.balanceOneWeek = netWorthPeriod;

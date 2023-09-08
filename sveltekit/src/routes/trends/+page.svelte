@@ -145,7 +145,7 @@
 										: getBalanceGroupLabel(balanceType.name)}
 								</TableTd>
 								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									{#if balanceType.balanceOneWeek && balanceType.performanceOneWeek}
+									{#if balanceType.balanceOneWeek !== null && balanceType.performanceOneWeek !== null}
 										<TableValue
 											title={formatCurrency(balanceType.balanceOneWeek, 2, 2)}
 											isPositive={balanceType.performanceOneWeek > 0}
@@ -160,7 +160,7 @@
 									{/if}
 								</TableTd>
 								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									{#if balanceType.balanceOneMonth && balanceType.performanceOneMonth}
+									{#if balanceType.balanceOneMonth !== null && balanceType.performanceOneMonth !== null}
 										<TableValue
 											title={formatCurrency(balanceType.balanceOneMonth, 2, 2)}
 											isPositive={balanceType.performanceOneMonth > 0}
@@ -175,7 +175,7 @@
 									{/if}
 								</TableTd>
 								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									{#if balanceType.balanceSixMonths && balanceType.performanceSixMonths}
+									{#if balanceType.balanceSixMonths !== null && balanceType.performanceSixMonths !== null}
 										<TableValue
 											title={formatCurrency(balanceType.balanceSixMonths, 2, 2)}
 											isPositive={balanceType.performanceSixMonths > 0}
@@ -190,7 +190,7 @@
 									{/if}
 								</TableTd>
 								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									{#if balanceType.balanceYearToDate && balanceType.performanceYearToDate}
+									{#if balanceType.balanceYearToDate !== null && balanceType.performanceYearToDate !== null}
 										<TableValue
 											title={formatCurrency(balanceType.balanceYearToDate, 2, 2)}
 											isPositive={balanceType.performanceYearToDate > 0}
@@ -205,7 +205,7 @@
 									{/if}
 								</TableTd>
 								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									{#if balanceType.balanceOneYear && balanceType.performanceOneYear}
+									{#if balanceType.balanceOneYear !== null && balanceType.performanceOneYear !== null}
 										<TableValue
 											title={formatCurrency(balanceType.balanceOneYear, 2, 2)}
 											isPositive={balanceType.performanceOneYear > 0}
@@ -220,7 +220,7 @@
 									{/if}
 								</TableTd>
 								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									{#if balanceType.balanceFiveYears && balanceType.performanceFiveYears}
+									{#if balanceType.balanceFiveYears !== null && balanceType.performanceFiveYears !== null}
 										<TableValue
 											title={formatCurrency(balanceType.balanceFiveYears, 2, 2)}
 											isPositive={balanceType.performanceFiveYears > 0}
@@ -235,7 +235,7 @@
 									{/if}
 								</TableTd>
 								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									{#if balanceType.balanceMax && balanceType.performanceMax}
+									{#if balanceType.balanceMax !== null && balanceType.performanceMax !== null}
 										<TableValue
 											title={formatCurrency(balanceType.balanceMax, 2, 2)}
 											isPositive={balanceType.performanceMax > 0}
@@ -250,7 +250,7 @@
 									{/if}
 								</TableTd>
 								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									{#if balanceType.currentBalance}
+									{#if balanceType.currentBalance !== null}
 										<TableValue
 											title={formatCurrency(balanceType.currentBalance, 2, 2)}
 											isNumeric={true}
