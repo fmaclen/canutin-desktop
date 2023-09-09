@@ -266,7 +266,7 @@ test.describe('Import CanutinFile', () => {
 		expect(await tableRows.nth(4).textContent()).toMatch('Not Initech Payroll');
 		expect(await tableRows.nth(4).textContent()).toMatch('2019');
 		expect(await tableRows.nth(4).textContent()).toMatch('Uncategorized');
-		expect(await page.locator('.table__excluded').last().textContent()).toBe('$9,999.00');
+		expect(await page.locator('.tableValue--excluded').last().textContent()).toBe('$9,999.00');
 		expect(await cardNetBalance.textContent()).toMatch('-$2,900.50');
 
 		// Import again
@@ -293,7 +293,7 @@ test.describe('Import CanutinFile', () => {
 		expect(await tableRows.nth(4).textContent()).toMatch('Not Initech Payroll');
 		expect(await tableRows.nth(4).textContent()).toMatch('2019');
 		expect(await tableRows.nth(4).textContent()).toMatch('Uncategorized');
-		expect(await page.locator('.table__excluded').last().textContent()).toBe('$9,999.00');
+		expect(await page.locator('.tableValue--excluded').last().textContent()).toBe('$9,999.00');
 		expect(await cardNetBalance.textContent()).toMatch('-$2,900.50');
 	});
 
