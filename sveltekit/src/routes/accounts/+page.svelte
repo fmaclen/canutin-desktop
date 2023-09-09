@@ -5,19 +5,19 @@
 	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
+	import Plate from '$lib/components/Plate.svelte';
 	import Link from '$lib/components/Link.svelte';
 	import Table from '$lib/components/Table.svelte';
 	import TableTh from '$lib/components/TableTh.svelte';
 	import TableTr from '$lib/components/TableTr.svelte';
 	import TableTd from '$lib/components/TableTd.svelte';
 	import TableButtonSortable from '$lib/components/TableButtonSortable.svelte';
+	import TableValue from '$lib/components/TableValue.svelte';
 	import TableNoValue from '$lib/components/TableNoValue.svelte';
 	import { toCamelCase } from '$lib/helpers/misc';
 	import { formatCurrency, formatInUTC } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
-	import Plate from '../../lib/components/Plate.svelte';
-	import TableValue from '../../lib/components/TableValue.svelte';
 
 	const title = 'Accounts';
 

@@ -3,12 +3,12 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Section from '$lib/components/Section.svelte';
+	import Plate from '$lib/components/Plate.svelte';
 	import Link from '$lib/components/Link.svelte';
 	import Notice from '$lib/components/Notice.svelte';
 	import { balanceGroupAppearance } from '$lib/components/Card';
 	import { formatCurrency } from '$lib/helpers/misc';
 	import type { PageData } from './$types';
-	import Plate from '../../lib/components/Plate.svelte';
 
 	const title = 'Balance sheet';
 

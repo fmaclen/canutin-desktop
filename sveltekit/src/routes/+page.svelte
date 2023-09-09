@@ -5,6 +5,7 @@
 	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
+	import Plate from '$lib/components/Plate.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Link from '$lib/components/Link.svelte';
 	import ChartBar from '$lib/components/ChartBar.svelte';
@@ -13,7 +14,6 @@
 	import { BalanceGroup, TrailingCashflowPeriods } from '$lib/helpers/constants';
 	import { balanceGroupAppearance, CardAppearance } from '$lib/components/Card';
 	import type { PeriodCashflow } from './+page.server';
-	import Plate from '../lib/components/Plate.svelte';
 
 	const title = 'The big picture';
 

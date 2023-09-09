@@ -19,8 +19,8 @@ import {
 import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import { startOfTheWeekAfter } from '$lib/helpers/charts';
+import { growthPercentage, proportionBetween } from '$lib/helpers/misc';
 import type { Account, Asset } from '@prisma/client';
-import { growthPercentage, proportionBetween } from '../../lib/helpers/misc';
 
 interface TrendGroup {
 	title: string;
