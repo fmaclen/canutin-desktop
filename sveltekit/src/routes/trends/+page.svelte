@@ -15,7 +15,7 @@
 	import TableValueTrend from '$lib/components/TableValueTrend.svelte';
 	import { formatCurrency, formatPercentage, toCamelCase } from '$lib/helpers/misc';
 	import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
-	import { safeAlphabeticalSort, safeNumericSort } from '$lib/helpers/tables';
+	import { sortAlphabetically, sortNumerically } from '$lib/helpers/tables';
 	import type { PageData } from './$types';
 	import type { ChartDataset } from 'chart.js';
 
@@ -77,7 +77,7 @@
 	data.streamed.trendNetWorthTableData.then((streamedData) => {
 		netWorthTable.set(streamedData);
 		trendNetWorthTableIsLoading = false;
-		sortPerformanceBy(toCamelCase(TableHeaders.ALLOCATION));
+		sortByColumn(toCamelCase(TableHeaders.ALLOCATION));
 	});
 
 	enum TableHeaders {
@@ -97,7 +97,7 @@
 	let sortBy: string;
 
 	// Sorts the accounts by column and asc/desc order
-	const sortPerformanceBy = (column: string) => {
+	const sortByColumn = (column: string) => {
 		if (sortBy === column) {
 			sortOrder = sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC;
 		} else {
@@ -107,23 +107,23 @@
 		$netWorthTable = $netWorthTable.sort((a, b) => {
 			switch (column) {
 				case toCamelCase(TableHeaders.BALANCE_TYPE):
-					return safeAlphabeticalSort(a, b, sortOrder, 'name');
+					return sortAlphabetically(a.name, b.name, sortOrder);
 				case toCamelCase(TableHeaders.ONE_WEEK):
-					return safeNumericSort(a, b, sortOrder, 'performanceOneWeek');
+					return sortNumerically(a.performanceOneWeek, b.performanceOneWeek, sortOrder);
 				case toCamelCase(TableHeaders.ONE_MONTH):
-					return safeNumericSort(a, b, sortOrder, 'performanceOneMonth');
+					return sortNumerically(a.performanceOneMonth, b.performanceOneMonth, sortOrder);
 				case toCamelCase(TableHeaders.SIX_MONTHS):
-					return safeNumericSort(a, b, sortOrder, 'performanceSixMonths');
+					return sortNumerically(a.performanceSixMonths, b.performanceSixMonths, sortOrder);
 				case toCamelCase(TableHeaders.YEAR_TO_DATE):
-					return safeNumericSort(a, b, sortOrder, 'performanceYearToDate');
+					return sortNumerically(a.performanceYearToDate, b.performanceYearToDate, sortOrder);
 				case toCamelCase(TableHeaders.ONE_YEAR):
-					return safeNumericSort(a, b, sortOrder, 'performanceOneYear');
+					return sortNumerically(a.performanceOneYear, b.performanceOneYear, sortOrder);
 				case toCamelCase(TableHeaders.FIVE_YEARS):
-					return safeNumericSort(a, b, sortOrder, 'performanceFiveYears');
+					return sortNumerically(a.performanceFiveYears, b.performanceFiveYears, sortOrder);
 				case toCamelCase(TableHeaders.MAX):
-					return safeNumericSort(a, b, sortOrder, 'performanceMax');
+					return sortNumerically(a.performanceMax, b.performanceMax, sortOrder);
 				case toCamelCase(TableHeaders.ALLOCATION):
-					return safeNumericSort(a, b, sortOrder, 'allocation');
+					return sortNumerically(a.allocation, b.allocation, sortOrder);
 				default:
 					return -1;
 			}
@@ -170,7 +170,7 @@
 										{label}
 										{sortOrder}
 										sortBy={sortBy === column}
-										on:click={async () => sortPerformanceBy(column)}
+										on:click={() => sortByColumn(column)}
 									/>
 								</TableTh>
 							{/each}

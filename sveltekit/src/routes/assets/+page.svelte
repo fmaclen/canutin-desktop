@@ -17,6 +17,7 @@
 	import { toCamelCase } from '$lib/helpers/misc';
 	import { formatCurrency, formatInUTC } from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
+	import { sortBooleans, sortAlphabetically, sortNumerically } from '$lib/helpers/tables';
 	import type { PageData } from './$types';
 
 	const title = 'Assets';
@@ -40,7 +41,7 @@
 	let sortBy: string;
 
 	// Sorts the assets by column and asc/desc order
-	const sortAssetsBy = async (column: string) => {
+	const sortByColumn = async (column: string) => {
 		if (sortBy === column) {
 			sortOrder = sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC;
 		} else {
@@ -50,42 +51,21 @@
 		assets = assets.sort((a, b) => {
 			switch (column) {
 				case toCamelCase(TableHeaders.NAME):
-					return sortOrder === SortOrder.DESC
-						? a.name.localeCompare(b.name)
-						: b.name.localeCompare(a.name);
-
+					return sortAlphabetically(a.name, b.name, sortOrder);
 				case toCamelCase(TableHeaders.ASSET_TYPE):
-					return sortOrder === SortOrder.DESC
-						? a.assetType.name.localeCompare(b.assetType.name)
-						: b.assetType.name.localeCompare(a.assetType.name);
-
-				case toCamelCase(TableHeaders.SYMBOL): {
-					// Need to convert `null` symbols to string so they can be compared
-					if (a.symbol === null) a.symbol = '';
-					if (b.symbol === null) b.symbol = '';
-					return sortOrder === SortOrder.DESC
-						? a.symbol.localeCompare(b.symbol)
-						: b.symbol.localeCompare(a.symbol);
-				}
+					return sortAlphabetically(a.assetType.name, b.assetType.name, sortOrder);
+				case toCamelCase(TableHeaders.SYMBOL):
+					return sortAlphabetically(a.symbol, b.symbol, sortOrder);
 				case toCamelCase(TableHeaders.MARKED_AS):
-					return sortOrder === SortOrder.ASC
-						? Number(a.isSold) - Number(b.isSold)
-						: Number(b.isSold) - Number(a.isSold);
-
+					return sortBooleans(a.isSold, b.isSold, sortOrder);
 				case toCamelCase(TableHeaders.QUANTITY):
-					return sortOrder === SortOrder.ASC ? a.quantity - b.quantity : b.quantity - a.quantity;
-
+					return sortNumerically(a.quantity, b.quantity, sortOrder);
 				case toCamelCase(TableHeaders.COST):
-					return sortOrder === SortOrder.ASC ? a.cost - b.cost : b.cost - a.cost;
-
+					return sortNumerically(a.cost, b.cost, sortOrder);
 				case toCamelCase(TableHeaders.VALUE):
-					return sortOrder === SortOrder.ASC ? a.value - b.value : b.value - a.value;
-
+					return sortNumerically(a.value, b.value, sortOrder);
 				case toCamelCase(TableHeaders.LAST_UPDATED):
-					return sortOrder === SortOrder.ASC
-						? a.lastUpdated - b.lastUpdated
-						: b.lastUpdated - a.lastUpdated;
-
+					return sortNumerically(a.lastUpdated, b.lastUpdated, sortOrder);
 				default:
 					return -1;
 			}
@@ -113,7 +93,7 @@
 		});
 
 	onMount(async () => {
-		sortAssetsBy(toCamelCase(TableHeaders.NAME));
+		sortByColumn(toCamelCase(TableHeaders.NAME));
 	});
 </script>
 
@@ -144,7 +124,7 @@
 										{label}
 										{sortOrder}
 										sortBy={sortBy === column}
-										on:click={async () => await sortAssetsBy(column)}
+										on:click={() => sortByColumn(column)}
 									/>
 								</TableTh>
 							{/each}
