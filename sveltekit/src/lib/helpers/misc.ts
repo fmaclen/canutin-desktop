@@ -20,10 +20,17 @@ export const formatCurrency = (
 	}).format(value);
 };
 
-export const formatPercentage = (value: number, maximumFractionDigits?: number) => {
+export const formatPercentage = (value: number) => {
+	const calculateFractionDigits = (value: number) => {
+		const valueLength = Math.round(value).toString().length;
+		if (value === 0 || valueLength > 2) return 0;
+		if (valueLength < 2) return 2;
+		if (valueLength < 3) return 1;
+	};
+
 	return new Intl.NumberFormat(LOCALE, {
 		style: 'percent',
-		maximumFractionDigits: maximumFractionDigits || 0
+		minimumFractionDigits: calculateFractionDigits(value)
 	}).format(value / 100);
 };
 

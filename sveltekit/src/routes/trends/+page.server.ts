@@ -26,8 +26,8 @@ interface TrendGroup {
 	title: string;
 	labels: string[];
 	datasets: ChartDataset[];
-	accounts: Account[] | null;
-	assets: Asset[] | null;
+	accounts: Account[];
+	assets: Asset[];
 }
 
 export interface TrendNetWorthTable {
@@ -83,7 +83,7 @@ const trendNetWorthTable: TrendNetWorthTable[] = [
 	{ name: otherAssetsLabel, ...netWorthTableEmpty }
 ];
 
-const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | null) => {
+const getDatasetLabels = async (accounts: Account[], assets: Asset[]) => {
 	const labels: string[] = [];
 	const earliestBalanceDates: Date[] = [];
 
@@ -99,6 +99,8 @@ const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | nu
 			if (periodStart) earliestBalanceDates.push(periodStart);
 		}
 	}
+
+	if (earliestBalanceDates.length === 0) return labels;
 
 	// Get the earliest date of all the accounts and/or assets balances
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));

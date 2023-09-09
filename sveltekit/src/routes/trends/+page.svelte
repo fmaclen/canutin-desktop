@@ -23,6 +23,7 @@
 	import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { ChartDataset } from 'chart.js';
+	import Notice from '../../lib/components/Notice.svelte';
 
 	const title = 'Trends';
 
@@ -141,6 +142,8 @@
 			column: toCamelCase(tableHeader)
 		};
 	});
+
+	const isVaultEmpty = data.trendNetWorth.labels.length === 0;
 </script>
 
 <Head {title} />
@@ -148,180 +151,202 @@
 <ScrollView {title}>
 	<Section title="Net worth">
 		<div slot="CONTENT">
-			<Plate>
-				<ChartJs
-					labels={data.trendNetWorth.labels}
-					datasets={$netWorthDatasets}
-					isLoading={netWorthDatasetsIsLoading}
-				/>
-				<Table>
-					<thead>
-						<tr>
-							{#each tableHeaders as tableHeader}
-								{@const { label, column } = tableHeader}
-								<TableTh
-									isAlignedRight={[
-										TableHeaders.ONE_WEEK,
-										TableHeaders.ONE_MONTH,
-										TableHeaders.SIX_MONTHS,
-										TableHeaders.YEAR_TO_DATE,
-										TableHeaders.ONE_YEAR,
-										TableHeaders.FIVE_YEARS,
-										TableHeaders.MAX,
-										TableHeaders.ALLOCATION
-									].includes(tableHeader.label)}
-								>
-									<TableButtonSortable
-										{label}
-										{sortOrder}
-										sortBy={sortBy === column}
-										on:click={() => sortByColumn(column)}
-									/>
-								</TableTh>
+			{#if isVaultEmpty}
+				<Notice>
+					Balance history doesn't have enough data points to calculate net worth trends
+				</Notice>
+			{:else}
+				<Plate>
+					<ChartJs
+						labels={data.trendNetWorth.labels}
+						datasets={$netWorthDatasets}
+						isLoading={netWorthDatasetsIsLoading}
+					/>
+					<Table>
+						<thead>
+							<tr>
+								{#each tableHeaders as tableHeader}
+									{@const { label, column } = tableHeader}
+									<TableTh
+										isAlignedRight={[
+											TableHeaders.ONE_WEEK,
+											TableHeaders.ONE_MONTH,
+											TableHeaders.SIX_MONTHS,
+											TableHeaders.YEAR_TO_DATE,
+											TableHeaders.ONE_YEAR,
+											TableHeaders.FIVE_YEARS,
+											TableHeaders.MAX,
+											TableHeaders.ALLOCATION
+										].includes(tableHeader.label)}
+									>
+										<TableButtonSortable
+											{label}
+											{sortOrder}
+											sortBy={sortBy === column}
+											on:click={() => sortByColumn(column)}
+										/>
+									</TableTh>
+								{/each}
+							</tr>
+						</thead>
+						<tbody>
+							{#each $netWorthTable as balanceType}
+								{@const {
+									name,
+									performanceOneWeek,
+									performanceOneMonth,
+									performanceSixMonths,
+									performanceYearToDate,
+									performanceOneYear,
+									performanceFiveYears,
+									performanceMax,
+									balanceOneWeek,
+									balanceOneMonth,
+									balanceSixMonths,
+									balanceYearToDate,
+									balanceOneYear,
+									balanceFiveYears,
+									balanceMax,
+									currentBalance,
+									allocation
+								} = balanceType}
+								{@const isDebt = balanceType.name === getBalanceGroupLabel(BalanceGroup.DEBT)}
+								<TableTr>
+									<TableTd>
+										{name}
+									</TableTd>
+									<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+										<TableValueTrend
+											value={balanceOneWeek}
+											performance={performanceOneWeek}
+											isReversed={isDebt}
+										/>
+									</TableTd>
+									<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+										<TableValueTrend
+											value={balanceOneMonth}
+											performance={performanceOneMonth}
+											isReversed={isDebt}
+										/>
+									</TableTd>
+									<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+										<TableValueTrend
+											value={balanceSixMonths}
+											performance={performanceSixMonths}
+											isReversed={isDebt}
+										/>
+									</TableTd>
+									<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+										<TableValueTrend
+											value={balanceYearToDate}
+											performance={performanceYearToDate}
+											isReversed={isDebt}
+										/>
+									</TableTd>
+									<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+										<TableValueTrend
+											value={balanceOneYear}
+											performance={performanceOneYear}
+											isReversed={isDebt}
+										/>
+									</TableTd>
+									<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+										<TableValueTrend
+											value={balanceFiveYears}
+											performance={performanceFiveYears}
+											isReversed={isDebt}
+										/>
+									</TableTd>
+									<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+										<TableValueTrend
+											value={balanceMax}
+											performance={performanceMax}
+											isReversed={isDebt}
+										/>
+									</TableTd>
+									<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
+										{#if currentBalance !== null}
+											<TableValue
+												title={formatCurrency(currentBalance, 2, 2)}
+												isNumeric={true}
+												isExcluded={name == 'Net worth'}
+											>
+												{allocation && formatPercentage(allocation, 2)}
+											</TableValue>
+										{:else}
+											<TableNoValue />
+										{/if}
+									</TableTd>
+								</TableTr>
 							{/each}
-						</tr>
-					</thead>
-					<tbody>
-						{#each $netWorthTable as balanceType}
-							{@const {
-								name,
-								performanceOneWeek,
-								performanceOneMonth,
-								performanceSixMonths,
-								performanceYearToDate,
-								performanceOneYear,
-								performanceFiveYears,
-								performanceMax,
-								balanceOneWeek,
-								balanceOneMonth,
-								balanceSixMonths,
-								balanceYearToDate,
-								balanceOneYear,
-								balanceFiveYears,
-								balanceMax,
-								currentBalance,
-								allocation
-							} = balanceType}
-							{@const isDebt = balanceType.name === getBalanceGroupLabel(BalanceGroup.DEBT)}
-							<TableTr>
-								<TableTd>
-									{name}
-								</TableTd>
-								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									<TableValueTrend
-										value={balanceOneWeek}
-										performance={performanceOneWeek}
-										isReversed={isDebt}
-									/>
-								</TableTd>
-								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									<TableValueTrend
-										value={balanceOneMonth}
-										performance={performanceOneMonth}
-										isReversed={isDebt}
-									/>
-								</TableTd>
-								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									<TableValueTrend
-										value={balanceSixMonths}
-										performance={performanceSixMonths}
-										isReversed={isDebt}
-									/>
-								</TableTd>
-								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									<TableValueTrend
-										value={balanceYearToDate}
-										performance={performanceYearToDate}
-										isReversed={isDebt}
-									/>
-								</TableTd>
-								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									<TableValueTrend
-										value={balanceOneYear}
-										performance={performanceOneYear}
-										isReversed={isDebt}
-									/>
-								</TableTd>
-								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									<TableValueTrend
-										value={balanceFiveYears}
-										performance={performanceFiveYears}
-										isReversed={isDebt}
-									/>
-								</TableTd>
-								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									<TableValueTrend
-										value={balanceMax}
-										performance={performanceMax}
-										isReversed={isDebt}
-									/>
-								</TableTd>
-								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
-									{#if currentBalance !== null}
-										<TableValue
-											title={formatCurrency(currentBalance, 2, 2)}
-											isNumeric={true}
-											isExcluded={name == 'Net worth'}
-										>
-											{allocation && formatPercentage(allocation, 2)}
-										</TableValue>
-									{:else}
-										<TableNoValue />
-									{/if}
-								</TableTd>
-							</TableTr>
-						{/each}
-					</tbody>
-				</Table>
-			</Plate>
+						</tbody>
+					</Table>
+				</Plate>
+			{/if}
 		</div>
 	</Section>
 
 	<Section title="Cash">
 		<div slot="CONTENT">
-			<Plate>
-				<ChartJs
-					labels={data.trendCash.labels}
-					datasets={$cashDatasets}
-					isLoading={cashDatasetsIsLoading}
-				/>
-			</Plate>
+			{#if isVaultEmpty}
+				<Notice>Balance history doesn't have enough data points to cash trends</Notice>
+			{:else}
+				<Plate>
+					<ChartJs
+						labels={data.trendCash.labels}
+						datasets={$cashDatasets}
+						isLoading={cashDatasetsIsLoading}
+					/>
+				</Plate>
+			{/if}
 		</div>
 	</Section>
 
 	<Section title="Debt">
 		<div slot="CONTENT">
-			<Plate>
-				<ChartJs
-					labels={data.trendDebt.labels}
-					datasets={$debtDatasets}
-					isLoading={debtDatasetsIsLoading}
-				/>
-			</Plate>
+			{#if isVaultEmpty}
+				<Notice>Balance history doesn't have enough data points to debt trends</Notice>
+			{:else}
+				<Plate>
+					<ChartJs
+						labels={data.trendDebt.labels}
+						datasets={$debtDatasets}
+						isLoading={debtDatasetsIsLoading}
+					/>
+				</Plate>
+			{/if}
 		</div>
 	</Section>
 
 	<Section title="Investments">
 		<div slot="CONTENT">
-			<Plate>
-				<ChartJs
-					labels={data.trendInvestments.labels}
-					datasets={$investmentsDatasets}
-					isLoading={investmentsDatasetsIsLoading}
-				/>
-			</Plate>
+			{#if isVaultEmpty}
+				<Notice>Balance history doesn't have enough data points to investment trends</Notice>
+			{:else}
+				<Plate>
+					<ChartJs
+						labels={data.trendInvestments.labels}
+						datasets={$investmentsDatasets}
+						isLoading={investmentsDatasetsIsLoading}
+					/>
+				</Plate>
+			{/if}
 		</div>
 	</Section>
 
 	<Section title="Other assets">
 		<div slot="CONTENT">
-			<Plate>
-				<ChartJs
-					labels={data.trendOtherAssets.labels}
-					datasets={$otherAssetsDatasets}
-					isLoading={otherAssetsDatasetsIsLoading}
-				/>
-			</Plate>
+			{#if isVaultEmpty}
+				<Notice>Balance history doesn't have enough data points to asset trends</Notice>
+			{:else}
+				<Plate>
+					<ChartJs
+						labels={data.trendOtherAssets.labels}
+						datasets={$otherAssetsDatasets}
+						isLoading={otherAssetsDatasetsIsLoading}
+					/>
+				</Plate>
+			{/if}
 		</div>
 	</Section>
 </ScrollView>
