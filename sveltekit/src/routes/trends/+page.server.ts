@@ -23,14 +23,14 @@ import type { Account, Asset } from '@prisma/client';
 import { growthPercentage, proportionBetween } from '../../lib/helpers/misc';
 
 interface TrendGroup {
-	title: BalanceGroup | 'Net worth';
+	title: string;
 	labels: string[];
 	datasets: ChartDataset[];
 	accounts: Account[] | null;
 	assets: Asset[] | null;
 }
 
-interface TrendNetWorthTable {
+export interface TrendNetWorthTable {
 	name: string;
 	currentBalance: number | null;
 	balanceOneWeek: number | null;
@@ -49,6 +49,12 @@ interface TrendNetWorthTable {
 	performanceMax: number | null;
 	allocation: number | null;
 }
+
+const netWorthLabel = 'Net worth';
+const cashLabel = getBalanceGroupLabel(BalanceGroup.CASH);
+const debtLabel = getBalanceGroupLabel(BalanceGroup.DEBT);
+const investmentsLabel = getBalanceGroupLabel(BalanceGroup.INVESTMENTS);
+const otherAssetsLabel = getBalanceGroupLabel(BalanceGroup.OTHER_ASSETS);
 
 const netWorthTableEmpty = {
 	currentBalance: null,
@@ -70,11 +76,11 @@ const netWorthTableEmpty = {
 };
 
 const trendNetWorthTable: TrendNetWorthTable[] = [
-	{ name: 'Net worth', ...netWorthTableEmpty },
-	{ name: BalanceGroup.CASH, ...netWorthTableEmpty },
-	{ name: BalanceGroup.DEBT, ...netWorthTableEmpty },
-	{ name: BalanceGroup.INVESTMENTS, ...netWorthTableEmpty },
-	{ name: BalanceGroup.OTHER_ASSETS, ...netWorthTableEmpty }
+	{ name: netWorthLabel, ...netWorthTableEmpty },
+	{ name: cashLabel, ...netWorthTableEmpty },
+	{ name: debtLabel, ...netWorthTableEmpty },
+	{ name: investmentsLabel, ...netWorthTableEmpty },
+	{ name: otherAssetsLabel, ...netWorthTableEmpty }
 ];
 
 const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | null) => {
@@ -133,7 +139,7 @@ export const load = async () => {
 	const trendCashAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.CASH); // prettier-ignore
 	const trendCashLabels = await getDatasetLabels(trendCashAccounts, trendCashAssets); // prettier-ignore
 	const trendCash: TrendGroup = {
-		title: BalanceGroup.CASH,
+		title: cashLabel,
 		labels: trendCashLabels,
 		accounts: trendCashAccounts,
 		assets: trendCashAssets,
@@ -144,7 +150,7 @@ export const load = async () => {
 	const trendDebtAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.DEBT); // prettier-ignore
 	const trendDebtLabels = await getDatasetLabels(trendDebtAccounts, trendDebtAssets); // prettier-ignore
 	const trendDebt: TrendGroup = {
-		title: BalanceGroup.DEBT,
+		title: debtLabel,
 		labels: trendDebtLabels,
 		accounts: trendDebtAccounts,
 		assets: trendDebtAssets,
@@ -155,7 +161,7 @@ export const load = async () => {
 	const trendInvestmentsAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.INVESTMENTS ); // prettier-ignore
 	const trendInvestmentsLabels = await getDatasetLabels(trendInvestmentsAccounts, trendInvestmentsAssets); // prettier-ignore
 	const trendInvestments: TrendGroup = {
-		title: BalanceGroup.INVESTMENTS,
+		title: investmentsLabel,
 		labels: trendInvestmentsLabels,
 		accounts: trendInvestmentsAccounts,
 		assets: trendInvestmentsAssets,
@@ -166,7 +172,7 @@ export const load = async () => {
 	const trendOtherAssetsAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.OTHER_ASSETS ); // prettier-ignore
 	const trendOtherAssetsLabels = await getDatasetLabels(trendOtherAssetsAccounts, trendOtherAssetsAssets); // prettier-ignore
 	const trendOtherAssets: TrendGroup = {
-		title: BalanceGroup.OTHER_ASSETS,
+		title: otherAssetsLabel,
 		labels: trendOtherAssetsLabels,
 		accounts: trendOtherAssetsAccounts,
 		assets: trendOtherAssetsAssets,
@@ -175,27 +181,27 @@ export const load = async () => {
 
 	const trendNetWorthLabels = await getDatasetLabels(accounts, assets);
 	const trendNetWorth: TrendGroup = {
-		title: 'Net worth',
+		title: netWorthLabel,
 		labels: trendNetWorthLabels,
 		datasets: [
 			{
-				label: 'Net worth',
+				label: netWorthLabel,
 				data: []
 			},
 			{
-				label: getBalanceGroupLabel(BalanceGroup.CASH),
+				label: cashLabel,
 				data: []
 			},
 			{
-				label: getBalanceGroupLabel(BalanceGroup.DEBT),
+				label: debtLabel,
 				data: []
 			},
 			{
-				label: getBalanceGroupLabel(BalanceGroup.INVESTMENTS),
+				label: investmentsLabel,
 				data: []
 			},
 			{
-				label: getBalanceGroupLabel(BalanceGroup.OTHER_ASSETS),
+				label: otherAssetsLabel,
 				data: []
 			}
 		],
@@ -204,19 +210,19 @@ export const load = async () => {
 	};
 	trendNetWorth.datasets.forEach((dataset) => {
 		switch (dataset.label) {
-			case 'Net worth':
+			case netWorthLabel:
 				setChartDatasetColor(dataset);
 				break;
-			case 'Cash':
+			case cashLabel:
 				setChartDatasetColor(dataset, BalanceGroup.CASH);
 				break;
-			case 'Debt':
+			case debtLabel:
 				setChartDatasetColor(dataset, BalanceGroup.DEBT);
 				break;
-			case 'Investments':
+			case investmentsLabel:
 				setChartDatasetColor(dataset, BalanceGroup.INVESTMENTS);
 				break;
-			case 'Other assets':
+			case otherAssetsLabel:
 				setChartDatasetColor(dataset, BalanceGroup.OTHER_ASSETS);
 				break;
 		}
@@ -351,11 +357,11 @@ export const load = async () => {
 				});
 			}
 
-			updateDatasetBalance(updatedDatasets, 'Cash', hasCashBalance ? cashBalance : null);
-			updateDatasetBalance(updatedDatasets, 'Debt', hasDebtBalance ? debtBalance : null);
-			updateDatasetBalance(updatedDatasets, 'Investments', hasInvestmentsBalance ? investmentsBalance : null); // prettier-ignore
-			updateDatasetBalance(updatedDatasets, 'Other assets', hasOtherAssetsBalance ? otherAssetsBalance : null); // prettier-ignore
-			updateDatasetBalance(updatedDatasets, 'Net worth', netWorthBalance);
+			updateDatasetBalance(updatedDatasets, cashLabel, hasCashBalance ? cashBalance : null);
+			updateDatasetBalance(updatedDatasets, debtLabel, hasDebtBalance ? debtBalance : null);
+			updateDatasetBalance(updatedDatasets, investmentsLabel, hasInvestmentsBalance ? investmentsBalance : null); // prettier-ignore
+			updateDatasetBalance(updatedDatasets, otherAssetsLabel, hasOtherAssetsBalance ? otherAssetsBalance : null); // prettier-ignore
+			updateDatasetBalance(updatedDatasets, netWorthLabel, netWorthBalance);
 		}
 
 		return updatedDatasets;
@@ -373,17 +379,17 @@ export const load = async () => {
 		const weeksInPeriod = trendNetWorthLabels;
 
 		const datasets = await trendNetWorthDataset;
-		const netWorthDataset = datasets.find(({ label }) => label === 'Net worth')?.data as number[]; // prettier-ignore
-		const cashDataset = datasets.find(({ label }) => label === 'Cash')?.data as number[]; // prettier-ignore
-		const debtDataset = datasets.find(({ label }) => label === 'Debt')?.data as number[]; // prettier-ignore
-		const investmentsDataset = datasets.find(({ label }) => label === 'Investments')?.data as number[]; // prettier-ignore
-		const otherAssetsDataset = datasets.find(({ label }) => label === 'Other assets')?.data as number[]; // prettier-ignore
+		const netWorthDataset = datasets.find(({ label }) => label === netWorthLabel)?.data as number[]; // prettier-ignore
+		const cashDataset = datasets.find(({ label }) => label === cashLabel)?.data as number[]; // prettier-ignore
+		const debtDataset = datasets.find(({ label }) => label === debtLabel)?.data as number[]; // prettier-ignore
+		const investmentsDataset = datasets.find(({ label }) => label === investmentsLabel)?.data as number[]; // prettier-ignore
+		const otherAssetsDataset = datasets.find(({ label }) => label === otherAssetsLabel)?.data as number[]; // prettier-ignore
 
-		const rowNetWorth = trendNetWorthTable.find(({ name }) => name === 'Net worth') as TrendNetWorthTable; // prettier-ignore
-		const rowCash = trendNetWorthTable.find(({ name }) => name === BalanceGroup.CASH) as TrendNetWorthTable; // prettier-ignore
-		const rowDebt = trendNetWorthTable.find(({ name }) => name === BalanceGroup.DEBT) as TrendNetWorthTable; // prettier-ignore
-		const rowInvestments = trendNetWorthTable.find(({ name }) => name === BalanceGroup.INVESTMENTS) as TrendNetWorthTable; // prettier-ignore
-		const rowOtherAssets = trendNetWorthTable.find(({ name }) => name === BalanceGroup.OTHER_ASSETS) as TrendNetWorthTable; // prettier-ignore
+		const rowNetWorth = trendNetWorthTable.find(({ name }) => name === netWorthLabel) as TrendNetWorthTable; // prettier-ignore
+		const rowCash = trendNetWorthTable.find(({ name }) => name === cashLabel) as TrendNetWorthTable; // prettier-ignore
+		const rowDebt = trendNetWorthTable.find(({ name }) => name === debtLabel) as TrendNetWorthTable; // prettier-ignore
+		const rowInvestments = trendNetWorthTable.find(({ name }) => name === investmentsLabel) as TrendNetWorthTable; // prettier-ignore
+		const rowOtherAssets = trendNetWorthTable.find(({ name }) => name === otherAssetsLabel) as TrendNetWorthTable; // prettier-ignore
 
 		for (const weekInPeriod of weeksInPeriod) {
 			const currentWeek = new Date(weekInPeriod);

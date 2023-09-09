@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { writable } from 'svelte/store';
 	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
@@ -11,12 +12,12 @@
 	import TableValue from '$lib/components/TableValue.svelte';
 	import TableNoValue from '$lib/components/TableNoValue.svelte';
 	import TableButtonSortable from '$lib/components/TableButtonSortable.svelte';
-	import type { PageData } from './$types';
-	import { writable } from 'svelte/store';
-	import type { ChartDataset } from 'chart.js';
+	import TableValueTrend from '$lib/components/TableValueTrend.svelte';
 	import { formatCurrency, formatPercentage, toCamelCase } from '$lib/helpers/misc';
 	import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
-	import TableValueTrend from '../../lib/components/TableValueTrend.svelte';
+	import { safeAlphabeticalSort, safeNumericSort } from '$lib/helpers/tables';
+	import type { PageData } from './$types';
+	import type { ChartDataset } from 'chart.js';
 
 	const title = 'Trends';
 
@@ -76,11 +77,8 @@
 	data.streamed.trendNetWorthTableData.then((streamedData) => {
 		netWorthTable.set(streamedData);
 		trendNetWorthTableIsLoading = false;
+		sortPerformanceBy(toCamelCase(TableHeaders.ALLOCATION));
 	});
-
-	//////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////
 
 	enum TableHeaders {
 		BALANCE_TYPE = 'Balance type',
@@ -99,7 +97,7 @@
 	let sortBy: string;
 
 	// Sorts the accounts by column and asc/desc order
-	const sortAccountsBy = async (column: string) => {
+	const sortPerformanceBy = (column: string) => {
 		if (sortBy === column) {
 			sortOrder = sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC;
 		} else {
@@ -109,70 +107,23 @@
 		$netWorthTable = $netWorthTable.sort((a, b) => {
 			switch (column) {
 				case toCamelCase(TableHeaders.BALANCE_TYPE):
-					console.log('a', a.name);
-					console.log('b', b.name);
-					return sortOrder === SortOrder.DESC
-						? a.name.localeCompare(b.name)
-						: b.name.localeCompare(a.name);
-
-				// Need to convert `null` performances to `0` so they can be compared
-
+					return safeAlphabeticalSort(a, b, sortOrder, 'name');
 				case toCamelCase(TableHeaders.ONE_WEEK):
-					if (a.performanceOneWeek === null) a.performanceOneWeek = 0;
-					if (b.performanceOneWeek === null) b.performanceOneWeek = 0;
-					return sortOrder === SortOrder.ASC
-						? a.performanceOneWeek - b.performanceOneWeek
-						: b.performanceOneWeek - a.performanceOneWeek;
-
+					return safeNumericSort(a, b, sortOrder, 'performanceOneWeek');
 				case toCamelCase(TableHeaders.ONE_MONTH):
-					if (a.performanceOneMonth === null) a.performanceOneMonth = 0;
-					if (b.performanceOneMonth === null) b.performanceOneMonth = 0;
-					return sortOrder === SortOrder.ASC
-						? a.performanceOneMonth - b.performanceOneMonth
-						: b.performanceOneMonth - a.performanceOneMonth;
-
+					return safeNumericSort(a, b, sortOrder, 'performanceOneMonth');
 				case toCamelCase(TableHeaders.SIX_MONTHS):
-					if (a.performanceSixMonths === null) a.performanceSixMonths = 0;
-					if (b.performanceSixMonths === null) b.performanceSixMonths = 0;
-					return sortOrder === SortOrder.ASC
-						? a.performanceSixMonths - b.performanceSixMonths
-						: b.performanceSixMonths - a.performanceSixMonths;
-
+					return safeNumericSort(a, b, sortOrder, 'performanceSixMonths');
 				case toCamelCase(TableHeaders.YEAR_TO_DATE):
-					if (a.performanceYearToDate === null) a.performanceYearToDate = 0;
-					if (b.performanceYearToDate === null) b.performanceYearToDate = 0;
-					return sortOrder === SortOrder.ASC
-						? a.performanceYearToDate - b.performanceYearToDate
-						: b.performanceYearToDate - a.performanceYearToDate;
-
+					return safeNumericSort(a, b, sortOrder, 'performanceYearToDate');
 				case toCamelCase(TableHeaders.ONE_YEAR):
-					if (a.performanceOneYear === null) a.performanceOneYear = 0;
-					if (b.performanceOneYear === null) b.performanceOneYear = 0;
-					return sortOrder === SortOrder.ASC
-						? a.performanceOneYear - b.performanceOneYear
-						: b.performanceOneYear - a.performanceOneYear;
-
+					return safeNumericSort(a, b, sortOrder, 'performanceOneYear');
 				case toCamelCase(TableHeaders.FIVE_YEARS):
-					if (a.performanceFiveYears === null) a.performanceFiveYears = 0;
-					if (b.performanceFiveYears === null) b.performanceFiveYears = 0;
-					return sortOrder === SortOrder.ASC
-						? a.performanceFiveYears - b.performanceFiveYears
-						: b.performanceFiveYears - a.performanceFiveYears;
-
+					return safeNumericSort(a, b, sortOrder, 'performanceFiveYears');
 				case toCamelCase(TableHeaders.MAX):
-					if (a.performanceMax === null) a.performanceMax = 0;
-					if (b.performanceMax === null) b.performanceMax = 0;
-					return sortOrder === SortOrder.ASC
-						? a.performanceMax - b.performanceMax
-						: b.performanceMax - a.performanceMax;
-
+					return safeNumericSort(a, b, sortOrder, 'performanceMax');
 				case toCamelCase(TableHeaders.ALLOCATION):
-					if (a.allocation === null) a.allocation = 0;
-					if (b.allocation === null) b.allocation = 0;
-					return sortOrder === SortOrder.ASC
-						? a.allocation - b.allocation
-						: b.allocation - a.allocation;
-
+					return safeNumericSort(a, b, sortOrder, 'allocation');
 				default:
 					return -1;
 			}
@@ -219,7 +170,7 @@
 										{label}
 										{sortOrder}
 										sortBy={sortBy === column}
-										on:click={async () => await sortAccountsBy(column)}
+										on:click={async () => sortPerformanceBy(column)}
 									/>
 								</TableTh>
 							{/each}
@@ -246,10 +197,10 @@
 								currentBalance,
 								allocation
 							} = balanceType}
-							{@const isDebt = balanceType.name === BalanceGroup.DEBT}
+							{@const isDebt = balanceType.name === getBalanceGroupLabel(BalanceGroup.DEBT)}
 							<TableTr>
 								<TableTd>
-									{typeof name === 'string' ? name : getBalanceGroupLabel(name)}
+									{name}
 								</TableTd>
 								<TableTd isAlignedRight={true} isLoading={trendNetWorthTableIsLoading}>
 									<TableValueTrend
