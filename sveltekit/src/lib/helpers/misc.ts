@@ -30,7 +30,7 @@ export const formatPercentage = (value: number, maximumFractionDigits?: number) 
 export const growthPercentage = (initialAmount: number, finalAmount: number): number => {
 	if (initialAmount === 0)
 		throw new Error('Initial amount cannot be zero when calculating growth percentage.');
-	return ((finalAmount - initialAmount) / Math.abs(initialAmount)) * 100;
+	return ((Math.abs(finalAmount) - Math.abs(initialAmount)) / Math.abs(initialAmount)) * 100;
 };
 
 export const sortByKey = (array: any[], key: string, order: SortOrder) => {
