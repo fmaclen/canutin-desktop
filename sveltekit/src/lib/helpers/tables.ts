@@ -8,10 +8,11 @@ export const sortNumerically = <T>(a: T, b: T, sortOrder: SortOrder): number => 
 };
 
 export const sortAlphabetically = <T>(a: T, b: T, sortOrder: SortOrder): number => {
-	const valueA: string | undefined | null = (a as unknown as string) ?? '';
-	const valueB: string | undefined | null = (b as unknown as string) ?? '';
+	// If the property is null or undefined, set it to an empty string
+	const valueA: string = (a as unknown as string) ?? '';
+	const valueB: string = (b as unknown as string) ?? '';
 	if (sortOrder === SortOrder.ASC) {
-		return valueA.localeCompare(valueB); // For alphabetical sorting
+		return valueA.localeCompare(valueB);
 	} else {
 		return valueB.localeCompare(valueA);
 	}
