@@ -46,7 +46,7 @@ export const sortByNumber = <T>(a: T, b: T, sortOrder: SortOrder): number => {
 	return sortOrder === SortOrder.DESC ? valueB - valueA : valueA - valueB;
 };
 
-export const sortAlphabetically = <T>(a: T, b: T, sortOrder: SortOrder): number => {
+export const sortByString = <T>(a: T, b: T, sortOrder: SortOrder): number => {
 	// If the property is null or undefined, set it to an empty string
 	const valueA: string = (a as unknown as string) ?? '';
 	const valueB: string = (b as unknown as string) ?? '';
@@ -57,7 +57,7 @@ export const sortAlphabetically = <T>(a: T, b: T, sortOrder: SortOrder): number 
 	}
 };
 
-export const sortBooleans = <T>(a: T, b: T, sortOrder: SortOrder): number => {
+export const sortByBoolean = <T>(a: T, b: T, sortOrder: SortOrder): number => {
 	return sortOrder === SortOrder.DESC ? +a - +b : +b - +a;
 };
 

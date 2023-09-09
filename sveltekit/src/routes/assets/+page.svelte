@@ -18,8 +18,8 @@
 	import {
 		formatCurrency,
 		formatInUTC,
-		sortBooleans,
-		sortAlphabetically,
+		sortByBoolean,
+		sortByString,
 		sortByNumber
 	} from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
@@ -56,13 +56,13 @@
 		assets = assets.sort((a, b) => {
 			switch (column) {
 				case toCamelCase(TableHeaders.NAME):
-					return sortAlphabetically(a.name, b.name, sortOrder);
+					return sortByString(a.name, b.name, sortOrder);
 				case toCamelCase(TableHeaders.ASSET_TYPE):
-					return sortAlphabetically(a.assetType.name, b.assetType.name, sortOrder);
+					return sortByString(a.assetType.name, b.assetType.name, sortOrder);
 				case toCamelCase(TableHeaders.SYMBOL):
-					return sortAlphabetically(a.symbol, b.symbol, sortOrder);
+					return sortByString(a.symbol, b.symbol, sortOrder);
 				case toCamelCase(TableHeaders.MARKED_AS):
-					return sortBooleans(a.isSold, b.isSold, sortOrder);
+					return sortByBoolean(a.isSold, b.isSold, sortOrder);
 				case toCamelCase(TableHeaders.QUANTITY):
 					return sortByNumber(a.quantity, b.quantity, sortOrder);
 				case toCamelCase(TableHeaders.COST):

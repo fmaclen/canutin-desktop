@@ -17,7 +17,7 @@
 		formatCurrency,
 		formatPercentage,
 		toCamelCase,
-		sortAlphabetically,
+		sortByString,
 		sortByNumber
 	} from '$lib/helpers/misc';
 	import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
@@ -112,7 +112,7 @@
 		$netWorthTable = $netWorthTable.sort((a, b) => {
 			switch (column) {
 				case toCamelCase(TableHeaders.BALANCE_TYPE):
-					return sortAlphabetically(a.name, b.name, sortOrder);
+					return sortByString(a.name, b.name, sortOrder);
 				case toCamelCase(TableHeaders.ONE_WEEK):
 					return sortByNumber(a.performanceOneWeek, b.performanceOneWeek, sortOrder);
 				case toCamelCase(TableHeaders.ONE_MONTH):

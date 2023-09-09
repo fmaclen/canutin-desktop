@@ -18,8 +18,8 @@
 	import {
 		formatCurrency,
 		formatInUTC,
-		sortBooleans,
-		sortAlphabetically,
+		sortByBoolean,
+		sortByString,
 		sortByNumber
 	} from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
@@ -56,17 +56,17 @@
 		accounts = accounts.sort((a, b) => {
 			switch (column) {
 				case toCamelCase(TableHeaders.NAME):
-					return sortAlphabetically(a.name, b.name, sortOrder);
+					return sortByString(a.name, b.name, sortOrder);
 				case toCamelCase(TableHeaders.INSTITUTION):
-					return sortAlphabetically(a.institution, b.institution, sortOrder);
+					return sortByString(a.institution, b.institution, sortOrder);
 				case toCamelCase(TableHeaders.ACCOUNT_TYPE):
-					return sortAlphabetically(a.accountType.name, b.accountType.name, sortOrder);
+					return sortByString(a.accountType.name, b.accountType.name, sortOrder);
 				case toCamelCase(TableHeaders.TRANSACTIONS):
 					return sortByNumber(a.transactionCount, b.transactionCount, sortOrder);
 				case toCamelCase(TableHeaders.MARKED_AS):
-					return sortBooleans(a.isClosed, b.isClosed, sortOrder);
+					return sortByBoolean(a.isClosed, b.isClosed, sortOrder);
 				case toCamelCase(TableHeaders.BALANCE_TYPE):
-					return sortBooleans(a.isAutoCalculated, b.isAutoCalculated, sortOrder);
+					return sortByBoolean(a.isAutoCalculated, b.isAutoCalculated, sortOrder);
 				case toCamelCase(TableHeaders.BALANCE):
 					return sortByNumber(a.balance, b.balance, sortOrder);
 				case toCamelCase(TableHeaders.LAST_UPDATED):
