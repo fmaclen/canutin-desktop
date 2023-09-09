@@ -17,6 +17,7 @@
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import Plate from '../../lib/components/Plate.svelte';
+	import TableValue from '../../lib/components/TableValue.svelte';
 
 	const title = 'Accounts';
 
@@ -180,9 +181,11 @@
 
 									<TableTd>
 										{#if transactionCount > 0}
-											<Link href={`/transactions?keyword=accountId:${id}&periodPreset=Lifetime`}>
-												{transactionCount}
-											</Link>
+											<TableValue isNumeric={true}>
+												<Link href={`/transactions?keyword=accountId:${id}&periodPreset=Lifetime`}>
+													{transactionCount}
+												</Link>
+											</TableValue>
 										{:else}
 											<TableNoValue />
 										{/if}
@@ -208,12 +211,16 @@
 										</TableTd>
 									{/if}
 
-									<TableTd hasTotal={true} isPositive={balance > 0} isAlignedRight={true}>
-										{formatCurrency(balance, 2, 2)}
+									<TableTd isAlignedRight={true}>
+										<TableValue isNumeric={true} isPositive={balance > 0}>
+											{formatCurrency(balance, 2, 2)}
+										</TableValue>
 									</TableTd>
 
-									<TableTd hasDate={true} isAlignedRight={true}>
-										{formatInUTC(fromUnixTime(lastUpdated), 'MMM dd, yyyy')}
+									<TableTd isAlignedRight={true}>
+										<TableValue isDate={true}>
+											{formatInUTC(fromUnixTime(lastUpdated), 'MMM dd, yyyy')}
+										</TableValue>
 									</TableTd>
 								</TableTr>
 							{/each}

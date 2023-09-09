@@ -17,6 +17,7 @@
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import Plate from '../../lib/components/Plate.svelte';
+	import TableValue from '../../lib/components/TableValue.svelte';
 
 	const title = 'Assets';
 
@@ -191,29 +192,37 @@
 											{/if}
 										</TableTd>
 
-										<TableTd hasTotal={true} isAlignedRight={true}>
+										<TableTd isAlignedRight={true}>
 											{#if quantity}
-												{quantity}
+												<TableValue isNumeric={true}>
+													{quantity}
+												</TableValue>
 											{:else}
 												<TableNoValue />
 											{/if}
 										</TableTd>
 
-										<TableTd hasTotal={true} isAlignedRight={true}>
+										<TableTd isAlignedRight={true}>
 											{#if cost}
-												{formatCurrency(cost, 2, 2)}
+												<TableValue isNumeric={true}>
+													{formatCurrency(cost, 2, 2)}
+												</TableValue>
 											{:else}
 												<TableNoValue />
 											{/if}
 										</TableTd>
 									{/if}
 
-									<TableTd hasTotal={true} isAlignedRight={true} isPositive={value > 0}>
-										{formatCurrency(value, 2, 2)}
+									<TableTd isAlignedRight={true}>
+										<TableValue isNumeric={true} isPositive={value > 0}>
+											{formatCurrency(value, 2, 2)}
+										</TableValue>
 									</TableTd>
 
-									<TableTd hasDate={true} isAlignedRight={true}>
-										{formatInUTC(fromUnixTime(lastUpdated), 'MMM dd, yyyy')}
+									<TableTd isAlignedRight={true}>
+										<TableValue isDate={true}>
+											{formatInUTC(fromUnixTime(lastUpdated), 'MMM dd, yyyy')}
+										</TableValue>
 									</TableTd>
 								</TableTr>
 							{/each}
