@@ -93,9 +93,92 @@
 		MAX = 'Max',
 		ALLOCATION = 'Allocation'
 	}
+
 	// Default params
 	let sortOrder = SortOrder.DESC;
 	let sortBy: string;
+
+	// Sorts the accounts by column and asc/desc order
+	const sortAccountsBy = async (column: string) => {
+		if (sortBy === column) {
+			sortOrder = sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC;
+		} else {
+			sortBy = column;
+		}
+
+		$netWorthTable = $netWorthTable.sort((a, b) => {
+			switch (column) {
+				case toCamelCase(TableHeaders.BALANCE_TYPE):
+					console.log('a', a.name);
+					console.log('b', b.name);
+					return sortOrder === SortOrder.DESC
+						? a.name.localeCompare(b.name)
+						: b.name.localeCompare(a.name);
+
+				// Need to convert `null` performances to `0` so they can be compared
+
+				case toCamelCase(TableHeaders.ONE_WEEK):
+					if (a.performanceOneWeek === null) a.performanceOneWeek = 0;
+					if (b.performanceOneWeek === null) b.performanceOneWeek = 0;
+					return sortOrder === SortOrder.ASC
+						? a.performanceOneWeek - b.performanceOneWeek
+						: b.performanceOneWeek - a.performanceOneWeek;
+
+				case toCamelCase(TableHeaders.ONE_MONTH):
+					if (a.performanceOneMonth === null) a.performanceOneMonth = 0;
+					if (b.performanceOneMonth === null) b.performanceOneMonth = 0;
+					return sortOrder === SortOrder.ASC
+						? a.performanceOneMonth - b.performanceOneMonth
+						: b.performanceOneMonth - a.performanceOneMonth;
+
+				case toCamelCase(TableHeaders.SIX_MONTHS):
+					if (a.performanceSixMonths === null) a.performanceSixMonths = 0;
+					if (b.performanceSixMonths === null) b.performanceSixMonths = 0;
+					return sortOrder === SortOrder.ASC
+						? a.performanceSixMonths - b.performanceSixMonths
+						: b.performanceSixMonths - a.performanceSixMonths;
+
+				case toCamelCase(TableHeaders.YEAR_TO_DATE):
+					if (a.performanceYearToDate === null) a.performanceYearToDate = 0;
+					if (b.performanceYearToDate === null) b.performanceYearToDate = 0;
+					return sortOrder === SortOrder.ASC
+						? a.performanceYearToDate - b.performanceYearToDate
+						: b.performanceYearToDate - a.performanceYearToDate;
+
+				case toCamelCase(TableHeaders.ONE_YEAR):
+					if (a.performanceOneYear === null) a.performanceOneYear = 0;
+					if (b.performanceOneYear === null) b.performanceOneYear = 0;
+					return sortOrder === SortOrder.ASC
+						? a.performanceOneYear - b.performanceOneYear
+						: b.performanceOneYear - a.performanceOneYear;
+
+				case toCamelCase(TableHeaders.FIVE_YEARS):
+					if (a.performanceFiveYears === null) a.performanceFiveYears = 0;
+					if (b.performanceFiveYears === null) b.performanceFiveYears = 0;
+					return sortOrder === SortOrder.ASC
+						? a.performanceFiveYears - b.performanceFiveYears
+						: b.performanceFiveYears - a.performanceFiveYears;
+
+				case toCamelCase(TableHeaders.MAX):
+					if (a.performanceMax === null) a.performanceMax = 0;
+					if (b.performanceMax === null) b.performanceMax = 0;
+					return sortOrder === SortOrder.ASC
+						? a.performanceMax - b.performanceMax
+						: b.performanceMax - a.performanceMax;
+
+				case toCamelCase(TableHeaders.ALLOCATION):
+					if (a.allocation === null) a.allocation = 0;
+					if (b.allocation === null) b.allocation = 0;
+					return sortOrder === SortOrder.ASC
+						? a.allocation - b.allocation
+						: b.allocation - a.allocation;
+
+				default:
+					return -1;
+			}
+		});
+	};
+
 	let tableHeaders = Object.values(TableHeaders).map((tableHeader) => {
 		return {
 			label: tableHeader,
@@ -132,7 +215,12 @@
 										TableHeaders.ALLOCATION
 									].includes(tableHeader.label)}
 								>
-									<TableButtonSortable {label} {sortOrder} sortBy={sortBy === column} />
+									<TableButtonSortable
+										{label}
+										{sortOrder}
+										sortBy={sortBy === column}
+										on:click={async () => await sortAccountsBy(column)}
+									/>
 								</TableTh>
 							{/each}
 						</tr>

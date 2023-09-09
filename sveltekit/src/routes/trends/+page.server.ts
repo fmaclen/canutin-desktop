@@ -31,7 +31,7 @@ interface TrendGroup {
 }
 
 interface TrendNetWorthTable {
-	name: BalanceGroup | 'Net worth';
+	name: string;
 	currentBalance: number | null;
 	balanceOneWeek: number | null;
 	performanceOneWeek: number | null;
