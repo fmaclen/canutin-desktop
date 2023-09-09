@@ -54,35 +54,32 @@
 		}
 
 		&--loading {
-			position: relative;
-			overflow: hidden;
-			background-color: var(--color-neutral-200);
-			color: var(--color-neutral-400);
-
 			@keyframes loading-animation {
 				0% {
-					left: -100%; // Initial position
+					background-position: -250px 0;
 				}
-
 				100% {
-					left: 100%; // Final position
+					background-position: 250px 0;
 				}
 			}
 
 			&::after {
 				content: '';
-				position: absolute;
-				top: 0;
+				border-radius: 2px;
 				width: 100%;
-				height: 100%;
-				background-image: linear-gradient(
+				height: 14.5px; // Computed height of <TableValue>'s numeric values
+				display: inline-block;
+				background: linear-gradient(
 					to right,
-					rgba(243, 243, 243, 0),
-					rgba(243, 243, 243, 0.75),
-					rgba(243, 243, 243, 1),
-					rgba(243, 243, 243, 0.75),
-					rgba(243, 243, 243, 0)
+					var(--color-grey5) 20%,
+					var(--color-grey10) 50%,
+					var(--color-grey5) 80%
 				);
+				background-size: 512px 80px;
+				animation-duration: 0.5s;
+				animation-iteration-count: infinite;
+				animation-timing-function: linear;
+				animation-fill-mode: forwards;
 				animation: loading-animation 2s linear infinite;
 			}
 		}
