@@ -13,9 +13,14 @@
 	import TableNoValue from '$lib/components/TableNoValue.svelte';
 	import TableButtonSortable from '$lib/components/TableButtonSortable.svelte';
 	import TableValueTrend from '$lib/components/TableValueTrend.svelte';
-	import { formatCurrency, formatPercentage, toCamelCase } from '$lib/helpers/misc';
+	import {
+		formatCurrency,
+		formatPercentage,
+		toCamelCase,
+		sortAlphabetically,
+		sortByNumber
+	} from '$lib/helpers/misc';
 	import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
-	import { sortAlphabetically, sortNumerically } from '$lib/helpers/tables';
 	import type { PageData } from './$types';
 	import type { ChartDataset } from 'chart.js';
 
@@ -109,21 +114,21 @@
 				case toCamelCase(TableHeaders.BALANCE_TYPE):
 					return sortAlphabetically(a.name, b.name, sortOrder);
 				case toCamelCase(TableHeaders.ONE_WEEK):
-					return sortNumerically(a.performanceOneWeek, b.performanceOneWeek, sortOrder);
+					return sortByNumber(a.performanceOneWeek, b.performanceOneWeek, sortOrder);
 				case toCamelCase(TableHeaders.ONE_MONTH):
-					return sortNumerically(a.performanceOneMonth, b.performanceOneMonth, sortOrder);
+					return sortByNumber(a.performanceOneMonth, b.performanceOneMonth, sortOrder);
 				case toCamelCase(TableHeaders.SIX_MONTHS):
-					return sortNumerically(a.performanceSixMonths, b.performanceSixMonths, sortOrder);
+					return sortByNumber(a.performanceSixMonths, b.performanceSixMonths, sortOrder);
 				case toCamelCase(TableHeaders.YEAR_TO_DATE):
-					return sortNumerically(a.performanceYearToDate, b.performanceYearToDate, sortOrder);
+					return sortByNumber(a.performanceYearToDate, b.performanceYearToDate, sortOrder);
 				case toCamelCase(TableHeaders.ONE_YEAR):
-					return sortNumerically(a.performanceOneYear, b.performanceOneYear, sortOrder);
+					return sortByNumber(a.performanceOneYear, b.performanceOneYear, sortOrder);
 				case toCamelCase(TableHeaders.FIVE_YEARS):
-					return sortNumerically(a.performanceFiveYears, b.performanceFiveYears, sortOrder);
+					return sortByNumber(a.performanceFiveYears, b.performanceFiveYears, sortOrder);
 				case toCamelCase(TableHeaders.MAX):
-					return sortNumerically(a.performanceMax, b.performanceMax, sortOrder);
+					return sortByNumber(a.performanceMax, b.performanceMax, sortOrder);
 				case toCamelCase(TableHeaders.ALLOCATION):
-					return sortNumerically(a.allocation, b.allocation, sortOrder);
+					return sortByNumber(a.allocation, b.allocation, sortOrder);
 				default:
 					return -1;
 			}

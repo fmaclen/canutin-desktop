@@ -39,6 +39,28 @@ export const sortByKey = (array: any[], key: string, order: SortOrder) => {
 		: array.sort((a, b) => (Math.abs(a[key]) < Math.abs(b[key]) ? 1 : -1));
 };
 
+export const sortByNumber = <T>(a: T, b: T, sortOrder: SortOrder): number => {
+	// If the property is null or undefined, set it to 0
+	const valueA: number = (a as unknown as number) ?? 0;
+	const valueB: number = (b as unknown as number) ?? 0;
+	return sortOrder === SortOrder.DESC ? valueB - valueA : valueA - valueB;
+};
+
+export const sortAlphabetically = <T>(a: T, b: T, sortOrder: SortOrder): number => {
+	// If the property is null or undefined, set it to an empty string
+	const valueA: string = (a as unknown as string) ?? '';
+	const valueB: string = (b as unknown as string) ?? '';
+	if (sortOrder === SortOrder.DESC) {
+		return valueA.localeCompare(valueB);
+	} else {
+		return valueB.localeCompare(valueA);
+	}
+};
+
+export const sortBooleans = <T>(a: T, b: T, sortOrder: SortOrder): number => {
+	return sortOrder === SortOrder.DESC ? +a - +b : +b - +a;
+};
+
 // Calculates the ratio between the two numbers
 export const proportionBetween = (num1: number, num2: number) => {
 	return Math.round((!(num1 === 0) && !(num2 === 0) ? (num1 * 100) / num2 : 0) * 1e2) / 1e2;

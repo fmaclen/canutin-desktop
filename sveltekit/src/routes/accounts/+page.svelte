@@ -15,9 +15,14 @@
 	import TableValue from '$lib/components/TableValue.svelte';
 	import TableNoValue from '$lib/components/TableNoValue.svelte';
 	import { toCamelCase } from '$lib/helpers/misc';
-	import { formatCurrency, formatInUTC } from '$lib/helpers/misc';
+	import {
+		formatCurrency,
+		formatInUTC,
+		sortBooleans,
+		sortAlphabetically,
+		sortByNumber
+	} from '$lib/helpers/misc';
 	import { SortOrder } from '$lib/helpers/constants';
-	import { sortBooleans, sortAlphabetically, sortNumerically } from '$lib/helpers/tables';
 	import type { PageData } from './$types';
 
 	const title = 'Accounts';
@@ -57,15 +62,15 @@
 				case toCamelCase(TableHeaders.ACCOUNT_TYPE):
 					return sortAlphabetically(a.accountType.name, b.accountType.name, sortOrder);
 				case toCamelCase(TableHeaders.TRANSACTIONS):
-					return sortNumerically(a.transactionCount, b.transactionCount, sortOrder);
+					return sortByNumber(a.transactionCount, b.transactionCount, sortOrder);
 				case toCamelCase(TableHeaders.MARKED_AS):
 					return sortBooleans(a.isClosed, b.isClosed, sortOrder);
 				case toCamelCase(TableHeaders.BALANCE_TYPE):
 					return sortBooleans(a.isAutoCalculated, b.isAutoCalculated, sortOrder);
 				case toCamelCase(TableHeaders.BALANCE):
-					return sortNumerically(a.balance, b.balance, sortOrder);
+					return sortByNumber(a.balance, b.balance, sortOrder);
 				case toCamelCase(TableHeaders.LAST_UPDATED):
-					return sortNumerically(a.lastUpdated, b.lastUpdated, sortOrder);
+					return sortByNumber(a.lastUpdated, b.lastUpdated, sortOrder);
 				default:
 					return -1;
 			}
