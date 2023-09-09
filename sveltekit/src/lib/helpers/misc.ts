@@ -27,6 +27,12 @@ export const formatPercentage = (value: number, maximumFractionDigits?: number) 
 	}).format(value / 100);
 };
 
+export const growthPercentage = (initialAmount: number, finalAmount: number): number => {
+	if (initialAmount === 0)
+		throw new Error('Initial amount cannot be zero when calculating growth percentage.');
+	return ((finalAmount - initialAmount) / Math.abs(initialAmount)) * 100;
+};
+
 export const sortByKey = (array: any[], key: string, order: SortOrder) => {
 	order == SortOrder.DESC
 		? array.sort((a, b) => (Math.abs(a[key]) > Math.abs(b[key]) ? 1 : -1))
@@ -36,12 +42,6 @@ export const sortByKey = (array: any[], key: string, order: SortOrder) => {
 // Calculates the ratio between the two numbers
 export const proportionBetween = (num1: number, num2: number) => {
 	return Math.round((!(num1 === 0) && !(num2 === 0) ? (num1 * 100) / num2 : 0) * 1e2) / 1e2;
-};
-
-export const growthPercentage = (initialAmount: number, finalAmount: number): number => {
-	if (initialAmount === 0)
-		throw new Error('Initial amount cannot be zero when calculating growth percentage.');
-	return ((finalAmount - initialAmount) / Math.abs(initialAmount)) * 100;
 };
 
 // Strip timezone from date and set to UTC
