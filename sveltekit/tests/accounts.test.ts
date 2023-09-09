@@ -25,7 +25,7 @@ test.describe('Accounts', () => {
 		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$0');
 		expect(await page.locator('.card', { hasText: 'Investment' }).textContent()).toMatch('$0');
 
-		const balanceTypeGroup = page.locator('.balanceSheet__typeGroup');
+		const balanceTypeGroup = page.locator('[data-test-id="balance-sheet-type-group"]');
 		expect(await balanceTypeGroup.count()).toBe(0);
 
 		// Check the form has the correct behavior
@@ -147,7 +147,7 @@ test.describe('Accounts', () => {
 		await expect(page.locator('h1', { hasText: 'Balance sheet' })).toBeVisible();
 		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$0');
 
-		const balanceTypeGroup = page.locator('.balanceSheet__typeGroup');
+		const balanceTypeGroup = page.locator('[data-test-id="balance-sheet-type-group"]');
 		expect(await balanceTypeGroup.textContent()).toMatch('Savings');
 		expect(await balanceTypeGroup.textContent()).toMatch("Alice's Savings");
 		expect(await balanceTypeGroup.textContent()).toMatch('$0');

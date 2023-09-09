@@ -336,7 +336,7 @@ test.describe('Import CanutinFile', () => {
 		expect(await tableRows.nth(1).textContent()).toMatch('Subscriptions');
 		expect(await tableRows.nth(1).textContent()).toMatch("Bob's Laughable-Yield Checking");
 		expect(await tableRows.nth(1).textContent()).toMatch('-$24.99');
-		expect(await page.locator('span.table__excluded', { hasText: '-$24.99' }).count()).toBe(1);
+		expect(await page.locator('.tableValue--excluded', { hasText: '-$24.99' }).count()).toBe(1);
 
 		// Check the extra spaces in the transaction description have been removed
 		await page.locator('a', { hasText: 'NetTV *PYMNT ~Thank You~' }).first().click();

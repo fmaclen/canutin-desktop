@@ -39,7 +39,7 @@
 						/>
 
 						{#each balanceSheetItemsByBalanceGroup.balanceItemsTypeGroups as balanceSheetTypeGroup}
-							<Plate>
+							<Plate dataTestId="balance-sheet-type-group">
 								<header class="balanceSheet__typeHeader">
 									<p class="balanceSheet__typeName">{balanceSheetTypeGroup.type}</p>
 									<p class="balanceSheet__typeValue">

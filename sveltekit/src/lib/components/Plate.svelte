@@ -1,4 +1,8 @@
-<div class="plate">
+<script lang="ts">
+	export let dataTestId: string | undefined = undefined;
+</script>
+
+<div class="plate" data-test-id={dataTestId}>
 	<slot />
 </div>
 

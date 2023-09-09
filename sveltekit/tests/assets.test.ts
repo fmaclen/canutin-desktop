@@ -23,7 +23,7 @@ test.describe('Assets', () => {
 		expect(await page.locator('.card', { hasText: 'Cash' }).textContent()).toMatch('$0');
 		expect(await page.locator('.card', { hasText: 'Investment' }).textContent()).toMatch('$0');
 
-		const balanceTypeGroup = page.locator('.balanceSheet__typeGroup');
+		const balanceTypeGroup = page.locator('[data-test-id="balance-sheet-type-group"]');
 		expect(await balanceTypeGroup.count()).toBe(0);
 
 		const isSoldCheckbox = page.locator('.formInputCheckbox__input[name=isSold]');
