@@ -73,7 +73,7 @@ test.describe('Trends', () => {
 		await page.locator('a', { hasText: 'Assets' }).click();
 		await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
 		await page.locator('a', { hasText: 'Transactions' }).click();
-		await expect(page.getByText('Initech HR * Payroll')).toBeVisible();
+		await expect(page.getByText('Initech HR * Payroll').first()).toBeVisible();
 		await page.locator('a', { hasText: 'Trends' }).click();
 		await expect(page.locator('h1', { hasText: 'Trends' })).toBeVisible();
 		await expect(page.locator('.tableValue')).toHaveCount(35);

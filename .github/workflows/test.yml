@@ -56,4 +56,4 @@ jobs:
           name: ${{ matrix.browser }}-${{ matrix.os }}-test-results
           path: |
             sveltekit/test-results/
-            sveltekit/prisma/
+            sveltekit/**/*.vault
