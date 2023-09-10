@@ -115,11 +115,25 @@ const getDatasetLabels = async (accounts: Account[], assets: Asset[]) => {
 		start: dateInUTC(startOfTheWeekAfter(dateInUTC(earliestBalanceDates[0]))),
 		end: dateInUTC(startOfTheWeekAfter(dateInUTC(new Date())))
 	});
-	console.warn({
-		start: dateInUTC(startOfTheWeekAfter(dateInUTC(earliestBalanceDates[0]))),
-		end: dateInUTC(startOfTheWeekAfter(dateInUTC(new Date())))
-	});
+
+	/////////////////
+	/////////////////
+	/////////////////
+	console.warn('earliestBalanceDates[0]', earliestBalanceDates[0]);
+	console.warn('dateInUTC(earliestBalanceDates[0])', dateInUTC(earliestBalanceDates[0]));
+	console.warn(
+		'startOfTheWeekAfter(dateInUTC(earliestBalanceDates[0]))',
+		startOfTheWeekAfter(dateInUTC(earliestBalanceDates[0]))
+	);
+	console.warn(
+		'dateInUTC(startOfTheWeekAfter(dateInUTC(earliestBalanceDates[0])))',
+		dateInUTC(startOfTheWeekAfter(dateInUTC(earliestBalanceDates[0])))
+	);
 	console.warn('-----------------------------------------------------------------------');
+	/////////////////
+	/////////////////
+	/////////////////
+
 	for (const weekInPeriod of weeksInPeriod) {
 		labels.push(dateInUTC(weekInPeriod).toISOString().slice(0, 10)); // e.g. 2022-12-31
 	}
