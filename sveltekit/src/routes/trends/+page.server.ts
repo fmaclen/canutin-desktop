@@ -325,7 +325,6 @@ export const load = async () => {
 			const debtDataIndex = trendDebtLabels.indexOf(weekInPeriod);
 			const investmentsDataIndex = trendInvestmentsLabels.indexOf(weekInPeriod);
 			const otherAssetsDataIndex = trendOtherAssetsLabels.indexOf(weekInPeriod);
-			console.warn('otherAssetsDataIndex', otherAssetsDataIndex, weekInPeriod);
 
 			const hasCashBalance = cashDataIndex !== -1;
 			const hasDebtBalance = debtDataIndex !== -1;
@@ -376,12 +375,12 @@ export const load = async () => {
 
 	const updateNetWorthTable = async (): Promise<TrendNetWorthTable[]> => {
 		const today = dateInUTC(new Date());
-		const oneWeekAgo = subWeeks(today, 1);
-		const oneMonthAgo = subMonths(today, 1);
-		const sixMonthsAgo = subMonths(today, 6);
-		const firstOfCurrentYear = startOfYear(today);
-		const oneYearAgo = subYears(today, 1);
-		const fiveYearsAgo = subYears(today, 5);
+		const oneWeekAgo = dateInUTC(subWeeks(today, 1));
+		const oneMonthAgo = dateInUTC(subMonths(today, 1));
+		const sixMonthsAgo = dateInUTC(subMonths(today, 6));
+		const firstOfCurrentYear = dateInUTC(startOfYear(today));
+		const oneYearAgo = dateInUTC(subYears(today, 1));
+		const fiveYearsAgo = dateInUTC(subYears(today, 5));
 		const weeksInPeriod = trendNetWorthLabels;
 
 		const datasets = await trendNetWorthDataset;
