@@ -152,26 +152,6 @@
 <ScrollView {title}>
 	<Section title="Net worth">
 		<div slot="CONTENT">
-			<code style="">
-				new Date(): {new Date()} >>>> dateInUTC: {dateInUTC(new Date())}
-			</code>
-			<hr />
-			<code style="">
-				new Date(): {new Date().toISOString()} >>>> dateInUTC: {dateInUTC(new Date()).toISOString()}
-			</code>
-			<hr />
-			<code style=""
-				>Same dates?: {new Date().getTime() === dateInUTC(new Date()).getTime()} >>>>>>>> ({new Date().getTime()}
-				vs {dateInUTC(new Date()).getTime()})</code
-			>
-			<hr />
-			<code style="">
-				{JSON.stringify(data.trendNetWorth.labels, null, 2)}
-			</code>
-			<hr />
-			<code style="">
-				{JSON.stringify($netWorthDatasets, null, 2)}
-			</code>
 			{#if isVaultEmpty}
 				<Notice>
 					Balance history doesn't have enough data points to calculate net worth trends
@@ -304,6 +284,27 @@
 					</Table>
 				</Plate>
 			{/if}
+
+			<code style="">
+				new Date(): {new Date()} >>>> dateInUTC: {dateInUTC(new Date())}
+			</code>
+			<hr />
+			<code style="">
+				new Date(): {new Date().toISOString()} >>>> dateInUTC: {dateInUTC(new Date()).toISOString()}
+			</code>
+			<hr />
+			<code style=""
+				>Same dates?: {new Date().getTime() === dateInUTC(new Date()).getTime()} >>>>>>>> ({new Date().getTime()}
+				vs {dateInUTC(new Date()).getTime()})</code
+			>
+			<hr />
+			<code style="">
+				{JSON.stringify(data.trendNetWorth.labels, null, 2)}
+			</code>
+			<hr />
+			<code style="">
+				{JSON.stringify($netWorthDatasets, null, 2)}
+			</code>
 		</div>
 	</Section>
 
