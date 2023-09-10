@@ -407,6 +407,7 @@ export const load = async () => {
 
 			if (isSameWeek(currentWeek, dateInUTC(new Date(weeksInPeriod[0])))) {
 				console.warn('max', currentWeek);
+				console.warn('maxWeek', dateInUTC(new Date(weeksInPeriod[0])));
 				console.warn(
 					'otherAssetsDataset.find((balance) => balance !== null)',
 					otherAssetsDataset.find((balance) => balance !== null)
@@ -420,7 +421,8 @@ export const load = async () => {
 				rowOtherAssets.balanceMax = otherAssetsDataset.find((balance) => balance !== null) || null;
 			}
 			if (isSameWeek(currentWeek, oneWeekAgo)) {
-				console.warn('oneWeek', currentWeek);
+				console.warn('currentWeek', currentWeek);
+				console.warn('oneWeekAgo', oneWeekAgo);
 				console.warn('otherAssetsPeriod', otherAssetsPeriod);
 				console.warn('weekInPeriod', weekInPeriod);
 				console.warn('-------------------------------------------------------');
@@ -431,7 +433,8 @@ export const load = async () => {
 				rowOtherAssets.balanceOneWeek = otherAssetsPeriod;
 			}
 			if (isSameWeek(currentWeek, oneMonthAgo)) {
-				console.warn('oneMonth', currentWeek);
+				console.warn('currentWeek', currentWeek);
+				console.warn('oneMonthAgo', oneMonthAgo);
 				console.warn('otherAssetsPeriod', otherAssetsPeriod);
 				console.warn('weekInPeriod', weekInPeriod);
 				console.warn('-------------------------------------------------------');
