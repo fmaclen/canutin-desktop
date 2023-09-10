@@ -371,7 +371,7 @@ export const load = async () => {
 	const trendNetWorthDataset = updateNetWorthDataset();
 
 	const updateNetWorthTable = async (): Promise<TrendNetWorthTable[]> => {
-		const today = new Date();
+		const today = dateInUTC(new Date());
 		const oneWeekAgo = subWeeks(today, 1);
 		const oneMonthAgo = subMonths(today, 1);
 		const sixMonthsAgo = subMonths(today, 6);
@@ -394,14 +394,14 @@ export const load = async () => {
 		const rowOtherAssets = trendNetWorthTable.find(({ name }) => name === otherAssetsLabel) as TrendNetWorthTable; // prettier-ignore
 
 		for (const weekInPeriod of weeksInPeriod) {
-			const currentWeek = new Date(weekInPeriod);
+			const currentWeek = dateInUTC(new Date(weekInPeriod));
 			const netWorthPeriod = netWorthDataset[weeksInPeriod.indexOf(weekInPeriod)];
 			const cashPeriod = cashDataset[weeksInPeriod.indexOf(weekInPeriod)];
 			const debtPeriod = debtDataset[weeksInPeriod.indexOf(weekInPeriod)];
 			const investmentsPeriod = investmentsDataset[weeksInPeriod.indexOf(weekInPeriod)];
 			const otherAssetsPeriod = otherAssetsDataset[weeksInPeriod.indexOf(weekInPeriod)];
 
-			if (isSameWeek(currentWeek, new Date(weeksInPeriod[0]))) {
+			if (isSameWeek(currentWeek, dateInUTC(new Date(weeksInPeriod[0])))) {
 				rowNetWorth.balanceMax = netWorthPeriod;
 				rowCash.balanceMax = cashDataset.find((balance) => balance !== null) || null;
 				rowDebt.balanceMax = debtDataset.find((balance) => balance !== null) || null;
@@ -450,7 +450,7 @@ export const load = async () => {
 				rowInvestments.balanceFiveYears = investmentsPeriod;
 				rowOtherAssets.balanceFiveYears = otherAssetsPeriod;
 			}
-			if (isSameWeek(currentWeek, new Date(weeksInPeriod[weeksInPeriod.length - 1]))) {
+			if (isSameWeek(currentWeek, dateInUTC(new Date(weeksInPeriod[weeksInPeriod.length - 1])))) {
 				rowNetWorth.currentBalance = netWorthPeriod;
 				rowCash.currentBalance = cashPeriod;
 				rowDebt.currentBalance = debtPeriod;

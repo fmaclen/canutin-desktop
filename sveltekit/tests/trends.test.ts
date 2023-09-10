@@ -68,6 +68,10 @@ test.describe('Trends', () => {
 		await databaseSeed(baseURL!);
 
 		await page.goto('/');
+		await page.locator('a', { hasText: 'Accounts' }).click();
+		await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
+		await page.locator('a', { hasText: 'Assets' }).click();
+		await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
 		await page.locator('a', { hasText: 'Trends' }).click();
 		await expect(page.locator('h1', { hasText: 'Trends' })).toBeVisible();
 		await expect(page.locator('.tableValue')).toHaveCount(35);

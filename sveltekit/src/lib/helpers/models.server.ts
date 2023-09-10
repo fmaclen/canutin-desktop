@@ -166,8 +166,8 @@ export const getAccountBalanceDateRange = async (account: Account) => {
 	}
 
 	return {
-		periodStart,
-		periodEnd
+		periodStart: periodStart && dateInUTC(periodStart),
+		periodEnd: periodEnd && dateInUTC(periodEnd)
 	};
 };
 
@@ -180,7 +180,7 @@ export const getAssetBalanceDateRange = async (asset: Asset) => {
 	const periodEnd = await prisma.assetBalanceStatement.findFirst(latestQuery).then((abs) => abs?.createdAt); // prettier-ignore
 
 	return {
-		periodStart,
-		periodEnd
+		periodStart: periodStart && dateInUTC(periodStart),
+		periodEnd: periodEnd && dateInUTC(periodEnd)
 	};
 };
