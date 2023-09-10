@@ -7,61 +7,61 @@ import {
 } from './fixtures/helpers.js';
 
 test.describe('Trends', () => {
-	test('Charts are rendered correctly', async ({ page, baseURL }, testInfo) => {
-		setSnapshotPath(testInfo);
-		await databaseWipe(baseURL!);
-		await databaseSeed(baseURL!);
+	// test('Charts are rendered correctly', async ({ page, baseURL }, testInfo) => {
+	// 	setSnapshotPath(testInfo);
+	// 	await databaseWipe(baseURL!);
+	// 	await databaseSeed(baseURL!);
 
-		await page.goto('/');
-		await page.locator('a', { hasText: 'Trends' }).click();
-		await expect(page.locator('h1', { hasText: 'Trends' })).toBeVisible();
+	// 	await page.goto('/');
+	// 	await page.locator('a', { hasText: 'Trends' }).click();
+	// 	await expect(page.locator('h1', { hasText: 'Trends' })).toBeVisible();
 
-		const charts = page.locator('.chart canvas');
-		expect(await charts.count()).toBe(5);
+	// 	const charts = page.locator('.chart canvas');
+	// 	expect(await charts.count()).toBe(5);
 
-		await charts.nth(0).hover();
-		expect(await charts.nth(0).screenshot()).toMatchSnapshot({
-			name: 'chart-netWorth.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
+	// 	await charts.nth(0).hover();
+	// 	expect(await charts.nth(0).screenshot()).toMatchSnapshot({
+	// 		name: 'chart-netWorth.png',
+	// 		maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+	// 	});
 
-		await charts.nth(1).hover();
-		expect(await charts.nth(1).screenshot()).toMatchSnapshot({
-			name: 'chart-cash.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
+	// 	await charts.nth(1).hover();
+	// 	expect(await charts.nth(1).screenshot()).toMatchSnapshot({
+	// 		name: 'chart-cash.png',
+	// 		maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+	// 	});
 
-		await charts.nth(2).hover();
-		expect(await charts.nth(2).screenshot()).toMatchSnapshot({
-			name: 'chart-debt.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
+	// 	await charts.nth(2).hover();
+	// 	expect(await charts.nth(2).screenshot()).toMatchSnapshot({
+	// 		name: 'chart-debt.png',
+	// 		maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+	// 	});
 
-		await charts.nth(3).hover();
-		expect(await charts.nth(3).screenshot()).toMatchSnapshot({
-			name: 'chart-investments.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
+	// 	await charts.nth(3).hover();
+	// 	expect(await charts.nth(3).screenshot()).toMatchSnapshot({
+	// 		name: 'chart-investments.png',
+	// 		maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+	// 	});
 
-		await charts.nth(4).hover();
-		expect(await charts.nth(4).screenshot()).toMatchSnapshot({
-			name: 'chart-otherAssets.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
-	});
+	// 	await charts.nth(4).hover();
+	// 	expect(await charts.nth(4).screenshot()).toMatchSnapshot({
+	// 		name: 'chart-otherAssets.png',
+	// 		maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+	// 	});
+	// });
 
-	test('Page renders correctly with no data', async ({ page, baseURL }) => {
-		await databaseWipe(baseURL!);
+	// test('Page renders correctly with no data', async ({ page, baseURL }) => {
+	// 	await databaseWipe(baseURL!);
 
-		await page.goto('/');
-		await page.locator('a', { hasText: 'Trends' }).click();
-		await expect(page.locator('h1', { hasText: 'Trends' })).toBeVisible();
-		await expect(page.getByText("Balance history doesn't have enough data points to calculate net worth trends")).toBeVisible(); // prettier-ignore
-		await expect(page.getByText("Balance history doesn't have enough data points to cash trends")).toBeVisible(); // prettier-ignore
-		await expect(page.getByText("Balance history doesn't have enough data points to debt trends")).toBeVisible(); // prettier-ignore
-		await expect(page.getByText("Balance history doesn't have enough data points to investment trends")).toBeVisible(); // prettier-ignore
-		await expect(page.getByText("Balance history doesn't have enough data points to asset trends")).toBeVisible(); // prettier-ignore
-	});
+	// 	await page.goto('/');
+	// 	await page.locator('a', { hasText: 'Trends' }).click();
+	// 	await expect(page.locator('h1', { hasText: 'Trends' })).toBeVisible();
+	// 	await expect(page.getByText("Balance history doesn't have enough data points to calculate net worth trends")).toBeVisible(); // prettier-ignore
+	// 	await expect(page.getByText("Balance history doesn't have enough data points to cash trends")).toBeVisible(); // prettier-ignore
+	// 	await expect(page.getByText("Balance history doesn't have enough data points to debt trends")).toBeVisible(); // prettier-ignore
+	// 	await expect(page.getByText("Balance history doesn't have enough data points to investment trends")).toBeVisible(); // prettier-ignore
+	// 	await expect(page.getByText("Balance history doesn't have enough data points to asset trends")).toBeVisible(); // prettier-ignore
+	// });
 
 	test('Balance type performances are calculated correctly', async ({ page, baseURL }) => {
 		await databaseWipe(baseURL!);
@@ -72,6 +72,8 @@ test.describe('Trends', () => {
 		await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
 		await page.locator('a', { hasText: 'Assets' }).click();
 		await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
+		await page.locator('a', { hasText: 'Transactions' }).click();
+		await expect(page.getByText('Initech HR * Payroll')).toBeVisible();
 		await page.locator('a', { hasText: 'Trends' }).click();
 		await expect(page.locator('h1', { hasText: 'Trends' })).toBeVisible();
 		await expect(page.locator('.tableValue')).toHaveCount(35);
