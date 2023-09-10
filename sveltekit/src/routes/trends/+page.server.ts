@@ -119,8 +119,8 @@ const getDatasetLabels = async (accounts: Account[], assets: Asset[]) => {
 	const utcNow = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
 
 	const weeksInPeriod = eachWeekOfInterval({
-		start: addWeeks(startOfWeek(earliestBalanceDates[0]), 1),
-		end: addWeeks(startOfWeek(utcNow), 1)
+		start: startOfTheWeekAfter(earliestBalanceDates[0]),
+		end: startOfTheWeekAfter(utcNow)
 	});
 
 	/////////////////
