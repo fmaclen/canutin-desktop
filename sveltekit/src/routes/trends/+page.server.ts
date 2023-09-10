@@ -106,15 +106,14 @@ const getDatasetLabels = async (accounts: Account[], assets: Asset[]) => {
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
 
 	const weeksInPeriod = eachWeekOfInterval({
-		start: dateInUTC(startOfTheWeekAfter(earliestBalanceDates[0])),
-		end: dateInUTC(startOfTheWeekAfter(new Date()))
+		start: startOfTheWeekAfter(dateInUTC(earliestBalanceDates[0])),
+		end: startOfTheWeekAfter(dateInUTC(new Date()))
 	});
 	console.warn({
-		start: dateInUTC(startOfTheWeekAfter(earliestBalanceDates[0])),
-		end: dateInUTC(startOfTheWeekAfter(new Date()))
+		start: startOfTheWeekAfter(dateInUTC(earliestBalanceDates[0])),
+		end: startOfTheWeekAfter(dateInUTC(new Date()))
 	});
 	for (const weekInPeriod of weeksInPeriod) {
-		console.warn(weekInPeriod.toISOString(), dateInUTC(weekInPeriod).toISOString());
 		labels.push(dateInUTC(weekInPeriod).toISOString().slice(0, 10)); // e.g. 2022-12-31
 	}
 
