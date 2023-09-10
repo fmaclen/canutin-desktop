@@ -252,6 +252,7 @@ export const load = async () => {
 
 		for (const weekInPeriod of weeksInPeriod) {
 			const currentWeek = dateInUTC(new Date(weekInPeriod));
+
 			for (const account of accounts) {
 				const balance = await getAccountCurrentBalance(account, currentWeek);
 				updateDatasetBalance(updatedDatasets, account.name, balance);
