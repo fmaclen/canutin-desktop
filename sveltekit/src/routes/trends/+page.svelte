@@ -271,7 +271,7 @@
 												isNumeric={true}
 												isExcluded={name == 'Net worth'}
 											>
-												{allocation && formatPercentage(allocation, 2)}
+												{allocation && formatPercentage(allocation)}
 											</TableValue>
 										{:else}
 											<TableNoValue />

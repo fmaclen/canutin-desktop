@@ -27,7 +27,7 @@
 		isNegative={!isTrendNeutral && !isTrendPositive}
 		isNumeric={true}
 	>
-		{getTrendSymbol()}{formatPercentage(performance, 2)}
+		{getTrendSymbol()}{formatPercentage(performance)}
 	</TableValue>
 {:else}
 	<TableNoValue />
