@@ -251,13 +251,14 @@ export const load = async () => {
 		const updatedDatasets: ChartDataset[] = structuredClone(datasets);
 
 		for (const weekInPeriod of weeksInPeriod) {
+			const currentWeek = dateInUTC(new Date(weekInPeriod));
 			for (const account of accounts) {
-				const balance = await getAccountCurrentBalance(account, new Date(weekInPeriod));
+				const balance = await getAccountCurrentBalance(account, currentWeek);
 				updateDatasetBalance(updatedDatasets, account.name, balance);
 			}
 
 			for (const asset of assets) {
-				const balance = await getAssetCurrentBalance(asset, new Date(weekInPeriod));
+				const balance = await getAssetCurrentBalance(asset, currentWeek);
 				updateDatasetBalance(updatedDatasets, asset.name, balance);
 			}
 		}

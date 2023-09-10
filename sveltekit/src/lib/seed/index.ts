@@ -41,34 +41,34 @@ const seedDemoData = async () => {
 	// Accounts
 
 	// Account: Checking
-	await prisma.account.create({
-		data: {
-			...accountCheckingDetails,
-			transactions: {
-				create: await accountCheckingTransactionSet()
-			}
-		}
-	});
+	// await prisma.account.create({
+	// 	data: {
+	// 		...accountCheckingDetails,
+	// 		transactions: {
+	// 			create: await accountCheckingTransactionSet()
+	// 		}
+	// 	}
+	// });
 
-	// Account: Savings
-	await prisma.account.create({
-		data: {
-			...accountSavingsDetails,
-			transactions: {
-				create: await accountSavingsTransactionSet()
-			}
-		}
-	});
+	// // Account: Savings
+	// await prisma.account.create({
+	// 	data: {
+	// 		...accountSavingsDetails,
+	// 		transactions: {
+	// 			create: await accountSavingsTransactionSet()
+	// 		}
+	// 	}
+	// });
 
-	// Account: Credit card
-	await prisma.account.create({
-		data: {
-			...accountCreditCardDetails,
-			transactions: {
-				create: await accountCreditCardTransactionSet()
-			}
-		}
-	});
+	// // Account: Credit card
+	// await prisma.account.create({
+	// 	data: {
+	// 		...accountCreditCardDetails,
+	// 		transactions: {
+	// 			create: await accountCreditCardTransactionSet()
+	// 		}
+	// 	}
+	// });
 
 	// Account: Auto-loan
 	await prisma.account.create({
