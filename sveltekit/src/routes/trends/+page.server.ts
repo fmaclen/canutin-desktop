@@ -410,6 +410,7 @@ export const load = async () => {
 					'otherAssetsDataset.find((balance) => balance !== null)',
 					otherAssetsDataset.find((balance) => balance !== null)
 				);
+				console.warn('weekInPeriod', weekInPeriod);
 				console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceMax = netWorthPeriod;
 				rowCash.balanceMax = cashDataset.find((balance) => balance !== null) || null;
@@ -420,6 +421,7 @@ export const load = async () => {
 			if (isSameWeek(currentWeek, oneWeekAgo)) {
 				console.warn('oneWeek', currentWeek);
 				console.warn('otherAssetsPeriod', otherAssetsPeriod);
+				console.warn('weekInPeriod', weekInPeriod);
 				console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceOneWeek = netWorthPeriod;
 				rowCash.balanceOneWeek = cashPeriod;
@@ -430,6 +432,7 @@ export const load = async () => {
 			if (isSameWeek(currentWeek, oneMonthAgo)) {
 				console.warn('oneMonth', currentWeek);
 				console.warn('otherAssetsPeriod', otherAssetsPeriod);
+				console.warn('weekInPeriod', weekInPeriod);
 				console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceOneMonth = netWorthPeriod;
 				rowCash.balanceOneMonth = cashPeriod;
@@ -440,6 +443,7 @@ export const load = async () => {
 			if (isSameWeek(currentWeek, sixMonthsAgo)) {
 				console.warn('sixMonthsAgo', currentWeek);
 				console.warn('otherAssetsPeriod', otherAssetsPeriod);
+				console.warn('weekInPeriod', weekInPeriod);
 				console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceSixMonths = netWorthPeriod;
 				rowCash.balanceSixMonths = cashPeriod;
