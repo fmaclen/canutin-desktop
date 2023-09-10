@@ -325,6 +325,7 @@ export const load = async () => {
 			const debtDataIndex = trendDebtLabels.indexOf(weekInPeriod);
 			const investmentsDataIndex = trendInvestmentsLabels.indexOf(weekInPeriod);
 			const otherAssetsDataIndex = trendOtherAssetsLabels.indexOf(weekInPeriod);
+			console.warn('otherAssetsDataIndex', otherAssetsDataIndex, weekInPeriod);
 
 			const hasCashBalance = cashDataIndex !== -1;
 			const hasDebtBalance = debtDataIndex !== -1;
