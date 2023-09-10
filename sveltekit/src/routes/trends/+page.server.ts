@@ -405,6 +405,12 @@ export const load = async () => {
 			const otherAssetsPeriod = otherAssetsDataset[weeksInPeriod.indexOf(weekInPeriod)];
 
 			if (isSameWeek(currentWeek, dateInUTC(new Date(weeksInPeriod[0])))) {
+				console.warn('max', currentWeek);
+				console.warn(
+					'otherAssetsDataset.find((balance) => balance !== null)',
+					otherAssetsDataset.find((balance) => balance !== null)
+				);
+				console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceMax = netWorthPeriod;
 				rowCash.balanceMax = cashDataset.find((balance) => balance !== null) || null;
 				rowDebt.balanceMax = debtDataset.find((balance) => balance !== null) || null;
@@ -412,6 +418,9 @@ export const load = async () => {
 				rowOtherAssets.balanceMax = otherAssetsDataset.find((balance) => balance !== null) || null;
 			}
 			if (isSameWeek(currentWeek, oneWeekAgo)) {
+				console.warn('oneWeek', currentWeek);
+				console.warn('otherAssetsPeriod', otherAssetsPeriod);
+				console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceOneWeek = netWorthPeriod;
 				rowCash.balanceOneWeek = cashPeriod;
 				rowDebt.balanceOneWeek = debtPeriod;
@@ -419,6 +428,9 @@ export const load = async () => {
 				rowOtherAssets.balanceOneWeek = otherAssetsPeriod;
 			}
 			if (isSameWeek(currentWeek, oneMonthAgo)) {
+				console.warn('oneMonth', currentWeek);
+				console.warn('otherAssetsPeriod', otherAssetsPeriod);
+				console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceOneMonth = netWorthPeriod;
 				rowCash.balanceOneMonth = cashPeriod;
 				rowDebt.balanceOneMonth = debtPeriod;
@@ -426,6 +438,9 @@ export const load = async () => {
 				rowOtherAssets.balanceOneMonth = otherAssetsPeriod;
 			}
 			if (isSameWeek(currentWeek, sixMonthsAgo)) {
+				console.warn('sixMonthsAgo', currentWeek);
+				console.warn('otherAssetsPeriod', otherAssetsPeriod);
+				console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceSixMonths = netWorthPeriod;
 				rowCash.balanceSixMonths = cashPeriod;
 				rowDebt.balanceSixMonths = debtPeriod;

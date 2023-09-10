@@ -152,11 +152,13 @@
 <ScrollView {title}>
 	<Section title="Net worth">
 		<div slot="CONTENT">
-			<code style=""
-				>new Date(): {new Date().toISOString()} >>>> dateInUTC: {dateInUTC(
-					new Date()
-				).toISOString()}</code
-			>
+			<code style="">
+				new Date(): {new Date()} >>>> dateInUTC: {dateInUTC(new Date())}
+			</code>
+			<hr />
+			<code style="">
+				new Date(): {new Date().toISOString()} >>>> dateInUTC: {dateInUTC(new Date()).toISOString()}
+			</code>
 			<hr />
 			<code style=""
 				>Same dates?: {new Date().getTime() === dateInUTC(new Date()).getTime()} >>>>>>>> ({new Date().getTime()}
