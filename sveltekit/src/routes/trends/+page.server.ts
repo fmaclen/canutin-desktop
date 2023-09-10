@@ -19,7 +19,7 @@ import {
 import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import { startOfTheWeekAfter } from '$lib/helpers/charts';
-import { growthPercentage, proportionBetween } from '$lib/helpers/misc';
+import { dateInUTC, growthPercentage, proportionBetween } from '$lib/helpers/misc';
 import type { Account, Asset } from '@prisma/client';
 
 interface TrendGroup {
@@ -106,7 +106,7 @@ const getDatasetLabels = async (accounts: Account[], assets: Asset[]) => {
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
 	const weeksInPeriod = eachWeekOfInterval({
 		start: startOfTheWeekAfter(earliestBalanceDates[0]),
-		end: startOfTheWeekAfter(new Date())
+		end: startOfTheWeekAfter(dateInUTC(new Date()))
 	});
 	for (const weekInPeriod of weeksInPeriod) {
 		labels.push(weekInPeriod.toISOString().slice(0, 10)); // e.g. 2022-12-31
