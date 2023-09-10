@@ -10,13 +10,15 @@ import {
 } from '$lib/helpers/models.server';
 import {
 	add,
+	addWeeks,
 	eachWeekOfInterval,
 	endOfWeek,
 	isSameWeek,
 	startOfYear,
 	subMonths,
 	subWeeks,
-	subYears
+	subYears,
+	startOfWeek
 } from 'date-fns';
 import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';
@@ -113,21 +115,21 @@ const getDatasetLabels = async (accounts: Account[], assets: Asset[]) => {
 	// Get the earliest date of all the accounts and/or assets balances
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
 
+	const now = new Date();
+	const utcNow = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+
 	const weeksInPeriod = eachWeekOfInterval({
-		start: startOfTheWeekAfter(earliestBalanceDates[0]),
-		end: startOfTheWeekAfter(new Date())
+		start: addWeeks(startOfWeek(earliestBalanceDates[0]), 1),
+		end: addWeeks(startOfWeek(utcNow), 1)
 	});
 
 	/////////////////
 	/////////////////
 	/////////////////
-	console.warn('START PERIOD');
-	console.warn('earliestBalanceDates[0]', earliestBalanceDates[0]);
-	console.warn('startOfTheWeekAfter(earliestBalanceDates[0])', startOfTheWeekAfter(earliestBalanceDates[0])); // prettier-ignore
-	console.warn('END PERIOD');
-	console.warn('startOfTheWeekAfter(new Date())', startOfTheWeekAfter(new Date()));
-	console.warn('dateInUTC(startOfTheWeekAfter(new Date())', dateInUTC(startOfTheWeekAfter(new Date()))); // prettier-ignore
-	console.warn('add(endOfWeek(date), { days: 1 })', add(endOfWeek(new Date()), { days: 1 })); // prettier-ignore
+	console.warn({
+		start: addWeeks(startOfWeek(earliestBalanceDates[0]), 1),
+		end: addWeeks(startOfWeek(utcNow), 1)
+	}); // prettier-ignore
 	console.warn('-----------------------------------------------------------------------');
 	/////////////////
 	/////////////////
@@ -398,7 +400,9 @@ export const load = async () => {
 	const trendNetWorthDataset = updateNetWorthDataset();
 
 	const updateNetWorthTable = async (): Promise<TrendNetWorthTable[]> => {
-		const today = dateInUTC(new Date());
+		const now = new Date();
+		const utcNow = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+		const today = dateInUTC(utcNow);
 		const oneWeekAgo = dateInUTC(subWeeks(today, 1));
 		const oneMonthAgo = dateInUTC(subMonths(today, 1));
 		const sixMonthsAgo = dateInUTC(subMonths(today, 6));
