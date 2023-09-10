@@ -18,7 +18,8 @@
 		formatPercentage,
 		toCamelCase,
 		sortByString,
-		sortByNumber
+		sortByNumber,
+		dateInUTC
 	} from '$lib/helpers/misc';
 	import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
@@ -151,7 +152,11 @@
 <ScrollView {title}>
 	<Section title="Net worth">
 		<div slot="CONTENT">
-			<code style="">{new Date()}</code>
+			<code style=""
+				>new Date(): {new Date().toISOString()} >>>> dateInUTC: {dateInUTC(
+					new Date()
+				).toISOString()}</code
+			>
 			<hr />
 			<code style="">
 				{JSON.stringify(data.trendNetWorth.labels, null, 2)}

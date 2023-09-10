@@ -70,87 +70,87 @@ const seedDemoData = async () => {
 	// 	}
 	// });
 
-	// Account: Auto-loan
-	await prisma.account.create({
-		data: {
-			...accountAutoLoanDetails,
-			accountBalanceStatements: {
-				create: accountAutoLoanBalanceStatements
-			}
-		}
-	});
+	// // Account: Auto-loan
+	// await prisma.account.create({
+	// 	data: {
+	// 		...accountAutoLoanDetails,
+	// 		accountBalanceStatements: {
+	// 			create: accountAutoLoanBalanceStatements
+	// 		}
+	// 	}
+	// });
 
-	// Account: Roth IRA
-	await prisma.account.create({
-		data: {
-			...accountRothIraDetails,
-			accountBalanceStatements: {
-				create: accountRothIraBalanceStatements
-			}
-		}
-	});
+	// // Account: Roth IRA
+	// await prisma.account.create({
+	// 	data: {
+	// 		...accountRothIraDetails,
+	// 		accountBalanceStatements: {
+	// 			create: accountRothIraBalanceStatements
+	// 		}
+	// 	}
+	// });
 
-	// Account: 401K
-	await prisma.account.create({
-		data: {
-			...account401kDetails,
-			accountBalanceStatements: {
-				create: account401kbalanceStatements
-			}
-		}
-	});
+	// // Account: 401K
+	// await prisma.account.create({
+	// 	data: {
+	// 		...account401kDetails,
+	// 		accountBalanceStatements: {
+	// 			create: account401kbalanceStatements
+	// 		}
+	// 	}
+	// });
 
-	// Account: Wallet
-	await prisma.account.create({
-		data: {
-			...accountWalletDetails,
-			accountBalanceStatements: {
-				create: accountWalletBalanceStatements
-			}
-		}
-	});
+	// // Account: Wallet
+	// await prisma.account.create({
+	// 	data: {
+	// 		...accountWalletDetails,
+	// 		accountBalanceStatements: {
+	// 			create: accountWalletBalanceStatements
+	// 		}
+	// 	}
+	// });
 
-	// Assets
+	// // Assets
 
-	// Asset: Security (Tesla)
-	await prisma.asset.create({
-		data: {
-			...assetSecurityTeslaDetails,
-			assetBalanceStatements: {
-				create: assetTeslaBalanceStatements
-			}
-		}
-	});
+	// // Asset: Security (Tesla)
+	// await prisma.asset.create({
+	// 	data: {
+	// 		...assetSecurityTeslaDetails,
+	// 		assetBalanceStatements: {
+	// 			create: assetTeslaBalanceStatements
+	// 		}
+	// 	}
+	// });
 
-	// Asset: Security (Gamestop)
-	await prisma.asset.create({
-		data: {
-			...assetSecurityGamestopDetails,
-			assetBalanceStatements: {
-				create: assetGamestopBalanceStatements
-			}
-		}
-	});
+	// // Asset: Security (Gamestop)
+	// await prisma.asset.create({
+	// 	data: {
+	// 		...assetSecurityGamestopDetails,
+	// 		assetBalanceStatements: {
+	// 			create: assetGamestopBalanceStatements
+	// 		}
+	// 	}
+	// });
 
-	// Asset: Crypto (Bitcoin)
-	await prisma.asset.create({
-		data: {
-			...assetCryptoBitcoinDetails,
-			assetBalanceStatements: {
-				create: assetBitcoinBalanceStatements
-			}
-		}
-	});
+	// // Asset: Crypto (Bitcoin)
+	// await prisma.asset.create({
+	// 	data: {
+	// 		...assetCryptoBitcoinDetails,
+	// 		assetBalanceStatements: {
+	// 			create: assetBitcoinBalanceStatements
+	// 		}
+	// 	}
+	// });
 
-	// Asset: Crypto (Ethereum)
-	await prisma.asset.create({
-		data: {
-			...assetCryptoEthereumDetails,
-			assetBalanceStatements: {
-				create: assetEthereumBalanceStatements
-			}
-		}
-	});
+	// // Asset: Crypto (Ethereum)
+	// await prisma.asset.create({
+	// 	data: {
+	// 		...assetCryptoEthereumDetails,
+	// 		assetBalanceStatements: {
+	// 			create: assetEthereumBalanceStatements
+	// 		}
+	// 	}
+	// });
 
 	// Asset: Collectible
 	await prisma.asset.create({
