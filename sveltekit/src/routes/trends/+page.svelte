@@ -158,11 +158,11 @@
 				</Notice>
 			{:else}
 				<Plate>
-					<ChartJs
+					<!-- <ChartJs
 						labels={data.trendNetWorth.labels}
 						datasets={$netWorthDatasets}
 						isLoading={netWorthDatasetsIsLoading}
-					/>
+					/> -->
 					<Table>
 						<thead>
 							<tr>
