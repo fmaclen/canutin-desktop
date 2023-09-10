@@ -9,7 +9,9 @@ import {
 	getAssetCurrentBalance
 } from '$lib/helpers/models.server';
 import {
+	add,
 	eachWeekOfInterval,
+	endOfWeek,
 	isSameWeek,
 	startOfYear,
 	subMonths,
@@ -112,23 +114,20 @@ const getDatasetLabels = async (accounts: Account[], assets: Asset[]) => {
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
 
 	const weeksInPeriod = eachWeekOfInterval({
-		start: dateInUTC(startOfTheWeekAfter(dateInUTC(earliestBalanceDates[0]))),
-		end: dateInUTC(startOfTheWeekAfter(dateInUTC(new Date())))
+		start: startOfTheWeekAfter(earliestBalanceDates[0]),
+		end: startOfTheWeekAfter(new Date())
 	});
 
 	/////////////////
 	/////////////////
 	/////////////////
+	console.warn('START PERIOD');
 	console.warn('earliestBalanceDates[0]', earliestBalanceDates[0]);
-	console.warn('dateInUTC(earliestBalanceDates[0])', dateInUTC(earliestBalanceDates[0]));
-	console.warn(
-		'startOfTheWeekAfter(dateInUTC(earliestBalanceDates[0]))',
-		startOfTheWeekAfter(dateInUTC(earliestBalanceDates[0]))
-	);
-	console.warn(
-		'dateInUTC(startOfTheWeekAfter(dateInUTC(earliestBalanceDates[0])))',
-		dateInUTC(startOfTheWeekAfter(dateInUTC(earliestBalanceDates[0])))
-	);
+	console.warn('startOfTheWeekAfter(earliestBalanceDates[0])', startOfTheWeekAfter(earliestBalanceDates[0])); // prettier-ignore
+	console.warn('END PERIOD');
+	console.warn('startOfTheWeekAfter(new Date())', startOfTheWeekAfter(new Date()));
+	console.warn('dateInUTC(startOfTheWeekAfter(new Date())', dateInUTC(startOfTheWeekAfter(new Date()))); // prettier-ignore
+	console.warn('add(endOfWeek(date), { days: 1 })', add(endOfWeek(new Date()), { days: 1 })); // prettier-ignore
 	console.warn('-----------------------------------------------------------------------');
 	/////////////////
 	/////////////////
