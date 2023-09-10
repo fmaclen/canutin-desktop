@@ -151,6 +151,13 @@
 <ScrollView {title}>
 	<Section title="Net worth">
 		<div slot="CONTENT">
+			<code style="">
+				{JSON.stringify(data.trendNetWorth.labels, null, 2)}
+			</code>
+			<hr />
+			<code style="">
+				{JSON.stringify($netWorthDatasets, null, 2)}
+			</code>
 			{#if isVaultEmpty}
 				<Notice>
 					Balance history doesn't have enough data points to calculate net worth trends
