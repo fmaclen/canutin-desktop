@@ -1,5 +1,5 @@
 import type { ChartDataset } from 'chart.js';
-import { add, endOfWeek } from 'date-fns';
+import { add, addDays, endOfWeek } from 'date-fns';
 import { BalanceGroup } from './constants';
 
 export const setChartDatasetColor = (dataset: ChartDataset, balanceGroup?: BalanceGroup) => {
@@ -33,5 +33,5 @@ export const setChartDatasetColor = (dataset: ChartDataset, balanceGroup?: Balan
 
 // Returns the start date of the next week after the given date.
 export const startOfTheWeekAfter = (date: Date) => {
-	return add(endOfWeek(date), { days: 2 });
+	return endOfWeek(addDays(date, 2));
 };
