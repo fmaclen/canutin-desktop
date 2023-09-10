@@ -151,6 +151,8 @@
 <ScrollView {title}>
 	<Section title="Net worth">
 		<div slot="CONTENT">
+			<code style="">{new Date()}</code>
+			<hr />
 			<code style="">
 				{JSON.stringify(data.trendNetWorth.labels, null, 2)}
 			</code>
