@@ -93,6 +93,21 @@ export const getAssetCurrentBalance = async (asset: Asset, periodStart?: Date) =
 		}
 	});
 
+	console.warn('asset:', asset.name);
+	console.warn({
+		where: {
+			assetId: asset.id,
+			createdAt: {
+				lte: periodStart
+			}
+		},
+		orderBy: {
+			createdAt: SortOrder.DESC
+		}
+	});
+	console.warn('balance:', lastBalanceStatement?.value);
+	console.warn('//////////////////////////////////////');
+
 	return lastBalanceStatement?.value ? lastBalanceStatement.value : 0;
 };
 
