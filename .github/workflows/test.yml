@@ -54,6 +54,4 @@ jobs:
         if: always()
         with:
           name: ${{ matrix.browser }}-${{ matrix.os }}-test-results
-          path: |
-            sveltekit/test-results/
-            sveltekit/**/*.vault
+          path: sveltekit/test-results/

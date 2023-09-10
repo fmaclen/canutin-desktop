@@ -104,9 +104,10 @@ const getDatasetLabels = async (accounts: Account[], assets: Asset[]) => {
 
 	// Get the earliest date of all the accounts and/or assets balances
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
+
 	const weeksInPeriod = eachWeekOfInterval({
-		start: startOfTheWeekAfter(earliestBalanceDates[0]),
-		end: startOfTheWeekAfter(dateInUTC(new Date()))
+		start: dateInUTC(startOfTheWeekAfter(earliestBalanceDates[0])),
+		end: dateInUTC(startOfTheWeekAfter(new Date()))
 	});
 	for (const weekInPeriod of weeksInPeriod) {
 		labels.push(weekInPeriod.toISOString().slice(0, 10)); // e.g. 2022-12-31
