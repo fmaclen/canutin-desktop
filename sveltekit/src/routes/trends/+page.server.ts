@@ -9,21 +9,17 @@ import {
 	getAssetCurrentBalance
 } from '$lib/helpers/models.server';
 import {
-	add,
-	addWeeks,
 	eachWeekOfInterval,
-	endOfWeek,
 	isSameWeek,
 	startOfYear,
 	subMonths,
 	subWeeks,
-	subYears,
-	startOfWeek
+	subYears
 } from 'date-fns';
 import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import { startOfTheWeekAfter } from '$lib/helpers/charts';
-import { dateInUTC, growthPercentage, proportionBetween } from '$lib/helpers/misc';
+import { growthPercentage, proportionBetween } from '$lib/helpers/misc';
 import type { Account, Asset } from '@prisma/client';
 
 interface TrendGroup {
@@ -87,56 +83,68 @@ const trendNetWorthTable: TrendNetWorthTable[] = [
 	{ name: otherAssetsLabel, ...netWorthTableEmpty }
 ];
 
-const getDatasetLabels = async (accounts: Account[], assets: Asset[]) => {
+const getDatasetLabels = async (accounts: Account[], assets: Asset[], latestBalanceDates: Date) => {
 	const labels: string[] = [];
 	const earliestBalanceDates: Date[] = [];
+	// const latestBalanceDates: Date[] = [];
 
 	if (accounts) {
 		for (const account of accounts) {
-			const { periodStart } = await getAccountBalanceDateRange(account);
-			console.warn('periodStart', periodStart);
-			console.warn('account.name', account.name);
-			console.warn('///////////////////////////');
+			const { periodStart, periodEnd } = await getAccountBalanceDateRange(account);
 			if (periodStart) earliestBalanceDates.push(periodStart);
+			// if (periodEnd) latestBalanceDates.push(periodEnd);
 		}
 	}
 	if (assets) {
 		for (const asset of assets) {
-			const { periodStart } = await getAssetBalanceDateRange(asset);
-			console.warn('periodStart', periodStart);
-			console.warn('asset.name', asset.name);
-			console.warn('///////////////////////////');
+			const { periodStart, periodEnd } = await getAssetBalanceDateRange(asset);
 			if (periodStart) earliestBalanceDates.push(periodStart);
+			// if (periodEnd) latestBalanceDates.push(periodEnd);
 		}
 	}
 
 	if (earliestBalanceDates.length === 0) return labels;
+	// if (latestBalanceDates.length === 0) return labels;
 
 	// Get the earliest date of all the accounts and/or assets balances
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
+	// latestBalanceDates.sort((a, b) => (a < b ? 1 : -1));
 
-	const now = new Date();
-	const utcNow = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+	///////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////
+
+	const endOfPeriod = latestBalanceDates.getTime() < Date.now() ? new Date() : latestBalanceDates; // prettier-ignore
+	console.warn(accounts[0]?.name);
+	console.warn(assets[0]?.name);
+	console.warn(endOfPeriod);
+	console.warn(latestBalanceDates.getTime() < Date.now());
+	///////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////
 
 	const weeksInPeriod = eachWeekOfInterval({
 		start: startOfTheWeekAfter(earliestBalanceDates[0]),
-		end: startOfTheWeekAfter(utcNow)
+		end: startOfTheWeekAfter(latestBalanceDates)
 	});
 
-	/////////////////
-	/////////////////
-	/////////////////
-	console.warn({
-		start: addWeeks(startOfWeek(earliestBalanceDates[0]), 1),
-		end: addWeeks(startOfWeek(utcNow), 1)
-	}); // prettier-ignore
-	console.warn('-----------------------------------------------------------------------');
-	/////////////////
-	/////////////////
-	/////////////////
+	///////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////
+
+	console.warn('weeksInPeriod', weeksInPeriod.length);
+	// console.warn('earliestBalanceDates', earliestBalanceDates[0]);
+	// console.warn(
+	// 	'startOfTheWeekAfter(earliestBalanceDates)',
+	// 	startOfTheWeekAfter(earliestBalanceDates[0])
+	// );
+	// console.warn('.....................');
+	// console.warn('endOfPeriod', endOfPeriod);
+	// console.warn('startOfTheWeekAfter(endOfPeriod)', startOfTheWeekAfter(endOfPeriod));
+	console.warn('-----------------------------------------------------------');
+
+	///////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////
 
 	for (const weekInPeriod of weeksInPeriod) {
-		labels.push(dateInUTC(weekInPeriod).toISOString().slice(0, 10)); // e.g. 2022-12-31
+		labels.push(weekInPeriod.toISOString().slice(0, 10)); // e.g. 2022-12-31
 	}
 
 	return labels;
@@ -164,9 +172,34 @@ export const load = async () => {
 	const accounts = await prisma.account.findMany();
 	const assets = await prisma.asset.findMany();
 
+	//////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
+
+	const latestBalanceDates: Date[] = [];
+
+	if (accounts) {
+		for (const account of accounts) {
+			const { periodEnd } = await getAccountBalanceDateRange(account);
+			if (periodEnd) latestBalanceDates.push(periodEnd);
+		}
+	}
+	if (assets) {
+		for (const asset of assets) {
+			const { periodEnd } = await getAssetBalanceDateRange(asset);
+			if (periodEnd) latestBalanceDates.push(periodEnd);
+		}
+	}
+
+	latestBalanceDates.sort((a, b) => (a < b ? 1 : -1));
+
+	//////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
+
 	const trendCashAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.CASH); // prettier-ignore
 	const trendCashAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.CASH); // prettier-ignore
-	const trendCashLabels = await getDatasetLabels(trendCashAccounts, trendCashAssets); // prettier-ignore
+	const trendCashLabels = await getDatasetLabels(trendCashAccounts, trendCashAssets, latestBalanceDates[0]); // prettier-ignore
 	const trendCash: TrendGroup = {
 		title: cashLabel,
 		labels: trendCashLabels,
@@ -177,7 +210,7 @@ export const load = async () => {
 
 	const trendDebtAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.DEBT); // prettier-ignore
 	const trendDebtAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.DEBT); // prettier-ignore
-	const trendDebtLabels = await getDatasetLabels(trendDebtAccounts, trendDebtAssets); // prettier-ignore
+	const trendDebtLabels = await getDatasetLabels(trendDebtAccounts, trendDebtAssets, latestBalanceDates[0]); // prettier-ignore
 	const trendDebt: TrendGroup = {
 		title: debtLabel,
 		labels: trendDebtLabels,
@@ -188,7 +221,7 @@ export const load = async () => {
 
 	const trendInvestmentsAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.INVESTMENTS ); // prettier-ignore
 	const trendInvestmentsAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.INVESTMENTS ); // prettier-ignore
-	const trendInvestmentsLabels = await getDatasetLabels(trendInvestmentsAccounts, trendInvestmentsAssets); // prettier-ignore
+	const trendInvestmentsLabels = await getDatasetLabels(trendInvestmentsAccounts, trendInvestmentsAssets, latestBalanceDates[0]); // prettier-ignore
 	const trendInvestments: TrendGroup = {
 		title: investmentsLabel,
 		labels: trendInvestmentsLabels,
@@ -199,7 +232,7 @@ export const load = async () => {
 
 	const trendOtherAssetsAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.OTHER_ASSETS ); // prettier-ignore
 	const trendOtherAssetsAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.OTHER_ASSETS ); // prettier-ignore
-	const trendOtherAssetsLabels = await getDatasetLabels(trendOtherAssetsAccounts, trendOtherAssetsAssets); // prettier-ignore
+	const trendOtherAssetsLabels = await getDatasetLabels(trendOtherAssetsAccounts, trendOtherAssetsAssets, latestBalanceDates[0]); // prettier-ignore
 	const trendOtherAssets: TrendGroup = {
 		title: otherAssetsLabel,
 		labels: trendOtherAssetsLabels,
@@ -208,7 +241,7 @@ export const load = async () => {
 		datasets: generateEmptyDataset(trendOtherAssetsAccounts, trendOtherAssetsAssets)
 	};
 
-	const trendNetWorthLabels = await getDatasetLabels(accounts, assets);
+	const trendNetWorthLabels = await getDatasetLabels(accounts, assets, latestBalanceDates[0]);
 	const trendNetWorth: TrendGroup = {
 		title: netWorthLabel,
 		labels: trendNetWorthLabels,
@@ -277,15 +310,13 @@ export const load = async () => {
 		const updatedDatasets: ChartDataset[] = structuredClone(datasets);
 
 		for (const weekInPeriod of weeksInPeriod) {
-			const currentWeek = dateInUTC(new Date(weekInPeriod));
-
 			for (const account of accounts) {
-				const balance = await getAccountCurrentBalance(account, currentWeek);
+				const balance = await getAccountCurrentBalance(account, new Date(weekInPeriod));
 				updateDatasetBalance(updatedDatasets, account.name, balance);
 			}
 
 			for (const asset of assets) {
-				const balance = await getAssetCurrentBalance(asset, currentWeek);
+				const balance = await getAssetCurrentBalance(asset, new Date(weekInPeriod));
 				updateDatasetBalance(updatedDatasets, asset.name, balance);
 			}
 		}
@@ -400,15 +431,13 @@ export const load = async () => {
 	const trendNetWorthDataset = updateNetWorthDataset();
 
 	const updateNetWorthTable = async (): Promise<TrendNetWorthTable[]> => {
-		const now = new Date();
-		const utcNow = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
-		const today = dateInUTC(utcNow);
-		const oneWeekAgo = dateInUTC(subWeeks(today, 1));
-		const oneMonthAgo = dateInUTC(subMonths(today, 1));
-		const sixMonthsAgo = dateInUTC(subMonths(today, 6));
-		const firstOfCurrentYear = dateInUTC(startOfYear(today));
-		const oneYearAgo = dateInUTC(subYears(today, 1));
-		const fiveYearsAgo = dateInUTC(subYears(today, 5));
+		const today = new Date();
+		const oneWeekAgo = subWeeks(today, 1);
+		const oneMonthAgo = subMonths(today, 1);
+		const sixMonthsAgo = subMonths(today, 6);
+		const firstOfCurrentYear = startOfYear(today);
+		const oneYearAgo = subYears(today, 1);
+		const fiveYearsAgo = subYears(today, 5);
 		const weeksInPeriod = trendNetWorthLabels;
 
 		const datasets = await trendNetWorthDataset;
@@ -425,14 +454,14 @@ export const load = async () => {
 		const rowOtherAssets = trendNetWorthTable.find(({ name }) => name === otherAssetsLabel) as TrendNetWorthTable; // prettier-ignore
 
 		for (const weekInPeriod of weeksInPeriod) {
-			const currentWeek = dateInUTC(new Date(weekInPeriod));
+			const currentWeek = new Date(weekInPeriod);
 			const netWorthPeriod = netWorthDataset[weeksInPeriod.indexOf(weekInPeriod)];
 			const cashPeriod = cashDataset[weeksInPeriod.indexOf(weekInPeriod)];
 			const debtPeriod = debtDataset[weeksInPeriod.indexOf(weekInPeriod)];
 			const investmentsPeriod = investmentsDataset[weeksInPeriod.indexOf(weekInPeriod)];
 			const otherAssetsPeriod = otherAssetsDataset[weeksInPeriod.indexOf(weekInPeriod)];
 
-			if (isSameWeek(currentWeek, dateInUTC(new Date(weeksInPeriod[0])))) {
+			if (isSameWeek(currentWeek, new Date(weeksInPeriod[0]))) {
 				rowNetWorth.balanceMax = netWorthPeriod;
 				rowCash.balanceMax = cashDataset.find((balance) => balance !== null) || null;
 				rowDebt.balanceMax = debtDataset.find((balance) => balance !== null) || null;
@@ -440,11 +469,6 @@ export const load = async () => {
 				rowOtherAssets.balanceMax = otherAssetsDataset.find((balance) => balance !== null) || null;
 			}
 			if (isSameWeek(currentWeek, oneWeekAgo)) {
-				// console.warn('weekInPeriod', weekInPeriod);
-				// console.warn('oneWeekAgo', oneWeekAgo);
-				// console.warn('currentWeek', currentWeek);
-				// console.warn('otherAssetsPeriod', otherAssetsPeriod);
-				// console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceOneWeek = netWorthPeriod;
 				rowCash.balanceOneWeek = cashPeriod;
 				rowDebt.balanceOneWeek = debtPeriod;
@@ -452,11 +476,6 @@ export const load = async () => {
 				rowOtherAssets.balanceOneWeek = otherAssetsPeriod;
 			}
 			if (isSameWeek(currentWeek, oneMonthAgo)) {
-				// console.warn('weekInPeriod', weekInPeriod);
-				// console.warn('oneMonthAgo', oneMonthAgo);
-				// console.warn('currentWeek', currentWeek);
-				// console.warn('otherAssetsPeriod', otherAssetsPeriod);
-				// console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceOneMonth = netWorthPeriod;
 				rowCash.balanceOneMonth = cashPeriod;
 				rowDebt.balanceOneMonth = debtPeriod;
@@ -464,11 +483,6 @@ export const load = async () => {
 				rowOtherAssets.balanceOneMonth = otherAssetsPeriod;
 			}
 			if (isSameWeek(currentWeek, sixMonthsAgo)) {
-				// console.warn('weekInPeriod', weekInPeriod);
-				// console.warn('sixMonthsAgo', sixMonthsAgo);
-				// console.warn('currentWeek', currentWeek);
-				// console.warn('otherAssetsPeriod', otherAssetsPeriod);
-				// console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceSixMonths = netWorthPeriod;
 				rowCash.balanceSixMonths = cashPeriod;
 				rowDebt.balanceSixMonths = debtPeriod;
@@ -476,11 +490,6 @@ export const load = async () => {
 				rowOtherAssets.balanceSixMonths = otherAssetsPeriod;
 			}
 			if (isSameWeek(currentWeek, firstOfCurrentYear)) {
-				// console.warn('weekInPeriod', weekInPeriod);
-				// console.warn('firstOfCurrentYear', firstOfCurrentYear);
-				// console.warn('currentWeek', currentWeek);
-				// console.warn('otherAssetsPeriod', otherAssetsPeriod);
-				// console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceYearToDate = netWorthPeriod;
 				rowCash.balanceYearToDate = cashPeriod;
 				rowDebt.balanceYearToDate = debtPeriod;
@@ -488,11 +497,6 @@ export const load = async () => {
 				rowOtherAssets.balanceYearToDate = otherAssetsPeriod;
 			}
 			if (isSameWeek(currentWeek, oneYearAgo)) {
-				// console.warn('weekInPeriod', weekInPeriod);
-				// console.warn('oneYearAgo', oneYearAgo);
-				// console.warn('currentWeek', currentWeek);
-				// console.warn('otherAssetsPeriod', otherAssetsPeriod);
-				// console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceOneYear = netWorthPeriod;
 				rowCash.balanceOneYear = cashPeriod;
 				rowDebt.balanceOneYear = debtPeriod;
@@ -500,18 +504,13 @@ export const load = async () => {
 				rowOtherAssets.balanceOneYear = otherAssetsPeriod;
 			}
 			if (isSameWeek(currentWeek, fiveYearsAgo)) {
-				// console.warn('weekInPeriod', weekInPeriod);
-				// console.warn('fiveYearsAgo', fiveYearsAgo);
-				// console.warn('currentWeek', currentWeek);
-				// console.warn('otherAssetsPeriod', otherAssetsPeriod);
-				// console.warn('-------------------------------------------------------');
 				rowNetWorth.balanceFiveYears = netWorthPeriod;
 				rowCash.balanceFiveYears = cashPeriod;
 				rowDebt.balanceFiveYears = debtPeriod;
 				rowInvestments.balanceFiveYears = investmentsPeriod;
 				rowOtherAssets.balanceFiveYears = otherAssetsPeriod;
 			}
-			if (isSameWeek(currentWeek, dateInUTC(new Date(weeksInPeriod[weeksInPeriod.length - 1])))) {
+			if (isSameWeek(currentWeek, new Date(weeksInPeriod[weeksInPeriod.length - 1]))) {
 				rowNetWorth.currentBalance = netWorthPeriod;
 				rowCash.currentBalance = cashPeriod;
 				rowDebt.currentBalance = debtPeriod;
