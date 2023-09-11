@@ -433,15 +433,6 @@ export const load = async () => {
 		const firstOfCurrentYear = startOfYear(today);
 		const oneYearAgo = subYears(today, 1);
 		const fiveYearsAgo = subYears(today, 5);
-
-		console.warn(now, 'now');
-		console.warn(today, 'today');
-		console.warn(oneWeekAgo, 'oneWeekAgo');
-		console.warn(oneMonthAgo, 'oneMonthAgo');
-		console.warn(sixMonthsAgo, 'sixMonthsAgo');
-		console.warn(firstOfCurrentYear, 'firstOfCurrentYear');
-		console.warn(oneYearAgo, 'oneYearAgo');
-		console.warn(fiveYearsAgo, 'fiveYearsAgo');
 		const weeksInPeriod = trendNetWorthLabels;
 
 		const datasets = await trendNetWorthDataset;
@@ -473,6 +464,22 @@ export const load = async () => {
 				rowOtherAssets.balanceMax = otherAssetsDataset.find((balance) => balance !== null) || null;
 			}
 			if (isSameWeek(currentWeek, oneWeekAgo)) {
+				console.warn(now, 'now');
+				console.warn(today, 'today');
+				console.warn(oneWeekAgo, 'oneWeekAgo');
+				console.warn(currentWeek, 'currentWeek');
+				console.warn(
+					new Date(currentWeek.getTime() + currentWeek.getTimezoneOffset() * 60000),
+					'currentWeek as UTC'
+				);
+				console.warn('--------------------------------------');
+				console.warn(weekInPeriod, 'weekInPeriod');
+				console.warn('--------------------------------------');
+				console.warn(netWorthPeriod, 'netWorthPeriod');
+				console.warn(cashPeriod, 'cashPeriod');
+				console.warn(debtPeriod, 'debtPeriod');
+				console.warn(investmentsPeriod, 'investmentsPeriod');
+				console.warn(otherAssetsPeriod, 'otherAssetsPeriod');
 				rowNetWorth.balanceOneWeek = netWorthPeriod;
 				rowCash.balanceOneWeek = cashPeriod;
 				rowDebt.balanceOneWeek = debtPeriod;
