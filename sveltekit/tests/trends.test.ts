@@ -72,13 +72,13 @@ test.describe('Trends', () => {
 		await expect(page.locator('h1', { hasText: 'Trends' })).toBeVisible();
 		await expect(page.locator('.tableValue')).toHaveCount(35);
 		await expect(page.locator('.table__sortable--active', { hasText: "1 week" })).not.toBeVisible(); // prettier-ignore
-		await expect(page.locator('.table__tr:nth-child(1) .table__td:nth-child(2)', { hasText: "+0.25%" })).toBeVisible(); // prettier-ignore
+		await expect(page.locator('.table__tr:nth-child(1) .table__td:nth-child(2)', { hasText: "+9.8%" })).toBeVisible(); // prettier-ignore
 		await expect(page.locator('.table__sortable--active', { hasText: "1 month" })).not.toBeVisible(); // prettier-ignore
 		await expect(page.locator('.table__tr:nth-child(2) .table__td:nth-child(3)', { hasText: "+8.88%" })).toBeVisible(); // prettier-ignore
 		await expect(page.locator('.table__sortable--active', { hasText: "6 months" })).not.toBeVisible(); // prettier-ignore
 		await expect(page.locator('.table__tr:nth-child(3) .table__td:nth-child(4)', { hasText: "-3.2%" })).toBeVisible(); // prettier-ignore
 		await expect(page.locator('.table__sortable--active', { hasText: "Year to date" })).not.toBeVisible(); // prettier-ignore
-		await expect(page.locator('.table__tr:nth-child(4) .table__td:nth-child(5)', { hasText: "-40%" })).toBeVisible(); // prettier-ignore
+		await expect(page.locator('.table__tr:nth-child(4) .table__td:nth-child(5)', { hasText: "-39%" })).toBeVisible(); // prettier-ignore
 		await expect(page.locator('.table__sortable--active', { hasText: "1 year" })).not.toBeVisible(); // prettier-ignore
 		await expect(page.locator('.table__tr:nth-child(5) .table__td:nth-child(6)', { hasText: "+197%" })).toBeVisible(); // prettier-ignore
 		await expect(page.locator('.table__sortable--active', { hasText: "5 years" })).not.toBeVisible(); // prettier-ignore

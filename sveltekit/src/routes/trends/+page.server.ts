@@ -462,7 +462,7 @@ export const load = async () => {
 				rowInvestments.balanceMax = investmentsDataset.find((balance) => balance !== null) || null;
 				rowOtherAssets.balanceMax = otherAssetsDataset.find((balance) => balance !== null) || null;
 			}
-			if (isSameWeek(currentWeek, oneWeekAgo)) {
+			if (isSameWeek(currentWeek, oneWeekAgo, { weekStartsOn: 1 })) {
 				console.warn(new Date(), 'now');
 				console.warn(today, 'today');
 				console.warn(oneWeekAgo, 'oneWeekAgo');
@@ -485,42 +485,46 @@ export const load = async () => {
 				rowInvestments.balanceOneWeek = investmentsPeriod;
 				rowOtherAssets.balanceOneWeek = otherAssetsPeriod;
 			}
-			if (isSameWeek(currentWeek, oneMonthAgo)) {
+			if (isSameWeek(currentWeek, oneMonthAgo, { weekStartsOn: 1 })) {
 				rowNetWorth.balanceOneMonth = netWorthPeriod;
 				rowCash.balanceOneMonth = cashPeriod;
 				rowDebt.balanceOneMonth = debtPeriod;
 				rowInvestments.balanceOneMonth = investmentsPeriod;
 				rowOtherAssets.balanceOneMonth = otherAssetsPeriod;
 			}
-			if (isSameWeek(currentWeek, sixMonthsAgo)) {
+			if (isSameWeek(currentWeek, sixMonthsAgo, { weekStartsOn: 1 })) {
 				rowNetWorth.balanceSixMonths = netWorthPeriod;
 				rowCash.balanceSixMonths = cashPeriod;
 				rowDebt.balanceSixMonths = debtPeriod;
 				rowInvestments.balanceSixMonths = investmentsPeriod;
 				rowOtherAssets.balanceSixMonths = otherAssetsPeriod;
 			}
-			if (isSameWeek(currentWeek, firstOfCurrentYear)) {
+			if (isSameWeek(currentWeek, firstOfCurrentYear, { weekStartsOn: 1 })) {
 				rowNetWorth.balanceYearToDate = netWorthPeriod;
 				rowCash.balanceYearToDate = cashPeriod;
 				rowDebt.balanceYearToDate = debtPeriod;
 				rowInvestments.balanceYearToDate = investmentsPeriod;
 				rowOtherAssets.balanceYearToDate = otherAssetsPeriod;
 			}
-			if (isSameWeek(currentWeek, oneYearAgo)) {
+			if (isSameWeek(currentWeek, oneYearAgo, { weekStartsOn: 1 })) {
 				rowNetWorth.balanceOneYear = netWorthPeriod;
 				rowCash.balanceOneYear = cashPeriod;
 				rowDebt.balanceOneYear = debtPeriod;
 				rowInvestments.balanceOneYear = investmentsPeriod;
 				rowOtherAssets.balanceOneYear = otherAssetsPeriod;
 			}
-			if (isSameWeek(currentWeek, fiveYearsAgo)) {
+			if (isSameWeek(currentWeek, fiveYearsAgo, { weekStartsOn: 1 })) {
 				rowNetWorth.balanceFiveYears = netWorthPeriod;
 				rowCash.balanceFiveYears = cashPeriod;
 				rowDebt.balanceFiveYears = debtPeriod;
 				rowInvestments.balanceFiveYears = investmentsPeriod;
 				rowOtherAssets.balanceFiveYears = otherAssetsPeriod;
 			}
-			if (isSameWeek(currentWeek, new Date(weeksInPeriod[weeksInPeriod.length - 1]))) {
+			if (
+				isSameWeek(currentWeek, new Date(weeksInPeriod[weeksInPeriod.length - 1]), {
+					weekStartsOn: 1
+				})
+			) {
 				rowNetWorth.currentBalance = netWorthPeriod;
 				rowCash.currentBalance = cashPeriod;
 				rowDebt.currentBalance = debtPeriod;
