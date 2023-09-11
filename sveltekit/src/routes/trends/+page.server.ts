@@ -306,12 +306,13 @@ export const load = async () => {
 		for (const weekInPeriod of weeksInPeriod) {
 			for (const account of accounts) {
 				const balance = await getAccountCurrentBalance(account, new Date(weekInPeriod));
-				if (account.name === "Alice's Roth IRA") console.warn(new Date(weekInPeriod), balance);
+				if (weekInPeriod === weeksInPeriod[40]) console.warn(new Date(weekInPeriod), balance);
 				updateDatasetBalance(updatedDatasets, account.name, balance);
 			}
 
 			for (const asset of assets) {
 				const balance = await getAssetCurrentBalance(asset, new Date(weekInPeriod));
+				if (weekInPeriod === weeksInPeriod[40]) console.warn(new Date(weekInPeriod), balance);
 				updateDatasetBalance(updatedDatasets, asset.name, balance);
 			}
 		}
