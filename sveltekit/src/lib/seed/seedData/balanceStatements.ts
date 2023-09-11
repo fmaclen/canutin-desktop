@@ -79,7 +79,7 @@ export const accountAutoLoanBalanceStatements = [
 
 export const accountRothIraBalanceStatements = [
 	{
-		createdAt: new Date(),
+		createdAt: dateInUTC(new Date()),
 		value: 18535.78
 	},
 	{
@@ -138,7 +138,7 @@ export const accountRothIraBalanceStatements = [
 
 export const account401kbalanceStatements = [
 	{
-		createdAt: new Date(),
+		createdAt: dateInUTC(new Date()),
 		value: 4250.58
 	},
 	{
@@ -210,7 +210,7 @@ export const accountWalletBalanceStatements = [
 
 export const assetTeslaBalanceStatements = [
 	{
-		createdAt: new Date(),
+		createdAt: dateInUTC(new Date()),
 		quantity: 25,
 		cost: 1200,
 		value: 30000
@@ -255,7 +255,7 @@ export const assetTeslaBalanceStatements = [
 
 export const assetGamestopBalanceStatements = [
 	{
-		createdAt: new Date(),
+		createdAt: dateInUTC(new Date()),
 		quantity: 125,
 		cost: 25,
 		value: 3125
@@ -300,7 +300,7 @@ export const assetGamestopBalanceStatements = [
 
 export const assetBitcoinBalanceStatements = [
 	{
-		createdAt: new Date(),
+		createdAt: dateInUTC(new Date()),
 		quantity: 1.5,
 		cost: 46280,
 		value: 69420
@@ -333,7 +333,7 @@ export const assetBitcoinBalanceStatements = [
 
 export const assetEthereumBalanceStatements = [
 	{
-		createdAt: new Date(),
+		createdAt: dateInUTC(new Date()),
 		quantity: 5,
 		cost: 3500,
 		value: 17500
