@@ -86,38 +86,32 @@ const trendNetWorthTable: TrendNetWorthTable[] = [
 const getDatasetLabels = async (accounts: Account[], assets: Asset[], latestBalanceDates: Date) => {
 	const labels: string[] = [];
 	const earliestBalanceDates: Date[] = [];
-	// const latestBalanceDates: Date[] = [];
 
 	if (accounts) {
 		for (const account of accounts) {
-			const { periodStart, periodEnd } = await getAccountBalanceDateRange(account);
+			const { periodStart } = await getAccountBalanceDateRange(account);
 			if (periodStart) earliestBalanceDates.push(periodStart);
-			// if (periodEnd) latestBalanceDates.push(periodEnd);
 		}
 	}
 	if (assets) {
 		for (const asset of assets) {
-			const { periodStart, periodEnd } = await getAssetBalanceDateRange(asset);
+			const { periodStart } = await getAssetBalanceDateRange(asset);
 			if (periodStart) earliestBalanceDates.push(periodStart);
-			// if (periodEnd) latestBalanceDates.push(periodEnd);
 		}
 	}
 
 	if (earliestBalanceDates.length === 0) return labels;
-	// if (latestBalanceDates.length === 0) return labels;
 
 	// Get the earliest date of all the accounts and/or assets balances
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
-	// latestBalanceDates.sort((a, b) => (a < b ? 1 : -1));
 
 	///////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////
 
-	const endOfPeriod = latestBalanceDates.getTime() < Date.now() ? new Date() : latestBalanceDates; // prettier-ignore
-	console.warn(accounts[0]?.name);
-	console.warn(assets[0]?.name);
-	console.warn(endOfPeriod);
-	console.warn(latestBalanceDates.getTime() < Date.now());
+	// console.warn(accounts[0]?.name);
+	// console.warn(assets[0]?.name);
+	// console.warn(endOfPeriod);
+	// console.warn(latestBalanceDates.getTime() < Date.now());
 	///////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////
 
@@ -129,7 +123,7 @@ const getDatasetLabels = async (accounts: Account[], assets: Asset[], latestBala
 	///////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////
 
-	console.warn('weeksInPeriod', weeksInPeriod.length);
+	// console.warn('weeksInPeriod', weeksInPeriod.length);
 	// console.warn('earliestBalanceDates', earliestBalanceDates[0]);
 	// console.warn(
 	// 	'startOfTheWeekAfter(earliestBalanceDates)',
@@ -138,7 +132,7 @@ const getDatasetLabels = async (accounts: Account[], assets: Asset[], latestBala
 	// console.warn('.....................');
 	// console.warn('endOfPeriod', endOfPeriod);
 	// console.warn('startOfTheWeekAfter(endOfPeriod)', startOfTheWeekAfter(endOfPeriod));
-	console.warn('-----------------------------------------------------------');
+	// console.warn('-----------------------------------------------------------');
 
 	///////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////
@@ -431,13 +425,23 @@ export const load = async () => {
 	const trendNetWorthDataset = updateNetWorthDataset();
 
 	const updateNetWorthTable = async (): Promise<TrendNetWorthTable[]> => {
-		const today = new Date();
+		const now = new Date();
+		const today = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
 		const oneWeekAgo = subWeeks(today, 1);
 		const oneMonthAgo = subMonths(today, 1);
 		const sixMonthsAgo = subMonths(today, 6);
 		const firstOfCurrentYear = startOfYear(today);
 		const oneYearAgo = subYears(today, 1);
 		const fiveYearsAgo = subYears(today, 5);
+
+		console.warn(now, 'now');
+		console.warn(today, 'today');
+		console.warn(oneWeekAgo, 'oneWeekAgo');
+		console.warn(oneMonthAgo, 'oneMonthAgo');
+		console.warn(sixMonthsAgo, 'sixMonthsAgo');
+		console.warn(firstOfCurrentYear, 'firstOfCurrentYear');
+		console.warn(oneYearAgo, 'oneYearAgo');
+		console.warn(fiveYearsAgo, 'fiveYearsAgo');
 		const weeksInPeriod = trendNetWorthLabels;
 
 		const datasets = await trendNetWorthDataset;
