@@ -19,7 +19,7 @@ import {
 import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import { startOfTheWeekAfter } from '$lib/helpers/charts';
-import { growthPercentage, proportionBetween } from '$lib/helpers/misc';
+import { dateInUTC, growthPercentage, proportionBetween } from '$lib/helpers/misc';
 import type { Account, Asset } from '@prisma/client';
 
 interface TrendGroup {
@@ -425,8 +425,7 @@ export const load = async () => {
 	const trendNetWorthDataset = updateNetWorthDataset();
 
 	const updateNetWorthTable = async (): Promise<TrendNetWorthTable[]> => {
-		const now = new Date();
-		const today = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+		const today = dateInUTC(new Date());
 		const oneWeekAgo = subWeeks(today, 1);
 		const oneMonthAgo = subMonths(today, 1);
 		const sixMonthsAgo = subMonths(today, 6);
@@ -464,7 +463,7 @@ export const load = async () => {
 				rowOtherAssets.balanceMax = otherAssetsDataset.find((balance) => balance !== null) || null;
 			}
 			if (isSameWeek(currentWeek, oneWeekAgo)) {
-				console.warn(now, 'now');
+				console.warn(new Date(), 'now');
 				console.warn(today, 'today');
 				console.warn(oneWeekAgo, 'oneWeekAgo');
 				console.warn(currentWeek, 'currentWeek');
