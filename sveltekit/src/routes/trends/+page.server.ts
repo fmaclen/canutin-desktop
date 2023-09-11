@@ -457,7 +457,7 @@ export const load = async () => {
 			const investmentsPeriod = investmentsDataset[weeksInPeriod.indexOf(weekInPeriod)];
 			const otherAssetsPeriod = otherAssetsDataset[weeksInPeriod.indexOf(weekInPeriod)];
 
-			if (isSameWeek(currentWeek, new Date(weeksInPeriod[0]))) {
+			if (isSameWeek(currentWeek, new Date(weeksInPeriod[0]), { weekStartsOn: 1 })) {
 				rowNetWorth.balanceMax = netWorthPeriod;
 				rowCash.balanceMax = cashDataset.find((balance) => balance !== null) || null;
 				rowDebt.balanceMax = debtDataset.find((balance) => balance !== null) || null;
