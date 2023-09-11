@@ -306,6 +306,8 @@ export const load = async () => {
 		for (const weekInPeriod of weeksInPeriod) {
 			for (const account of accounts) {
 				const balance = await getAccountCurrentBalance(account, new Date(weekInPeriod));
+				if (account.name === "Alice's Limited Rewards")
+					console.warn(new Date(weekInPeriod), balance);
 				updateDatasetBalance(updatedDatasets, account.name, balance);
 			}
 
