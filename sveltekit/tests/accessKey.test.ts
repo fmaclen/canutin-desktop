@@ -9,7 +9,7 @@ import {
 } from './fixtures/helpers.js';
 
 test.describe('Access key', () => {
-	const fakeAccessKey = 'top-secret-key-123';
+	const FAKE_ACCESS_KEY = 'top-secret-key-123';
 
 	test('Access to UI can be restricted by setting an access key', async ({ baseURL, page }) => {
 		await databaseWipe(baseURL!);
@@ -44,7 +44,7 @@ test.describe('Access key', () => {
 		await expect(copyButton).not.toBeVisible();
 
 		// Check the UI is updated when an access key is filled in
-		await accessKeyInput.fill(fakeAccessKey);
+		await accessKeyInput.fill(FAKE_ACCESS_KEY);
 		await expect(submitButton).not.toBeDisabled();
 		await expect(resetButton).toBeDisabled();
 		await expect(updateButton).not.toBeVisible();
@@ -114,7 +114,7 @@ test.describe('Access key', () => {
 		await expect(accessKeyInput).toHaveValue('');
 		await expect(continueButton).toBeDisabled();
 
-		await accessKeyInput.fill(fakeAccessKey);
+		await accessKeyInput.fill(FAKE_ACCESS_KEY);
 		await expect(continueButton).not.toBeDisabled();
 
 		// Check access key is incorrect
@@ -137,7 +137,7 @@ test.describe('Access key', () => {
 
 		// Update access key
 		await page.locator('a', { hasText: 'Settings' }).click();
-		await accessKeyInput.fill(fakeAccessKey);
+		await accessKeyInput.fill(FAKE_ACCESS_KEY);
 		await updateButton.click();
 		await expectToastAndDismiss(page, 'Access key has been set', Appearance.POSITIVE);
 
@@ -145,7 +145,7 @@ test.describe('Access key', () => {
 		await delay(); // Assertion is faster than the cookie being set
 		cookies = await context.cookies();
 		expect(cookies).toHaveLength(1);
-		expect(cookies[0].value).toMatch(fakeAccessKey);
+		expect(cookies[0].value).toMatch(FAKE_ACCESS_KEY);
 		await expect(formNotice).toHaveClass(/formNotice__notice--positive/);
 		expect(await formNotice.textContent()).toMatch('Access key is enabled');
 
@@ -192,7 +192,7 @@ test.describe('Access key', () => {
 			// Set access key
 			await page.goto('/');
 			await page.locator('a', { hasText: 'Settings' }).click();
-			await page.locator('input[name=accessKey]').fill(fakeAccessKey);
+			await page.locator('input[name=accessKey]').fill(FAKE_ACCESS_KEY);
 			await page.locator('div[data-test-id=settings-accessKey-form] button', { hasText: 'Enable' }).click(); // prettier-ignore
 			const formNotice = page.locator('div[data-test-id=settings-accessKey-form] .formNotice__notice'); // prettier-ignore
 			await expect(formNotice).toHaveClass(/formNotice__notice--positive/);
@@ -202,7 +202,7 @@ test.describe('Access key', () => {
 			await delay(); // Assertion is faster than the cookie being set
 			let cookies = await page.context().cookies();
 			expect(cookies).toHaveLength(1);
-			expect(cookies[0].value).toMatch(fakeAccessKey);
+			expect(cookies[0].value).toMatch(FAKE_ACCESS_KEY);
 			await page.locator('a', { hasText: 'The big picture' }).click();
 			expect(await page.locator('.card', { hasText: 'Net worth' }).textContent()).toMatch('$0');
 
@@ -233,7 +233,7 @@ test.describe('Access key', () => {
 		const inputAccessKey = page.locator('input[name=accessKey]');
 
 		await page.locator('a', { hasText: 'Settings' }).click();
-		await inputAccessKey.fill(fakeAccessKey);
+		await inputAccessKey.fill(FAKE_ACCESS_KEY);
 		await page.locator('div[data-test-id=settings-accessKey-form] button', { hasText: 'Enable' }).click(); // prettier-ignore
 		await expect(formNotice).toHaveClass(/formNotice__notice--positive/);
 		expect(await formNotice.textContent()).toMatch('Access key is enabled');
@@ -253,7 +253,7 @@ test.describe('Access key', () => {
 		await expect(page.locator('h1', { hasText: 'Access key' })).toBeVisible();
 
 		// Reset access key
-		await inputAccessKey.fill(fakeAccessKey);
+		await inputAccessKey.fill(FAKE_ACCESS_KEY);
 		await page.locator('button', { hasText: 'Continue' }).click();
 		await page.locator('a', { hasText: 'Settings' }).click();
 		await prepareToAcceptDialog(page, 'Are you sure you want to reset the access key?');
@@ -278,7 +278,7 @@ test.describe('Access key', () => {
 
 		// Set access key
 		await page.locator('a', { hasText: 'Settings' }).click();
-		await page.locator('input[name=accessKey]').fill(fakeAccessKey);
+		await page.locator('input[name=accessKey]').fill(FAKE_ACCESS_KEY);
 		await page.locator('div[data-test-id=settings-accessKey-form] button', { hasText: 'Enable' }).click(); // prettier-ignore
 		const formNotice = page.locator('div[data-test-id=settings-accessKey-form] .formNotice__notice'); // prettier-ignore
 		await expect(formNotice).toHaveClass(/formNotice__notice--positive/);
@@ -291,7 +291,7 @@ test.describe('Access key', () => {
 		await expect(page.locator('h1', { hasText: 'The big picture' })).not.toBeVisible();
 
 		// Reset access key
-		await page.locator('input[name=accessKey]').fill(fakeAccessKey);
+		await page.locator('input[name=accessKey]').fill(FAKE_ACCESS_KEY);
 		await page.locator('button', { hasText: 'Continue' }).click();
 		await page.locator('a', { hasText: 'Settings' }).click();
 		await prepareToAcceptDialog(page, 'Are you sure you want to reset the access key?');

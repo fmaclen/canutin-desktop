@@ -20,10 +20,52 @@ export const formatCurrency = (
 	}).format(value);
 };
 
+export const formatPercentage = (value: number) => {
+	const calculateFractionDigits = (value: number) => {
+		const valueLength = Math.round(value).toString().length;
+		if (value === 0 || valueLength > 2) return 0;
+		if (valueLength < 2) return 2;
+		if (valueLength < 3) return 1;
+	};
+
+	return new Intl.NumberFormat(LOCALE, {
+		style: 'percent',
+		minimumFractionDigits: calculateFractionDigits(value)
+	}).format(value / 100);
+};
+
+export const growthPercentage = (initialAmount: number, finalAmount: number): number => {
+	if (initialAmount === 0)
+		throw new Error('Initial amount cannot be zero when calculating growth percentage.');
+	return ((Math.abs(finalAmount) - Math.abs(initialAmount)) / Math.abs(initialAmount)) * 100;
+};
+
 export const sortByKey = (array: any[], key: string, order: SortOrder) => {
 	order == SortOrder.DESC
 		? array.sort((a, b) => (Math.abs(a[key]) > Math.abs(b[key]) ? 1 : -1))
 		: array.sort((a, b) => (Math.abs(a[key]) < Math.abs(b[key]) ? 1 : -1));
+};
+
+export const sortByNumber = <T>(a: T, b: T, sortOrder: SortOrder): number => {
+	// If the property is null or undefined, set it to 0
+	const valueA: number = (a as unknown as number) ?? 0;
+	const valueB: number = (b as unknown as number) ?? 0;
+	return sortOrder === SortOrder.DESC ? valueB - valueA : valueA - valueB;
+};
+
+export const sortByString = <T>(a: T, b: T, sortOrder: SortOrder): number => {
+	// If the property is null or undefined, set it to an empty string
+	const valueA: string = (a as unknown as string) ?? '';
+	const valueB: string = (b as unknown as string) ?? '';
+	if (sortOrder === SortOrder.DESC) {
+		return valueA.localeCompare(valueB);
+	} else {
+		return valueB.localeCompare(valueA);
+	}
+};
+
+export const sortByBoolean = <T>(a: T, b: T, sortOrder: SortOrder): number => {
+	return sortOrder === SortOrder.DESC ? +a - +b : +b - +a;
 };
 
 // Calculates the ratio between the two numbers

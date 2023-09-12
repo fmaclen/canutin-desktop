@@ -11,6 +11,10 @@
 	<title>{formattedTitle} {SEPARATOR} Canutin</title>
 
 	{#if PUBLIC_PLAUSIBLE_DOMAIN}
-		<script defer data-domain={PUBLIC_PLAUSIBLE_DOMAIN} src="https://plausible.io/js/script.js" />
+		<script
+			defer
+			data-domain={PUBLIC_PLAUSIBLE_DOMAIN}
+			src="https://plausible.io/js/script.js"
+		></script>
 	{/if}
 </svelte:head>

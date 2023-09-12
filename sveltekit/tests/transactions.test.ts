@@ -154,16 +154,18 @@ test.describe('Transactions', () => {
 		expect(await tableRows.first().textContent()).toMatch('-$2,250.00');
 
 		// Check positive values have a different color than 0 and negative value
-		await expect(page.locator('.table__td', { hasText: '$2,800.00' }).first()).toHaveClass(
-			/table__td--positive/
+		await expect(page.locator('.tableValue', { hasText: '$2,800.00' }).first()).toHaveClass(
+			/tableValue--positive/
 		);
-		await expect(page.locator('.table__td', { hasText: '$0.00' }).first()).not.toHaveClass(
-			/table__td--positive/
+		await expect(page.locator('.tableValue', { hasText: '$0.00' }).first()).not.toHaveClass(
+			/tableValue--positive/
 		);
-		await expect(page.locator('.table__td', { hasText: '-$2,250.00' }).first()).not.toHaveClass(
-			/table__td--positive/
+		await expect(page.locator('.tableValue', { hasText: '-$2,250.00' }).first()).not.toHaveClass(
+			/tableValue--positive/
 		);
-		await expect(page.locator('.table__excluded', { hasText: '-$24.21' }).first()).toHaveAttribute(
+		await expect(
+			page.locator('.tableValue--excluded', { hasText: '-$24.21' }).first()
+		).toHaveAttribute(
 			'title',
 			"This transaction is excluded from 'The big picture' and 'Balance sheet' totals"
 		);
@@ -426,7 +428,7 @@ test.describe('Transactions', () => {
 		await page.locator('a', { hasText: 'Balance sheet' }).click();
 
 		const addButton = page.locator('button', { hasText: 'Add' });
-		const balanceTypeGroup = page.locator('.balanceSheet__typeGroup');
+		const balanceTypeGroup = page.locator('[data-test-id="balance-sheet-type-group"]');
 		const nameInput = page.locator('.formInput__input[name=name]');
 
 		await page.locator('a', { hasText: 'Add account' }).click();
@@ -502,7 +504,7 @@ test.describe('Transactions', () => {
 		await isPendingCheckbox.check();
 		await page.locator('button', { hasText: 'save' }).click();
 		expect(await netBalanceCard.textContent()).not.toMatch('-$420.69');
-		await expect(page.locator('.table__excluded', { hasText: '-$420.69' })).not.toBeVisible();
+		await expect(page.locator('.tableValue--excluded', { hasText: '-$420.69' })).not.toBeVisible();
 
 		// Change date period from "Last 3 months" to "Lifetime"
 		await periodSelect.selectOption('7');
@@ -513,7 +515,7 @@ test.describe('Transactions', () => {
 		// Check the transaction is now excluded
 		expect(await netBalanceCard.textContent()).not.toMatch('-$420.69');
 		expect(await tableRows.first().textContent()).toMatch('-$420.69');
-		await expect(page.locator('.table__excluded', { hasText: '-$420.69' })).toBeVisible();
+		await expect(page.locator('.tableValue--excluded', { hasText: '-$420.69' })).toBeVisible();
 
 		// Check the values have been updated
 		await page.locator('a', { hasText: 'Toilet Paper Depot' }).click();
@@ -642,7 +644,7 @@ test.describe('Transactions', () => {
 			const selectAllCheckbox = page.locator('th input.batchEditor-checkbox__input');
 			const selectCheckboxes = page.locator('td input.batchEditor-checkbox__input');
 			const batchEditor = page.locator('.batchEditor');
-			const excludedTotals = page.locator('span.table__excluded');
+			const excludedTotals = page.locator('span.tableValue--excluded');
 
 			// Select all but 2 transactions in "Last 3 months"
 			await selectAllCheckbox.check();

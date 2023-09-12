@@ -150,9 +150,6 @@
 		grid-template-columns: minmax(0, 1fr);
 		grid-template-rows: minmax(384px, 25vh);
 		box-sizing: border-box;
-		background-color: var(--color-white);
-		box-shadow: var(--box-shadow);
-		border-radius: 4px;
 		position: relative;
 
 		&--multiple-datasets {

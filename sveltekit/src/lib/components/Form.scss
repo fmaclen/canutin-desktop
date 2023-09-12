@@ -1,34 +1,34 @@
 @mixin baseInput {
-  background-color: var(--color-white);
-  border: 2px solid var(--color-border);
-  border-radius: 4px;
-  padding: 10px;
-  font-family: var(--font-sansSerif);
-  font-size: 12px;
-  box-sizing: border-box;
+	background-color: var(--color-white);
+	border: 2px solid var(--color-border);
+	border-radius: 4px;
+	padding: 10px;
+	font-family: var(--font-sansSerif);
+	font-size: 12px;
+	box-sizing: border-box;
 
-  &:active,
-  &:focus {
-    outline-color: var(--color-bluePrimary);
-    outline-style: auto;
-  }
+	&:active,
+	&:focus {
+		outline-color: var(--color-bluePrimary);
+		outline-style: auto;
+	}
 }
 
 @mixin disabledInput {
-  pointer-events: none;
-  background-color: var(--color-grey10);
-  color: var(--color-grey40);
-  cursor: default;
+	pointer-events: none;
+	background-color: var(--color-grey10);
+	color: var(--color-grey40);
+	cursor: default;
 }
 
 @mixin errorInput {
-  &--error {
-    border-color: var(--color-redPrimary);
-  }
+	&--error {
+		border-color: var(--color-redPrimary);
+	}
 }
 
 @mixin numberInput {
-  &--number {
-    font-family: var(--font-monospace);
-  }
+	&--number {
+		font-family: var(--font-monospace);
+	}
 }

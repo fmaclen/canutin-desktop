@@ -8,43 +8,119 @@ import {
 	getAssetBalanceDateRange,
 	getAssetCurrentBalance
 } from '$lib/helpers/models.server';
-import { eachWeekOfInterval } from 'date-fns';
+import {
+	eachWeekOfInterval,
+	isSameWeek,
+	startOfWeek,
+	startOfYear,
+	subMonths,
+	subWeeks,
+	subYears
+} from 'date-fns';
 import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import { startOfTheWeekAfter } from '$lib/helpers/charts';
+import { growthPercentage, proportionBetween } from '$lib/helpers/misc';
 import type { Account, Asset } from '@prisma/client';
 
 interface TrendGroup {
-	title: BalanceGroup | 'Net worth';
+	title: string;
 	labels: string[];
 	datasets: ChartDataset[];
-	accounts: Account[] | null;
-	assets: Asset[] | null;
+	accounts: Account[];
+	assets: Asset[];
 }
 
-const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | null) => {
+export interface TrendNetWorthTable {
+	name: string;
+	currentBalance: number | null;
+	balanceOneWeek: number | null;
+	performanceOneWeek: number | null;
+	balanceOneMonth: number | null;
+	performanceOneMonth: number | null;
+	balanceSixMonths: number | null;
+	performanceSixMonths: number | null;
+	balanceYearToDate: number | null;
+	performanceYearToDate: number | null;
+	balanceOneYear: number | null;
+	performanceOneYear: number | null;
+	balanceFiveYears: number | null;
+	performanceFiveYears: number | null;
+	balanceMax: number | null;
+	performanceMax: number | null;
+	allocation: number | null;
+}
+
+const netWorthLabel = 'Net worth';
+const cashLabel = getBalanceGroupLabel(BalanceGroup.CASH);
+const debtLabel = getBalanceGroupLabel(BalanceGroup.DEBT);
+const investmentsLabel = getBalanceGroupLabel(BalanceGroup.INVESTMENTS);
+const otherAssetsLabel = getBalanceGroupLabel(BalanceGroup.OTHER_ASSETS);
+
+const netWorthTableEmpty = {
+	currentBalance: null,
+	balanceOneWeek: null,
+	balanceOneMonth: null,
+	balanceSixMonths: null,
+	balanceYearToDate: null,
+	balanceOneYear: null,
+	balanceFiveYears: null,
+	balanceMax: null,
+	performanceOneWeek: null,
+	performanceOneMonth: null,
+	performanceSixMonths: null,
+	performanceYearToDate: null,
+	performanceOneYear: null,
+	performanceFiveYears: null,
+	performanceMax: null,
+	allocation: null
+};
+
+const trendNetWorthTable: TrendNetWorthTable[] = [
+	{ name: netWorthLabel, ...netWorthTableEmpty },
+	{ name: cashLabel, ...netWorthTableEmpty },
+	{ name: debtLabel, ...netWorthTableEmpty },
+	{ name: investmentsLabel, ...netWorthTableEmpty },
+	{ name: otherAssetsLabel, ...netWorthTableEmpty }
+];
+
+const latestBalanceDates: Date[] = [];
+const accountsPeriodStart: {
+	accountId: number;
+	periodStart: Date | undefined;
+}[] = [];
+const assetsPeriodStart: {
+	assetId: number;
+	periodStart: Date | undefined;
+}[] = [];
+
+const getDatasetLabels = async (accounts: Account[], assets: Asset[]) => {
 	const labels: string[] = [];
 	const earliestBalanceDates: Date[] = [];
 
 	if (accounts) {
 		for (const account of accounts) {
-			const { periodStart } = await getAccountBalanceDateRange(account);
+			const periodStart = accountsPeriodStart.find(({ accountId }) => accountId === account.id)?.periodStart; // prettier-ignore
 			if (periodStart) earliestBalanceDates.push(periodStart);
 		}
 	}
 	if (assets) {
 		for (const asset of assets) {
-			const { periodStart } = await getAssetBalanceDateRange(asset);
+			const periodStart = assetsPeriodStart.find(({ assetId }) => assetId === asset.id)?.periodStart; // prettier-ignore
 			if (periodStart) earliestBalanceDates.push(periodStart);
 		}
 	}
 
-	// Get the earliest date of all the accounts and/or assets balances
+	if (earliestBalanceDates.length === 0) return labels;
+
+	// Sort all the periodStart dates in ascending order to get the earliest one
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
+
 	const weeksInPeriod = eachWeekOfInterval({
 		start: startOfTheWeekAfter(earliestBalanceDates[0]),
-		end: startOfTheWeekAfter(new Date())
+		end: startOfTheWeekAfter(latestBalanceDates[0])
 	});
+
 	for (const weekInPeriod of weeksInPeriod) {
 		labels.push(weekInPeriod.toISOString().slice(0, 10)); // e.g. 2022-12-31
 	}
@@ -55,18 +131,8 @@ const getDatasetLabels = async (accounts: Account[] | null, assets: Asset[] | nu
 // Generates an skeleton dataset for each Chart to be shown while we load the rest of the data
 const generateEmptyDataset = (accounts: Account[] | null, assets: Asset[] | null) => {
 	const datasets: ChartDataset[] = [];
-
-	if (accounts) {
-		for (const account of accounts) {
-			datasets.push({ label: account.name, data: [] });
-		}
-	}
-	if (assets) {
-		for (const asset of assets) {
-			datasets.push({ label: asset.name, data: [] });
-		}
-	}
-
+	if (accounts) for (const account of accounts) datasets.push({ label: account.name, data: [] });
+	if (assets) for (const asset of assets) datasets.push({ label: asset.name, data: [] });
 	return datasets;
 };
 
@@ -74,11 +140,29 @@ export const load = async () => {
 	const accounts = await prisma.account.findMany();
 	const assets = await prisma.asset.findMany();
 
+	if (accounts) {
+		for (const account of accounts) {
+			const { periodStart, periodEnd } = await getAccountBalanceDateRange(account);
+			if (periodStart) accountsPeriodStart.push({ accountId: account.id, periodStart });
+			if (periodEnd) latestBalanceDates.push(periodEnd);
+		}
+	}
+	if (assets) {
+		for (const asset of assets) {
+			const { periodStart, periodEnd } = await getAssetBalanceDateRange(asset);
+			if (periodStart) assetsPeriodStart.push({ assetId: asset.id, periodStart });
+			if (periodEnd) latestBalanceDates.push(periodEnd);
+		}
+	}
+
+	// Sort all the periodEnd dates in descending order to get the latest one
+	latestBalanceDates.sort((a, b) => (a < b ? 1 : -1));
+
 	const trendCashAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.CASH); // prettier-ignore
 	const trendCashAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.CASH); // prettier-ignore
 	const trendCashLabels = await getDatasetLabels(trendCashAccounts, trendCashAssets); // prettier-ignore
 	const trendCash: TrendGroup = {
-		title: BalanceGroup.CASH,
+		title: cashLabel,
 		labels: trendCashLabels,
 		accounts: trendCashAccounts,
 		assets: trendCashAssets,
@@ -89,7 +173,7 @@ export const load = async () => {
 	const trendDebtAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.DEBT); // prettier-ignore
 	const trendDebtLabels = await getDatasetLabels(trendDebtAccounts, trendDebtAssets); // prettier-ignore
 	const trendDebt: TrendGroup = {
-		title: BalanceGroup.DEBT,
+		title: debtLabel,
 		labels: trendDebtLabels,
 		accounts: trendDebtAccounts,
 		assets: trendDebtAssets,
@@ -100,7 +184,7 @@ export const load = async () => {
 	const trendInvestmentsAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.INVESTMENTS ); // prettier-ignore
 	const trendInvestmentsLabels = await getDatasetLabels(trendInvestmentsAccounts, trendInvestmentsAssets); // prettier-ignore
 	const trendInvestments: TrendGroup = {
-		title: BalanceGroup.INVESTMENTS,
+		title: investmentsLabel,
 		labels: trendInvestmentsLabels,
 		accounts: trendInvestmentsAccounts,
 		assets: trendInvestmentsAssets,
@@ -111,7 +195,7 @@ export const load = async () => {
 	const trendOtherAssetsAssets = assets.filter((asset) => asset.balanceGroup === BalanceGroup.OTHER_ASSETS ); // prettier-ignore
 	const trendOtherAssetsLabels = await getDatasetLabels(trendOtherAssetsAccounts, trendOtherAssetsAssets); // prettier-ignore
 	const trendOtherAssets: TrendGroup = {
-		title: BalanceGroup.OTHER_ASSETS,
+		title: otherAssetsLabel,
 		labels: trendOtherAssetsLabels,
 		accounts: trendOtherAssetsAccounts,
 		assets: trendOtherAssetsAssets,
@@ -120,27 +204,27 @@ export const load = async () => {
 
 	const trendNetWorthLabels = await getDatasetLabels(accounts, assets);
 	const trendNetWorth: TrendGroup = {
-		title: 'Net worth',
+		title: netWorthLabel,
 		labels: trendNetWorthLabels,
 		datasets: [
 			{
-				label: 'Net worth',
+				label: netWorthLabel,
 				data: []
 			},
 			{
-				label: getBalanceGroupLabel(BalanceGroup.CASH),
+				label: cashLabel,
 				data: []
 			},
 			{
-				label: getBalanceGroupLabel(BalanceGroup.DEBT),
+				label: debtLabel,
 				data: []
 			},
 			{
-				label: getBalanceGroupLabel(BalanceGroup.INVESTMENTS),
+				label: investmentsLabel,
 				data: []
 			},
 			{
-				label: getBalanceGroupLabel(BalanceGroup.OTHER_ASSETS),
+				label: otherAssetsLabel,
 				data: []
 			}
 		],
@@ -149,19 +233,19 @@ export const load = async () => {
 	};
 	trendNetWorth.datasets.forEach((dataset) => {
 		switch (dataset.label) {
-			case 'Net worth':
+			case netWorthLabel:
 				setChartDatasetColor(dataset);
 				break;
-			case 'Cash':
+			case cashLabel:
 				setChartDatasetColor(dataset, BalanceGroup.CASH);
 				break;
-			case 'Debt':
+			case debtLabel:
 				setChartDatasetColor(dataset, BalanceGroup.DEBT);
 				break;
-			case 'Investments':
+			case investmentsLabel:
 				setChartDatasetColor(dataset, BalanceGroup.INVESTMENTS);
 				break;
-			case 'Other assets':
+			case otherAssetsLabel:
 				setChartDatasetColor(dataset, BalanceGroup.OTHER_ASSETS);
 				break;
 		}
@@ -200,13 +284,13 @@ export const load = async () => {
 
 		// For Charts with a color set we apply a shade of that color to each dataset
 		if (color) {
-			const COLOR_WEIGHT = 125;
 			updatedDatasets.sort((a, b) => {
 				const aLastValue = (a.data[a.data.length - 1] || 0) as number;
 				const bLastValue = (b.data[b.data.length - 1] || 0) as number;
 				// NOTE: in the case of `trendDebtDataset` the sort order is reversed.
 				return orderBy === SortOrder.ASC ? bLastValue - aLastValue : aLastValue - bLastValue;
 			});
+			const COLOR_WEIGHT = 125;
 			updatedDatasets.forEach((updatedDataset, i) => {
 				const itemColor = new Values(color)
 					.all(COLOR_WEIGHT / updatedDatasets.length)
@@ -234,7 +318,6 @@ export const load = async () => {
 		'#e75258', // var(--color-redPrimary)
 		SortOrder.ASC
 	);
-
 	const trendInvestmentsDataset = updateDataset(
 		trendInvestments.datasets,
 		trendInvestmentsLabels,
@@ -242,7 +325,6 @@ export const load = async () => {
 		trendInvestmentsAssets,
 		'#B19B70' // var(--color-goldPrimary)
 	);
-
 	const trendOtherAssetsDataset = updateDataset(
 		trendOtherAssets.datasets,
 		trendOtherAssetsLabels,
@@ -257,52 +339,181 @@ export const load = async () => {
 		const weeksInPeriod = trendNetWorthLabels;
 
 		for (const weekInPeriod of weeksInPeriod) {
+			const cashDataIndex = trendCashLabels.indexOf(weekInPeriod);
+			const debtDataIndex = trendDebtLabels.indexOf(weekInPeriod);
+			const investmentsDataIndex = trendInvestmentsLabels.indexOf(weekInPeriod);
+			const otherAssetsDataIndex = trendOtherAssetsLabels.indexOf(weekInPeriod);
+
+			const hasCashBalance = cashDataIndex !== -1;
+			const hasDebtBalance = debtDataIndex !== -1;
+			const hasInvestmentsBalance = investmentsDataIndex !== -1;
+			const hasOtherAssetsBalance = otherAssetsDataIndex !== -1;
+
 			let netWorthBalance = 0;
 			let cashBalance = 0;
 			let debtBalance = 0;
 			let investmentsBalance = 0;
 			let otherAssetsBalance = 0;
 
-			const cashDataIndex = trendCashLabels.indexOf(weekInPeriod);
-			const debtDataIndex = trendDebtLabels.indexOf(weekInPeriod);
-			const investmentsDataIndex = trendInvestmentsLabels.indexOf(weekInPeriod);
-			const otherAssetsDataIndex = trendOtherAssetsLabels.indexOf(weekInPeriod);
-
-			if (cashDataIndex !== -1) {
+			if (hasCashBalance) {
 				(await trendCashDataset).forEach((dataset) => {
 					cashBalance += dataset.data[cashDataIndex] as number;
 					netWorthBalance += dataset.data[cashDataIndex] as number;
 				});
 			}
-			if (debtDataIndex !== -1) {
+			if (hasDebtBalance) {
 				(await trendDebtDataset).forEach((dataset) => {
 					debtBalance += dataset.data[debtDataIndex] as number;
 					netWorthBalance += dataset.data[debtDataIndex] as number;
 				});
 			}
-			if (investmentsDataIndex !== -1) {
+			if (hasInvestmentsBalance) {
 				(await trendInvestmentsDataset).forEach((dataset) => {
 					investmentsBalance += dataset.data[investmentsDataIndex] as number;
 					netWorthBalance += dataset.data[investmentsDataIndex] as number;
 				});
 			}
-			if (otherAssetsDataIndex !== -1) {
+			if (hasOtherAssetsBalance) {
 				(await trendOtherAssetsDataset).forEach((dataset) => {
 					otherAssetsBalance += dataset.data[otherAssetsDataIndex] as number;
 					netWorthBalance += dataset.data[otherAssetsDataIndex] as number;
 				});
 			}
 
-			updateDatasetBalance(updatedDatasets, 'Cash', cashBalance);
-			updateDatasetBalance(updatedDatasets, 'Debt', debtBalance);
-			updateDatasetBalance(updatedDatasets, 'Investments', investmentsBalance);
-			updateDatasetBalance(updatedDatasets, 'Other assets', otherAssetsBalance);
-			updateDatasetBalance(updatedDatasets, 'Net worth', netWorthBalance);
+			updateDatasetBalance(updatedDatasets, cashLabel, hasCashBalance ? cashBalance : null);
+			updateDatasetBalance(updatedDatasets, debtLabel, hasDebtBalance ? debtBalance : null);
+			updateDatasetBalance(updatedDatasets, investmentsLabel, hasInvestmentsBalance ? investmentsBalance : null); // prettier-ignore
+			updateDatasetBalance(updatedDatasets, otherAssetsLabel, hasOtherAssetsBalance ? otherAssetsBalance : null); // prettier-ignore
+			updateDatasetBalance(updatedDatasets, netWorthLabel, netWorthBalance);
 		}
 
 		return updatedDatasets;
 	};
 	const trendNetWorthDataset = updateNetWorthDataset();
+
+	const updateNetWorthTable = async (): Promise<TrendNetWorthTable[]> => {
+		const today = new Date();
+		const oneWeekAgo = startOfWeek(subWeeks(today, 1));
+		const oneMonthAgo = subMonths(today, 1);
+		const sixMonthsAgo = subMonths(today, 6);
+		const firstOfCurrentYear = startOfYear(today);
+		const oneYearAgo = subYears(today, 1);
+		const fiveYearsAgo = subYears(today, 5);
+		const weeksInPeriod = trendNetWorthLabels;
+
+		const datasets = await trendNetWorthDataset;
+		const netWorthDataset = datasets.find(({ label }) => label === netWorthLabel)?.data as number[]; // prettier-ignore
+		const cashDataset = datasets.find(({ label }) => label === cashLabel)?.data as number[]; // prettier-ignore
+		const debtDataset = datasets.find(({ label }) => label === debtLabel)?.data as number[]; // prettier-ignore
+		const investmentsDataset = datasets.find(({ label }) => label === investmentsLabel)?.data as number[]; // prettier-ignore
+		const otherAssetsDataset = datasets.find(({ label }) => label === otherAssetsLabel)?.data as number[]; // prettier-ignore
+
+		const rowNetWorth = trendNetWorthTable.find(({ name }) => name === netWorthLabel) as TrendNetWorthTable; // prettier-ignore
+		const rowCash = trendNetWorthTable.find(({ name }) => name === cashLabel) as TrendNetWorthTable; // prettier-ignore
+		const rowDebt = trendNetWorthTable.find(({ name }) => name === debtLabel) as TrendNetWorthTable; // prettier-ignore
+		const rowInvestments = trendNetWorthTable.find(({ name }) => name === investmentsLabel) as TrendNetWorthTable; // prettier-ignore
+		const rowOtherAssets = trendNetWorthTable.find(({ name }) => name === otherAssetsLabel) as TrendNetWorthTable; // prettier-ignore
+
+		for (const weekInPeriod of weeksInPeriod) {
+			const currentWeek = new Date(weekInPeriod);
+			const netWorthPeriod = netWorthDataset[weeksInPeriod.indexOf(weekInPeriod)];
+			const cashPeriod = cashDataset[weeksInPeriod.indexOf(weekInPeriod)];
+			const debtPeriod = debtDataset[weeksInPeriod.indexOf(weekInPeriod)];
+			const investmentsPeriod = investmentsDataset[weeksInPeriod.indexOf(weekInPeriod)];
+			const otherAssetsPeriod = otherAssetsDataset[weeksInPeriod.indexOf(weekInPeriod)];
+
+			if (isSameWeek(currentWeek, new Date(weeksInPeriod[0]), { weekStartsOn: 1 })) {
+				rowNetWorth.balanceMax = netWorthPeriod;
+				rowCash.balanceMax = cashDataset.find((balance) => balance !== null) || null;
+				rowDebt.balanceMax = debtDataset.find((balance) => balance !== null) || null;
+				rowInvestments.balanceMax = investmentsDataset.find((balance) => balance !== null) || null;
+				rowOtherAssets.balanceMax = otherAssetsDataset.find((balance) => balance !== null) || null;
+			}
+			if (isSameWeek(currentWeek, oneWeekAgo, { weekStartsOn: 1 })) {
+				rowNetWorth.balanceOneWeek = netWorthPeriod;
+				rowCash.balanceOneWeek = cashPeriod;
+				rowDebt.balanceOneWeek = debtPeriod;
+				rowInvestments.balanceOneWeek = investmentsPeriod;
+				rowOtherAssets.balanceOneWeek = otherAssetsPeriod;
+			}
+			if (isSameWeek(currentWeek, oneMonthAgo, { weekStartsOn: 1 })) {
+				rowNetWorth.balanceOneMonth = netWorthPeriod;
+				rowCash.balanceOneMonth = cashPeriod;
+				rowDebt.balanceOneMonth = debtPeriod;
+				rowInvestments.balanceOneMonth = investmentsPeriod;
+				rowOtherAssets.balanceOneMonth = otherAssetsPeriod;
+			}
+			if (isSameWeek(currentWeek, sixMonthsAgo, { weekStartsOn: 1 })) {
+				rowNetWorth.balanceSixMonths = netWorthPeriod;
+				rowCash.balanceSixMonths = cashPeriod;
+				rowDebt.balanceSixMonths = debtPeriod;
+				rowInvestments.balanceSixMonths = investmentsPeriod;
+				rowOtherAssets.balanceSixMonths = otherAssetsPeriod;
+			}
+			if (isSameWeek(currentWeek, firstOfCurrentYear, { weekStartsOn: 1 })) {
+				rowNetWorth.balanceYearToDate = netWorthPeriod;
+				rowCash.balanceYearToDate = cashPeriod;
+				rowDebt.balanceYearToDate = debtPeriod;
+				rowInvestments.balanceYearToDate = investmentsPeriod;
+				rowOtherAssets.balanceYearToDate = otherAssetsPeriod;
+			}
+			if (isSameWeek(currentWeek, oneYearAgo, { weekStartsOn: 1 })) {
+				rowNetWorth.balanceOneYear = netWorthPeriod;
+				rowCash.balanceOneYear = cashPeriod;
+				rowDebt.balanceOneYear = debtPeriod;
+				rowInvestments.balanceOneYear = investmentsPeriod;
+				rowOtherAssets.balanceOneYear = otherAssetsPeriod;
+			}
+			if (isSameWeek(currentWeek, fiveYearsAgo, { weekStartsOn: 1 })) {
+				rowNetWorth.balanceFiveYears = netWorthPeriod;
+				rowCash.balanceFiveYears = cashPeriod;
+				rowDebt.balanceFiveYears = debtPeriod;
+				rowInvestments.balanceFiveYears = investmentsPeriod;
+				rowOtherAssets.balanceFiveYears = otherAssetsPeriod;
+			}
+			if (
+				isSameWeek(currentWeek, new Date(weeksInPeriod[weeksInPeriod.length - 1]), {
+					weekStartsOn: 1
+				})
+			) {
+				rowNetWorth.currentBalance = netWorthPeriod;
+				rowCash.currentBalance = cashPeriod;
+				rowDebt.currentBalance = debtPeriod;
+				rowInvestments.currentBalance = investmentsPeriod;
+				rowOtherAssets.currentBalance = otherAssetsPeriod;
+				rowNetWorth.allocation = 100;
+				rowCash.allocation = proportionBetween(cashPeriod, netWorthPeriod);
+				rowDebt.allocation = proportionBetween(Math.abs(debtPeriod), netWorthPeriod);
+				rowInvestments.allocation = proportionBetween(investmentsPeriod, netWorthPeriod);
+				rowOtherAssets.allocation = proportionBetween(otherAssetsPeriod, netWorthPeriod);
+			}
+		}
+
+		for (const trend of trendNetWorthTable) {
+			const {
+				balanceOneWeek,
+				balanceOneMonth,
+				balanceSixMonths,
+				balanceYearToDate,
+				balanceOneYear,
+				balanceFiveYears,
+				balanceMax,
+				currentBalance
+			} = trend;
+			if (currentBalance === null) break;
+			if (balanceOneWeek) trend.performanceOneWeek = growthPercentage(balanceOneWeek, currentBalance); // prettier-ignore
+			if (balanceOneMonth) trend.performanceOneMonth = growthPercentage(balanceOneMonth, currentBalance); // prettier-ignore
+			if (balanceSixMonths) trend.performanceSixMonths = growthPercentage(balanceSixMonths, currentBalance); // prettier-ignore
+			if (balanceYearToDate) trend.performanceYearToDate = growthPercentage(balanceYearToDate, currentBalance); // prettier-ignore
+			if (balanceOneYear) trend.performanceOneYear = growthPercentage(balanceOneYear, currentBalance); // prettier-ignore
+			if (balanceFiveYears) trend.performanceFiveYears = growthPercentage(balanceFiveYears, currentBalance); // prettier-ignore
+			if (balanceMax) trend.performanceMax = growthPercentage(balanceMax, currentBalance); // prettier-ignore
+		}
+
+		return trendNetWorthTable;
+	};
+
+	const trendNetWorthTableData = updateNetWorthTable();
 
 	return {
 		trendNetWorth,
@@ -310,12 +521,14 @@ export const load = async () => {
 		trendDebt,
 		trendInvestments,
 		trendOtherAssets,
-		streaming: {
+		trendNetWorthTable,
+		streamed: {
 			trendCashDataset,
 			trendDebtDataset,
 			trendInvestmentsDataset,
 			trendOtherAssetsDataset,
-			trendNetWorthDataset
+			trendNetWorthDataset,
+			trendNetWorthTableData
 		}
 	};
 };

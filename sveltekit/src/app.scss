@@ -1,80 +1,80 @@
 :root {
-  --color-redPrimary:#e75258;
-  --color-redSecondary:#F9ECEF;
-  --color-greenPrimary:#00A36F;
-  --color-greenSecondary:#ECF9F6;
-  --color-purplePrimary:#5255AC;
-  --color-goldPrimary:#B19B70;
-  --color-bluePrimary:#0366D6;
-  --color-blueSecondary:#EFF7FF;
-  --color-yellowPrimary:#FBA500;
-  --color-yellowSecondary:#FFF8E4;
+	--color-redPrimary: #e75258;
+	--color-redSecondary: #f9ecef;
+	--color-greenPrimary: #00a36f;
+	--color-greenSecondary: #ecf9f6;
+	--color-purplePrimary: #5255ac;
+	--color-goldPrimary: #b19b70;
+	--color-bluePrimary: #0366d6;
+	--color-blueSecondary: #eff7ff;
+	--color-yellowPrimary: #fba500;
+	--color-yellowSecondary: #fff8e4;
 
-  --color-white:#FFFFFF;
-  --color-white-alpha10:rgba(255,255,255,.1);
-  --color-white-alpha50:rgba(255,255,255,.5);
-  
-  --color-black:#000;
-  --color-black-alpha10:rgba(0,0,0,.10);
-  --color-black-alpha15:rgba(0,0,0,.15);
-  --color-black-alpha35:rgba(0,0,0,.35);
-  --color-black-alpha65:rgba(0,0,0,.65);
+	--color-white: #ffffff;
+	--color-white-alpha10: rgba(255, 255, 255, 0.1);
+	--color-white-alpha50: rgba(255, 255, 255, 0.5);
 
-  --color-border:#E2E2E2;
+	--color-black: #000;
+	--color-black-alpha10: rgba(0, 0, 0, 0.1);
+	--color-black-alpha15: rgba(0, 0, 0, 0.15);
+	--color-black-alpha35: rgba(0, 0, 0, 0.35);
+	--color-black-alpha65: rgba(0, 0, 0, 0.65);
 
-  --color-grey3: #FAFAFA;
-  --color-grey5: #F2F2F2;
-  --color-grey7: #EDEDED;
-  --color-grey10: #E6E6E6;
-  --color-grey20: #CCCCCC;
-  --color-grey30: #B2B2B2;
-  --color-grey40: #999999;
-  --color-grey50: #7F7F7F;
-  --color-grey60: #666;
-  --color-grey70: #4C4C4C;
-  --color-grey80: #333333;
-  --color-grey90: #191919;
+	--color-border: #e2e2e2;
 
-  --font-sansSerif: "Inter", Helvetica, Arial, sans-serif;
-  --font-monospace: "Decima Mono Pro", "SF Mono", monospace;
+	--color-grey3: #fafafa;
+	--color-grey5: #f2f2f2;
+	--color-grey7: #ededed;
+	--color-grey10: #e6e6e6;
+	--color-grey20: #cccccc;
+	--color-grey30: #b2b2b2;
+	--color-grey40: #999999;
+	--color-grey50: #7f7f7f;
+	--color-grey60: #666;
+	--color-grey70: #4c4c4c;
+	--color-grey80: #333333;
+	--color-grey90: #191919;
 
-  --box-shadow: 0px 4px 15px rgb(0 0 0 / 10%), 0px 1px 1px rgb(0 0 0 / 5%);
+	--font-sansSerif: 'Inter', Helvetica, Arial, sans-serif;
+	--font-monospace: 'Decima Mono Pro', 'SF Mono', monospace;
+
+	--box-shadow: 0px 4px 15px rgb(0 0 0 / 10%), 0px 1px 1px rgb(0 0 0 / 5%);
 }
 
 // Fonts
 @font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Inter'), url('./lib/fonts/Inter-Regular.woff2') format('woff2'), local('Inter'),
-    url('./lib/fonts/Inter-Regular.woff') format('woff');
+	font-family: 'Inter';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Inter'), url('./lib/fonts/Inter-Regular.woff2') format('woff2'), local('Inter'),
+		url('./lib/fonts/Inter-Regular.woff') format('woff');
 }
 
 @font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 600;
-  src: local('Inter'), url('./lib/fonts/Inter-SemiBold.woff2') format('woff2'), local('Inter'),
-    url('./lib/fonts/Inter-SemiBold.woff') format('woff');
+	font-family: 'Inter';
+	font-style: normal;
+	font-weight: 600;
+	src: local('Inter'), url('./lib/fonts/Inter-SemiBold.woff2') format('woff2'), local('Inter'),
+		url('./lib/fonts/Inter-SemiBold.woff') format('woff');
 }
 
 /* Decima Mono Pro */
 @font-face {
-  font-family: 'Decima Mono Pro';
-  font-weight: 400;
-  font-style: normal;
-  src: local('Decima Mono Pro'), url('./lib/fonts/DecimaMonoPro-Regular.woff2') format('woff2'),
-    local('Decima Mono Pro'), url('./lib/fonts/DecimaMonoPro-Regular.woff') format('woff');
+	font-family: 'Decima Mono Pro';
+	font-weight: 400;
+	font-style: normal;
+	src: local('Decima Mono Pro'), url('./lib/fonts/DecimaMonoPro-Regular.woff2') format('woff2'),
+		local('Decima Mono Pro'), url('./lib/fonts/DecimaMonoPro-Regular.woff') format('woff');
 }
 
 html.html {
-  height: 100%;
+	height: 100%;
 }
 
 body.body {
-  font-family: var(--font-sansSerif);
-  color: var(--color-grey90);
-  background-color: var(--color-grey5);
-  margin: 0;
-  height: 100%;
+	font-family: var(--font-sansSerif);
+	color: var(--color-grey90);
+	background-color: var(--color-grey5);
+	margin: 0;
+	height: 100%;
 }
