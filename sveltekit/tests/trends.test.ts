@@ -85,7 +85,7 @@ test.describe('Trends', () => {
 		await expect(page.locator('.table__tr:nth-child(1) .table__td:nth-child(7)', { hasText: "~" })).toBeVisible(); // prettier-ignore
 		await expect(page.locator('.table__sortable--active', { hasText: "Max" })).not.toBeVisible(); // prettier-ignore
 		await expect(page.locator('.table__tr:nth-child(1) .table__td:nth-child(8) .tableValue--positive', { hasText: "+1,382%" })).toBeVisible(); // prettier-ignore
-		await expect(page.locator('.table__tr:nth-child(4) .table__td:nth-child(8) .tableValue--negative', { hasText: "+11,742%" })).toBeVisible(); // prettier-ignore
+		await expect(page.locator('.table__tr:nth-child(4) .table__td:nth-child(8) .tableValue--negative', { hasText: "+7,300%" })).toBeVisible(); // prettier-ignore
 		await expect(page.locator('.table__sortable--active', { hasText: "Allocation" })).toBeVisible(); // prettier-ignore
 		await expect(page.locator('.tableValue--excluded', { hasText: "100%" })).toBeVisible(); // prettier-ignore
 		await expect(page.locator('.tableValue--numeric', { hasText: "76.9%" })).toBeVisible(); // prettier-ignore
