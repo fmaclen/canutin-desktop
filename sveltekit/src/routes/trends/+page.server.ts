@@ -429,8 +429,8 @@ export const load = async () => {
 
 	const updateNetWorthTable = async (): Promise<TrendNetWorthTable[]> => {
 		const today = new Date();
-		console.log('-', new Date(today.getTime() - today.getTimezoneOffset() * 60000));
-		console.log('+', new Date(today.getTime() + today.getTimezoneOffset() * 60000));
+		console.warn('-', new Date(today.getTime() - today.getTimezoneOffset() * 60000));
+		console.warn('+', new Date(today.getTime() + today.getTimezoneOffset() * 60000));
 		// const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 		const oneWeekAgo = startOfWeek(subWeeks(today, 1));
 		const oneMonthAgo = subMonths(today, 1);
