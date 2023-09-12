@@ -113,7 +113,7 @@ const getDatasetLabels = async (accounts: Account[], assets: Asset[]) => {
 
 	if (earliestBalanceDates.length === 0) return labels;
 
-	// Get the earliest date of all the accounts and/or assets balances
+	// Sort all the periodStart dates in ascending order to get the earliest one
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
 
 	const weeksInPeriod = eachWeekOfInterval({
@@ -131,18 +131,8 @@ const getDatasetLabels = async (accounts: Account[], assets: Asset[]) => {
 // Generates an skeleton dataset for each Chart to be shown while we load the rest of the data
 const generateEmptyDataset = (accounts: Account[] | null, assets: Asset[] | null) => {
 	const datasets: ChartDataset[] = [];
-
-	if (accounts) {
-		for (const account of accounts) {
-			datasets.push({ label: account.name, data: [] });
-		}
-	}
-	if (assets) {
-		for (const asset of assets) {
-			datasets.push({ label: asset.name, data: [] });
-		}
-	}
-
+	if (accounts) for (const account of accounts) datasets.push({ label: account.name, data: [] });
+	if (assets) for (const asset of assets) datasets.push({ label: asset.name, data: [] });
 	return datasets;
 };
 
@@ -165,6 +155,7 @@ export const load = async () => {
 		}
 	}
 
+	// Sort all the periodEnd dates in descending order to get the latest one
 	latestBalanceDates.sort((a, b) => (a < b ? 1 : -1));
 
 	const trendCashAccounts = accounts.filter((account) => account.balanceGroup === BalanceGroup.CASH); // prettier-ignore
