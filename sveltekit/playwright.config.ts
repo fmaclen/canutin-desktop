@@ -12,7 +12,7 @@ const projectBrowser = [
 ];
 
 const config: PlaywrightTestConfig = {
-	retries: isEnvCI ? 0 : 0,
+	retries: isEnvCI ? 3 : 0,
 	webServer: {
 		command: 'npx prisma migrate dev && npm run build && npm run preview',
 		port: 4173,

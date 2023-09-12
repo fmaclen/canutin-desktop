@@ -40,7 +40,7 @@ const prisma = new PrismaClient();
 const seedDemoData = async () => {
 	// Accounts
 
-	// Account: Checking;
+	// Account: Checking
 	await prisma.account.create({
 		data: {
 			...accountCheckingDetails,

@@ -18,10 +18,8 @@ jobs:
   SvelteKit:
     strategy:
       matrix:
-        # os: [macos-latest, ubuntu-latest, windows-latest]
-        # browser: [chromium, firefox, webkit]
-        os: [ubuntu-latest]
-        browser: [chromium]
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        browser: [chromium, firefox, webkit]
 
     name: SvelteKit (${{ matrix.os }} - ${{ matrix.browser }})
     runs-on: ubuntu-latest

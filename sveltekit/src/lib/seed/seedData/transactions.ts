@@ -5,15 +5,6 @@ import { dateInUTC } from '$lib//helpers/misc';
 const MONTHS_IN_SET = 24;
 
 export const accountCheckingTransactionSet = async () => {
-	console.warn({
-		description: 'Westside Apartments',
-		value: -2250,
-		date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), 0)), 0)),
-		categoryId: await getTransactionCategoryId('Rent'),
-		isExcluded: false,
-		isPending: false
-	});
-
 	const transactionSet = async (i: number) => [
 		{
 			description: 'Westside Apartments',
