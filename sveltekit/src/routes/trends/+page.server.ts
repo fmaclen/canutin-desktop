@@ -11,6 +11,7 @@ import {
 import {
 	eachWeekOfInterval,
 	isSameWeek,
+	startOfWeek,
 	startOfYear,
 	subMonths,
 	subWeeks,
@@ -427,8 +428,11 @@ export const load = async () => {
 	const trendNetWorthDataset = updateNetWorthDataset();
 
 	const updateNetWorthTable = async (): Promise<TrendNetWorthTable[]> => {
-		const today = dateInUTC(new Date());
-		const oneWeekAgo = subWeeks(today, 1);
+		const today = new Date();
+		console.log('-', new Date(today.getTime() - today.getTimezoneOffset() * 60000));
+		console.log('+', new Date(today.getTime() + today.getTimezoneOffset() * 60000));
+		// const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+		const oneWeekAgo = startOfWeek(subWeeks(today, 1));
 		const oneMonthAgo = subMonths(today, 1);
 		const sixMonthsAgo = subMonths(today, 6);
 		const firstOfCurrentYear = startOfYear(today);
@@ -465,6 +469,11 @@ export const load = async () => {
 				rowOtherAssets.balanceMax = otherAssetsDataset.find((balance) => balance !== null) || null;
 			}
 			if (isSameWeek(currentWeek, oneWeekAgo, { weekStartsOn: 1 })) {
+				// FIXME////////////////////////////////////////////////////////////////
+				// FIXME////////////////////////////////////////////////////////////////
+				// FIXME////////////////////////////////////////////////////////////////
+				// FIXME////////////////////////////////////////////////////////////////
+				// FIXME////////////////////////////////////////////////////////////////
 				console.warn(new Date(), 'now');
 				console.warn(today, 'today');
 				console.warn(oneWeekAgo, 'oneWeekAgo');
