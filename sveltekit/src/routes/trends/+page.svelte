@@ -5,6 +5,7 @@
 	import Section from '$lib/components/Section.svelte';
 	import ChartJs from '$lib/components/ChartJS.svelte';
 	import Plate from '$lib/components/Plate.svelte';
+	import Notice from '$lib/components/Notice.svelte';
 	import Table from '$lib/components/Table.svelte';
 	import TableTh from '$lib/components/TableTh.svelte';
 	import TableTr from '$lib/components/TableTr.svelte';
@@ -18,13 +19,11 @@
 		formatPercentage,
 		toCamelCase,
 		sortByString,
-		sortByNumber,
-		dateInUTC
+		sortByNumber
 	} from '$lib/helpers/misc';
 	import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 	import type { ChartDataset } from 'chart.js';
-	import Notice from '../../lib/components/Notice.svelte';
 
 	const title = 'Trends';
 
@@ -158,11 +157,11 @@
 				</Notice>
 			{:else}
 				<Plate>
-					<!-- <ChartJs
+					<ChartJs
 						labels={data.trendNetWorth.labels}
 						datasets={$netWorthDatasets}
 						isLoading={netWorthDatasetsIsLoading}
-					/> -->
+					/>
 					<Table>
 						<thead>
 							<tr>
@@ -284,26 +283,11 @@
 					</Table>
 				</Plate>
 			{/if}
-
-			<code style="">
-				new Date(): {new Date()} >>>> dateInUTC: {dateInUTC(new Date())}
-			</code>
-			<hr />
-			<code style="">
-				{JSON.stringify($netWorthTable, null, 2)}
-			</code>
 		</div>
 	</Section>
 
 	<Section title="Cash">
 		<div slot="CONTENT">
-			<code style="">
-				{JSON.stringify(data.trendCash.labels, null, 2)}
-			</code>
-			<hr />
-			<code style="">
-				{JSON.stringify($cashDatasets, null, 2)}
-			</code>
 			{#if isVaultEmpty}
 				<Notice>Balance history doesn't have enough data points to cash trends</Notice>
 			{:else}
@@ -320,13 +304,6 @@
 
 	<Section title="Debt">
 		<div slot="CONTENT">
-			<code style="">
-				{JSON.stringify(data.trendDebt.labels, null, 2)}
-			</code>
-			<hr />
-			<code style="">
-				{JSON.stringify($debtDatasets, null, 2)}
-			</code>
 			{#if isVaultEmpty}
 				<Notice>Balance history doesn't have enough data points to debt trends</Notice>
 			{:else}
@@ -343,13 +320,6 @@
 
 	<Section title="Investments">
 		<div slot="CONTENT">
-			<code style="">
-				{JSON.stringify(data.trendInvestments.labels, null, 2)}
-			</code>
-			<hr />
-			<code style="">
-				{JSON.stringify($investmentsDatasets, null, 2)}
-			</code>
 			{#if isVaultEmpty}
 				<Notice>Balance history doesn't have enough data points to investment trends</Notice>
 			{:else}
@@ -366,13 +336,6 @@
 
 	<Section title="Other assets">
 		<div slot="CONTENT">
-			<code style="">
-				{JSON.stringify(data.trendOtherAssets.labels, null, 2)}
-			</code>
-			<hr />
-			<code style="">
-				{JSON.stringify($otherAssetsDatasets, null, 2)}
-			</code>
 			{#if isVaultEmpty}
 				<Notice>Balance history doesn't have enough data points to asset trends</Notice>
 			{:else}

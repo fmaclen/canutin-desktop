@@ -20,7 +20,7 @@ import {
 import { BalanceGroup, SortOrder, getBalanceGroupLabel } from '$lib/helpers/constants';
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import { startOfTheWeekAfter } from '$lib/helpers/charts';
-import { dateInUTC, growthPercentage, proportionBetween } from '$lib/helpers/misc';
+import { growthPercentage, proportionBetween } from '$lib/helpers/misc';
 import type { Account, Asset } from '@prisma/client';
 
 interface TrendGroup {
@@ -106,37 +106,10 @@ const getDatasetLabels = async (accounts: Account[], assets: Asset[], latestBala
 	// Get the earliest date of all the accounts and/or assets balances
 	earliestBalanceDates.sort((a, b) => (a > b ? 1 : -1));
 
-	///////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////
-
-	// console.warn(accounts[0]?.name);
-	// console.warn(assets[0]?.name);
-	// console.warn(endOfPeriod);
-	// console.warn(latestBalanceDates.getTime() < Date.now());
-	///////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////
-
 	const weeksInPeriod = eachWeekOfInterval({
 		start: startOfTheWeekAfter(earliestBalanceDates[0]),
 		end: startOfTheWeekAfter(latestBalanceDates)
 	});
-
-	///////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////
-
-	// console.warn('weeksInPeriod', weeksInPeriod.length);
-	// console.warn('earliestBalanceDates', earliestBalanceDates[0]);
-	// console.warn(
-	// 	'startOfTheWeekAfter(earliestBalanceDates)',
-	// 	startOfTheWeekAfter(earliestBalanceDates[0])
-	// );
-	// console.warn('.....................');
-	// console.warn('endOfPeriod', endOfPeriod);
-	// console.warn('startOfTheWeekAfter(endOfPeriod)', startOfTheWeekAfter(endOfPeriod));
-	// console.warn('-----------------------------------------------------------');
-
-	///////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////
 
 	for (const weekInPeriod of weeksInPeriod) {
 		labels.push(weekInPeriod.toISOString().slice(0, 10)); // e.g. 2022-12-31
@@ -307,13 +280,11 @@ export const load = async () => {
 		for (const weekInPeriod of weeksInPeriod) {
 			for (const account of accounts) {
 				const balance = await getAccountCurrentBalance(account, new Date(weekInPeriod));
-				if (weekInPeriod === weeksInPeriod[40]) console.warn(new Date(weekInPeriod), balance);
 				updateDatasetBalance(updatedDatasets, account.name, balance);
 			}
 
 			for (const asset of assets) {
 				const balance = await getAssetCurrentBalance(asset, new Date(weekInPeriod));
-				if (weekInPeriod === weeksInPeriod[40]) console.warn(new Date(weekInPeriod), balance);
 				updateDatasetBalance(updatedDatasets, asset.name, balance);
 			}
 		}
@@ -429,9 +400,6 @@ export const load = async () => {
 
 	const updateNetWorthTable = async (): Promise<TrendNetWorthTable[]> => {
 		const today = new Date();
-		console.warn('-', new Date(today.getTime() - today.getTimezoneOffset() * 60000));
-		console.warn('+', new Date(today.getTime() + today.getTimezoneOffset() * 60000));
-		// const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 		const oneWeekAgo = startOfWeek(subWeeks(today, 1));
 		const oneMonthAgo = subMonths(today, 1);
 		const sixMonthsAgo = subMonths(today, 6);
@@ -469,27 +437,6 @@ export const load = async () => {
 				rowOtherAssets.balanceMax = otherAssetsDataset.find((balance) => balance !== null) || null;
 			}
 			if (isSameWeek(currentWeek, oneWeekAgo, { weekStartsOn: 1 })) {
-				// FIXME////////////////////////////////////////////////////////////////
-				// FIXME////////////////////////////////////////////////////////////////
-				// FIXME////////////////////////////////////////////////////////////////
-				// FIXME////////////////////////////////////////////////////////////////
-				// FIXME////////////////////////////////////////////////////////////////
-				console.warn(new Date(), 'now');
-				console.warn(today, 'today');
-				console.warn(oneWeekAgo, 'oneWeekAgo');
-				console.warn(currentWeek, 'currentWeek');
-				console.warn(
-					new Date(currentWeek.getTime() + currentWeek.getTimezoneOffset() * 60000),
-					'currentWeek as UTC'
-				);
-				console.warn('--------------------------------------');
-				console.warn(weekInPeriod, 'weekInPeriod');
-				console.warn('--------------------------------------');
-				console.warn(netWorthPeriod, 'netWorthPeriod');
-				console.warn(cashPeriod, 'cashPeriod');
-				console.warn(debtPeriod, 'debtPeriod');
-				console.warn(investmentsPeriod, 'investmentsPeriod');
-				console.warn(otherAssetsPeriod, 'otherAssetsPeriod');
 				rowNetWorth.balanceOneWeek = netWorthPeriod;
 				rowCash.balanceOneWeek = cashPeriod;
 				rowDebt.balanceOneWeek = debtPeriod;
