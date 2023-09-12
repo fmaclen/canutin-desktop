@@ -5,6 +5,7 @@
 	import Head from '$lib/components/Head.svelte';
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Section from '$lib/components/Section.svelte';
+	import Plate from '$lib/components/Plate.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Link from '$lib/components/Link.svelte';
 	import ChartBar from '$lib/components/ChartBar.svelte';
@@ -42,7 +43,7 @@
 	};
 
 	const ONE_HOUR_IN_SECONDS = 3600; // Add one hour to account for daylight savings
-	const timezoneOffset = (new Date().getTimezoneOffset() * 60) + ONE_HOUR_IN_SECONDS;
+	const timezoneOffset = new Date().getTimezoneOffset() * 60 + ONE_HOUR_IN_SECONDS;
 </script>
 
 <Head {title} />
@@ -73,62 +74,68 @@
 	</Section>
 
 	<Section title="Cashflow">
-		<div slot="CONTENT" class="bigPictureCashflow">
-			{@const { chart } = cashflow}
+		<div slot="CONTENT">
+			<Plate>
+				{@const { chart } = cashflow}
 
-			<div class="chart">
-				{#each cashflow.periods as period}
-					{@const isCurrentPeriod = currentPeriod.id === period.id}
-					{@const isActive = activePeriod === period.id}
-					{@const isLabelVisible =
-						isActive ||
-						isCurrentPeriod ||
-						[chart.highestSurplus, chart.lowestSurplus].includes(period.surplus)}
-					{@const month = fromUnixTime(period.month + timezoneOffset)}
-					{@const isJanuary = month.getMonth() === 0}
-					<a
-						on:mouseenter={() => setActivePeriod(period)}
-						href="/transactions
+				<div class="chart">
+					{#each cashflow.periods as period}
+						{@const isCurrentPeriod = currentPeriod.id === period.id}
+						{@const isActive = activePeriod === period.id}
+						{@const isLabelVisible =
+							isActive ||
+							isCurrentPeriod ||
+							[chart.highestSurplus, chart.lowestSurplus].includes(period.surplus)}
+						{@const month = fromUnixTime(period.month + timezoneOffset)}
+						{@const isJanuary = month.getMonth() === 0}
+						<a
+							on:mouseenter={() => setActivePeriod(period)}
+							href="/transactions
 							?periodFrom={format(startOfMonth(month), 'yyyy-MM-dd')}
 							&periodTo={format(endOfMonth(month), 'yyyy-MM-dd')}
 							&periodLabel={format(month, 'MMMM yyyy')}
 						"
-						title="See transactions in {format(month, 'MMMM yyyy')}"
-						class="chart__period
+							title="See transactions in {format(month, 'MMMM yyyy')}"
+							class="chart__period
 							{isActive && 'chart__period--active'}
 							{isJanuary && 'chart__period--january'}
 						"
-					>
-						<ChartBar
-							{isCurrentPeriod}
-							{isActive}
-							{isLabelVisible}
-							value={formatCurrency(period.surplus)}
-							height={period.chartRatio}
-							trend={period.surplus > 0 ? 'positive' : period.surplus < 0 ? 'negative' : undefined}
-							positiveRatio={chart.positiveRatio}
-							negativeRatio={chart.negativeRatio}
-						/>
-						<time class="chart__time {isActive && 'chart__time--active'}">
-							{format(month, 'MMM')}
-							{isJanuary ? `'${format(month, 'yy')}` : ''}
-						</time>
-					</a>
-				{/each}
-			</div>
-			<div class="bigPictureCashflow__summary">
-				<Card
-					title="Income"
-					appearance={CardAppearance.SECONDARY}
-					value={formatCurrency(activeIncome)}
-				/>
-				<Card
-					title="Expenses"
-					appearance={CardAppearance.SECONDARY}
-					value={formatCurrency(activeExpenses)}
-				/>
-				<Card title="Surplus" value={formatCurrency(activeSurplus)} />
-			</div>
+						>
+							<ChartBar
+								{isCurrentPeriod}
+								{isActive}
+								{isLabelVisible}
+								value={formatCurrency(period.surplus)}
+								height={period.chartRatio}
+								trend={period.surplus > 0
+									? 'positive'
+									: period.surplus < 0
+									? 'negative'
+									: undefined}
+								positiveRatio={chart.positiveRatio}
+								negativeRatio={chart.negativeRatio}
+							/>
+							<time class="chart__time {isActive && 'chart__time--active'}">
+								{format(month, 'MMM')}
+								{isJanuary ? `'${format(month, 'yy')}` : ''}
+							</time>
+						</a>
+					{/each}
+				</div>
+				<div class="bigPictureCashflow__summary">
+					<Card
+						title="Income"
+						appearance={CardAppearance.SECONDARY}
+						value={formatCurrency(activeIncome)}
+					/>
+					<Card
+						title="Expenses"
+						appearance={CardAppearance.SECONDARY}
+						value={formatCurrency(activeExpenses)}
+					/>
+					<Card title="Surplus" value={formatCurrency(activeSurplus)} />
+				</div>
+			</Plate>
 		</div>
 	</Section>
 
@@ -164,13 +171,6 @@
 		gap: 8px;
 		padding-left: 20px;
 		border-left: 1px solid var(--color-border);
-	}
-
-	div.bigPictureCashflow {
-		background-color: var(--color-white);
-		border-radius: 4px;
-		box-shadow: var(--box-shadow);
-		width: 100%;
 	}
 
 	div.bigPictureCashflow__summary {

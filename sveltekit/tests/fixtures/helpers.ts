@@ -7,7 +7,7 @@ import { Appearance, DeveloperFunctions } from '../../src/lib/helpers/constants.
 // Waits for the caret position update in `@canutin/sveltekit-currency-input`
 export const DELAY_FOR_DECIMAL_VALUES_IN_MS = 25;
 
-export const pathToTestVault = path.join(process.cwd(), 'tests', 'tmp', 'Canutin.vault.test');
+export const pathToTestVault = path.join(process.cwd(), 'tests', 'tmp', 'Canutin.test.vault');
 
 const methodAndHeaders = {
 	method: 'POST',

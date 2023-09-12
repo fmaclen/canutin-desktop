@@ -6,9 +6,11 @@
 	import { onMount } from 'svelte';
 	import type { ChartConfiguration, ChartDataset } from 'chart.js';
 	import { formatCurrency } from '$lib/helpers/misc';
+	import iconLoading from '$lib/assets/icon-loading.svg';
 
 	export let labels: string[];
 	export let datasets: ChartDataset[];
+	export let isLoading: boolean = false;
 
 	let canvasChart: HTMLCanvasElement;
 
@@ -16,6 +18,8 @@
 	const getValueFromCSSVariable = (variable: string) => {
 		return getComputedStyle(document.documentElement).getPropertyValue(variable);
 	};
+
+	let chart: Chart | null;
 
 	onMount(() => {
 		// Getting the font family from a CSS variable
@@ -127,12 +131,17 @@
 		};
 
 		const context = canvasChart.getContext('2d');
-		context && new Chart(context, config);
+		chart = context && new Chart(context, config);
 	});
+
+	$: datasets && chart?.update();
 </script>
 
 <div class="chart {datasets.length > 1 && 'chart--multiple-datasets'}">
-	<canvas bind:this={canvasChart} />
+	{#if isLoading}
+		<img src={iconLoading} class="chart__loading" alt="Loading..." />
+	{/if}
+	<canvas class="chart__canvas {isLoading && 'chart__canvas--loading'}" bind:this={canvasChart} />
 </div>
 
 <style lang="scss">
@@ -141,13 +150,23 @@
 		grid-template-columns: minmax(0, 1fr);
 		grid-template-rows: minmax(384px, 25vh);
 		box-sizing: border-box;
-		background-color: var(--color-white);
-		box-shadow: var(--box-shadow);
-		border-radius: 4px;
+		position: relative;
 
 		&--multiple-datasets {
 			padding-top: 8px;
 			padding-bottom: 8px;
 		}
+	}
+
+	canvas.chart__canvas--loading {
+		opacity: 0.5;
+		filter: grayscale(100%);
+	}
+
+	img.chart__loading {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
 </style>

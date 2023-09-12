@@ -48,7 +48,7 @@
 				const latestVersion = response[0]?.tag_name?.replace('v', '');
 
 				// Update status bar with latest version
-				if (latestVersion && semver.lt(data.appVersion, latestVersion)) {
+				if (latestVersion && data.appVersion && semver.lt(data.appVersion, latestVersion)) {
 					toast.push(
 						`A newer version is available. <a class="toastLink" href="${GITHUB_RELEASES_URL}" target="_blank">Download ${latestVersion}</a>`,
 						{

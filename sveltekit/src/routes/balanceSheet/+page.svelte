@@ -3,6 +3,7 @@
 	import ScrollView from '$lib/components/ScrollView.svelte';
 	import Card from '$lib/components/Card.svelte';
 	import Section from '$lib/components/Section.svelte';
+	import Plate from '$lib/components/Plate.svelte';
 	import Link from '$lib/components/Link.svelte';
 	import Notice from '$lib/components/Notice.svelte';
 	import { balanceGroupAppearance } from '$lib/components/Card';
@@ -38,7 +39,7 @@
 						/>
 
 						{#each balanceSheetItemsByBalanceGroup.balanceItemsTypeGroups as balanceSheetTypeGroup}
-							<div class="balanceSheet__typeGroup">
+							<Plate dataTestId="balance-sheet-type-group">
 								<header class="balanceSheet__typeHeader">
 									<p class="balanceSheet__typeName">{balanceSheetTypeGroup.type}</p>
 									<p class="balanceSheet__typeValue">
@@ -61,7 +62,7 @@
 										</li>
 									{/each}
 								</ol>
-							</div>
+							</Plate>
 						{/each}
 					</div>
 				{/each}
@@ -102,12 +103,6 @@
 			padding-left: unset;
 			border-left: unset;
 		}
-	}
-
-	div.balanceSheet__typeGroup {
-		box-shadow: var(--box-shadow);
-		background-color: var(--color-white);
-		border-radius: 4px;
 	}
 
 	header.balanceSheet__typeHeader {
