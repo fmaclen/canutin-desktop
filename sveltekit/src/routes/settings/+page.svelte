@@ -16,7 +16,8 @@
 	import FormNoticeP from '$lib/components/FormNoticeP.svelte';
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import syncStatusStore from '$lib/stores/syncStatusStore';
-	import { SyncSettings, Appearance, EventFrequency } from '$lib/helpers/constants';
+	import colorThemeStore from '$lib/stores/colorThemeStore';
+	import { SyncSettings, Appearance, EventFrequency, ColorTheme } from '$lib/helpers/constants';
 	import type { ImportSync } from '$lib/helpers/import';
 	import { getAccessKeyCookie } from '$lib/helpers/accessKey';
 	import { api } from '$lib/helpers/misc';
@@ -103,6 +104,17 @@
 		label: value
 	}));
 
+	// Color theming
+	let colorThemeValue: ColorTheme;
+	const colorThemeOptions = Object.values(ColorTheme).map((value) => ({
+		label: value,
+		value
+	}));
+
+	const handleColorTheme = (event: any): void => {
+		$colorThemeStore = event.target.colorTheme.value;
+	};
+
 	onMount(async () => {
 		accessKeyValue = accessKey ? accessKey : '';
 		isAccessKeyEnabled = accessKey !== undefined;
@@ -124,6 +136,12 @@
 					break;
 			}
 		});
+
+		colorThemeValue =
+			($colorThemeStore as ColorTheme) ||
+			(window?.matchMedia('(prefers-color-scheme: dark)').matches
+				? ColorTheme.DARK
+				: ColorTheme.LIGHT);
 	});
 </script>
 
@@ -249,6 +267,25 @@
 					>
 						{isSyncEnabled ? 'Update' : 'Enable'}
 					</Button>
+				</FormFooter>
+			</Form>
+		</div>
+	</Section>
+
+	<Section title="Interface">
+		<div slot="CONTENT">
+			<Form on:submit={handleColorTheme}>
+				<FormFieldset>
+					<FormField name="colorTheme" label="Color theme">
+						<FormSelect
+							name="colorTheme"
+							options={colorThemeOptions}
+							bind:value={colorThemeValue}
+						/>
+					</FormField>
+				</FormFieldset>
+				<FormFooter>
+					<Button appearance={Appearance.ACTIVE}>Apply</Button>
 				</FormFooter>
 			</Form>
 		</div>

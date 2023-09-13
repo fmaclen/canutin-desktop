@@ -13,8 +13,8 @@
 		display: grid;
 		grid-row-gap: 8px;
 		padding: 16px 19px 16px 16px;
-		background-color: #ffffff;
-		box-shadow: 0px 4px 15px rgb(0 0 0 / 10%), 0px 1px 1px rgb(0 0 0 / 5%);
+		background-color: var(--color-white);
+		box-shadow: vare(--box-shadow);
 		border-radius: 3px;
 		font-size: 13px;
 		border-left: 3px solid var(--color-grey20);

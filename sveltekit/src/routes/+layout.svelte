@@ -10,14 +10,16 @@
 
 	import StatusBar from '$lib/components/StatusBar.svelte';
 	import ButtonTag from '$lib/components/ButtonTag.svelte';
+	import FlashAlert from '$lib/components/FlashAlert.svelte';
+
 	import lastUpdateCheckStore from '$lib/stores/lastUpdateCheckStore';
 	import syncStatusStore from '$lib/stores/syncStatusStore';
 	import isAppReadyStore from '$lib/stores/isAppReadyStore';
-	import FlashAlert from '$lib/components/FlashAlert.svelte';
+	import colorThemeStore from '$lib/stores/colorThemeStore';
 	import { api } from '$lib/helpers/misc';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { setColorTheme } from '$lib/components/FlashAlert';
-	import { Appearance } from '$lib/helpers/constants';
+	import { Appearance, ColorTheme } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -115,8 +117,20 @@
 		})}`;
 	};
 
+	const setGlobalColorTheme = () => {
+		const colorTheme: ColorTheme =
+			($colorThemeStore as ColorTheme) ||
+			(window?.matchMedia('(prefers-color-scheme: dark)').matches
+				? ColorTheme.DARK
+				: ColorTheme.LIGHT);
+
+		document.documentElement.setAttribute('data-theme', colorTheme.toLocaleLowerCase());
+	};
+
 	// Set the default status bar message when layout is mounted
 	onMount(async () => {
+		setGlobalColorTheme();
+
 		// `!dev` because we don't want to constantly hit Github's API when developing
 		!dev && (await getAppLastestVersion());
 
@@ -124,6 +138,8 @@
 			calendar = refreshCalendar();
 		}, 1000);
 	});
+
+	$: $colorThemeStore && setGlobalColorTheme();
 </script>
 
 <FlashAlert />
@@ -300,7 +316,6 @@
 		text-align: right;
 		font-family: var(--font-monospace);
 		text-transform: uppercase;
-		transition: color 0.2s ease-in-out;
 
 		grid-area: title-bar;
 

@@ -80,3 +80,8 @@ export enum EventStatus {
 	UNREAD = 'unread',
 	ONGOING = 'ongoing'
 }
+
+export enum ColorTheme {
+	LIGHT = 'Light',
+	DARK = 'Dark'
+}
