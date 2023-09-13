@@ -64,13 +64,13 @@
 	};
 
 	// Sync
-	let isSyncLoading: boolean = false;
 	$syncStatusStore = syncStatus || $syncStatusStore;
-	$: isSyncEnabled = $syncStatusStore.isSyncEnabled;
-	$: canutinFileUrlValue = '';
-	$: frequencyValue = 0;
-	$: cookieValue = '';
-	$: jwtValue = '';
+	let isSyncLoading: boolean = false;
+	let isSyncEnabled = $syncStatusStore.isSyncEnabled;
+	let canutinFileUrlValue = '';
+	let frequencyValue = 0;
+	let cookieValue = '';
+	let jwtValue = '';
 
 	const handleSyncForm = async (event: any) => {
 		const canutinFileUrl = event.target.canutinFileUrl?.value;
