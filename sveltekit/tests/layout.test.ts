@@ -235,16 +235,23 @@ test.describe('Layout', () => {
 		await expect(page.locator('html[data-color-theme="Light"]')).toBeVisible();
 		await expect(page.locator('html[data-color-theme="Dark"]')).not.toBeVisible();
 
+		const html = page.locator('html.html');
+		let colorScheme = await html.evaluate((node) => getComputedStyle(node).colorScheme);
+		expect(colorScheme).toBe('light'); // `color-scheme: light;`
+
 		await page.locator('a.layout__a', { hasText: 'Settings' }).click();
 		await expect(page.locator('h1', { hasText: 'Settings' })).toBeVisible();
 
 		const colorThemeSelect = page.locator('.formSelect__select[name=colorTheme]');
-		expect(await colorThemeSelect.getAttribute('value')).toBe('Light');
+		expect(await colorThemeSelect.inputValue()).toBe('Light');
 
 		await colorThemeSelect.selectOption({ label: 'Dark' });
 		await page.locator('button', { hasText: 'Apply' }).click();
 		await expect(page.locator('html[data-color-theme="Dark"]')).toBeVisible();
 		await expect(page.locator('html[data-color-theme="Light"]')).not.toBeVisible();
+
+		colorScheme = await html.evaluate((node) => getComputedStyle(node).colorScheme);
+		expect(colorScheme).toBe('dark'); // `color-scheme: dark;`
 	});
 
 	// This test fails often in CI so we keep it disabled unless it's ran locally
