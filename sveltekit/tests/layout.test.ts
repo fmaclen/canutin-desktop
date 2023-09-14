@@ -232,8 +232,8 @@ test.describe('Layout', () => {
 	test('Can switch color theme to and from dark mode', async ({ page }) => {
 		await page.goto('/');
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
-		await expect(page.locator('html[data-color-theme="Light]')).toBeVisible();
-		await expect(page.locator('html[data-color-theme="Dark]')).not.toBeVisible();
+		await expect(page.locator('html[data-color-theme="Light"]')).toBeVisible();
+		await expect(page.locator('html[data-color-theme="Dark"]')).not.toBeVisible();
 
 		await expect(page.locator('a.layout__a', { hasText: 'Settings' })).toBeVisible();
 		await expect(page.locator('h1', { hasText: 'Settings' })).toBeVisible();
@@ -243,8 +243,8 @@ test.describe('Layout', () => {
 
 		await colorThemeSelect.selectOption({ label: 'Dark' });
 		await page.locator('button', { hasText: 'Apply' }).click();
-		await expect(page.locator('html[data-color-theme="Dark]')).toBeVisible();
-		await expect(page.locator('html[data-color-theme="Light]')).not.toBeVisible();
+		await expect(page.locator('html[data-color-theme="Dark"]')).toBeVisible();
+		await expect(page.locator('html[data-color-theme="Light"]')).not.toBeVisible();
 	});
 
 	// This test fails often in CI so we keep it disabled unless it's ran locally
