@@ -235,7 +235,7 @@ test.describe('Layout', () => {
 		await expect(page.locator('html[data-color-theme="Light"]')).toBeVisible();
 		await expect(page.locator('html[data-color-theme="Dark"]')).not.toBeVisible();
 
-		await expect(page.locator('a.layout__a', { hasText: 'Settings' })).toBeVisible();
+		await page.locator('a.layout__a', { hasText: 'Settings' }).click();
 		await expect(page.locator('h1', { hasText: 'Settings' })).toBeVisible();
 
 		const colorThemeSelect = page.locator('.formSelect__select[name=colorTheme]');
