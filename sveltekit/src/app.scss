@@ -61,7 +61,7 @@ html.html {
 
 	--color-border: hsl(0, 0%, 89%);
 
-	--color-neutral-0: var(--color-neutral-0);
+	--color-neutral-0: var(--color-white);
 	--color-neutral-30: hsl(0, 0%, 98%);
 	--color-neutral-50: hsl(0, 0%, 95%);
 	--color-neutral-70: hsl(0, 0%, 93%);
@@ -112,7 +112,7 @@ html.html {
 		--color-neutral-700: hsl(0, 0%, 70%);
 		--color-neutral-800: hsl(0, 0%, 80%);
 		--color-neutral-900: hsl(0, 0%, 90%);
-		--color-neutral-1000: var(--color-neutral-0);
+		--color-neutral-1000: var(--color-white);
 
 		--box-shadow: 0px 4px 15px rgb(0 0 0 / 25%), 0px 1px 1px rgb(0 0 0 / 33%);
 	}
