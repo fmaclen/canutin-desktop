@@ -118,19 +118,20 @@
 	};
 
 	const setGlobalColorTheme = () => {
+		// NOTE: there is code duplication in `app.html` to avoid flash of unstyled content
 		const colorTheme: ColorTheme =
 			($colorThemeStore as ColorTheme) ||
 			(window?.matchMedia('(prefers-color-scheme: dark)').matches
 				? ColorTheme.DARK
 				: ColorTheme.LIGHT);
 
-		document.documentElement.setAttribute('data-theme', colorTheme.toLocaleLowerCase());
+		document.documentElement.setAttribute('data-color-theme', colorTheme);
 	};
+
+	$: $colorThemeStore && setGlobalColorTheme();
 
 	// Set the default status bar message when layout is mounted
 	onMount(async () => {
-		setGlobalColorTheme();
-
 		// `!dev` because we don't want to constantly hit Github's API when developing
 		!dev && (await getAppLastestVersion());
 
@@ -138,8 +139,6 @@
 			calendar = refreshCalendar();
 		}, 1000);
 	});
-
-	$: $colorThemeStore && setGlobalColorTheme();
 </script>
 
 <FlashAlert />
