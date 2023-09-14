@@ -309,7 +309,7 @@
 		justify-content: center;
 		font-size: 12px;
 		color: var(--color-neutral-300);
-		background-color: var(--color-neutral-0);
+		background-color: var(--color-neutral-30);
 		border-bottom: 1px solid var(--color-border);
 		padding: 0 16px;
 		text-align: right;
@@ -419,7 +419,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		background-color: var(--color-neutral-0);
+		background-color: var(--color-neutral-30);
 		border-top: 1px solid var(--color-border);
 		width: 100%;
 
