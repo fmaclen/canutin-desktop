@@ -21,7 +21,7 @@
 		top: 0;
 		z-index: 1;
 		box-shadow: inset 0 -2px 0 var(--color-neutral-100);
-		background-color: #fff;
+		background-color: var(--color-neutral-0);
 		text-align: left;
 		box-sizing: border-box;
 

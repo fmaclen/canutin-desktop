@@ -125,8 +125,19 @@
 
 		&--currentPeriod {
 			background-color: var(--color-neutral-0);
-			background-image: var(--background-url);
-			background-size: 40px;
+
+			&::after {
+				content: '';
+				position: absolute;
+				height: 100%;
+				width: 100%;
+				background-color: var(--color-neutral-200);
+
+				-webkit-mask-size: 40px;
+				mask-size: 40px;
+				-webkit-mask-image: var(--background-url);
+				mask-image: var(--background-url);
+			}
 		}
 	}
 

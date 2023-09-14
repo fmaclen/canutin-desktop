@@ -31,7 +31,7 @@
 
 		&--active {
 			color: var(--color-bluePrimary);
-			background-color: var(--color-white);
+			background-color: var(--color-neutral-0);
 			box-shadow: var(--box-shadow);
 			pointer-events: none;
 		}

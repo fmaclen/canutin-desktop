@@ -62,7 +62,7 @@ html.html {
 
 	--color-border: hsl(0, 0%, 89%);
 
-	--color-neutral-0: var(--color-white);
+	--color-neutral-0: hsl(0, 0%, 100%);
 	--color-neutral-30: hsl(0, 0%, 98%);
 	--color-neutral-50: hsl(0, 0%, 95%);
 	--color-neutral-70: hsl(0, 0%, 93%);
@@ -75,7 +75,7 @@ html.html {
 	--color-neutral-700: hsl(0, 0%, 30%);
 	--color-neutral-800: hsl(0, 0%, 20%);
 	--color-neutral-900: hsl(0, 0%, 10%);
-	--color-neutral-1000: var(--color-black);
+	--color-neutral-1000: hsl(0, 0%, 0%);
 
 	--box-shadow: 0px 4px 15px rgb(0 0 0 / 10%), 0px 1px 1px rgb(0 0 0 / 5%);
 
@@ -85,9 +85,9 @@ html.html {
 
 		--color-bluePrimary: hsl(212, 97%, 50%);
 
-		--color-redSecondary: hsl(347, 53%, 10%);
-		--color-greenSecondary: hsl(167, 53%, 10%);
-		--color-blueSecondary: hsl(211, 100%, 10%);
+		--color-redSecondary: hsl(347, 33%, 13%);
+		--color-greenSecondary: hsl(167, 33%, 13%);
+		--color-blueSecondary: hsl(211, 33%, 13%);
 		--color-yellowSecondary: hsl(44, 100%, 10%);
 
 		--color-alpha-light-100: rgba(0, 0, 0, 0.1);
@@ -98,24 +98,24 @@ html.html {
 		--color-alpha-dark-350: rgba(255, 255, 255, 0.35);
 		--color-alpha-dark-650: rgba(255, 255, 255, 0.65);
 
-		--color-border: hsl(0, 0%, 11%);
+		--color-border: hsl(0, 0%, 18%);
 
-		--color-neutral-0: var(--color-black);
-		--color-neutral-30: hsl(0, 0%, 2%);
-		--color-neutral-50: hsl(0, 0%, 5%);
-		--color-neutral-70: hsl(0, 0%, 7%);
-		--color-neutral-100: hsl(0, 0%, 10%);
-		--color-neutral-200: hsl(0, 0%, 20%);
+		--color-neutral-0: hsl(0, 0%, 11%);
+		--color-neutral-30: hsl(0, 0%, 12%);
+		--color-neutral-50: hsl(0, 0%, 14%);
+		--color-neutral-70: hsl(0, 0%, 15%);
+		--color-neutral-100: hsl(0, 0%, 20%);
+		--color-neutral-200: hsl(0, 0%, 25%);
 		--color-neutral-300: hsl(0, 0%, 30%);
 		--color-neutral-400: hsl(0, 0%, 40%);
 		--color-neutral-500: hsl(0, 0%, 50%);
 		--color-neutral-600: hsl(0, 0%, 60%);
 		--color-neutral-700: hsl(0, 0%, 70%);
 		--color-neutral-800: hsl(0, 0%, 80%);
-		--color-neutral-900: hsl(0, 0%, 90%);
-		--color-neutral-1000: var(--color-white);
+		--color-neutral-900: hsl(0, 0%, 95%);
+		--color-neutral-1000: hsl(0, 0%, 100%);
 
-		--box-shadow: 0px 4px 15px rgb(0 0 0 / 25%), 0px 1px 1px rgb(0 0 0 / 33%);
+		--box-shadow: 0px 4px 15px rgb(0 0 0 / 10%), 0px 1px -1px rgb(255 255 255 / 17%);
 	}
 }
 
