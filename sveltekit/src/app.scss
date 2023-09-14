@@ -33,6 +33,9 @@ html.html {
 	--color-goldPrimary: #b19b70;
 	--color-yellowPrimary: #fba500;
 
+	--color-white: #ffffff;
+	--color-black: #000000;
+
 	--font-sansSerif: 'Inter', Helvetica, Arial, sans-serif;
 	--font-monospace: 'Decima Mono Pro', 'SF Mono', monospace;
 
@@ -48,11 +51,9 @@ html.html {
 	--color-blueSecondary: hsl(210, 100%, 97%);
 	--color-yellowSecondary: hsl(44, 100%, 95%);
 
-	--color-white: #ffffff;
 	--color-alpha-light-100: rgba(255, 255, 255, 0.1);
 	--color-alpha-light-500: rgba(255, 255, 255, 0.5);
 
-	--color-black: #000;
 	--color-alpha-dark-100: rgba(0, 0, 0, 0.1);
 	--color-alpha-dark-150: rgba(0, 0, 0, 0.15);
 	--color-alpha-dark-350: rgba(0, 0, 0, 0.35);
@@ -60,6 +61,7 @@ html.html {
 
 	--color-border: hsl(0, 0%, 89%);
 
+	--color-neutral-0: var(--color-neutral-0);
 	--color-neutral-30: hsl(0, 0%, 98%);
 	--color-neutral-50: hsl(0, 0%, 95%);
 	--color-neutral-70: hsl(0, 0%, 93%);
@@ -72,6 +74,7 @@ html.html {
 	--color-neutral-700: hsl(0, 0%, 30%);
 	--color-neutral-800: hsl(0, 0%, 20%);
 	--color-neutral-900: hsl(0, 0%, 10%);
+	--color-neutral-1000: var(--color-black);
 
 	--box-shadow: 0px 4px 15px rgb(0 0 0 / 10%), 0px 1px 1px rgb(0 0 0 / 5%);
 
@@ -96,6 +99,7 @@ html.html {
 
 		--color-border: hsl(0, 0%, 11%);
 
+		--color-neutral-0: var(--color-black);
 		--color-neutral-30: hsl(0, 0%, 2%);
 		--color-neutral-50: hsl(0, 0%, 5%);
 		--color-neutral-70: hsl(0, 0%, 7%);
@@ -108,6 +112,7 @@ html.html {
 		--color-neutral-700: hsl(0, 0%, 70%);
 		--color-neutral-800: hsl(0, 0%, 80%);
 		--color-neutral-900: hsl(0, 0%, 90%);
+		--color-neutral-1000: var(--color-neutral-0);
 
 		--box-shadow: 0px 4px 15px rgb(0 0 0 / 25%), 0px 1px 1px rgb(0 0 0 / 33%);
 	}

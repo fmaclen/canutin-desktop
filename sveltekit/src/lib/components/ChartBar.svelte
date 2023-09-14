@@ -124,7 +124,7 @@
 		position: relative;
 
 		&--currentPeriod {
-			background-color: var(--color-white);
+			background-color: var(--color-neutral-0);
 			background-image: var(--background-url);
 			background-size: 40px;
 		}

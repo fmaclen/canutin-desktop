@@ -309,7 +309,7 @@
 		justify-content: center;
 		font-size: 12px;
 		color: var(--color-neutral-300);
-		background-color: var(--color-white);
+		background-color: var(--color-neutral-0);
 		border-bottom: 1px solid var(--color-border);
 		padding: 0 16px;
 		text-align: right;
@@ -334,7 +334,7 @@
 		border-right: 1px solid;
 		border-bottom: 1px solid;
 		border-color: var(--color-border);
-		background-color: var(--color-white);
+		background-color: var(--color-neutral-0);
 
 		grid-area: logo;
 
@@ -346,7 +346,7 @@
 	aside.layout__aside {
 		display: flex;
 		flex-direction: column;
-		background-color: var(--color-white);
+		background-color: var(--color-neutral-0);
 		border-right: 1px solid var(--color-border);
 		height: 100%;
 		box-sizing: border-box;
@@ -419,7 +419,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		background-color: var(--color-white);
+		background-color: var(--color-neutral-0);
 		border-top: 1px solid var(--color-border);
 		width: 100%;
 

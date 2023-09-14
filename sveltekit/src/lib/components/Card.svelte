@@ -21,7 +21,7 @@
 		padding: 16px;
 		box-shadow: var(--box-shadow);
 		border-radius: 4px;
-		background-color: var(--color-white);
+		background-color: var(--color-neutral-0);
 
 		&--secondary {
 			box-shadow: none;
