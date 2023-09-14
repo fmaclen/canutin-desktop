@@ -7,7 +7,7 @@
 <style lang="scss">
 	h2.sectionTitle {
 		font-family: var(--font-monospace);
-		color: var(--color-grey40);
+		color: var(--color-neutral-400);
 		font-size: 12px;
 		font-weight: unset;
 		line-height: 1em;

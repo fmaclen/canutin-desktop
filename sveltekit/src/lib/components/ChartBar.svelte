@@ -70,7 +70,7 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		color: var(--color-grey50);
+		color: var(--color-neutral-500);
 		border: none;
 
 		&--positive {
@@ -124,9 +124,20 @@
 		position: relative;
 
 		&--currentPeriod {
-			background-color: var(--color-white);
-			background-image: var(--background-url);
-			background-size: 40px;
+			background-color: var(--color-neutral-0);
+
+			&::after {
+				content: '';
+				position: absolute;
+				height: 100%;
+				width: 100%;
+				background-color: var(--color-neutral-200);
+
+				-webkit-mask-size: 40px;
+				mask-size: 40px;
+				-webkit-mask-image: var(--background-url);
+				mask-image: var(--background-url);
+			}
 		}
 	}
 

@@ -8,7 +8,7 @@
 
 <style lang="scss">
 	div.plate {
-		background-color: var(--color-white);
+		background-color: var(--color-neutral-0);
 		box-shadow: var(--box-shadow);
 		border-radius: 4px;
 	}

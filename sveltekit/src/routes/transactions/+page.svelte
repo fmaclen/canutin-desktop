@@ -412,7 +412,7 @@
 		flex-direction: column;
 		row-gap: 8px;
 		border-radius: 4px 4px 0 0;
-		background-color: var(--color-grey3);
+		background-color: var(--color-neutral-30);
 		border-bottom: 1px solid var(--color-border);
 		padding: 16px;
 	}
@@ -435,7 +435,7 @@
 		gap: 8px;
 		font-size: 12px;
 		padding: 16px;
-		color: var(--color-grey20);
+		color: var(--color-neutral-200);
 		border-bottom: 1px solid var(--color-border);
 		background-color: var(--color-blueSecondary);
 	}

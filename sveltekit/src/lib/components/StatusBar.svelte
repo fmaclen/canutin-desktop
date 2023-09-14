@@ -49,7 +49,7 @@
 		width: 100%;
 		height: 100%;
 		box-sizing: border-box;
-		color: var(--color-grey50);
+		color: var(--color-neutral-500);
 	}
 
 	p.statusBar__p {

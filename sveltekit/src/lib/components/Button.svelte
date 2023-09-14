@@ -14,18 +14,18 @@
 <style lang="scss">
 	button.button {
 		border-radius: 4px;
-		border: 1px solid var(--color-black-alpha15);
+		border: 1px solid var(--color-alpha-dark-150);
 		padding: 8px 12px;
 		letter-spacing: -0.03em;
 		font-size: 12px;
 		font-weight: 600;
 		font-family: var(--font-sansSerif);
 		background-color: transparent;
-		color: var(--color-grey70);
+		color: var(--color-neutral-700);
 		cursor: pointer;
 
 		&:hover {
-			border-color: var(--color-black-alpha35);
+			border-color: var(--color-alpha-dark-350);
 		}
 
 		&:active {
@@ -52,9 +52,9 @@
 		}
 
 		&:disabled {
-			color: var(--color-grey30);
-			background-color: var(--color-grey7);
-			border-color: var(--color-grey7);
+			color: var(--color-neutral-300);
+			background-color: var(--color-neutral-70);
+			border-color: var(--color-neutral-70);
 			cursor: default;
 			pointer-events: none;
 		}

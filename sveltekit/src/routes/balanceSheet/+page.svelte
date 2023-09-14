@@ -148,7 +148,7 @@
 		border-bottom: 1px dashed var(--color-border);
 
 		&:nth-child(odd) {
-			background-color: var(--color-grey3);
+			background-color: var(--color-neutral-30);
 		}
 
 		&:last-child {

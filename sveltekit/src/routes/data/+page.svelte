@@ -88,19 +88,19 @@
 
 	a.wizard__a {
 		display: block;
-		background-color: white;
 		width: 100%;
 		border-radius: 4px;
-		box-shadow: var(--box-shadow);
 		text-decoration: none;
 		color: unset;
 		transition: transform 50ms, box-shadow 50ms;
+		background-color: var(--color-neutral-0);
+		box-shadow: var(--box-shadow);
 
 		&:hover {
 			transform: scale(1.02);
 
 			p.wizard__help {
-				color: var(--color-grey70);
+				color: var(--color-neutral-700);
 			}
 		}
 
@@ -113,7 +113,7 @@
 		display: flex;
 		justify-content: flex-start;
 		padding: 20px;
-		background-color: #eff7ff;
+		background-color: var(--color-blueSecondary);
 		border-radius: 4px;
 	}
 
@@ -137,7 +137,7 @@
 
 	p.wizard__help {
 		font-size: 12px;
-		color: var(--color-grey40);
 		transition: color 75ms;
+		color: var(--color-neutral-400);
 	}
 </style>

@@ -1,16 +1,16 @@
 import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 
-// NOTE: There is code duplication here with the `colorThemeStore.ts`
+// NOTE: There is code duplication here with the `lastUpdateCheckStore.ts`
 
-const LOCAL_STORAGE_ITEM_NAME = 'lastUpdateCheck';
+const LOCAL_STORAGE_ITEM_NAME = 'colorTheme';
 
 const localStoreItem = browser && window.localStorage.getItem(LOCAL_STORAGE_ITEM_NAME);
-const lastUpdateCheckStore = writable(localStoreItem && parseInt(localStoreItem));
+const colorThemeStore = writable(localStoreItem);
 
 // Update the browser's local storage when the store changes
-lastUpdateCheckStore.subscribe((value) => {
+colorThemeStore.subscribe((value) => {
 	if (browser && value) window.localStorage.setItem(LOCAL_STORAGE_ITEM_NAME, value.toString());
 });
 
-export default lastUpdateCheckStore;
+export default colorThemeStore;

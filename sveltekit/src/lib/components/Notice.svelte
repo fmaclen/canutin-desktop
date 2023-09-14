@@ -12,7 +12,7 @@
 		padding: 32px;
 		margin: 0;
 		border-radius: 4px;
-		color: var(--color-grey50);
+		color: var(--color-neutral-500);
 		background-color: var(--color-border);
 
 		&--error {

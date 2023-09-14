@@ -20,7 +20,7 @@
 		border: none;
 		padding: 0;
 		background-color: transparent;
-		color: var(--color-grey40);
+		color: var(--color-neutral-400);
 		text-decoration: none;
 		cursor: pointer;
 
@@ -30,7 +30,7 @@
 		}
 
 		&--active {
-			color: var(--color-grey80);
+			color: var(--color-neutral-800);
 			font-weight: 600;
 		}
 
@@ -41,7 +41,7 @@
 				display: inline-block;
 				padding-left: 4px;
 				font-size: 8px;
-				color: var(--color-grey70);
+				color: var(--color-neutral-700);
 				line-height: 1em;
 			}
 		}

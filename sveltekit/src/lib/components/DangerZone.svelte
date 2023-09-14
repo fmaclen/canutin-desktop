@@ -36,7 +36,7 @@
 	p.dangerZone__p {
 		font-size: 12px;
 		margin: 0;
-		color: var(--color-grey70);
+		color: var(--color-neutral-700);
 
 		&--negative {
 			color: var(--color-redPrimary);

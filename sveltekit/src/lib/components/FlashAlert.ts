@@ -20,7 +20,7 @@ export const setColorTheme = (appearance: Appearance | null) => {
 		default:
 			return {
 				classes: ['toastLi'],
-				theme: { '--toastBackground': 'var(--color-black-alpha65)' }
+				theme: { '--toastBackground': 'var(--color-alpha-dark-650)' }
 			};
 	}
 };

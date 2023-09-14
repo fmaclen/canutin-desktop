@@ -14,14 +14,14 @@
 
 <style lang="scss">
 	th.table__th {
-		color: var(--color-grey40);
+		color: var(--color-neutral-400);
 		font-weight: 400;
 		padding: 16px 16px 16px 0;
 		position: sticky;
 		top: 0;
 		z-index: 1;
-		box-shadow: inset 0 -2px 0 var(--color-grey10);
-		background-color: #fff;
+		box-shadow: inset 0 -2px 0 var(--color-neutral-100);
+		background-color: var(--color-neutral-0);
 		text-align: left;
 		box-sizing: border-box;
 

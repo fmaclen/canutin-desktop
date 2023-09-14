@@ -10,14 +10,16 @@
 
 	import StatusBar from '$lib/components/StatusBar.svelte';
 	import ButtonTag from '$lib/components/ButtonTag.svelte';
+	import FlashAlert from '$lib/components/FlashAlert.svelte';
+
 	import lastUpdateCheckStore from '$lib/stores/lastUpdateCheckStore';
 	import syncStatusStore from '$lib/stores/syncStatusStore';
 	import isAppReadyStore from '$lib/stores/isAppReadyStore';
-	import FlashAlert from '$lib/components/FlashAlert.svelte';
+	import colorThemeStore from '$lib/stores/colorThemeStore';
 	import { api } from '$lib/helpers/misc';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { setColorTheme } from '$lib/components/FlashAlert';
-	import { Appearance } from '$lib/helpers/constants';
+	import { Appearance, ColorTheme } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -114,6 +116,19 @@
 			hour12: true
 		})}`;
 	};
+
+	const setGlobalColorTheme = () => {
+		// NOTE: there is code duplication in `app.html` to avoid flash of unstyled content
+		const colorTheme: ColorTheme =
+			($colorThemeStore as ColorTheme) ||
+			(window?.matchMedia('(prefers-color-scheme: dark)').matches
+				? ColorTheme.DARK
+				: ColorTheme.LIGHT);
+
+		document.documentElement.setAttribute('data-color-theme', colorTheme);
+	};
+
+	$: $colorThemeStore && setGlobalColorTheme();
 
 	// Set the default status bar message when layout is mounted
 	onMount(async () => {
@@ -293,19 +308,18 @@
 		align-items: center;
 		justify-content: center;
 		font-size: 12px;
-		color: var(--color-grey30);
-		background-color: var(--color-white);
+		color: var(--color-neutral-300);
+		background-color: var(--color-neutral-30);
 		border-bottom: 1px solid var(--color-border);
 		padding: 0 16px;
 		text-align: right;
 		font-family: var(--font-monospace);
 		text-transform: uppercase;
-		transition: color 0.2s ease-in-out;
 
 		grid-area: title-bar;
 
 		&:hover {
-			color: var(--color-grey80);
+			color: var(--color-neutral-800);
 		}
 	}
 
@@ -320,19 +334,19 @@
 		border-right: 1px solid;
 		border-bottom: 1px solid;
 		border-color: var(--color-border);
-		background-color: var(--color-white);
+		background-color: var(--color-neutral-0);
 
 		grid-area: logo;
 
 		&:hover {
-			background-color: var(--color-grey3);
+			background-color: var(--color-neutral-30);
 		}
 	}
 
 	aside.layout__aside {
 		display: flex;
 		flex-direction: column;
-		background-color: var(--color-white);
+		background-color: var(--color-neutral-0);
 		border-right: 1px solid var(--color-border);
 		height: 100%;
 		box-sizing: border-box;
@@ -363,11 +377,11 @@
 		font-size: 13px;
 		font-weight: 600;
 		text-decoration: none;
-		color: var(--color-grey80);
+		color: var(--color-neutral-800);
 		padding: 16px 32px;
 
 		&:hover {
-			background-color: var(--color-grey3);
+			background-color: var(--color-neutral-30);
 		}
 
 		&--primary {
@@ -380,7 +394,7 @@
 	button.layout__button:disabled,
 	a.layout__a--disabled {
 		pointer-events: none;
-		color: var(--color-grey20);
+		color: var(--color-neutral-200);
 	}
 
 	hr.layout__hr {
@@ -405,7 +419,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		background-color: var(--color-white);
+		background-color: var(--color-neutral-30);
 		border-top: 1px solid var(--color-border);
 		width: 100%;
 

@@ -91,7 +91,7 @@
 							padding: 16,
 							autoSkipPadding: 80,
 							maxRotation: 0, // Prevent labels from rotating to fit on the canvas
-							color: getValueFromCSSVariable('--color-grey30'),
+							color: getValueFromCSSVariable('--color-neutral-300'),
 							callback: (index: any) => {
 								if (index === 0) return ''; // Hide the first label to prevent clutter between labels on the y-axis
 								return labels[index];
@@ -110,7 +110,7 @@
 							},
 							padding: 16,
 							align: 'center',
-							color: getValueFromCSSVariable('--color-grey30'),
+							color: getValueFromCSSVariable('--color-neutral-300'),
 							z: 2,
 							callback: (value: any, index: any, ticks: any) => {
 								// Only show ticks for zero, max and min values and format the value to currency
