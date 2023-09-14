@@ -231,7 +231,7 @@
 	code.importSummary__code {
 		display: block;
 		grid-column: span 2;
-		background-color: var(--color-grey10);
+		background-color: var(--color-neutral-100);
 		font-family: var(--font-monospace);
 		font-size: 12px;
 		padding: 16px;
@@ -244,6 +244,6 @@
 	pre.importSummary__pre {
 		font-family: inherit;
 		margin-top: 0;
-		color: var(--color-grey50);
+		color: var(--color-neutral-500);
 	}
 </style>

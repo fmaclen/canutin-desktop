@@ -308,7 +308,7 @@
 		align-items: center;
 		justify-content: center;
 		font-size: 12px;
-		color: var(--color-grey30);
+		color: var(--color-neutral-300);
 		background-color: var(--color-white);
 		border-bottom: 1px solid var(--color-border);
 		padding: 0 16px;
@@ -319,7 +319,7 @@
 		grid-area: title-bar;
 
 		&:hover {
-			color: var(--color-grey80);
+			color: var(--color-neutral-800);
 		}
 	}
 
@@ -339,7 +339,7 @@
 		grid-area: logo;
 
 		&:hover {
-			background-color: var(--color-grey3);
+			background-color: var(--color-neutral-30);
 		}
 	}
 
@@ -377,11 +377,11 @@
 		font-size: 13px;
 		font-weight: 600;
 		text-decoration: none;
-		color: var(--color-grey80);
+		color: var(--color-neutral-800);
 		padding: 16px 32px;
 
 		&:hover {
-			background-color: var(--color-grey3);
+			background-color: var(--color-neutral-30);
 		}
 
 		&--primary {
@@ -394,7 +394,7 @@
 	button.layout__button:disabled,
 	a.layout__a--disabled {
 		pointer-events: none;
-		color: var(--color-grey20);
+		color: var(--color-neutral-200);
 	}
 
 	hr.layout__hr {

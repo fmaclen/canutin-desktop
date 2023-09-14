@@ -180,7 +180,7 @@
 		grid-gap: 8px;
 		grid-column-start: span 12;
 		padding: 16px;
-		background-color: var(--color-grey3);
+		background-color: var(--color-neutral-30);
 	}
 
 	div.chart {
@@ -201,8 +201,8 @@
 		}
 
 		&--active {
-			background-color: var(--color-grey3);
-			border-bottom-color: var(--color-grey3);
+			background-color: var(--color-neutral-30);
+			border-bottom-color: var(--color-neutral-30);
 		}
 
 		&--january {
@@ -219,10 +219,10 @@
 		padding: 8px;
 		box-sizing: border-box;
 		text-align: center;
-		color: var(--color-grey30);
+		color: var(--color-neutral-300);
 
 		&--active {
-			color: var(--color-grey70);
+			color: var(--color-neutral-700);
 		}
 	}
 

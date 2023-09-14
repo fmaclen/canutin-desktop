@@ -70,7 +70,7 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		color: var(--color-grey50);
+		color: var(--color-neutral-500);
 		border: none;
 
 		&--positive {

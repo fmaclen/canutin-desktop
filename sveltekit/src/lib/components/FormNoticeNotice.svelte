@@ -17,7 +17,7 @@
 		box-shadow: vare(--box-shadow);
 		border-radius: 3px;
 		font-size: 13px;
-		border-left: 3px solid var(--color-grey20);
+		border-left: 3px solid var(--color-neutral-200);
 
 		&--active {
 			border-left-color: var(--color-bluePrimary);

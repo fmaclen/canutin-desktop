@@ -51,7 +51,7 @@
 
 		&--netWorth {
 			color: var(--color-white);
-			background-color: var(--color-grey80);
+			background-color: var(--color-neutral-800);
 			grid-auto-flow: row;
 			grid-area: 1 / 1 / 3 / 2;
 		}

@@ -35,7 +35,7 @@
 		display: flex;
 		align-items: flex-end;
 		justify-content: space-between;
-		background-color: var(--color-grey3);
+		background-color: var(--color-neutral-30);
 		border-bottom: 1px solid var(--color-border);
 	}
 

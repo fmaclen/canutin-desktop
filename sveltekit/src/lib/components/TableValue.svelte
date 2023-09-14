@@ -24,15 +24,15 @@
 <style lang="scss">
 	span.tableValue {
 		&--excluded {
-			color: var(--color-grey40);
+			color: var(--color-neutral-400);
 		}
 
 		&--title {
-			border-bottom: 1px dashed var(--color-grey10);
+			border-bottom: 1px dashed var(--color-neutral-100);
 			cursor: help;
 
 			&:hover {
-				border-bottom: 1px dashed var(--color-grey30);
+				border-bottom: 1px dashed var(--color-neutral-300);
 			}
 		}
 

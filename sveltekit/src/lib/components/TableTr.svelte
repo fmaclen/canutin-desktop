@@ -17,7 +17,7 @@
 
 		&:nth-child(odd) {
 			:global(td.table__td) {
-				background-color: var(--color-grey3);
+				background-color: var(--color-neutral-30);
 			}
 		}
 

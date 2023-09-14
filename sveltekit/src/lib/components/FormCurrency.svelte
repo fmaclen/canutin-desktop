@@ -30,7 +30,7 @@
 		}
 
 		:global(input.currencyInput__formatted--zero) {
-			color: var(--color-grey50);
+			color: var(--color-neutral-500);
 		}
 
 		:global(input.currencyInput__formatted--negative) {

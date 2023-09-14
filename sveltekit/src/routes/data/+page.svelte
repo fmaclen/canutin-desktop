@@ -100,7 +100,7 @@
 			transform: scale(1.02);
 
 			p.wizard__help {
-				color: var(--color-grey70);
+				color: var(--color-neutral-700);
 			}
 		}
 
@@ -137,7 +137,7 @@
 
 	p.wizard__help {
 		font-size: 12px;
-		color: var(--color-grey40);
+		color: var(--color-neutral-400);
 		transition: color 75ms;
 	}
 </style>

@@ -16,8 +16,8 @@
 
 @mixin disabledInput {
 	pointer-events: none;
-	background-color: var(--color-grey10);
-	color: var(--color-grey40);
+	background-color: var(--color-neutral-100);
+	color: var(--color-neutral-400);
 	cursor: default;
 }
 

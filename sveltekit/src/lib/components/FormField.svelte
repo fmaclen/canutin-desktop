@@ -31,12 +31,12 @@
 		font-size: 12px;
 		font-weight: 600;
 		letter-spacing: -0.03em;
-		color: var(--color-grey70);
+		color: var(--color-neutral-700);
 		max-height: 40px;
 	}
 
 	span.form__optional {
 		font-weight: 400;
-		color: var(--color-grey40);
+		color: var(--color-neutral-400);
 	}
 </style>

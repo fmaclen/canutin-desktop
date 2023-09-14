@@ -25,7 +25,7 @@
 	td.table__td {
 		font-size: 12px;
 		padding: 12px 16px 12px 0;
-		color: var(--color-grey80);
+		color: var(--color-neutral-800);
 
 		&:first-child:not(.table__td--notice) {
 			padding-left: 16px;
@@ -40,8 +40,8 @@
 		&--notice {
 			text-align: center;
 			padding: 32px;
-			background-color: var(--color-grey5);
-			color: var(--color-grey50);
+			background-color: var(--color-neutral-50);
+			color: var(--color-neutral-500);
 		}
 
 		&--with-tag {
@@ -71,9 +71,9 @@
 				display: inline-block;
 				background: linear-gradient(
 					to right,
-					var(--color-grey5) 20%,
-					var(--color-grey10) 50%,
-					var(--color-grey5) 80%
+					var(--color-neutral-50) 20%,
+					var(--color-neutral-100) 50%,
+					var(--color-neutral-50) 80%
 				);
 				background-size: 512px 80px;
 				animation-duration: 0.5s;

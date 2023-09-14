@@ -21,7 +21,7 @@
 		font-weight: 600;
 		font-family: var(--font-sansSerif);
 		background-color: transparent;
-		color: var(--color-grey70);
+		color: var(--color-neutral-700);
 		cursor: pointer;
 
 		&:hover {
@@ -52,9 +52,9 @@
 		}
 
 		&:disabled {
-			color: var(--color-grey30);
-			background-color: var(--color-grey7);
-			border-color: var(--color-grey7);
+			color: var(--color-neutral-300);
+			background-color: var(--color-neutral-70);
+			border-color: var(--color-neutral-70);
 			cursor: default;
 			pointer-events: none;
 		}

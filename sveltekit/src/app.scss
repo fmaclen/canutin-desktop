@@ -60,18 +60,18 @@ html.html {
 
 	--color-border: hsl(0, 0%, 89%);
 
-	--color-grey3: hsl(0, 0%, 98%);
-	--color-grey5: hsl(0, 0%, 95%);
-	--color-grey7: hsl(0, 0%, 93%);
-	--color-grey10: hsl(0, 0%, 90%);
-	--color-grey20: hsl(0, 0%, 80%);
-	--color-grey30: hsl(0, 0%, 70%);
-	--color-grey40: hsl(0, 0%, 60%);
-	--color-grey50: hsl(0, 0%, 50%);
-	--color-grey60: hsl(0, 0%, 40%);
-	--color-grey70: hsl(0, 0%, 30%);
-	--color-grey80: hsl(0, 0%, 20%);
-	--color-grey90: hsl(0, 0%, 10%);
+	--color-neutral-30: hsl(0, 0%, 98%);
+	--color-neutral-50: hsl(0, 0%, 95%);
+	--color-neutral-70: hsl(0, 0%, 93%);
+	--color-neutral-100: hsl(0, 0%, 90%);
+	--color-neutral-200: hsl(0, 0%, 80%);
+	--color-neutral-300: hsl(0, 0%, 70%);
+	--color-neutral-400: hsl(0, 0%, 60%);
+	--color-neutral-500: hsl(0, 0%, 50%);
+	--color-neutral-600: hsl(0, 0%, 40%);
+	--color-neutral-700: hsl(0, 0%, 30%);
+	--color-neutral-800: hsl(0, 0%, 20%);
+	--color-neutral-900: hsl(0, 0%, 10%);
 
 	--box-shadow: 0px 4px 15px rgb(0 0 0 / 10%), 0px 1px 1px rgb(0 0 0 / 5%);
 
@@ -96,18 +96,18 @@ html.html {
 
 		--color-border: hsl(0, 0%, 11%);
 
-		--color-grey3: hsl(0, 0%, 2%);
-		--color-grey5: hsl(0, 0%, 5%);
-		--color-grey7: hsl(0, 0%, 7%);
-		--color-grey10: hsl(0, 0%, 10%);
-		--color-grey20: hsl(0, 0%, 20%);
-		--color-grey30: hsl(0, 0%, 30%);
-		--color-grey40: hsl(0, 0%, 40%);
-		--color-grey50: hsl(0, 0%, 50%);
-		--color-grey60: hsl(0, 0%, 60%);
-		--color-grey70: hsl(0, 0%, 70%);
-		--color-grey80: hsl(0, 0%, 80%);
-		--color-grey90: hsl(0, 0%, 90%);
+		--color-neutral-30: hsl(0, 0%, 2%);
+		--color-neutral-50: hsl(0, 0%, 5%);
+		--color-neutral-70: hsl(0, 0%, 7%);
+		--color-neutral-100: hsl(0, 0%, 10%);
+		--color-neutral-200: hsl(0, 0%, 20%);
+		--color-neutral-300: hsl(0, 0%, 30%);
+		--color-neutral-400: hsl(0, 0%, 40%);
+		--color-neutral-500: hsl(0, 0%, 50%);
+		--color-neutral-600: hsl(0, 0%, 60%);
+		--color-neutral-700: hsl(0, 0%, 70%);
+		--color-neutral-800: hsl(0, 0%, 80%);
+		--color-neutral-900: hsl(0, 0%, 90%);
 
 		--box-shadow: 0px 4px 15px rgb(0 0 0 / 25%), 0px 1px 1px rgb(0 0 0 / 33%);
 	}
@@ -115,8 +115,8 @@ html.html {
 
 body.body {
 	font-family: var(--font-sansSerif);
-	color: var(--color-grey90);
-	background-color: var(--color-grey5);
+	color: var(--color-neutral-900);
+	background-color: var(--color-neutral-50);
 	margin: 0;
 	height: 100%;
 }

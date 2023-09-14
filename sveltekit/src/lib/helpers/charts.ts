@@ -25,7 +25,7 @@ export const setChartDatasetColor = (dataset: ChartDataset, balanceGroup?: Balan
 			dataset.borderColor = '#5255AC';
 			break;
 		default:
-			// var(--color-grey80)
+			// var(--color-neutral-800)
 			dataset.backgroundColor = '#333333';
 			dataset.borderColor = '#333333';
 	}

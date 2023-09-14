@@ -13,8 +13,8 @@
 		font-weight: 400;
 		text-transform: uppercase;
 		font-size: 11px;
-		color: var(--color-grey50);
-		background-color: var(--color-grey10);
+		color: var(--color-neutral-500);
+		background-color: var(--color-neutral-100);
 		padding: 6px 8px;
 		border-radius: 4px;
 		width: max-content;
@@ -22,7 +22,7 @@
 		cursor: pointer;
 
 		&:hover {
-			color: var(--color-grey70);
+			color: var(--color-neutral-700);
 		}
 
 		&:disabled {
