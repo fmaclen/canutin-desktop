@@ -49,14 +49,14 @@ html.html {
 	--color-yellowSecondary: hsl(44, 100%, 95%);
 
 	--color-white: #ffffff;
-	--color-white-alpha10: rgba(255, 255, 255, 0.1);
-	--color-white-alpha50: rgba(255, 255, 255, 0.5);
+	--color-alpha-light-100: rgba(255, 255, 255, 0.1);
+	--color-alpha-light-500: rgba(255, 255, 255, 0.5);
 
 	--color-black: #000;
-	--color-black-alpha10: rgba(0, 0, 0, 0.1);
-	--color-black-alpha15: rgba(0, 0, 0, 0.15);
-	--color-black-alpha35: rgba(0, 0, 0, 0.35);
-	--color-black-alpha65: rgba(0, 0, 0, 0.65);
+	--color-alpha-dark-100: rgba(0, 0, 0, 0.1);
+	--color-alpha-dark-150: rgba(0, 0, 0, 0.15);
+	--color-alpha-dark-350: rgba(0, 0, 0, 0.35);
+	--color-alpha-dark-650: rgba(0, 0, 0, 0.65);
 
 	--color-border: hsl(0, 0%, 89%);
 
@@ -86,13 +86,13 @@ html.html {
 		--color-blueSecondary: hsl(211, 100%, 10%);
 		--color-yellowSecondary: hsl(44, 100%, 10%);
 
-		--color-white-alpha10: rgba(0, 0, 0, 0.1);
-		--color-white-alpha50: rgba(0, 0, 0, 0.5);
+		--color-alpha-light-100: rgba(0, 0, 0, 0.1);
+		--color-alpha-light-500: rgba(0, 0, 0, 0.5);
 
-		--color-black-alpha10: rgba(255, 255, 255, 0.1);
-		--color-black-alpha15: rgba(255, 255, 255, 0.15);
-		--color-black-alpha35: rgba(255, 255, 255, 0.35);
-		--color-black-alpha65: rgba(255, 255, 255, 0.65);
+		--color-alpha-dark-100: rgba(255, 255, 255, 0.1);
+		--color-alpha-dark-150: rgba(255, 255, 255, 0.15);
+		--color-alpha-dark-350: rgba(255, 255, 255, 0.35);
+		--color-alpha-dark-650: rgba(255, 255, 255, 0.65);
 
 		--color-border: hsl(0, 0%, 11%);
 

@@ -14,7 +14,7 @@
 <style lang="scss">
 	button.button {
 		border-radius: 4px;
-		border: 1px solid var(--color-black-alpha15);
+		border: 1px solid var(--color-alpha-dark-150);
 		padding: 8px 12px;
 		letter-spacing: -0.03em;
 		font-size: 12px;
@@ -25,7 +25,7 @@
 		cursor: pointer;
 
 		&:hover {
-			border-color: var(--color-black-alpha35);
+			border-color: var(--color-alpha-dark-350);
 		}
 
 		&:active {

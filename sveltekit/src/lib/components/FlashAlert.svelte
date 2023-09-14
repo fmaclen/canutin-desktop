@@ -127,7 +127,7 @@
 		--toastBarTop: 0;
 		--toastBarRight: 0;
 		--toastBarHeight: 100%;
-		--toastBarBackground: var(--color-white-alpha10);
+		--toastBarBackground: var(--color-alpha-light-100);
 	}
 
 	:global(._toastMsg) {
@@ -152,12 +152,12 @@
 
 	:global(a.toastLink) {
 		color: var(--color-white);
-		border-bottom: 1px solid var(--color-white-alpha10);
+		border-bottom: 1px solid var(--color-alpha-light-100);
 		text-decoration: none;
 	}
 
 	:global(a.toastLink:hover) {
-		border-bottom-color: var(--color-white-alpha50);
+		border-bottom-color: var(--color-alpha-light-500);
 	}
 
 	div.toastLoadingMsg,
