@@ -1,6 +1,8 @@
 import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 
+// NOTE: There is code duplication here with the `colorThemeStore.ts`
+
 const LOCAL_STORAGE_ITEM_NAME = 'lastUpdateCheck';
 
 const localStoreItem = browser && window.localStorage.getItem(LOCAL_STORAGE_ITEM_NAME);
