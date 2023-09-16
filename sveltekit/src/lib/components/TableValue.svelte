@@ -36,7 +36,7 @@
 			}
 		}
 
-		&--positive {
+		&--positive:not(.tableValue--excluded) {
 			color: var(--color-greenPrimary);
 		}
 
