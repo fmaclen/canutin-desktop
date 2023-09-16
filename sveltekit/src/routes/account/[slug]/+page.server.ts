@@ -3,7 +3,7 @@ import { getSelectAccountTypes } from '$lib/helpers/forms.server';
 import { selectBalanceGroups } from '$lib/helpers/forms';
 import { notFound } from '$lib/helpers/misc';
 import { startOfTheWeekAfter, setChartDatasetColor } from '$lib/helpers/charts';
-import { eachWeekOfInterval, startOfWeek } from 'date-fns';
+import { eachWeekOfInterval } from 'date-fns';
 import { getAccountBalanceDateRange, getAccountCurrentBalance } from '$lib/helpers/models.server';
 import type { ChartDataset } from 'chart.js';
 import type { Account } from '@prisma/client';
@@ -33,7 +33,7 @@ export const load = async ({ params }: { params: Params }) => {
 
 	if (periodStart && periodEnd) {
 		const weeksInPeriod = eachWeekOfInterval({
-			start: startOfWeek(periodStart),
+			start: startOfTheWeekAfter(periodStart),
 			end: startOfTheWeekAfter(periodEnd)
 		});
 
