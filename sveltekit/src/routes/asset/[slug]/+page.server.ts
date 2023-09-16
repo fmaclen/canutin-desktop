@@ -6,7 +6,7 @@ import { SortOrder } from '$lib/helpers/constants';
 import { notFound } from '$lib/helpers/misc';
 import { setChartDatasetColor } from '$lib/helpers/charts';
 import type { ChartDataset } from 'chart.js';
-import { eachWeekOfInterval, startOfWeek } from 'date-fns';
+import { eachWeekOfInterval } from 'date-fns';
 import { getAssetBalanceDateRange, getAssetCurrentBalance } from '$lib/helpers/models.server';
 import { startOfTheWeekAfter } from '$lib/helpers/charts';
 
@@ -36,7 +36,7 @@ export const load = async ({ params }: { params: Params }) => {
 	const { periodStart, periodEnd } = await getAssetBalanceDateRange(asset);
 	if (periodStart && periodEnd) {
 		const weeksInPeriod = eachWeekOfInterval({
-			start: startOfWeek(periodStart),
+			start: startOfTheWeekAfter(periodStart),
 			end: startOfTheWeekAfter(periodEnd)
 		});
 
