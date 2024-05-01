@@ -27,5 +27,5 @@ export const load = async () => {
 	env.SHOULD_CHECK_VAULT = 'false';
 
 	// Redirect to `The big picture` because vault is migrated and seeded
-	throw redirect(307, '/');
+	redirect(307, '/');
 };

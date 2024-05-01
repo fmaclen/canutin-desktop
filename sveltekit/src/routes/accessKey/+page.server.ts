@@ -6,5 +6,5 @@ export const load = async () => {
 	const { accessKey } = await getAccessKeySettings();
 
 	// Redirect to the home page if the access key is not set
-	if (!accessKey) throw redirect(307, '/');
+	if (!accessKey) redirect(307, '/');
 };

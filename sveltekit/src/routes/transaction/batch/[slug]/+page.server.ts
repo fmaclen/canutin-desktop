@@ -18,7 +18,7 @@ export const load = async ({ params }: { params: Params }) => {
 	if (transactionIds.length === 0) return notFound();
 
 	// If there is only one transaction selected then redirect to the *non-batch* edit page
-	if (transactionIds.length === 1) throw redirect(307, `/transaction/${transactionIds[0]}`);
+	if (transactionIds.length === 1) redirect(307, `/transaction/${transactionIds[0]}`);
 
 	const batchTransactions = await prisma.transaction.findMany({
 		where: {
