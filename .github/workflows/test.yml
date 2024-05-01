@@ -8,8 +8,8 @@ jobs:
   Electron:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
       - name: Install dependencies
         run: npm ci
       - name: Run unit tests
@@ -24,8 +24,8 @@ jobs:
     name: SvelteKit (${{ matrix.os }} - ${{ matrix.browser }})
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
 
       - name: Install dependencies
         working-directory: ./sveltekit
@@ -48,7 +48,7 @@ jobs:
           USE_HTTP: "true"
           PUBLIC_PLAUSIBLE_DOMAIN: ""
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: ${{ matrix.browser }}-${{ matrix.os }}-test-results

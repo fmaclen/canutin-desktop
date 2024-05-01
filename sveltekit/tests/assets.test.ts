@@ -77,7 +77,7 @@ test.describe('Assets', () => {
 		await costInput.focus();
 		await page.keyboard.type('69');
 		await expect(valueInput).toBeDisabled();
-		await expect(valueInput).toHaveValue('$289.8');
+		await expect(valueInput).toHaveValue('$289.80');
 
 		await page.locator('button', { hasText: 'Save' }).click();
 		await expectToastAndDismiss(page, "GameStop was updated", Appearance.POSITIVE); // prettier-ignore
@@ -112,7 +112,7 @@ test.describe('Assets', () => {
 		expect(await balanceGroupSelect.textContent()).toMatch('Other assets');
 
 		await expect(isSoldCheckbox).toBeChecked();
-		await expect(valueInput).toHaveValue('$289.8');
+		await expect(valueInput).toHaveValue('$289.80');
 		await expect(isSoldCheckbox).toBeChecked();
 
 		// Check the asset type was updated

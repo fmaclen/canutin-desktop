@@ -23,7 +23,7 @@ export const load = async () => {
 		}
 	});
 
-	const assetSummaries: Promise<AssetSummary[]> = Promise.all(
+	const assetSummaries: AssetSummary[] = await Promise.all(
 		assets.map(async (asset) => {
 			const lastBalanceStatement =
 				asset.assetBalanceStatements[asset.assetBalanceStatements.length - 1];

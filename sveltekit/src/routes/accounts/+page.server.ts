@@ -23,7 +23,7 @@ export const load = async () => {
 		}
 	});
 
-	const accountSummaries: Promise<AccountSummary[]> = Promise.all(
+	const accountSummaries: AccountSummary[] = await Promise.all(
 		accounts.map(async (account) => {
 			const balance = await getAccountCurrentBalance(account);
 			const transactionCount = account.transactions.length;

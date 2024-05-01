@@ -101,7 +101,7 @@ export const api = async ({ endpoint, method, payload, params }: Api) => {
 };
 
 export const notFound = () => {
-	throw redirect(307, '/404');
+	redirect(307, '/404');
 };
 
 export const toCamelCase = (sentence: string) => {
