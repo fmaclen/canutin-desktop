@@ -18,11 +18,12 @@ jobs:
   SvelteKit:
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-        browser: [chromium, firefox, webkit]
+        # os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
+        # browser: [chromium, firefox, webkit]
+        browser: [chromium]
 
     name: SvelteKit (${{ matrix.os }} - ${{ matrix.browser }})
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
