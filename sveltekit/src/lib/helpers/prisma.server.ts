@@ -9,19 +9,15 @@ const cwd = env.SVELTEKIT_PATH ? env.SVELTEKIT_PATH : process.cwd();
 
 const platformToExecutables: any = {
 	win32: {
-		migrationEngine: '@prisma/engines/migration-engine-windows.exe',
 		queryEngine: '.prisma/client/query_engine-windows.dll.node'
 	},
 	linux: {
-		migrationEngine: '@prisma/engines/migration-engine-debian-openssl-3.0.x',
 		queryEngine: '.prisma/client/libquery_engine-debian-openssl-3.0.x.so.node'
 	},
 	darwin: {
-		migrationEngine: '@prisma/engines/migration-engine-darwin',
 		queryEngine: '.prisma/client/libquery_engine-darwin.dylib.node'
 	},
 	darwinArm64: {
-		migrationEngine: '@prisma/engines/migration-engine-darwin-arm64',
 		queryEngine: '.prisma/client/libquery_engine-darwin-arm64.dylib.node'
 	}
 };
@@ -40,11 +36,6 @@ const nodeModulesPath = path.join(cwd, 'node_modules');
 const queryEnginePath = path.join(nodeModulesPath, platformToExecutables[platformName].queryEngine);
 
 const runPrismaMigrate = async (): Promise<number> => {
-	const migrationEnginePath = path.join(
-		nodeModulesPath,
-		platformToExecutables[platformName].migrationEngine
-	);
-
 	const prismaExecModule = path.join(nodeModulesPath, 'prisma', 'build', 'index.js');
 
 	try {
@@ -53,7 +44,6 @@ const runPrismaMigrate = async (): Promise<number> => {
 				cwd,
 				env: {
 					...env,
-					PRISMA_MIGRATION_ENGINE_BINARY: migrationEnginePath,
 					PRISMA_QUERY_ENGINE_LIBRARY: queryEnginePath
 				},
 				stdio: 'inherit'
