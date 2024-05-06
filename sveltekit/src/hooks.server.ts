@@ -1,4 +1,4 @@
-import type { Handle } from '@sveltejs/kit';
+import { type Handle, redirect } from '@sveltejs/kit';
 
 import { env } from '$env/dynamic/private';
 import { dev } from '$app/environment';
@@ -8,13 +8,6 @@ import {
 	UNAUTHORIZED_RESPONSE_MESSAGE,
 	UNAUTHORIZED_RESPONSE_STATUS
 } from '$lib/helpers/constants';
-
-const redirectTo = (origin: string, route: string) => {
-	// When the app runs as an Electron app it doesn't have an SSL certificate
-	const url = new URL(origin);
-	url.protocol = process.env.USE_HTTP === 'true' ? 'http:' : 'https:';
-	return Response.redirect(`${url.origin}${route}`, 307);
-};
 
 export const handle: Handle = async ({ event, resolve }) => {
 	// Simulate an internal server error by visiting `/500` in dev
@@ -47,7 +40,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		if (shouldVaultBeChecked) {
 			return isRequestJson
 				? new Response('Not ready', { status: 202 })
-				: redirectTo(event.url.origin, '/vault');
+				: redirect(307, '/vault');
 		}
 
 		// Access key
@@ -57,7 +50,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		if (!isAuthorized) {
 			return isRequestJson
 				? new Response(UNAUTHORIZED_RESPONSE_MESSAGE, UNAUTHORIZED_RESPONSE_STATUS)
-				: redirectTo(event.url.origin, '/accessKey');
+				: redirect(307, '/accessKey');
 		}
 	}
 
