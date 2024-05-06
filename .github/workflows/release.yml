@@ -46,18 +46,12 @@ jobs:
 
       - name: Install Prisma's dependencies
         working-directory: ./sveltekit
-        run: npx prisma generate && npx prisma migrate dev
-        env:
-          # Need to migrate and seed a temporary database required for the
-          # SvelteKit build process to finish.
-          DATABASE_URL: "file:./Canutin.temp.vault"
+        run: npx prisma generate
 
       - name: "Generate Electron & Sveltekit builds"
         run: npm run build:all
         env:
-          DATABASE_URL: "file:./Canutin.temp.vault"
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
-          PUBLIC_PLAUSIBLE_DOMAIN: ${{ secrets.PUBLIC_PLAUSIBLE_DOMAIN }}
 
       - name: Update package.json's with app version
         run: npm run package:release
@@ -75,8 +69,6 @@ jobs:
         # Only create a release for the server when action runs in Ubuntu.
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: npm run package:server
-        env:
-          APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
       - name: Release server package
         if: ${{ matrix.os == 'ubuntu-latest' }}

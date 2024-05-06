@@ -30,7 +30,7 @@ echo "
 -> Checking dependencies
 "
 # Installing production dependencies
-npm ci --prod
+npm ci --omit=dev
 
 # Generating Prisma's artifacts
 npx prisma generate
