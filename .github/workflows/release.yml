@@ -40,21 +40,22 @@ jobs:
         working-directory: ./sveltekit
         run: npm ci
 
-      - name: Install Prisma's dependencies
-        working-directory: ./sveltekit
-        run: npx prisma generate
-
       # HACK: need to set the `DATABASE_URL` environment variable because the
       # implementation `sveltekit/src/routes/devTools.json/+server.ts` needs it
       # during the build process and that shouldn't be the case.
+      # We probably also don't need `npx prisma migrate dev`.
       # REF: https://github.com/fmaclen/canutin-desktop/issues/205
-      - name: Create a copy of .env.example
+      - name: Install Prisma's dependencies
         working-directory: ./sveltekit
-        run: cp .env.example .env
+        run: npx prisma generate && npx prisma migrate dev
+        env:
+          DATABASE_URL: "file:./Canutin.temp.vault"
 
+      # HACK: Same as above, but for the server
       - name: "Generate Electron & Sveltekit builds"
         run: npm run build:all
         env:
+          DATABASE_URL: "file:./Canutin.temp.vault"
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
       - name: Update package.json's with app version
