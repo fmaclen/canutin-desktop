@@ -44,6 +44,14 @@ jobs:
         working-directory: ./sveltekit
         run: npx prisma generate
 
+      # HACK: need to set the `DATABASE_URL` environment variable because the
+      # implementation `sveltekit/src/routes/devTools.json/+server.ts` needs it
+      # during the build process and that shouldn't be the case.
+      # REF: https://github.com/fmaclen/canutin-desktop/issues/205
+      - name: Create a copy of .env.example
+        working-directory: ./sveltekit
+        run: cp .env.example .env
+
       - name: "Generate Electron & Sveltekit builds"
         run: npm run build:all
         env:
