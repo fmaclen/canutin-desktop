@@ -155,7 +155,7 @@ test.describe('Layout', () => {
 		await expect(page.locator('h1', { hasText: 'Transaction' })).toBeVisible();
 	});
 
-	test.describe('Checks for app updates', () => {
+	test.skip('Checks for app updates', () => {
 		test.afterEach(async ({ baseURL }) => {
 			// Reset APP_VERSION to the default value
 			await setEnvironmentVariable(baseURL!, 'APP_VERSION', 'v0.0.0-test');

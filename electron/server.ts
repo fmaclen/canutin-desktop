@@ -44,7 +44,6 @@ class Server {
         SVELTEKIT_PATH: svelteKitPath,
         DATABASE_URL: `file:${newVaultPath ? newVaultPath : this.vaultPath}`,
         SHOULD_CHECK_VAULT: "true",
-        USE_HTTP: "true",
         APP_VERSION: isDev
           ? require("../package.json").version
           : app.getVersion(),

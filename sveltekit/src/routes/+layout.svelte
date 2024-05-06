@@ -141,6 +141,16 @@
 	});
 </script>
 
+<svelte:head>
+	{#if data.plausibleDomain}
+		<script
+			defer
+			data-domain={data.plausibleDomain}
+			src="https://plausible.io/js/script.js"
+		></script>
+	{/if}
+</svelte:head>
+
 <FlashAlert />
 
 <div class="layout {isNavigating && 'layout--is-navigating'}">

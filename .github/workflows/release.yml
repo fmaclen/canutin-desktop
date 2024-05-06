@@ -42,20 +42,21 @@ jobs:
 
       # HACK: need to set the `DATABASE_URL` environment variable because the
       # implementation `sveltekit/src/routes/devTools.json/+server.ts` needs it
-      # during the build process and that shouldn't be the case.
-      # We probably also don't need `npx prisma migrate dev`.
+      # during the build process, not only it needs the dbURL but also needs a
+      # valid vault file, so we also need to run `npx prisma migrate dev` as well.
       # REF: https://github.com/fmaclen/canutin-desktop/issues/205
       - name: Install Prisma's dependencies
         working-directory: ./sveltekit
-        run: npx prisma generate && npx prisma migrate dev
+        run: |
+          cp .env.example .env
+          npx prisma generate
+          npx prisma migrate dev
         env:
           DATABASE_URL: "file:./Canutin.temp.vault"
 
-      # HACK: Same as above, but for the server
       - name: "Generate Electron & Sveltekit builds"
         run: npm run build:all
         env:
-          DATABASE_URL: "file:./Canutin.temp.vault"
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
       - name: Update package.json's with app version
@@ -74,10 +75,12 @@ jobs:
         # Only create a release for the server when action runs in Ubuntu.
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: npm run package:server
+        env:
+          APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
       - name: Release server package
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.tag.outputs.new_release_git_tag }}
           files: ./dist/canutin-server_*.tar.gz
