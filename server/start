@@ -35,12 +35,6 @@ npm ci --omit=dev
 # Generating Prisma's artifacts
 npx prisma generate
 
-# Set environment variables from `.env` file
-export $(xargs <.env)
-
-# Set version from package.json
-APP_VERSION=$(node -p "require('./package.json').version")
-
 echo "
 -> Current configuration
 "

@@ -7,12 +7,4 @@
 
 <svelte:head>
 	<title>{formattedTitle} {SEPARATOR} Canutin</title>
-
-	{#if process.env.PUBLIC_PLAUSIBLE_DOMAIN}
-		<script
-			defer
-			data-domain={process.env.PUBLIC_PLAUSIBLE_DOMAIN}
-			src="https://plausible.io/js/script.js"
-		></script>
-	{/if}
 </svelte:head>
