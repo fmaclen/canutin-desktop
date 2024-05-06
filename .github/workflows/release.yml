@@ -47,16 +47,14 @@ jobs:
       # REF: https://github.com/fmaclen/canutin-desktop/issues/205
       - name: Install Prisma's dependencies
         working-directory: ./sveltekit
-        run: |
-          cp .env.example .env
-          npx prisma generate
-          npx prisma migrate dev
+        run: npx prisma generate && npx prisma migrate dev
         env:
           DATABASE_URL: "file:./Canutin.temp.vault"
 
       - name: "Generate Electron & Sveltekit builds"
         run: npm run build:all
         env:
+          DATABASE_URL: "file:./Canutin.temp.vault"
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
       - name: Update package.json's with app version
