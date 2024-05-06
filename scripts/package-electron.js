@@ -28,7 +28,7 @@ rimraf(svelteKitProdPath, () => {
   );
 
   // Install SvelteKit's production dependencies
-  execSync("npm ci --prod", {
+  execSync("npm ci --omit=dev", {
     cwd: svelteKitProdPath,
   });
 
