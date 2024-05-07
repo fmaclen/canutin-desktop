@@ -1,6 +1,4 @@
 <script lang="ts">
-	import currentPeriodBackground from '$lib/assets/chart-current-background.svg';
-
 	export let isCurrentPeriod: boolean;
 	export let isActive: boolean;
 	export let isLabelVisible: boolean;
@@ -21,7 +19,7 @@
 		negativeRatio
 	)}fr;`;
 	let barHeight = `height: ${height}%;`;
-	let barBackground = isCurrentPeriod ? `--background-url: url(${currentPeriodBackground});` : '';
+	let barBackground = isCurrentPeriod ? `--background-url: url(/chart-current-background.svg);` : '';
 </script>
 
 <div class="chart__barContainer" style={barGridTemplateRows}>
