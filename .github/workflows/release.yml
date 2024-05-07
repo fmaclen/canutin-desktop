@@ -24,7 +24,7 @@ jobs:
     needs: tag
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-13, ubuntu-latest, windows-latest] # AFAIK macos-13 is the lastest one on x86
 
     name: Release (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
