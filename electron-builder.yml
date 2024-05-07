@@ -22,7 +22,7 @@ mac:
     - target: dmg
       arch:
         - x64
-        - # - arm64 # FIXME: https://github.com/Canutin/desktop/issues/85
+        # - arm64 # FIXME: https://github.com/Canutin/desktop/issues/85
 
 win:
   target:
