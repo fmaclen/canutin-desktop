@@ -68,17 +68,3 @@ jobs:
           github_token: ${{ secrets.github_token }}
           build_script_name: "package:electron"
           release: true
-
-      - name: Collect all files needed for server release
-        # Only create a release for the server when action runs in Ubuntu.
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: npm run package:server
-        env:
-          APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
-
-      - name: Release server package
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ needs.tag.outputs.new_release_git_tag }}
-          files: ./dist/canutin-server_*.tar.gz
