@@ -1,8 +1,11 @@
 name: Build & release
 
+# on:
+#   push:
+#     branches: [main, master]
 on:
-  push:
-    branches: [main, master]
+  pull_request:
+    branches: [main, master, develop]
 
 jobs:
   tag:
