@@ -50,12 +50,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
+      - name: Remove 'v' prefix in version tag
+        id: remove_prefix
+        run: |
+          tag="${{ needs.tag.outputs.new_release_git_tag }}"
+          new_release_git_tag_trimmed="${tag##v}"
+          echo "new_release_git_tag_trimmed=$new_release_git_tag_trimmed" >> $GITHUB_OUTPUT
+
       - name: Push the Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.actor }}/canutin:latest, ghcr.io/${{ github.actor }}/canutin:${{ needs.tag.outputs.new_release_git_tag }}
+          tags: ghcr.io/${{ github.actor }}/canutin:latest, ghcr.io/${{ github.actor }}/canutin:${{ needs.remove_prefix.outputs.new_release_git_tag_trimmed }}
           platforms: linux/amd64, linux/arm64
 
   # build-release-electron:
