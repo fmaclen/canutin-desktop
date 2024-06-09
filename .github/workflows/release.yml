@@ -27,6 +27,7 @@ jobs:
   build-release-docker:
     if : ${{ needs.tag.outputs.new_release_git_tag != '' }}
     needs: tag
+    name: Build & release Docker image
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -62,7 +63,7 @@ jobs:
   #   strategy:
   #     matrix:
   #       os: [macos-13, ubuntu-latest, windows-latest] # AFAIK macos-13 is the lastest one on x86
-  #   name: Electron (${{ matrix.os }})
+  #   name: Build & release Electron (${{ matrix.os }})
   #   runs-on: ${{ matrix.os }}
   #   steps:
   #     - uses: actions/checkout@v4
