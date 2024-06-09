@@ -3,21 +3,16 @@
 <img width="1495" alt="image" src="https://user-images.githubusercontent.com/1434675/201496760-84c132ba-9685-4313-8668-9d72fd52537b.png">
 
 <p align="center">
-  ⚡ <strong>Live demo <a href="https://demo.canutin.com/">https://demo.canutin.com/</a></strong><br/>
+  ⚡ <strong>Live demo <a href="https://demo.canutin.com/">https://demo.canutin.com</a></strong><br/>
   <em>(data will be wiped frequently)</em>
-</p>
-
-<p align="center">
-  💻 <strong>Download the <a href="https://github.com/Canutin/desktop/releases">latest release</a></strong> (Windows, macOS & Linux)
-</p>
-<p align="center">
-  🐝 Bugs? 🤑 Feature requests? Check out <a href="https://github.com/Canutin/desktop/#contributing">ways to contribute</a>
 </p>
 
 ---
 
 - [What is Canutin?](#what-is-canutin)
-- [Installation & first run](#installation--first-run)
+- Install...
+  - [💻 Desktop (macOS, Windows, Linux)](#install-macos-windows--linux)
+  - [📦 Server (Docker)](#install-docker)
 - [Getting data in](#getting-data-in)
 - [Frequenty asked questions](#frequenty-asked-questions)
 - [Contributing](#contributing)
@@ -32,7 +27,7 @@
 - Allows you to import accounts, assets and transactions [via API](#getting-data-in).
 - No sign up is required.
 
-## Installation & first run
+## Install (macOS, Windows & Linux)
 
 1. Begin by downloading the [latest release](https://github.com/Canutin/desktop/releases) for your operating system.
 2. Run the installer and follow the instructions.
@@ -49,6 +44,42 @@ Canutin hasn't paid the _app-store tax_ that Microsoft and Apple require to _not
 - **On macOS**: After you see `Canutin.app cannot be opened because the developer cannont be verified`, click `Cancel`, then head over to `System Preferences > Security & Privacy` and click `Open Anyway`.
 
 You might need to do this step again in the future when you update the app.
+
+# Install (Docker)
+
+Run the command below, then visit [http://localhost:42069](http://localhost:42069).
+
+```shell
+docker run -d \
+  --name canutin \
+  -p 42069:42069 \
+  -v ./vaults:/canutin/vaults \
+  --restart=unless-stopped \
+  ghcr.io/fmaclen/canutin:latest
+```
+
+Or create a `docker-compose.yml` file:
+
+```yaml
+version: '3'
+services:
+  canutin:
+    image: ghcr.io/fmaclen/canutin:latest
+    container_name: canutin
+    ports:
+      - "42069:42069"
+    volumes:
+      - ./vaults:/canutin/vaults
+    restart: unless-stopped
+    # Optional environment variables
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "42069"
+      SHOULD_CHECK_VAULT: "true"
+      DATABASE_URL: "file:../vaults/Canutin.vault"
+```
+
+And then run `docker compose up -d`.
 
 ## Getting data in
 
