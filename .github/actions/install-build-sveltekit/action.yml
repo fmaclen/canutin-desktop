@@ -22,7 +22,7 @@ runs:
 
     - name: Generate SvelteKit build
       working-directory: ./sveltekit
-      run: npm run build:sveltekit
+      run: npm run build
       env:
         DATABASE_URL: "file:./Canutin.temp.vault"
         APP_VERSION: ${{ env.APP_VERSION }}

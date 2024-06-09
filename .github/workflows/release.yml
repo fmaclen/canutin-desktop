@@ -73,7 +73,7 @@ jobs:
   #       run: npm ci
 
   #     - name: "Generate Electron build"
-  #       run: npm run build:electron
+  #       run: npm run build
 
   #     - name: Install & build SvelteKit
   #       uses: ./.github/actions/install-build-sveltekit
