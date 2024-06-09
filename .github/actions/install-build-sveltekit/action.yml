@@ -35,6 +35,7 @@ runs:
       shell: bash
 
     - name: Debug ACTION
+      working-directory: ./sveltekit
       run: |
         pwd
         ls -al

@@ -38,6 +38,7 @@ jobs:
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
       - name: Debug RELEASE
+        working-directory: ./sveltekit
         run: |
           pwd
           ls -al
