@@ -7,6 +7,10 @@ ENV PORT "42069"
 ENV SHOULD_CHECK_VAULT "true"
 ENV DATABASE_URL "file:../vaults/Canutin.vault"
 
+# DEBUG where we are
+RUN pwd
+RUN ls -la
+
 COPY ./scripts/docker-entrypoint.sh .
 COPY ./sveltekit/package.json .
 COPY ./sveltekit/package-lock.json .
