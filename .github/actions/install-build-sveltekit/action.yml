@@ -33,10 +33,3 @@ runs:
       env:
         APP_VERSION: ${{ env.APP_VERSION }}
       shell: bash
-
-    - name: Debug ACTION
-      working-directory: ./sveltekit
-      run: |
-        pwd
-        ls -al
-      shell: bash
