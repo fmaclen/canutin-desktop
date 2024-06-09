@@ -26,14 +26,6 @@ ${COLOR_BLUE_START}
                                         
 ${COLOR_END}
 "
-echo "
--> Checking dependencies
-"
-# Installing production dependencies
-npm ci --omit=dev
-
-# Generating Prisma's artifacts
-npx prisma generate
 
 echo "
 -> Current configuration

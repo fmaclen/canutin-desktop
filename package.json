@@ -8,13 +8,10 @@
   "scripts": {
     "start": "node scripts/sveltekit-start.js",
     "dev": "electron-esbuild dev",
-    "build:all": "npm run build:electron && npm run build:sveltekit",
-    "build:electron": "electron-esbuild build",
-    "build:sveltekit": "cd sveltekit && npm run build",
+    "build": "electron-esbuild build",
     "test": "jest --watchAll",
     "package:release": "node scripts/package-release.js",
-    "package:electron": "node scripts/package-electron.js && electron-builder",
-    "package:server": "node scripts/package-server.js"
+    "package:electron": "node scripts/package-electron.js && electron-builder"
   },
   "devDependencies": {
     "@types/jest": "29.5.12",

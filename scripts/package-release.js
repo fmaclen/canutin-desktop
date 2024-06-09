@@ -17,8 +17,6 @@ const isVersionValid =
   );
 
 if (isVersionValid) {
-  console.info(`\n-> Updating version in package.json\n`);
-
   // Get the package.json contents
   const pathToElectronPackageJson = require("path").join(__dirname, "..", "package.json"); // prettier-ignore
   const pathToSvelteKitPackageJson = require("path").join(__dirname, "..", "sveltekit", "package.json"); // prettier-ignore
@@ -33,6 +31,8 @@ if (isVersionValid) {
   // Write the updated package.json
   require("fs").writeFileSync(pathToElectronPackageJson, JSON.stringify(electronPackageJson, null, 2)); // prettier-ignore
   require("fs").writeFileSync(pathToSvelteKitPackageJson, JSON.stringify(svelteKitPackageJson, null, 2)); // prettier-ignore
+
+  console.info(`\n-> Updated package.json to version: ${version}\n`);
 } else {
   throw new Error(`'${version}' is not a valid semantically versioned tag`);
 }
