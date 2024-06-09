@@ -45,7 +45,7 @@ Canutin hasn't paid the _app-store tax_ that Microsoft and Apple require to _not
 
 You might need to do this step again in the future when you update the app.
 
-# Install (Docker)
+## Install (Docker)
 
 Run the command below, then visit [http://localhost:42069](http://localhost:42069).
 
