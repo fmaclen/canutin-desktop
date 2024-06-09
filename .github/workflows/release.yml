@@ -1,19 +1,15 @@
 name: Build & release
 
-# on:
-#   push:
-#     branches: [main, master]
 on:
-  pull_request:
-    branches: [main, master, develop]
+  push:
+    branches: [main, master]
 
 jobs:
   tag:
     name: Tag commit
     runs-on: ubuntu-latest
     outputs:
-      # new_release_git_tag: ${{ steps.tag_version.outputs.new_release_git_tag }}
-      new_release_git_tag: "v1.14.3"
+      new_release_git_tag: ${{ steps.tag_version.outputs.new_release_git_tag }}
     steps:
       - uses: actions/checkout@v4
       - name: Bump version and push tag
@@ -21,8 +17,6 @@ jobs:
         uses: cycjimmy/semantic-release-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          dry_run: true
 
   build-release-docker:
     if : ${{ needs.tag.outputs.new_release_git_tag != '' }}
@@ -65,32 +59,32 @@ jobs:
           tags: ghcr.io/${{ github.actor }}/canutin:latest, ghcr.io/${{ github.actor }}/canutin:${{ steps.remove_prefix.outputs.new_release_git_tag_trimmed }}
           platforms: linux/amd64, linux/arm64
 
-  # build-release-electron:
-  #   if: ${{ needs.tag.outputs.new_release_git_tag != '' }}
-  #   needs: tag
-  #   strategy:
-  #     matrix:
-  #       os: [macos-13, ubuntu-latest, windows-latest] # AFAIK macos-13 is the lastest one on x86
-  #   name: Build & release Electron (${{ matrix.os }})
-  #   runs-on: ${{ matrix.os }}
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-node@v4
+  build-release-electron:
+    if: ${{ needs.tag.outputs.new_release_git_tag != '' }}
+    needs: tag
+    strategy:
+      matrix:
+        os: [macos-13, ubuntu-latest, windows-latest] # AFAIK macos-13 is the lastest one on x86
+    name: Build & release Electron (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
 
-  #     - name: Install Electron dependencies
-  #       run: npm ci
+      - name: Install Electron dependencies
+        run: npm ci
 
-  #     - name: "Generate Electron build"
-  #       run: npm run build
+      - name: "Generate Electron build"
+        run: npm run build
 
-  #     - name: Install & build SvelteKit
-  #       uses: ./.github/actions/install-build-sveltekit
-  #       env:
-  #         APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
+      - name: Install & build SvelteKit
+        uses: ./.github/actions/install-build-sveltekit
+        env:
+          APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
-  #     - name: Build & release Electron app
-  #       uses: coparse-inc/action-electron-builder@v1.0.0
-  #       with:
-  #         github_token: ${{ secrets.github_token }}
-  #         build_script_name: "package:electron"
-  #         release: true
+      - name: Build & release Electron app
+        uses: coparse-inc/action-electron-builder@v1.0.0
+        with:
+          github_token: ${{ secrets.github_token }}
+          build_script_name: "package:electron"
+          release: true
