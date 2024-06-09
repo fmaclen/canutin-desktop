@@ -7,11 +7,11 @@ ENV PORT "42069"
 ENV SHOULD_CHECK_VAULT "true"
 ENV DATABASE_URL "file:../vaults/Canutin.vault"
 
-COPY /sveltekit/package.json .
-COPY /sveltekit/package-lock.json .
-COPY /sveltekit/build .
-COPY /sveltekit/prisma ./prisma
-COPY /scripts/docker-entrypoint.sh .
+COPY ./scripts/docker-entrypoint.sh .
+COPY ./sveltekit/package.json .
+COPY ./sveltekit/package-lock.json .
+COPY ./sveltekit/build .
+COPY ./sveltekit/prisma ./prisma
 
 # Installing production dependencies
 RUN npm ci --omit=dev
