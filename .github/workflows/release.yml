@@ -53,6 +53,7 @@ jobs:
       - name: Push the Docker image
         uses: docker/build-push-action@v5
         with:
+          context: .
           push: true
           tags: ghcr.io/${{ github.actor }}/canutin:latest, ghcr.io/${{ github.actor }}/canutin:${{ needs.tag.outputs.new_release_git_tag }}
           platforms: linux/amd64, linux/arm64

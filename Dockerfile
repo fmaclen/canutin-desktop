@@ -9,7 +9,7 @@ ENV DATABASE_URL "file:../vaults/Canutin.vault"
 
 COPY /sveltekit/package.json .
 COPY /sveltekit/package-lock.json .
-COPY /sveltekit/build ./
+COPY /sveltekit/build .
 COPY /sveltekit/prisma ./prisma
 COPY /scripts/docker-entrypoint.sh .
 
