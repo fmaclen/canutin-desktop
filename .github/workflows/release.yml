@@ -37,6 +37,12 @@ jobs:
         env:
           APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
 
+      - name: Debug RELEASE
+        run: |
+          pwd
+          ls -al
+        shell: bash
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 

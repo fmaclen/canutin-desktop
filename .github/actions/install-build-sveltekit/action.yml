@@ -33,3 +33,9 @@ runs:
       env:
         APP_VERSION: ${{ env.APP_VERSION }}
       shell: bash
+
+    - name: Debug ACTION
+      run: |
+        pwd
+        ls -al
+      shell: bash
