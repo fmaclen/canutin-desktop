@@ -62,7 +62,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.actor }}/canutin:latest, ghcr.io/${{ github.actor }}/canutin:${{ needs.remove_prefix.outputs.new_release_git_tag_trimmed }}
+          tags: ghcr.io/${{ github.actor }}/canutin:latest, ghcr.io/${{ github.actor }}/canutin:${{ steps.remove_prefix.outputs.new_release_git_tag_trimmed }}
           platforms: linux/amd64, linux/arm64
 
   # build-release-electron:
