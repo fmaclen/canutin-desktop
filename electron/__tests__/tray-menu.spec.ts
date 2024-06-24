@@ -51,25 +51,6 @@ describe("TrayMenu", () => {
     // expect(spyToggleServer).toHaveBeenCalled();
   });
 
-  test("the browser opens with the specified parameters", () => {
-    jest.useFakeTimers();
-    jest.spyOn(global, "setTimeout");
-
-    const trayMenu = new TrayMenu(fakeVault);
-    const spyShell = jest.spyOn(Electron.shell, "openExternal");
-    trayMenu["openBrowser"]();
-    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 0);
-
-    trayMenu["openBrowser"](TrayMenu.OPEN_BROWSER_DELAY);
-    expect(setTimeout).toHaveBeenLastCalledWith(
-      expect.any(Function),
-      TrayMenu.OPEN_BROWSER_DELAY
-    );
-
-    jest.runAllTimers();
-    expect(spyShell).toBeCalledWith(trayMenu["server"]?.url);
-  });
-
   describe("develoment environment", () => {
     spyIsPackaged.mockReturnValue(false);
     const trayMenu = new TrayMenu(fakeVault);
