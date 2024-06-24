@@ -6,6 +6,7 @@ import {
   shell,
   Tray,
   nativeTheme,
+  BrowserWindow,
 } from "electron";
 
 import Vault from "./vault";
@@ -33,6 +34,7 @@ class TrayMenu {
   private trayIcon: string;
   private vault: Vault;
   server: Server | undefined;
+  window: BrowserWindow;
 
   private menuServerStatus: MenuItemConstructorOptions;
   private menuServerToggle: MenuItemConstructorOptions;
@@ -43,11 +45,15 @@ class TrayMenu {
   private menuSeparator: MenuItemConstructorOptions;
   private menuCurrentTemplate: MenuItemConstructorOptions[];
 
-  constructor(vault: Vault) {
+  constructor(vault: Vault, window: BrowserWindow) {
     this.vault = vault;
+    this.window = window;
     this.isServerRunning = false;
     this.isAppPackaged = app.isPackaged || false;
     this.trayIcon = TrayMenu.ICON_TRAY_IDLE;
+
+    // Set loading window
+    this.setLoadingView();
 
     // There's a snapshot test that checks the menu template and we don't want
     // to use macOS keyboard shortcuts when generating the template.
@@ -170,6 +176,7 @@ class TrayMenu {
       this.menuOpenInBrowser.visible = false;
       this.setTrayIcon(TrayMenu.ICON_TRAY_IDLE);
       this.updateTray();
+      this.setLoadingView();
     } else if (this.server) {
       // Start the server
       this.server.start(vaultPath);
@@ -182,6 +189,8 @@ class TrayMenu {
       this.menuOpenInBrowser.visible = true;
       this.setTrayIcon(TrayMenu.ICON_TRAY_ACTIVE);
       this.updateTray();
+      setTimeout(() => this.server && this.window.loadURL(this.server.url), TrayMenu.OPEN_BROWSER_DELAY);
+      ;
     }
 
     // FIXME:
@@ -219,11 +228,18 @@ class TrayMenu {
 
     return this.isAppPackaged
       ? path.join(process.resourcesPath, `assets/${fileName}${theme}.png`)
-      : `./resources/${
-          process.env.NODE_ENV !== "test" && theme
-            ? "assets/dev/dev-"
-            : "assets/"
-        }${fileName}${theme}.png`;
+      : `./resources/${process.env.NODE_ENV !== "test" && theme
+        ? "assets/dev/dev-"
+        : "assets/"
+      }${fileName}${theme}.png`;
+  }
+
+  private setLoadingView = () => {
+    if (this.isAppPackaged) {
+      this.window.loadFile(path.join(process.resourcesPath, `loading.html`));
+    } else {
+      this.window.loadFile("../../resources/loading.html");
+    }
   }
 
   private setTrayIcon = (icon: string) => {
