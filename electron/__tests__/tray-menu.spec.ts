@@ -6,6 +6,12 @@ import TrayMenu from "../tray-menu";
 import Vault from "../vault";
 import Server from "../server";
 
+type TrayMenuWithPrivateMethods = TrayMenu & {
+  getImagePath: (fileName: string) => string;
+  toggleServer: () => void;
+  setLoadingView: () => void;
+};
+
 describe("TrayMenu", () => {
   const IMAGE_ASSET = "dev-canutin-tray-active-light";
   // resources/assets/dev/dev-canutin-tray-active-light.png
@@ -36,18 +42,25 @@ describe("TrayMenu", () => {
   });
 
   test("tray is set with the correct parameters", () => {
-    // FIXME:
-    // can't seem to spy on the `toggleServer()` method below:
-    // const spyToggleServer = jest.spyOn(
-    //   TrayMenu.prototype as any,
-    //   "toggleServer"
-    // );
+    // NOTE:
+    // `TrayMenu.prototype` doesn't include private methods
+    // so we need to cast it to `TrayMenuWithPrivateMethods`
     const spyGetImagePath = jest.spyOn(
-      TrayMenu.prototype as any,
+      TrayMenu.prototype as TrayMenuWithPrivateMethods,
       "getImagePath"
+    );
+    const spyToggleServer = jest.spyOn(
+      TrayMenu.prototype as TrayMenuWithPrivateMethods,
+      "toggleServer"
+    );
+    const spySetLoadingView = jest.spyOn(
+      TrayMenu.prototype as TrayMenuWithPrivateMethods,
+      "setLoadingView"
     );
     const trayMenu = new TrayMenu(vault, mockWindow);
     const tray = trayMenu["tray"];
+    expect(spySetLoadingView).toHaveBeenCalled();
+    expect(spyToggleServer).toHaveBeenCalled();
     expect(trayMenu["menuCurrentTemplate"]).toMatchSnapshot();
     expect(spyGetImagePath).toHaveBeenCalledWith(TrayMenu.ICON_TRAY_IDLE);
     expect(tray.on).toHaveBeenCalledWith("click", expect.any(Function));
@@ -56,7 +69,6 @@ describe("TrayMenu", () => {
       Menu.buildFromTemplate(trayMenu["menuCurrentTemplate"])
     );
     expect(trayMenu["vault"]["path"]).toBe(pathToVault);
-    // expect(spyToggleServer).toHaveBeenCalled();
   });
 
   describe("develoment environment", () => {

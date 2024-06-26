@@ -123,7 +123,7 @@ class TrayMenu {
     }
   }
 
-  private switchVault = () => {
+  private switchVault() {
     const { vault } = this;
     const isVaultSet = vault.dialog();
 
@@ -141,7 +141,7 @@ class TrayMenu {
     }
   };
 
-  private toggleServer = () => {
+  private toggleServer() {
     const vaultPath = this.vault?.path;
 
     if (!this.server && vaultPath) this.server = new Server(vaultPath);
@@ -179,7 +179,7 @@ class TrayMenu {
     this.isServerRunning = !this.isServerRunning;
   };
 
-  private updateTray = () => {
+  private updateTray() {
     this.tray?.setContextMenu(Menu.buildFromTemplate(this.menuCurrentTemplate));
   };
 
@@ -204,7 +204,7 @@ class TrayMenu {
       }${fileName}${theme}.png`;
   }
 
-  private setLoadingView = () => {
+  private setLoadingView() {
     if (this.isAppPackaged) {
       this.window.loadFile(path.join(process.resourcesPath, `loading.html`));
     } else {
