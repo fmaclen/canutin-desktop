@@ -1,4 +1,5 @@
 import path from "path";
+import { BrowserWindow } from "electron";
 import Electron, { Menu } from "electron";
 
 import TrayMenu from "../tray-menu";
@@ -6,17 +7,13 @@ import Vault from "../vault";
 import Server from "../server";
 
 describe("TrayMenu", () => {
-  const resourcesPath = process.resourcesPath; // this is `undefined` in tests
-  const vault = new Vault();
+  const IMAGE_ASSET = "canutin-tray-icon";
+  const pathToImageAsset = `/path/to/fake/assets/${IMAGE_ASSET}.png`;
   const pathToVault = "/fake/path/to/Canutin.vault";
+  const resourcesPath = process.resourcesPath; // this is `undefined` in tests
+  const mockWindow = new BrowserWindow();
+  const vault = new Vault();
   vault.path = pathToVault;
-
-  // FIXME:
-  // tests pass but there is an error when the test runs where
-  // `fakePathToImageAsset` returns "MODULE_NOT_FOUND".
-  // REF https://github.com/Canutin/desktop-2/issues/6
-  const imageAsset = "fake-image";
-  const pathToImageAsset = `/path/to/fake/assets/${imageAsset}.png`;
 
   const spyPathJoin = jest
     .spyOn(path, "join")
@@ -38,7 +35,7 @@ describe("TrayMenu", () => {
       TrayMenu.prototype as any,
       "getImagePath"
     );
-    const trayMenu = new TrayMenu(vault);
+    const trayMenu = new TrayMenu(vault, mockWindow);
     const tray = trayMenu["tray"];
     expect(trayMenu["menuCurrentTemplate"]).toMatchSnapshot();
     expect(spyGetImagePath).toHaveBeenCalledWith(TrayMenu.ICON_TRAY_IDLE);
@@ -53,7 +50,7 @@ describe("TrayMenu", () => {
 
   describe("develoment environment", () => {
     spyIsPackaged.mockReturnValue(false);
-    const trayMenu = new TrayMenu(vault);
+    const trayMenu = new TrayMenu(vault, mockWindow);
 
     test("browser opens to the server url", () => {
       expect(trayMenu["server"]?.url).toBe(
@@ -63,15 +60,15 @@ describe("TrayMenu", () => {
 
     test("path to image assets", () => {
       spyPathJoin.mockClear();
-      const imagePath = trayMenu["getImagePath"](imageAsset);
-      expect(imagePath).toBe(`./resources/assets/${imageAsset}-light.png`);
+      const imagePath = trayMenu["getImagePath"](IMAGE_ASSET);
+      expect(imagePath).toBe(`./resources/assets/${IMAGE_ASSET}-light.png`);
       expect(spyPathJoin).not.toBeCalled();
     });
   });
 
   describe("production environment", () => {
     spyIsPackaged.mockReturnValue(true);
-    const trayMenu = new TrayMenu(vault);
+    const trayMenu = new TrayMenu(vault, mockWindow);
 
     test("browser opens to the server url", () => {
       expect(trayMenu["server"]?.url).toBe(
@@ -80,11 +77,11 @@ describe("TrayMenu", () => {
     });
 
     test("path to image assets", () => {
-      const imagePath = trayMenu["getImagePath"](imageAsset);
+      const imagePath = trayMenu["getImagePath"](IMAGE_ASSET);
       expect(imagePath).toBe(pathToImageAsset);
       expect(spyPathJoin).toHaveBeenLastCalledWith(
         resourcesPath,
-        `assets/${imageAsset}-light.png`
+        `assets/${IMAGE_ASSET}-light.png`
       );
     });
   });
@@ -100,7 +97,7 @@ describe("TrayMenu", () => {
       "shouldUseDarkColors",
       "get"
     );
-    const trayMenu = new TrayMenu(vault);
+    const trayMenu = new TrayMenu(vault, mockWindow);
 
     expect(trayMenu["trayIcon"]).toBe(iconTrayActive);
     expect(spyPathJoin).toHaveBeenCalledWith(
@@ -162,7 +159,7 @@ describe("TrayMenu", () => {
       "showOpenDialogSync"
     );
     const spyUpdateTray = jest.spyOn(TrayMenu.prototype as any, "updateTray");
-    const trayMenu = new TrayMenu(vault);
+    const trayMenu = new TrayMenu(vault, mockWindow);
     trayMenu["switchVault"];
     expect(trayMenu["menuVaultPath"].label).not.toBe(pathToVault);
     expect(spyElectronDialogSync).toHaveBeenCalledWith({

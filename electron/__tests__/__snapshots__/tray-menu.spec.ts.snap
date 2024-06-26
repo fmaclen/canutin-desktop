@@ -4,7 +4,7 @@ exports[`TrayMenu tray is set with the correct parameters 1`] = `
 [
   {
     "enabled": false,
-    "icon": "/path/to/fake/assets/fake-image.png",
+    "icon": "/path/to/fake/assets/canutin-tray-icon.png",
     "id": "menu-server-status",
     "label": "Canutin is running",
   },
@@ -15,13 +15,6 @@ exports[`TrayMenu tray is set with the correct parameters 1`] = `
     "click": [Function],
     "id": "menu-server-toggle",
     "label": "Stop Canutin",
-    "visible": true,
-  },
-  {
-    "accelerator": "Ctrl+T",
-    "click": [Function],
-    "id": "menu-open-in-browser",
-    "label": "Open in browser",
     "visible": true,
   },
   {
