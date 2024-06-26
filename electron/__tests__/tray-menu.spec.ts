@@ -14,13 +14,14 @@ type TrayMenuWithPrivateMethods = TrayMenu & {
 
 describe("TrayMenu", () => {
   const IMAGE_ASSET = "dev-canutin-tray-active-light";
-  // resources/assets/dev/dev-canutin-tray-active-light.png
   const pathToImageAsset = `./resources/assets/dev/${IMAGE_ASSET}.png`;
   const pathToVault = "/fake/path/to/Canutin.vault";
   const resourcesPath = process.resourcesPath; // this is `undefined` in tests
-  const mockWindow = new BrowserWindow();
+  const mockBrowserWindow = new BrowserWindow();
   const vault = new Vault();
   vault.path = pathToVault;
+
+  const spyIsPackaged = jest.spyOn(Electron.app, "isPackaged", "get");
 
   // FIXME:
   // Tests are passing but there is an error related to `spyPathJoin`:
@@ -32,10 +33,7 @@ describe("TrayMenu", () => {
   // The path to the file is correct. But I think that's failing because we
   // are mocking an Electron module which expects a PNG but the mocked
   // version is maybe expecting something else (?)
-  const spyPathJoin = jest
-    .spyOn(path, "join")
-    .mockReturnValue(pathToImageAsset);
-  const spyIsPackaged = jest.spyOn(Electron.app, "isPackaged", "get");
+  const spyPathJoin = jest.spyOn(path, "join").mockReturnValue(pathToImageAsset);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -57,12 +55,12 @@ describe("TrayMenu", () => {
       TrayMenu.prototype as TrayMenuWithPrivateMethods,
       "setLoadingView"
     );
-    const trayMenu = new TrayMenu(vault, mockWindow);
+    const trayMenu = new TrayMenu(vault, mockBrowserWindow);
     const tray = trayMenu["tray"];
     expect(spySetLoadingView).toHaveBeenCalled();
     expect(spyToggleServer).toHaveBeenCalled();
-    expect(trayMenu["menuCurrentTemplate"]).toMatchSnapshot();
     expect(spyGetImagePath).toHaveBeenCalledWith(TrayMenu.ICON_TRAY_IDLE);
+    expect(trayMenu["menuCurrentTemplate"]).toMatchSnapshot();
     expect(tray.on).toHaveBeenCalledWith("click", expect.any(Function));
     expect(tray.setToolTip).toHaveBeenCalledWith("Canutin");
     expect(tray.setContextMenu).toHaveBeenCalledWith(
@@ -73,7 +71,7 @@ describe("TrayMenu", () => {
 
   describe("develoment environment", () => {
     spyIsPackaged.mockReturnValue(false);
-    const trayMenu = new TrayMenu(vault, mockWindow);
+    const trayMenu = new TrayMenu(vault, mockBrowserWindow);
 
     test("browser opens to the server url", () => {
       expect(trayMenu["server"]?.url).toBe(
@@ -91,7 +89,7 @@ describe("TrayMenu", () => {
 
   describe("production environment", () => {
     spyIsPackaged.mockReturnValue(true);
-    const trayMenu = new TrayMenu(vault, mockWindow);
+    const trayMenu = new TrayMenu(vault, mockBrowserWindow);
 
     test("browser opens to the server url", () => {
       expect(trayMenu["server"]?.url).toBe(
@@ -120,7 +118,7 @@ describe("TrayMenu", () => {
       "shouldUseDarkColors",
       "get"
     );
-    const trayMenu = new TrayMenu(vault, mockWindow);
+    const trayMenu = new TrayMenu(vault, mockBrowserWindow);
 
     expect(trayMenu["trayIcon"]).toBe(iconTrayActive);
     expect(spyPathJoin).toHaveBeenCalledWith(
@@ -182,7 +180,7 @@ describe("TrayMenu", () => {
       "showOpenDialogSync"
     );
     const spyUpdateTray = jest.spyOn(TrayMenu.prototype as any, "updateTray");
-    const trayMenu = new TrayMenu(vault, mockWindow);
+    const trayMenu = new TrayMenu(vault, mockBrowserWindow);
     trayMenu["switchVault"];
     expect(trayMenu["menuVaultPath"].label).not.toBe(pathToVault);
     expect(spyElectronDialogSync).toHaveBeenCalledWith({
