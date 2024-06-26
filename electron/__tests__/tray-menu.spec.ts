@@ -7,14 +7,25 @@ import Vault from "../vault";
 import Server from "../server";
 
 describe("TrayMenu", () => {
-  const IMAGE_ASSET = "canutin-tray-icon";
-  const pathToImageAsset = `/path/to/fake/assets/${IMAGE_ASSET}.png`;
+  const IMAGE_ASSET = "dev-canutin-tray-active-light";
+  // resources/assets/dev/dev-canutin-tray-active-light.png
+  const pathToImageAsset = `./resources/assets/dev/${IMAGE_ASSET}.png`;
   const pathToVault = "/fake/path/to/Canutin.vault";
   const resourcesPath = process.resourcesPath; // this is `undefined` in tests
   const mockWindow = new BrowserWindow();
   const vault = new Vault();
   vault.path = pathToVault;
 
+  // FIXME:
+  // Tests are passing but there is an error related to `spyPathJoin`:
+  //
+  // resources/assets/dev/dev-canutin-tray-active-light.png:1
+  // �PNG
+  // SyntaxError: Invalid or unexpected token
+  //
+  // The path to the file is correct. But I think that's failing because we
+  // are mocking an Electron module which expects a PNG but the mocked
+  // version is maybe expecting something else (?)
   const spyPathJoin = jest
     .spyOn(path, "join")
     .mockReturnValue(pathToImageAsset);

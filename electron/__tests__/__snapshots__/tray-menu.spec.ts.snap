@@ -4,7 +4,7 @@ exports[`TrayMenu tray is set with the correct parameters 1`] = `
 [
   {
     "enabled": false,
-    "icon": "/path/to/fake/assets/canutin-tray-icon.png",
+    "icon": "./resources/assets/dev/dev-canutin-tray-active-light.png",
     "id": "menu-server-status",
     "label": "Canutin is running",
   },
