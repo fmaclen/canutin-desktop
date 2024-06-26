@@ -168,6 +168,10 @@ class TrayMenu {
       );
       this.setTrayIcon(TrayMenu.ICON_TRAY_ACTIVE);
       this.updateTray();
+
+      // FIXME:
+      // Should set the server URL after the server is actually running.
+      // REF: https://github.com/Canutin/desktop-2/issues/8
       setTimeout(() => this.server && this.window.loadURL(this.server.url), TrayMenu.LOAD_SERVER_URL_DELAY);
       ;
     }

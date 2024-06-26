@@ -40,7 +40,6 @@ describe("TrayMenu", () => {
   });
 
   test("tray is set with the correct parameters", () => {
-    // NOTE:
     // `TrayMenu.prototype` doesn't include private methods
     // so we need to cast it to `TrayMenuWithPrivateMethods`
     const spyGetImagePath = jest.spyOn(
