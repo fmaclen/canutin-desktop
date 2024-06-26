@@ -70,13 +70,24 @@ describe("TrayMenu", () => {
   });
 
   describe("develoment environment", () => {
-    spyIsPackaged.mockReturnValue(false);
-    const trayMenu = new TrayMenu(vault, mockBrowserWindow);
+    let trayMenu: TrayMenu;
+    
+    beforeEach(() => {
+      spyIsPackaged.mockReturnValue(false);
+      trayMenu = new TrayMenu(vault, mockBrowserWindow);
+    });
 
     test("browser opens to the server url", () => {
+      const trayMenu = new TrayMenu(vault, mockBrowserWindow);
       expect(trayMenu["server"]?.url).toBe(
         `http://localhost:${Server.PORT_DEVELOPMENT}`
       );
+    });
+
+    test("loading view is set correctly", () => {
+      trayMenu["setLoadingView"]();
+      expect(mockBrowserWindow.loadFile).toHaveBeenCalledWith("../../resources/loading.html");
+      expect(mockBrowserWindow.loadFile).toHaveBeenCalledTimes(2);
     });
 
     test("path to image assets", () => {
@@ -98,28 +109,29 @@ describe("TrayMenu", () => {
     });
 
     test("path to image assets", () => {
-      const imagePath = trayMenu["getImagePath"](IMAGE_ASSET);
-      expect(imagePath).toBe(pathToImageAsset);
-      expect(spyPathJoin).toHaveBeenLastCalledWith(
-        resourcesPath,
-        `assets/${IMAGE_ASSET}-light.png`
-      );
+      const iconTrayIdle = TrayMenu.ICON_TRAY_ACTIVE;
+      const imagePath = trayMenu["getImagePath"](iconTrayIdle);
+  
+      expect(trayMenu["trayIcon"]).toBe(iconTrayIdle);
+      expect(imagePath).toBe(`./resources/assets/dev/dev-${iconTrayIdle}-light.png`);
+      expect(spyPathJoin).toHaveBeenCalled();
     });
   });
 
   test("tray icon is loaded with the correct theme color", () => {
+    spyIsPackaged.mockReturnValue(true);
+
     const iconTrayIdle = TrayMenu.ICON_TRAY_IDLE;
     const iconTrayActive = TrayMenu.ICON_TRAY_ACTIVE;
     const iconStatusPositive = TrayMenu.ICON_STATUS_POSITIVE;
     const iconStatusNegative = TrayMenu.ICON_STATUS_NEGATIVE;
-
     const spyShouldUseDarkColors = jest.spyOn(
       Electron.nativeTheme,
       "shouldUseDarkColors",
       "get"
     );
-    const trayMenu = new TrayMenu(vault, mockBrowserWindow);
 
+    const trayMenu = new TrayMenu(vault, mockBrowserWindow);
     expect(trayMenu["trayIcon"]).toBe(iconTrayActive);
     expect(spyPathJoin).toHaveBeenCalledWith(
       resourcesPath,
@@ -179,7 +191,7 @@ describe("TrayMenu", () => {
       Electron.dialog,
       "showOpenDialogSync"
     );
-    const spyUpdateTray = jest.spyOn(TrayMenu.prototype as any, "updateTray");
+    const spyUpdateTray = jest.spyOn(TrayMenu.prototype as TrayMenuWithPrivateMethods, "updateTray");
     const trayMenu = new TrayMenu(vault, mockBrowserWindow);
     trayMenu["switchVault"];
     expect(trayMenu["menuVaultPath"].label).not.toBe(pathToVault);
