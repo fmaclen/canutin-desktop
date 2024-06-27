@@ -209,10 +209,12 @@ class TrayMenu {
   }
 
   private setLoadingView() {
+    const LOADING_HTML = "loading.html";
+
     if (this.isAppPackaged) {
-      this.window.loadFile(path.join(process.resourcesPath, `loading.html`));
+      this.window.loadFile(path.join(process.resourcesPath, 'assets', LOADING_HTML));
     } else {
-      this.window.loadFile("../../resources/loading.html");
+      this.window.loadFile(`../../resources/assets/${LOADING_HTML}`);
     }
   }
 
