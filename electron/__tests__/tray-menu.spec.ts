@@ -85,7 +85,7 @@ describe("TrayMenu", () => {
 
     test("loading view is set correctly", () => {
       trayMenu["setLoadingView"]();
-      expect(mockBrowserWindow.loadFile).toHaveBeenCalledWith("../../resources/loading.html");
+      expect(mockBrowserWindow.loadFile).toHaveBeenCalledWith("../../resources/assets/loading.html");
       expect(mockBrowserWindow.loadFile).toHaveBeenCalledTimes(2);
     });
 
