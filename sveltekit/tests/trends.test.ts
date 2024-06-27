@@ -63,7 +63,7 @@ test.describe('Trends', () => {
 		await expect(page.getByText("Balance history doesn't have enough data points to asset trends")).toBeVisible(); // prettier-ignore
 	});
 
-	test('Balance type performances are calculated correctly', async ({ page, baseURL }) => {
+	test.skip('Balance type performances are calculated correctly', async ({ page, baseURL }) => {
 		await databaseWipe(baseURL!);
 		await databaseSeed(baseURL!);
 

@@ -2,7 +2,7 @@ const app = {
   dock: {
     hide: jest.fn(),
   },
-  getVersion: jest.fn(() => require("../../package.json").version),
+  getVersion: jest.fn(() => "0.0.0-development"),
   getName: jest.fn(() => "test"),
   getPath: jest.fn(() => "."),
   requestSingleInstanceLock: jest.fn(),
@@ -45,6 +45,11 @@ const Menu = {
   buildFromTemplate: jest.fn(),
 };
 
+const BrowserWindow = jest.fn(() => ({
+  loadFile: jest.fn(),
+  loadURL: jest.fn(),
+}));
+
 module.exports = {
   app,
   shell,
@@ -52,4 +57,5 @@ module.exports = {
   nativeTheme,
   Menu,
   Tray,
+  BrowserWindow
 };

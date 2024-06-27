@@ -3,16 +3,16 @@ import {
   app,
   Menu,
   MenuItemConstructorOptions,
-  shell,
   Tray,
   nativeTheme,
+  BrowserWindow,
 } from "electron";
 
 import Vault from "./vault";
 import Server from "./server";
 
 class TrayMenu {
-  static readonly OPEN_BROWSER_DELAY = 500;
+  static readonly LOAD_SERVER_URL_DELAY = 500;
 
   static readonly MENU_SERVER_STATUS = "menu-server-status";
   static readonly MENU_SERVER_TOGGLE = "menu-server-toggle";
@@ -33,21 +33,25 @@ class TrayMenu {
   private trayIcon: string;
   private vault: Vault;
   server: Server | undefined;
+  window: BrowserWindow;
 
   private menuServerStatus: MenuItemConstructorOptions;
   private menuServerToggle: MenuItemConstructorOptions;
-  private menuOpenInBrowser: MenuItemConstructorOptions;
   private menuVaultPath: MenuItemConstructorOptions;
   private menuSwitchVault: MenuItemConstructorOptions;
   private menuPresistentOptions: MenuItemConstructorOptions[];
   private menuSeparator: MenuItemConstructorOptions;
   private menuCurrentTemplate: MenuItemConstructorOptions[];
 
-  constructor(vault: Vault) {
+  constructor(vault: Vault, window: BrowserWindow) {
     this.vault = vault;
+    this.window = window;
     this.isServerRunning = false;
     this.isAppPackaged = app.isPackaged || false;
     this.trayIcon = TrayMenu.ICON_TRAY_IDLE;
+
+    // Set loading window
+    this.setLoadingView();
 
     // There's a snapshot test that checks the menu template and we don't want
     // to use macOS keyboard shortcuts when generating the template.
@@ -67,20 +71,6 @@ class TrayMenu {
       click: () => this.toggleServer(),
       id: TrayMenu.MENU_SERVER_TOGGLE,
       visible: false,
-    };
-    this.menuOpenInBrowser = {
-      label: "Open in browser",
-      id: TrayMenu.MENU_OPEN_IN_BROWSER,
-      accelerator: this.isMacOs ? "Command+T" : "Ctrl+T",
-      visible: false,
-      click: () => this.openBrowser(),
-    };
-    this.menuOpenInBrowser = {
-      label: "Open in browser",
-      id: TrayMenu.MENU_OPEN_IN_BROWSER,
-      accelerator: this.isMacOs ? "Command+T" : "Ctrl+T",
-      visible: false,
-      click: () => this.openBrowser(),
     };
     this.menuVaultPath = {
       label: this.vault?.path ? this.vault.path : "No vault chosen",
@@ -109,7 +99,6 @@ class TrayMenu {
       this.menuServerStatus,
       this.menuSeparator,
       this.menuServerToggle,
-      this.menuOpenInBrowser,
       this.menuSeparator,
       this.menuVaultPath,
       this.menuSwitchVault,
@@ -131,11 +120,10 @@ class TrayMenu {
     // Start the server
     if (this.vault?.path) {
       this.toggleServer();
-      this.isAppPackaged && this.openBrowser(TrayMenu.OPEN_BROWSER_DELAY);
     }
   }
 
-  private switchVault = () => {
+  private switchVault() {
     const { vault } = this;
     const isVaultSet = vault.dialog();
 
@@ -149,12 +137,11 @@ class TrayMenu {
         this.toggleServer(); // Starts the server
       } else {
         this.toggleServer(); // Starts the server
-        this.openBrowser(TrayMenu.OPEN_BROWSER_DELAY);
       }
     }
   };
 
-  private toggleServer = () => {
+  private toggleServer() {
     const vaultPath = this.vault?.path;
 
     if (!this.server && vaultPath) this.server = new Server(vaultPath);
@@ -167,9 +154,9 @@ class TrayMenu {
       this.menuServerStatus.icon = this.getImagePath(
         TrayMenu.ICON_STATUS_NEGATIVE
       );
-      this.menuOpenInBrowser.visible = false;
       this.setTrayIcon(TrayMenu.ICON_TRAY_IDLE);
       this.updateTray();
+      this.setLoadingView();
     } else if (this.server) {
       // Start the server
       this.server.start(vaultPath);
@@ -179,9 +166,14 @@ class TrayMenu {
       this.menuServerStatus.icon = this.getImagePath(
         TrayMenu.ICON_STATUS_POSITIVE
       );
-      this.menuOpenInBrowser.visible = true;
       this.setTrayIcon(TrayMenu.ICON_TRAY_ACTIVE);
       this.updateTray();
+
+      // FIXME:
+      // Should set the server URL after the server is actually running.
+      // REF: https://github.com/Canutin/desktop-2/issues/8
+      setTimeout(() => this.server && this.window.loadURL(this.server.url), TrayMenu.LOAD_SERVER_URL_DELAY);
+      ;
     }
 
     // FIXME:
@@ -191,18 +183,9 @@ class TrayMenu {
     this.isServerRunning = !this.isServerRunning;
   };
 
-  private updateTray = () => {
+  private updateTray() {
     this.tray?.setContextMenu(Menu.buildFromTemplate(this.menuCurrentTemplate));
   };
-
-  private openBrowser(delay: number = 0) {
-    const server = this.server;
-    // FIXME:
-    // To prevent opening the browser before the server is ready we wait.
-    // Server boot up time is likely to vary so ideally we would "ping"
-    // the server until it's ready and only then open the user's browser.
-    server?.url && setTimeout(() => shell.openExternal(server.url), delay);
-  }
 
   private getImagePath(fileName: string) {
     const themeAgnosticIcons = [
@@ -219,11 +202,20 @@ class TrayMenu {
 
     return this.isAppPackaged
       ? path.join(process.resourcesPath, `assets/${fileName}${theme}.png`)
-      : `./resources/${
-          process.env.NODE_ENV !== "test" && theme
-            ? "assets/dev/dev-"
-            : "assets/"
-        }${fileName}${theme}.png`;
+      : `./resources/${process.env.NODE_ENV !== "test" && theme
+        ? "assets/dev/dev-"
+        : "assets/"
+      }${fileName}${theme}.png`;
+  }
+
+  private setLoadingView() {
+    const LOADING_HTML = "loading.html";
+
+    if (this.isAppPackaged) {
+      this.window.loadFile(path.join(process.resourcesPath, 'assets', LOADING_HTML));
+    } else {
+      this.window.loadFile(`../../resources/assets/${LOADING_HTML}`);
+    }
   }
 
   private setTrayIcon = (icon: string) => {

@@ -8,6 +8,17 @@
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron-esbuild",
       "runtimeArgs": ["dev", "--", "--remote-debugging-port=9222"]
+    },
+    {
+      "name": "Jest: run current file",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": ["--inspect-brk", "${workspaceRoot}/node_modules/.bin/jest", "--runInBand"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "args": [
+        "${file}"
+      ]
     }
   ]
 }
