@@ -155,17 +155,15 @@ class TrayMenu {
       // Start the server
       try {
         await this.server.start(vaultPath);
+
+        // Now we know the server is up and running
+        this.window.loadURL(this.server.url);
         this.menuServerToggle.visible = true;
         this.menuServerToggle.label = "Stop Canutin";
         this.menuServerStatus.label = "Canutin is running";
-        this.menuServerStatus.icon = this.getImagePath(
-          TrayMenu.ICON_STATUS_POSITIVE
-        );
+        this.menuServerStatus.icon = this.getImagePath(TrayMenu.ICON_STATUS_POSITIVE);
         this.setTrayIcon(TrayMenu.ICON_TRAY_ACTIVE);
         this.updateTray();
-
-        // Now we can safely load the URL as we know the server is running
-        this.window.loadURL(this.server.url);
       } catch (error) {
         console.error("Failed to start server:", error);
         // TODO: Handle the error appropriately (e.g., show an error message to the user)
