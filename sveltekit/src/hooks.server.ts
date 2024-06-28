@@ -10,6 +10,9 @@ import {
 } from '$lib/helpers/constants';
 
 export const handle: Handle = async ({ event, resolve }) => {
+	// Let Electron know the server is up and running
+	if (process.send) process.send('sveltekit-server-ready');
+
 	// Simulate an internal server error by visiting `/500` in dev
 	if (dev && event.url.pathname.startsWith('/500'))
 		throw new Error(

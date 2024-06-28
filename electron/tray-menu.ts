@@ -135,7 +135,7 @@ class TrayMenu {
     }
   };
 
-  private toggleServer() {
+  private async toggleServer() {
     const vaultPath = this.vault?.path;
 
     if (!this.server && vaultPath) this.server = new Server(vaultPath);
@@ -153,21 +153,23 @@ class TrayMenu {
       this.setLoadingView();
     } else if (this.server) {
       // Start the server
-      this.server.start(vaultPath);
-      this.menuServerToggle.visible = true;
-      this.menuServerToggle.label = "Stop Canutin";
-      this.menuServerStatus.label = "Canutin is running";
-      this.menuServerStatus.icon = this.getImagePath(
-        TrayMenu.ICON_STATUS_POSITIVE
-      );
-      this.setTrayIcon(TrayMenu.ICON_TRAY_ACTIVE);
-      this.updateTray();
+      try {
+        await this.server.start(vaultPath);
+        this.menuServerToggle.visible = true;
+        this.menuServerToggle.label = "Stop Canutin";
+        this.menuServerStatus.label = "Canutin is running";
+        this.menuServerStatus.icon = this.getImagePath(
+          TrayMenu.ICON_STATUS_POSITIVE
+        );
+        this.setTrayIcon(TrayMenu.ICON_TRAY_ACTIVE);
+        this.updateTray();
 
-      // FIXME:
-      // Should set the server URL after the server is actually running.
-      // REF: https://github.com/Canutin/desktop-2/issues/8
-      setTimeout(() => this.server && this.window.loadURL(this.server.url), TrayMenu.LOAD_SERVER_URL_DELAY);
-      ;
+        // Now we can safely load the URL as we know the server is running
+        this.window.loadURL(this.server.url);
+      } catch (error) {
+        console.error("Failed to start server:", error);
+        // TODO: Handle the error appropriately (e.g., show an error message to the user)
+      }
     }
   };
 
