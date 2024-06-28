@@ -50,8 +50,8 @@ class Server {
       },
     });
 
-    this.isRunning = true;
     this.pid = svelteKitProcess.pid; // Set process id so we can kill it private later
+    this.isRunning = this.pid ? true : false;
 
     // Loggin the url to the console in development so it's easier to click
     isDev && console.info(`\n-> Server started at ${this.url}\n`);
@@ -62,6 +62,7 @@ class Server {
 
     process.kill(this.pid);
     this.pid = undefined;
+    this.isRunning = false;
   }
 }
 

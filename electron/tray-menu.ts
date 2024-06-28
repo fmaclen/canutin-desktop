@@ -25,7 +25,6 @@ class TrayMenu {
   static readonly ICON_STATUS_POSITIVE = "status-positive";
   static readonly ICON_STATUS_NEGATIVE = "status-negative";
 
-  private isServerRunning: boolean;
   private isAppPackaged: boolean;
   private isMacOs: boolean;
 
@@ -46,7 +45,6 @@ class TrayMenu {
   constructor(vault: Vault, window: BrowserWindow) {
     this.vault = vault;
     this.window = window;
-    this.isServerRunning = false;
     this.isAppPackaged = app.isPackaged || false;
     this.trayIcon = TrayMenu.ICON_TRAY_IDLE;
 
@@ -132,12 +130,8 @@ class TrayMenu {
       this.updateTray();
 
       // Starting (or restarting) the server
-      if (this.isServerRunning) {
-        this.toggleServer(); // Stops the server
-        this.toggleServer(); // Starts the server
-      } else {
-        this.toggleServer(); // Starts the server
-      }
+      if (this.server?.isRunning) this.server.stop();
+      this.server?.start(vault.path);
     }
   };
 
@@ -146,7 +140,7 @@ class TrayMenu {
 
     if (!this.server && vaultPath) this.server = new Server(vaultPath);
 
-    if (this.server && this.isServerRunning) {
+    if (this.server?.isRunning) {
       // Stop the server
       this.server.stop();
       this.menuServerToggle.label = "Start Canutin";
@@ -175,12 +169,6 @@ class TrayMenu {
       setTimeout(() => this.server && this.window.loadURL(this.server.url), TrayMenu.LOAD_SERVER_URL_DELAY);
       ;
     }
-
-    // FIXME:
-    // It would be better to check if the server is actually running (or not)
-    // instead of blindingly reversing the vaule of `isServerRunning`.
-    // REF: https://github.com/Canutin/desktop-2/issues/8
-    this.isServerRunning = !this.isServerRunning;
   };
 
   private updateTray() {
