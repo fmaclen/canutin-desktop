@@ -14,13 +14,12 @@ process.platform === "darwin" && app.dock.hide(); // Hide dock icon on macOS
 let trayMenu: TrayMenu | undefined;
 
 app.on(ElectronEvents.READY, () => {
+  // Prompt the user to choose a vault if one isn't set yet
+  const vault = new Vault();
+  if (!vault.path) vault.dialog();
+
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   const window = new BrowserWindow(browserWindowConfig(width, height));
-
-  const vault = new Vault();
-
-  // Prompt the user to choose a vault if one isn't set yet
-  if (!vault.path) vault.dialog();
 
   trayMenu = new TrayMenu(vault, window);
 });

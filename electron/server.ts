@@ -51,6 +51,8 @@ class Server {
         },
       });
 
+      fetch(`${this.url}/__app.html`); // Trigger the server to start
+
       this.serverProcess.on('message', (message: any) => {
         if (message === 'sveltekit-server-ready') {
           this.isRunning = true;
