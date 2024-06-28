@@ -20,27 +20,44 @@ describe("Server", () => {
   const spyPathJoin = jest
     .spyOn(path, "join")
     .mockReturnValue(fakePathToSvelteKitIndex);
+
+  const mockOn = jest.fn();
+  const mockKill = jest.fn();
+  const mockChildProcess = { 
+    pid: fakePid,
+    on: mockOn,
+    kill: mockKill
+  } as unknown as child_process.ChildProcess;
+
   const spyChildProcessFork = jest
     .spyOn(child_process, "fork")
-    .mockReturnValue({ pid: fakePid } as child_process.ChildProcess);
+    .mockReturnValue(mockChildProcess);
+
   const spyIsPackaged = jest.spyOn(Electron.app, "isPackaged", "get");
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  describe("develoment environment", () => {
+  describe("development environment", () => {
     const server = new Server(fakePathToVault);
 
     test("server url has the correct port", () => {
       expect(server.url).toBe(`http://localhost:${Server.PORT_DEVELOPMENT}`);
     });
 
-    test("the server starts with the correct parameters", () => {
+    test("the server starts with the correct parameters", async () => {
       expect(server.isRunning).toBe(false);
-      expect(server["pid"]).toBe(undefined);
+      expect(server["serverProcess"]).toBe(null);
 
-      server.start();
+      const startPromise = server.start();
+      
+      // Simulate the 'message' event to resolve the start promise
+      const messageHandler = mockOn.mock.calls.find(call => call[0] === 'message')[1];
+      messageHandler('sveltekit-server-ready');
+      
+      await startPromise;
+
       expect(spyPathJoin).toHaveBeenCalledWith(
         expect.stringContaining("/electron"),
         "../../sveltekit"
@@ -60,7 +77,7 @@ describe("Server", () => {
         }
       );
       expect(server.isRunning).toBe(true);
-      expect(server["pid"]).toBe(fakePid);
+      expect(server["serverProcess"]).toBe(mockChildProcess);
 
       // Check app version in `package.json` matches semantic versioning
       // REGEX source: https://gist.github.com/jhorsman/62eeea161a13b80e39f5249281e17c39?permalink_comment_id=3034996#gistcomment-3034996
@@ -78,8 +95,15 @@ describe("Server", () => {
       expect(server.url).toBe(`http://localhost:${Server.PORT_PRODUCTION}`);
     });
 
-    test("the server starts with the correct parameters", () => {
-      server.start();
+    test("the server starts with the correct parameters", async () => {
+      const startPromise = server.start();
+      
+      // Simulate the 'message' event to resolve the start promise
+      const messageHandler = mockOn.mock.calls.find(call => call[0] === 'message')[1];
+      messageHandler('sveltekit-server-ready');
+      
+      await startPromise;
+
       expect(spyPathJoin).toHaveBeenCalledWith(
         process.resourcesPath,
         "sveltekit"
@@ -102,10 +126,10 @@ describe("Server", () => {
 
   test("the server stops", () => {
     const server = new Server(fakePathToVault);
-    const spyProcessKill = jest.spyOn(process, "kill").mockReturnValue(true);
-    server["pid"] = fakePid;
+    server["serverProcess"] = mockChildProcess;
     server.stop();
-    expect(spyProcessKill).toHaveBeenCalledWith(fakePid);
-    expect(server["pid"]).toBe(undefined);
+    expect(mockKill).toHaveBeenCalled();
+    expect(server["serverProcess"]).toBe(null);
+    expect(server.isRunning).toBe(false);
   });
 });

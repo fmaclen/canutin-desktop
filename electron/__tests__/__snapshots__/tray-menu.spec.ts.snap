@@ -6,7 +6,7 @@ exports[`TrayMenu tray is set with the correct parameters 1`] = `
     "enabled": false,
     "icon": "./resources/assets/dev/dev-canutin-tray-active-light.png",
     "id": "menu-server-status",
-    "label": "Canutin is running",
+    "label": "Canutin is not running",
   },
   {
     "type": "separator",
@@ -14,8 +14,8 @@ exports[`TrayMenu tray is set with the correct parameters 1`] = `
   {
     "click": [Function],
     "id": "menu-server-toggle",
-    "label": "Stop Canutin",
-    "visible": true,
+    "label": "Start Canutin",
+    "visible": false,
   },
   {
     "type": "separator",
