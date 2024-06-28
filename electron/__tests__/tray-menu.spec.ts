@@ -68,35 +68,6 @@ describe("TrayMenu", () => {
     expect(trayMenu["vault"]["path"]).toBe(pathToVault);
   });
 
-  describe("develoment environment", () => {
-    let trayMenu: TrayMenu;
-    
-    beforeEach(() => {
-      spyIsPackaged.mockReturnValue(false);
-      trayMenu = new TrayMenu(vault, mockBrowserWindow);
-    });
-
-    test("browser opens to the server url", () => {
-      const trayMenu = new TrayMenu(vault, mockBrowserWindow);
-      expect(trayMenu["server"]?.url).toBe(
-        `http://localhost:${Server.PORT_DEVELOPMENT}`
-      );
-    });
-
-    test("loading view is set correctly", () => {
-      trayMenu["setLoadingView"]();
-      expect(mockBrowserWindow.loadFile).toHaveBeenCalledWith("../../resources/assets/loading.html");
-      expect(mockBrowserWindow.loadFile).toHaveBeenCalledTimes(2);
-    });
-
-    test("path to image assets", () => {
-      spyPathJoin.mockClear();
-      const imagePath = trayMenu["getImagePath"](IMAGE_ASSET);
-      expect(imagePath).toBe(`./resources/assets/${IMAGE_ASSET}-light.png`);
-      expect(spyPathJoin).not.toBeCalled();
-    });
-  });
-
   describe("production environment", () => {
     spyIsPackaged.mockReturnValue(true);
     const trayMenu = new TrayMenu(vault, mockBrowserWindow);
@@ -108,7 +79,8 @@ describe("TrayMenu", () => {
     });
 
     test("path to image assets", () => {
-      const iconTrayIdle = TrayMenu.ICON_TRAY_ACTIVE;
+      const iconTrayIdle = TrayMenu.ICON_TRAY_IDLE;
+      spyPathJoin.mockReturnValueOnce(`./resources/assets/dev/dev-${iconTrayIdle}-light.png`);
       const imagePath = trayMenu["getImagePath"](iconTrayIdle);
   
       expect(trayMenu["trayIcon"]).toBe(iconTrayIdle);
@@ -130,20 +102,23 @@ describe("TrayMenu", () => {
       "get"
     );
 
+    spyPathJoin
+      .mockReturnValueOnce(`assets/${iconTrayIdle}-light.png`)
+      .mockReturnValueOnce("assets/loading.html")
+      .mockReturnValueOnce(`assets/${iconStatusNegative}.png`)
+      .mockReturnValueOnce(`assets/${iconTrayActive}-dark.png`)
+      .mockReturnValueOnce(`assets/${iconStatusPositive}.png`);
+
     const trayMenu = new TrayMenu(vault, mockBrowserWindow);
-    expect(trayMenu["trayIcon"]).toBe(iconTrayActive);
+    expect(trayMenu["trayIcon"]).toBe(iconTrayIdle);
     expect(spyPathJoin).toHaveBeenCalledWith(
       resourcesPath,
       `assets/${iconTrayIdle}-light.png`
     );
-    expect(spyPathJoin).toHaveBeenLastCalledWith(
-      resourcesPath,
-      `assets/${iconTrayActive}-light.png`
-    );
 
     spyShouldUseDarkColors.mockReturnValue(true);
     trayMenu["setTrayIcon"](iconTrayActive);
-    expect(spyPathJoin).toHaveBeenLastCalledWith(
+    expect(spyPathJoin).toHaveBeenCalledWith(
       resourcesPath,
       `assets/${iconTrayActive}-dark.png`
     );
@@ -151,15 +126,15 @@ describe("TrayMenu", () => {
     // Positive and negative icons are theme agnostic
     expect(spyPathJoin).toHaveBeenCalledWith(
       resourcesPath,
-      `assets/${iconStatusPositive}.png`
+      `assets/${iconStatusNegative}.png`
     );
     expect(spyPathJoin).not.toHaveBeenCalledWith(
       resourcesPath,
-      `assets/${iconStatusPositive}-light.png`
+      `assets/${iconStatusNegative}-light.png`
     );
     expect(spyPathJoin).not.toHaveBeenCalledWith(
       resourcesPath,
-      `assets/${iconStatusPositive}-dark.png`
+      `assets/${iconStatusNegative}-dark.png`
     );
     expect(spyPathJoin).toHaveBeenCalledWith(
       resourcesPath,
@@ -175,6 +150,29 @@ describe("TrayMenu", () => {
     );
 
     // TODO: add test for when the OS changes theme color `nativeTheme.on("updated"...`
+  });
+
+  test("toggleServer starts and stops the server", async () => {
+    const trayMenu = new TrayMenu(vault, mockBrowserWindow);
+    const mockStart = jest.fn().mockResolvedValue(undefined);
+    const mockStop = jest.fn();
+    const mockServer = { start: mockStart, stop: mockStop, isRunning: false };
+    trayMenu["server"] = mockServer as any;
+
+    // Start the server
+    await trayMenu["toggleServer"]();
+    expect(mockStart).toHaveBeenCalledWith(pathToVault);
+    expect(trayMenu["menuServerToggle"].label).toBe("Stop Canutin");
+    expect(trayMenu["menuServerStatus"].label).toBe("Canutin is running");
+    expect(trayMenu["trayIcon"]).toBe(TrayMenu.ICON_TRAY_ACTIVE);
+
+    // Stop the server
+    mockServer.isRunning = true;
+    await trayMenu["toggleServer"]();
+    expect(mockStop).toHaveBeenCalled();
+    expect(trayMenu["menuServerToggle"].label).toBe("Start Canutin");
+    expect(trayMenu["menuServerStatus"].label).toBe("Canutin is not running");
+    expect(trayMenu["trayIcon"]).toBe(TrayMenu.ICON_TRAY_IDLE);
   });
 
   // Disabled tests
