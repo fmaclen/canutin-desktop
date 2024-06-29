@@ -1,6 +1,5 @@
 import path from "path";
-import { BrowserWindow } from "electron";
-import Electron, { Menu } from "electron";
+import Electron, { Menu, BrowserWindow } from "electron";
 
 import TrayMenu from "../tray-menu";
 import Vault from "../vault";
@@ -50,13 +49,8 @@ describe("TrayMenu", () => {
       TrayMenu.prototype as TrayMenuWithPrivateMethods,
       "toggleServer"
     );
-    const spySetLoadingView = jest.spyOn(
-      TrayMenu.prototype as TrayMenuWithPrivateMethods,
-      "setLoadingView"
-    );
     const trayMenu = new TrayMenu(vault, mockBrowserWindow);
     const tray = trayMenu["tray"];
-    expect(spySetLoadingView).toHaveBeenCalled();
     expect(spyToggleServer).toHaveBeenCalled();
     expect(spyGetImagePath).toHaveBeenCalledWith(TrayMenu.ICON_TRAY_IDLE);
     expect(trayMenu["menuCurrentTemplate"]).toMatchSnapshot();

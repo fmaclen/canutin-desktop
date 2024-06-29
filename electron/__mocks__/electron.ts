@@ -50,12 +50,20 @@ const BrowserWindow = jest.fn(() => ({
   loadURL: jest.fn(),
 }));
 
+const MessageChannelMain = jest.fn();
+
+const utilityProcess = {
+  fork: jest.fn(),
+};
+
 module.exports = {
   app,
   shell,
   dialog,
   nativeTheme,
+  utilityProcess,
   Menu,
   Tray,
-  BrowserWindow
+  BrowserWindow,
+  MessageChannelMain,
 };

@@ -48,9 +48,6 @@ class TrayMenu {
     this.isAppPackaged = app.isPackaged || false;
     this.trayIcon = TrayMenu.ICON_TRAY_IDLE;
 
-    // Set loading window
-    this.setLoadingView();
-
     // There's a snapshot test that checks the menu template and we don't want
     // to use macOS keyboard shortcuts when generating the template.
     this.isMacOs =
@@ -138,7 +135,7 @@ class TrayMenu {
   private async toggleServer() {
     const vaultPath = this.vault?.path;
 
-    if (!this.server && vaultPath) this.server = new Server(vaultPath);
+    if (!this.server && vaultPath) this.server = new Server(vaultPath, this.window);
 
     if (this.server?.isRunning) {
       // Stop the server
@@ -150,7 +147,6 @@ class TrayMenu {
       );
       this.setTrayIcon(TrayMenu.ICON_TRAY_IDLE);
       this.updateTray();
-      this.setLoadingView();
     } else if (this.server) {
       // Start the server
       try {
@@ -163,9 +159,7 @@ class TrayMenu {
         this.menuServerStatus.icon = this.getImagePath(TrayMenu.ICON_STATUS_POSITIVE);
         this.setTrayIcon(TrayMenu.ICON_TRAY_ACTIVE);
         this.updateTray();
-        this.window.loadURL(this.server.url);
       } catch (error) {
-        console.error("Failed to start server:", error);
         // TODO: Handle the error appropriately (e.g., show an error message to the user)
       }
     }
@@ -194,16 +188,6 @@ class TrayMenu {
         ? "assets/dev/dev-"
         : "assets/"
       }${fileName}${theme}.png`;
-  }
-
-  private setLoadingView() {
-    const LOADING_HTML = "loading.html";
-
-    if (this.isAppPackaged) {
-      this.window.loadFile(path.join(process.resourcesPath, 'assets', LOADING_HTML));
-    } else {
-      this.window.loadFile(`../../resources/assets/${LOADING_HTML}`);
-    }
   }
 
   private setTrayIcon = (icon: string) => {
