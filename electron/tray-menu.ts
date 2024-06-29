@@ -10,7 +10,6 @@ import {
 
 import Vault from "./vault";
 import Server from "./server";
-import { setLoadingView } from "./window";
 
 class TrayMenu {
   static readonly LOAD_SERVER_URL_DELAY = 500;
@@ -161,7 +160,6 @@ class TrayMenu {
         this.setTrayIcon(TrayMenu.ICON_TRAY_ACTIVE);
         this.updateTray();
       } catch (error) {
-        console.error("Failed to start server:", error);
         // TODO: Handle the error appropriately (e.g., show an error message to the user)
       }
     }

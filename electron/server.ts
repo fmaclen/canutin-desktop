@@ -4,7 +4,16 @@ import { app, BrowserWindow, MessageChannelMain, utilityProcess, UtilityProcess 
 import { ELECTRON_MESSAGE_SERVER_READY } from "../sveltekit/src/lib/helpers/electron";
 import { setLoadingView } from "./window";
 
-const SERVER_READY_DELAY_IN_MS = 1500;
+function serverDelayInMilliseconds(): number {
+  switch (process.env.NODE_ENV) {
+    case "development":
+      return 500;
+    case "test":
+      return 0;
+    default:
+      return 1500;
+  }
+}
 
 class Server {
   static readonly PORT_DEVELOPMENT = "3000";
@@ -33,7 +42,7 @@ class Server {
     return new Promise((resolve, reject) => {
       const HOST = "127.0.0.1";
       const isAppPackaged = this.isAppPackaged;
-      const isDev = process.env.NODE_ENV == "development";
+      const isDev = process.env.NODE_ENV && ["development", "test"].includes(process.env.NODE_ENV);
 
       const svelteKitPath = isAppPackaged
         ? path.join(process.resourcesPath, "sveltekit")
@@ -79,7 +88,7 @@ class Server {
             this.isRunning = true;
             this.window.loadURL(this.url);
             resolve();
-          }, SERVER_READY_DELAY_IN_MS);
+          }, serverDelayInMilliseconds());
 
         } catch (error) {
           reject(error);
