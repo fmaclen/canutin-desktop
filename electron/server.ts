@@ -1,7 +1,10 @@
 import path from "path";
-import { app, MessageChannelMain, utilityProcess, UtilityProcess } from "electron";
+import { app, BrowserWindow, MessageChannelMain, utilityProcess, UtilityProcess } from "electron";
 
 import { ELECTRON_MESSAGE_SERVER_READY } from "../sveltekit/src/lib/helpers/electron";
+import { setLoadingView } from "./window";
+
+const SERVER_READY_DELAY_IN_MS = 1500;
 
 class Server {
   static readonly PORT_DEVELOPMENT = "3000";
@@ -12,9 +15,11 @@ class Server {
   private port: string;
   private serverProcess: UtilityProcess | null = null;
   readonly url: string;
+  window: BrowserWindow;
   isRunning: boolean;
 
-  constructor(vaultPath: string) {
+  constructor(vaultPath: string, window: BrowserWindow) {
+    this.window = window;
     this.vaultPath = vaultPath;
     this.isAppPackaged = app.isPackaged;
     this.port = this.isAppPackaged
@@ -59,34 +64,40 @@ class Server {
       });
 
       this.serverProcess.on('message', async (message) => {
-        if (message === ELECTRON_MESSAGE_SERVER_READY) {
+        if (message !== ELECTRON_MESSAGE_SERVER_READY) return;
 
-          // Send an initial fetch request to initialize the server
-          try {
-            await fetch(this.url);
-          } catch (error) {
-            console.error('-> Error initializing server:', error);
-            reject(error);
-            return;
-          }
+        try {
+          // HACK:
+          // We wait a bit to ensure the server is fully initialized, otherwise
+          // the first fetch request might fail with a connection error.
+          // The delay is more noticeable in production builds.
+          setTimeout(async () => {
+            // Send an initial fetch request to migrate the vault if necessary
+            const response = await fetch(this.url);
+            if (!response.ok) throw new Error(`-> Server responded with status ${response.status}`);
 
-          this.isRunning = true;
-          resolve();
+            this.isRunning = true;
+            this.window.loadURL(this.url);
+            resolve();
+          }, SERVER_READY_DELAY_IN_MS);
+
+        } catch (error) {
+          reject(error);
         }
       });
 
       this.serverProcess.on('exit', (code) => {
+        this.isRunning = false;
         if (code !== 0) reject(new Error(`-> Server process exited with code ${code}`));
       });
     });
   }
 
   stop() {
-    if (this.serverProcess) {
-      this.serverProcess.kill();
-      this.serverProcess = null;
-    }
-    this.isRunning = false;
+    if (!this.serverProcess) return;
+    setLoadingView(this.window);
+    this.serverProcess.kill();
+    this.serverProcess = null;
   }
 }
 

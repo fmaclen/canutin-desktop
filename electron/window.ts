@@ -1,3 +1,6 @@
+import { BrowserWindow, BrowserWindowConstructorOptions, app, nativeTheme, screen } from "electron";
+import path from "path";
+
 const MIN_WINDOW_WIDTH = 1200;
 const MIN_WINDOW_HEIGHT = 768;
 const MAX_WINDOW_WIDTH = 1440;
@@ -27,11 +30,24 @@ const calculateWindowHeight = (displayHeight: number) => {
   }
 };
 
-export const browserWindowConfig = (width: number, height: number) => {
+export const browserWindowConfig = (): BrowserWindowConstructorOptions => {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+
   return {
     minWidth: MIN_WINDOW_WIDTH,
     minHeight: MIN_WINDOW_HEIGHT,
     width: calculateWindowWidth(width),
     height: calculateWindowHeight(height),
+    backgroundColor: nativeTheme.shouldUseDarkColors ? "#1c1c1c" : "#e3e3e3",
+  }
+}
+
+export const setLoadingView = (window: BrowserWindow) => {
+  const LOADING_HTML = "loading.html";
+
+  if (app.isPackaged) {
+    window.loadFile(path.join(process.resourcesPath, 'assets', LOADING_HTML));
+  } else {
+    window.loadFile(`../../resources/assets/${LOADING_HTML}`);
   }
 }
