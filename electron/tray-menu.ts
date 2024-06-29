@@ -121,7 +121,7 @@ class TrayMenu {
   private switchVault() {
     const { vault } = this;
     const isVaultSet = vault.dialog();
-    
+
     if (isVaultSet && vault.path) {
       this.menuVaultPath.label = vault.path;
       this.updateTray();

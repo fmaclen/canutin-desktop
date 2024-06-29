@@ -97,6 +97,7 @@ class Server {
 
       this.serverProcess.on('exit', (code) => {
         this.isRunning = false;
+        this.serverProcess = null;
         if (code !== 0) reject(new Error(`-> Server process exited with code ${code}`));
       });
     });
@@ -106,7 +107,6 @@ class Server {
     if (!this.serverProcess) return;
     setLoadingView(this.window);
     this.serverProcess.kill();
-    this.serverProcess = null;
   }
 }
 
