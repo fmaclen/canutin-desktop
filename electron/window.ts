@@ -5,6 +5,7 @@ const MIN_WINDOW_WIDTH = 1200;
 const MIN_WINDOW_HEIGHT = 768;
 const MAX_WINDOW_WIDTH = 1440;
 const MAX_WINDOW_HEIGHT = 1200;
+const LOADING_HTML = "loading.html";
 
 const calculateWindowWidth = (displayWidth: number) => {
   const relativeWindowWidth = Math.floor(displayWidth * 0.7);
@@ -43,8 +44,6 @@ export const browserWindowConfig = (): BrowserWindowConstructorOptions => {
 }
 
 export const setLoadingView = (window: BrowserWindow) => {
-  const LOADING_HTML = "loading.html";
-
   if (app.isPackaged) {
     window.loadFile(path.join(process.resourcesPath, 'assets', LOADING_HTML));
   } else {
