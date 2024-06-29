@@ -1,6 +1,7 @@
 import path from "path";
-import { app } from "electron";
-import { fork, ChildProcess } from "child_process";
+import { app, MessageChannelMain, utilityProcess, UtilityProcess } from "electron";
+
+import { ELECTRON_MESSAGE_SERVER_READY } from "../sveltekit/src/lib/helpers/electron";
 
 class Server {
   static readonly PORT_DEVELOPMENT = "3000";
@@ -9,7 +10,7 @@ class Server {
   private isAppPackaged: boolean;
   private vaultPath: string;
   private port: string;
-  private serverProcess: ChildProcess | null = null;
+  private serverProcess: UtilityProcess | null = null;
   readonly url: string;
   isRunning: boolean;
 
@@ -37,7 +38,8 @@ class Server {
         ? path.join(svelteKitPath, "index.js")
         : path.join(svelteKitPath, "build", "index.js");
 
-      this.serverProcess = fork(svelteKitModulePath, {
+      const { port1 } = new MessageChannelMain();
+      this.serverProcess = utilityProcess.fork(svelteKitModulePath, [], {
         env: {
           ...process.env,
           HOST,
@@ -45,24 +47,36 @@ class Server {
           SVELTEKIT_PATH: svelteKitPath,
           DATABASE_URL: `file:${newVaultPath ? newVaultPath : this.vaultPath}`,
           SHOULD_CHECK_VAULT: "true",
+          IS_ELECTRON: "true",
           APP_VERSION: isDev
             ? require("../package.json").version
             : app.getVersion(),
         },
       });
 
-      fetch(`${this.url}/__app.html`); // Trigger the server to start
+      this.serverProcess.once('spawn', () => {
+        this.serverProcess!.postMessage({ message: 'port' }, [port1]);
+      });
 
-      this.serverProcess.on('message', (message: any) => {
-        if (message === 'sveltekit-server-ready') {
+      this.serverProcess.on('message', async (message) => {
+        if (message === ELECTRON_MESSAGE_SERVER_READY) {
+
+          // Send an initial fetch request to initialize the server
+          try {
+            await fetch(this.url);
+          } catch (error) {
+            console.error('-> Error initializing server:', error);
+            reject(error);
+            return;
+          }
+
           this.isRunning = true;
-          isDev && console.info(`\n-> Server started at ${this.url}\n`);
           resolve();
         }
       });
 
-      this.serverProcess.on('error', (err) => {
-        reject(err);
+      this.serverProcess.on('exit', (code) => {
+        if (code !== 0) reject(new Error(`-> Server process exited with code ${code}`));
       });
     });
   }

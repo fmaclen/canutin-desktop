@@ -8,16 +8,11 @@ import {
 	UNAUTHORIZED_RESPONSE_MESSAGE,
 	UNAUTHORIZED_RESPONSE_STATUS
 } from '$lib/helpers/constants';
+import { notifyElectronServerReady } from '$lib/helpers/electron';
 
-let wasElectronNotified = false;
+if (env.IS_ELECTRON) notifyElectronServerReady();
 
 export const handle: Handle = async ({ event, resolve }) => {
-	// Let Electron know the server is up and running, and send the server URL
-	if (!wasElectronNotified && process.send) {
-		process.send('sveltekit-server-ready');
-		wasElectronNotified = true;
-	}
-
 	// Simulate an internal server error by visiting `/500` in dev
 	if (dev && event.url.pathname.startsWith('/500'))
 		throw new Error(
