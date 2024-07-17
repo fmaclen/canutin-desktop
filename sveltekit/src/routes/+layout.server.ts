@@ -6,6 +6,8 @@ export const load = async () => {
 	return {
 		appVersion: APP_VERSION,
 		plausibleDomain: env.PLAUSIBLE_DOMAIN,
+		plausibleApi: env.PLAUSIBLE_API,
+		plausibleSrc: env.PLAUSIBLE_SRC,
 		syncStatus: await getSyncStatus()
 	};
 };

@@ -146,7 +146,8 @@
 		<script
 			defer
 			data-domain={data.plausibleDomain}
-			src="https://plausible.io/js/script.js"
+			data-api={data.plausibleApi}
+			src={data.plausibleSrc ?? 'https://plausible.io/js/script.js'}
 		></script>
 	{/if}
 </svelte:head>
