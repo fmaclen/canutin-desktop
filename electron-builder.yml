@@ -1,6 +1,6 @@
 productName: Canutin
 appId: com.canutin.desktop
-artifactName: canutin-${name}_v${version}-${os}-${arch}.${ext}
+artifactName: ${productName}_${version}-${os}-${arch}.${ext}
 
 files:
   - from: "dist/main"
@@ -18,24 +18,27 @@ extraResources:
     to: "sveltekit"
 
 mac:
-  target:
-    - target: dmg
-      arch:
-        - x64
-        # - arm64 # FIXME: https://github.com/Canutin/desktop/issues/85
+  category: public.app-category.developer-tools
+  icon: resources/assets/icon.icns
+  entitlements: resources/mac/entitlements.mac.plist
+  entitlementsInherit: resources/mac/entitlements.mac.plist
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  target: dmg
 
 win:
-  target:
-    - nsis
+  target: nsis
+  icon: resources/assets/icon.ico
 
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
 
 linux:
-  target:
-    - zip
+  target: tar.gz
+  icon: resources/assets/icon.png
 
 publish:
   provider: github
   releaseType: release
+  vPrefixedTagName: false
