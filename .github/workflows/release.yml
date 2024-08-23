@@ -23,7 +23,7 @@ jobs:
         uses: cycjimmy/semantic-release-action@v4
         with:
           branches: main
-          tag_format: ${version}
+          tag_format: v${version}
         id: semantic
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
@@ -45,13 +45,16 @@ jobs:
         with:
           node-version: 20
 
-      # - name: Update app version in package.json
-      #   run: node .github/workflows/publish/update-package-json.cjs ${{ needs.versioning.outputs.new_release_version }}
+      - name: Install Electron dependencies
+        run: npm ci
+  
+      - name: "Generate Electron build"
+        run: npm run build
 
       - name: Install & build SvelteKit
         uses: ./.github/actions/install-build-sveltekit
         env:
-          APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
+          APP_VERSION: ${{ needs.versioning.outputs.new_release_version }}
 
       - name: Build & release Electron app
         env:
@@ -61,7 +64,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-        run: npm run electron:build
+        run: npm run package:electron
 
   docker:
     needs: versioning
@@ -73,13 +76,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # - name: Update app version in package.json
-      #   run: node .github/workflows/publish/update-package-json.cjs ${{ needs.versioning.outputs.new_release_version }}
-
       - name: Install & build SvelteKit
         uses: ./.github/actions/install-build-sveltekit
         env:
-          APP_VERSION: ${{ needs.tag.outputs.new_release_git_tag }}
+          APP_VERSION: ${{ needs.versioning.outputs.new_release_version }}
 
       - name: Build & publish
         uses: mr-smithers-excellent/docker-build-push@v6

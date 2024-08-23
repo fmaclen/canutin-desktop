@@ -35,7 +35,7 @@ nsis:
   allowToChangeInstallationDirectory: true
 
 linux:
-  target: tar.gz
+  target: zip
   icon: resources/assets/icon.png
 
 publish:
