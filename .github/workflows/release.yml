@@ -47,7 +47,7 @@ jobs:
 
       - name: Install Electron dependencies
         run: npm ci
-  
+
       - name: "Generate Electron build"
         run: npm run build
 
@@ -84,7 +84,7 @@ jobs:
       - name: Build & publish
         uses: mr-smithers-excellent/docker-build-push@v6
         with:
-          image: hollama
+          image: canutin
           registry: ghcr.io
           multiPlatform: true
           platform: linux/amd64,linux/arm64
