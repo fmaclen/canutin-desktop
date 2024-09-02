@@ -7,3 +7,10 @@ resources/sveltekit
 .vscode/settings.json
 *tar.gz
 .env
+
+# PocketBase
+pocketbase
+pb_data/
+pocketbase.exe
+LICENSE.md
+CHANGELOG.md

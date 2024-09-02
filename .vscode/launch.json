@@ -19,6 +19,23 @@
       "args": [
         "${file}"
       ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Current File",
+      "program": "${file}",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/**/*.js"
+      ],
+      "runtimeArgs": ["--experimental-specifier-resolution=node"],
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "console": "integratedTerminal"
     }
   ]
 }

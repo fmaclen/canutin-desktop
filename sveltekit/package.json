@@ -16,6 +16,7 @@
 	"devDependencies": {
 		"@canutin/svelte-currency-input": "^0.11.4",
 		"@playwright/test": "^1.43.0",
+		"@prisma/sdk": "^4.0.0",
 		"@sveltejs/adapter-node": "^5.0.1",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
@@ -30,6 +31,7 @@
 		"eslint": "^8.56.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.35.1",
+		"pocketbase": "^0.21.5",
 		"prettier": "^3.1.1",
 		"prettier-plugin-svelte": "^3.1.2",
 		"prisma": "^5.13.0",
