@@ -1,16 +1,19 @@
-import { getTransactionCategoryId } from '$lib/helpers/models.server';
 import { addDays, startOfMonth, subMonths } from 'date-fns';
-import { dateInUTC } from '$lib//helpers/misc';
+
+// Strip timezone from date and set to UTC
+const dateInUTC = (date) => {
+	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0));
+};
 
 const MONTHS_IN_SET = 24;
 
 export const accountCheckingTransactionSet = async () => {
-	const transactionSet = async (i: number) => [
+	const transactionSet = async (i) => [
 		{
 			description: 'Westside Apartments',
 			value: -2250,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 0)),
-			categoryId: await getTransactionCategoryId('Rent'),
+			tag: 'Rent',
 			isExcluded: false,
 			isPending: false
 		},
@@ -18,7 +21,7 @@ export const accountCheckingTransactionSet = async () => {
 			description: 'Initech HR * Payroll',
 			value: 2800,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 5)),
-			categoryId: await getTransactionCategoryId('Payroll & benefits'),
+			tag: 'Payroll & benefits',
 			isExcluded: false,
 			isPending: false
 		},
@@ -26,7 +29,7 @@ export const accountCheckingTransactionSet = async () => {
 			description: 'Transfer to Ransack Savings',
 			value: -250,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 6)),
-			categoryId: await getTransactionCategoryId('Transfers'),
+			tag: 'Transfers',
 			isExcluded: false,
 			isPending: false
 		},
@@ -34,7 +37,7 @@ export const accountCheckingTransactionSet = async () => {
 			description: 'Juggernaut Visa Payment',
 			value: i % 2 === 0 ? -1750 : -1500,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 7)),
-			categoryId: await getTransactionCategoryId('Payments'),
+			tag: 'Payments',
 			isExcluded: false,
 			isPending: false
 		},
@@ -42,7 +45,7 @@ export const accountCheckingTransactionSet = async () => {
 			description: 'Initech HR * Payroll',
 			value: 2800,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 20)),
-			categoryId: await getTransactionCategoryId('Payroll & benefits'),
+			tag: 'Payroll & benefits',
 			isExcluded: false,
 			isPending: false
 		},
@@ -50,7 +53,7 @@ export const accountCheckingTransactionSet = async () => {
 			description: 'Transfer to Loot Financial',
 			value: -500,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 24)),
-			categoryId: await getTransactionCategoryId('Transfers'),
+			tag: 'Transfers',
 			isExcluded: false,
 			isPending: false
 		},
@@ -58,7 +61,7 @@ export const accountCheckingTransactionSet = async () => {
 			description: 'Transfer to MegaCoin Exchange',
 			value: i % 3 === 0 ? 0 : -500,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 26)),
-			categoryId: await getTransactionCategoryId('Transfers'),
+			tag: 'Transfers',
 			isExcluded: false,
 			isPending: false
 		},
@@ -66,7 +69,7 @@ export const accountCheckingTransactionSet = async () => {
 			description: 'Toyota - TFS Payment',
 			value: -500,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 27)),
-			categoryId: await getTransactionCategoryId('Automotive'),
+			tag: 'Automotive',
 			isExcluded: false,
 			isPending: false
 		}
@@ -81,12 +84,12 @@ export const accountCheckingTransactionSet = async () => {
 };
 
 export const accountSavingsTransactionSet = async () => {
-	const transactionSet = async (i: number) => [
+	const transactionSet = async (i) => [
 		{
 			description: 'Transfer from Ransack Checking',
 			value: 250,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 6)),
-			categoryId: await getTransactionCategoryId('Transfers'),
+			tag: 'Transfers',
 			isExcluded: false,
 			isPending: false
 		}
@@ -101,12 +104,12 @@ export const accountSavingsTransactionSet = async () => {
 };
 
 export const accountCreditCardTransactionSet = async () => {
-	const transactionSet = async (i: number) => [
+	const transactionSet = async (i) => [
 		{
 			description: 'Evergreen Market',
 			value: -175.75,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 1)),
-			categoryId: await getTransactionCategoryId('Groceries'),
+			tag: 'Groceries',
 			isExcluded: false,
 			isPending: false
 		},
@@ -114,7 +117,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Evergreen Market',
 			value: -135.5,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 7)),
-			categoryId: await getTransactionCategoryId('Groceries'),
+			tag: 'Groceries',
 			isExcluded: false,
 			isPending: false
 		},
@@ -122,7 +125,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Evergreen Market',
 			value: -189.25,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 15)),
-			categoryId: await getTransactionCategoryId('Groceries'),
+				tag: 'Groceries',
 			isExcluded: false,
 			isPending: false
 		},
@@ -130,7 +133,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Evergreen Market',
 			value: -105.5,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 23)),
-			categoryId: await getTransactionCategoryId('Groceries'),
+			tag: 'Groceries',
 			isExcluded: false,
 			isPending: false
 		},
@@ -138,7 +141,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Chorizo King',
 			value: -22.5,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 3)),
-			categoryId: await getTransactionCategoryId('Food & drink'),
+			tag: 'Food & drink',
 			isExcluded: false,
 			isPending: false
 		},
@@ -146,7 +149,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Por Que No Los Tacos?',
 			value: -19.25,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 6)),
-			categoryId: await getTransactionCategoryId('Food & drink'),
+			tag: 'Food & drink',
 			isExcluded: false,
 			isPending: false
 		},
@@ -154,7 +157,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Mainely Lobster',
 			value: -43.97,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 10)),
-			categoryId: await getTransactionCategoryId('Restaurants'),
+			tag: 'Restaurants',
 			isExcluded: false,
 			isPending: false
 		},
@@ -162,7 +165,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: "Maria's Artisanal Gelato",
 			value: -12.67,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 11)),
-			categoryId: await getTransactionCategoryId('Food & drink'),
+			tag: 'Food & drink',
 			isExcluded: false,
 			isPending: false
 		},
@@ -170,7 +173,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Sunset Cafe',
 			value: -17.81,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 14)),
-			categoryId: await getTransactionCategoryId('Restaurants'),
+			tag: 'Restaurants',
 			isExcluded: false,
 			isPending: false
 		},
@@ -178,7 +181,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Stellar Burger',
 			value: -16.23,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 20)),
-			categoryId: await getTransactionCategoryId('Restaurants'),
+			tag: 'Restaurants',
 			isExcluded: false,
 			isPending: false
 		},
@@ -186,7 +189,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: "Roy's Steakhouse",
 			value: -55.78,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 25)),
-			categoryId: await getTransactionCategoryId('Restaurants'),
+			tag: 'Restaurants',
 			isExcluded: false,
 			isPending: false
 		},
@@ -194,7 +197,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Stellar Burger',
 			value: -19.23,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 26)),
-			categoryId: await getTransactionCategoryId('Restaurants'),
+			tag: 'Restaurants',
 			isExcluded: false,
 			isPending: false
 		},
@@ -202,7 +205,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'NetTV Max',
 			value: -14.99,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 2)),
-			categoryId: await getTransactionCategoryId('Subscriptions'),
+			tag: 'Subscriptions',
 			isExcluded: false,
 			isPending: false
 		},
@@ -210,7 +213,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Store.com',
 			value: -25.9,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 12)),
-			categoryId: await getTransactionCategoryId('Shops'),
+			tag: 'Shops',
 			isExcluded: false,
 			isPending: false
 		},
@@ -218,7 +221,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Store.com',
 			value: -24.21,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 18)),
-			categoryId: await getTransactionCategoryId('Shops'),
+			tag: 'Shops',
 			isExcluded: true,
 			isPending: false
 		},
@@ -226,7 +229,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Store.com (Refund)',
 			value: -24.21,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 26)),
-			categoryId: await getTransactionCategoryId('Shops'),
+			tag: 'Shops',
 			isExcluded: true,
 			isPending: false
 		},
@@ -234,7 +237,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Florida Man (Gas & Convinience Store)',
 			value: -25.67,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 7)),
-			categoryId: await getTransactionCategoryId('Gas stations'),
+			tag: 'Gas stations',
 			isExcluded: false,
 			isPending: false
 		},
@@ -242,7 +245,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Florida Man (Gas & Convinience Store)',
 			value: -40.01,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 24)),
-			categoryId: await getTransactionCategoryId('Gas stations'),
+			tag: 'Gas stations',
 			isExcluded: false,
 			isPending: false
 		},
@@ -250,7 +253,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Horizon Wireless',
 			value: -90.5,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 2)),
-			categoryId: await getTransactionCategoryId('Internet & phone'),
+			tag: 'Internet & phone',
 			isExcluded: false,
 			isPending: false
 		},
@@ -258,7 +261,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Patriot Insurance',
 			value: -135.67,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 27)),
-			categoryId: await getTransactionCategoryId('Insurance'),
+			tag: 'Insurance',
 			isExcluded: false,
 			isPending: false
 		},
@@ -266,7 +269,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: i % 7 === 0 ? 'Hølm Home' : 'The Hardware Center',
 			value: i % 7 === 0 ? -215.43 : -95.89,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 16)),
-			categoryId: await getTransactionCategoryId(i % 2 === 0 ? 'Furnishings' : 'Home maintenance'),
+			tag: i % 2 === 0 ? 'Furnishings' : 'Home maintenance',
 			isExcluded: false,
 			isPending: false
 		},
@@ -274,7 +277,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: i % 5 === 0 ? 'ShortCircut Computers' : 'alphaStream',
 			value: i % 5 === 0 ? -649.99 : -4.99,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 26)),
-			categoryId: await getTransactionCategoryId(i % 5 === 0 ? 'Electronics' : 'Music'),
+			tag: i % 5 === 0 ? 'Electronics' : 'Music',
 			isExcluded: false,
 			isPending: false
 		},
@@ -282,7 +285,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'PurpleShield Health',
 			value: -254.84,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 3)),
-			categoryId: await getTransactionCategoryId('Health'),
+			tag: 'Health',
 			isExcluded: false,
 			isPending: false
 		},
@@ -290,7 +293,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: i % 7 === 0 ? 'Narby Warker' : "Stefano's Pizza by the Slice",
 			value: i % 7 === 0 ? -150 : -7.78,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 13)),
-			categoryId: await getTransactionCategoryId(i % 7 === 0 ? 'Health' : 'Restaurants'),
+			tag: i % 7 === 0 ? 'Health' : 'Restaurants',
 			isExcluded: false,
 			isPending: false
 		},
@@ -298,9 +301,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: i % 9 === 0 ? '9-5 Office Supplies' : 'Flix Movie Rentals',
 			value: i % 9 === 0 ? -98.23 : -4.99,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 13)),
-			categoryId: await getTransactionCategoryId(
-				i % 9 === 0 ? 'Office supplies' : 'Entertainment & recreation'
-			),
+			tag: i % 9 === 0 ? 'Office supplies' : 'Entertainment & recreation',
 			isExcluded: false,
 			isPending: false
 		},
@@ -309,9 +310,7 @@ export const accountCreditCardTransactionSet = async () => {
 				i % 11 === 0 ? 'Horizon Wireless (Promotional Rebate)' : 'Juggernaut Cash Back Redemption',
 			value: i % 11 === 0 ? 445 : 25.33,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 15)),
-			categoryId: await getTransactionCategoryId(
-				i % 11 === 0 ? 'Internet & phone' : 'Financial & banking'
-			),
+			tag: i % 11 === 0 ? 'Internet & phone' : 'Financial & banking',
 			isExcluded: false,
 			isPending: false
 		},
@@ -319,7 +318,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Ransack Bank Payment Received — Thank You',
 			value: i % 3 === 0 ? 1755 : i % 6 === 0 ? 2355 : i % 9 === 0 ? 1945 : 1675,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 8)),
-			categoryId: await getTransactionCategoryId('Payments'),
+			tag: 'Payments',
 			isExcluded: false,
 			isPending: false
 		},
@@ -327,7 +326,7 @@ export const accountCreditCardTransactionSet = async () => {
 			description: 'Juggernaut Visa Interest',
 			value: -56.89,
 			date: dateInUTC(addDays(startOfMonth(subMonths(new Date(), i)), 8)),
-			categoryId: await getTransactionCategoryId('Fees'),
+			tag: 'Fees',
 			isExcluded: false,
 			isPending: false
 		}

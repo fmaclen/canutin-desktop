@@ -1,10 +1,7 @@
-import { BalanceGroup } from '$lib/helpers/constants';
-import { getModelType } from '$lib/helpers/models.server';
-
 export const accountCheckingDetails = {
 	name: "Bob's Laughable-Yield Checking",
-	balanceGroup: BalanceGroup.CASH,
-	accountTypeId: await getModelType('checking', true),
+	balanceGroup: 0,
+	tag: 'Checking',
 	isAutoCalculated: true,
 	isClosed: false,
 	institution: 'Ransack Bank'
@@ -12,8 +9,8 @@ export const accountCheckingDetails = {
 
 export const accountSavingsDetails = {
 	name: 'Emergency Fund',
-	balanceGroup: BalanceGroup.CASH,
-	accountTypeId: await getModelType('savings', true),
+	balanceGroup: 0,
+	tag: 'Savings',
 	isAutoCalculated: true,
 	isClosed: false,
 	institution: 'Ransack Bank'
@@ -21,8 +18,8 @@ export const accountSavingsDetails = {
 
 export const accountCreditCardDetails = {
 	name: "Alice's Limited Rewards",
-	balanceGroup: BalanceGroup.DEBT,
-	accountTypeId: await getModelType('credit card', true),
+	balanceGroup: 1,
+	tag: 'Credit card',
 	isAutoCalculated: true,
 	isClosed: false,
 	institution: 'Juggernaut Bank'
@@ -30,8 +27,8 @@ export const accountCreditCardDetails = {
 
 export const accountAutoLoanDetails = {
 	name: 'Fiat Auto Loan',
-	balanceGroup: BalanceGroup.DEBT,
-	accountTypeId: await getModelType('auto', true),
+	balanceGroup: 1,
+	tag: 'Auto loan',
 	isAutoCalculated: false,
 	isClosed: false,
 	institution: 'Fiat Financial Services'
@@ -39,8 +36,8 @@ export const accountAutoLoanDetails = {
 
 export const accountRothIraDetails = {
 	name: "Alice's Roth IRA",
-	balanceGroup: BalanceGroup.INVESTMENTS,
-	accountTypeId: await getModelType('roth', true),
+	balanceGroup: 2,
+	tag: 'Roth IRA',
 	isAutoCalculated: false,
 	isClosed: false,
 	institution: 'Loot Financial'
@@ -48,8 +45,8 @@ export const accountRothIraDetails = {
 
 export const account401kDetails = {
 	name: "Bob's 401k",
-	balanceGroup: BalanceGroup.INVESTMENTS,
-	accountTypeId: await getModelType('401k', true),
+	balanceGroup: 2,
+	tag: '401k',
 	isAutoCalculated: false,
 	isClosed: false,
 	institution: 'Loot Financial'
@@ -57,8 +54,8 @@ export const account401kDetails = {
 
 export const accountWalletDetails = {
 	name: 'Matress Wallet',
-	balanceGroup: BalanceGroup.CASH,
-	accountTypeId: await getModelType('cash', true),
+	balanceGroup: 0,
+	tag: 'Wallet',
 	isAutoCalculated: false,
 	isClosed: false
 };
