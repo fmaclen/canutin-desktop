@@ -1,4 +1,5 @@
 import PocketBase from 'pocketbase';
+import readline from 'readline';
 
 const pb = new PocketBase(process.env.POCKETBASE_URL || 'http://127.0.0.1:8090');
 
@@ -563,9 +564,34 @@ const assetTypes = [
 	}
 ];
 
+function askForConfirmation(question) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  return new Promise(resolve => {
+    rl.question(question, answer => {
+      rl.close();
+      resolve(answer.toLowerCase() === 'y');
+    });
+  });
+}
+
 async function main() {
 	try {
 		await pb.admins.authWithPassword('playwright@example.com', 'playwright');
+
+		// Check if tags already exist
+		const existingTags = await pb.collection('tags').getList(1, 1);
+		
+		if (existingTags.totalItems > 0) {
+			const confirmed = await askForConfirmation('-> Tags already exist. Do you want to proceed with seeding? (y/n): ');
+			if (!confirmed) {
+				console.warn('-> Seeding cancelled by user');
+				return;
+			}
+		}
 
 		// Create transaction category tags
 		for (const categoryGroup of transactionCategories.categoryGroups) {
@@ -604,14 +630,14 @@ async function main() {
 			});
 		}
 
-		console.log('Seed data imported successfully');
+		console.warn('-> Seed data imported successfully');
 	} catch (error) {
-		console.error('Error importing seed data:', error);
+		console.warn('-> Error importing seed data:', error);
 	}
 }
 
 main()
 	.catch((e) => {
-		console.error(e);
+		console.warn('-> Error:', e);
 		process.exit(1);
 	});
