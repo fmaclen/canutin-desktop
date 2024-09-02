@@ -9,7 +9,7 @@ import {
   accountRothIraDetails,
   account401kDetails,
   accountWalletDetails
-} from '$lib/seed/seedData/accounts';
+} from './seedData/accounts.js';
 
 import {
   assetSecurityTeslaDetails,
@@ -18,13 +18,13 @@ import {
   assetCryptoEthereumDetails,
   assetCollectibleDetails,
   assetVehicleDetails
-} from '$lib/seed/seedData/assets';
+} from './seedData/assets.js';
 
 import {
   accountCheckingTransactionSet,
   accountSavingsTransactionSet,
   accountCreditCardTransactionSet
-} from '$lib/seed/seedData/transactions';
+} from './seedData/transactions.js';
 
 import {
   account401kbalanceStatements,
@@ -37,11 +37,11 @@ import {
   assetEthereumBalanceStatements,
   assetCollectibleBalanceStatements,
   assetVehicleBalanceStatements
-} from '$lib/seed/seedData/balanceStatements';
+} from './seedData/balanceStatements.js';
 
 const pb = new PocketBase(process.env.POCKETBASE_URL || 'http://127.0.0.1:8090');
 
-function askForConfirmation(question: string) {
+function askForConfirmation(question) {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -55,9 +55,25 @@ function askForConfirmation(question: string) {
   });
 }
 
-async function getTagId(name: string, type: string) {
-  const result = await pb.collection('tags').getFirstListItem(`name="${name}" && for="${type}"`);
-  return result.id;
+async function deleteAllData() {
+  const collections = ['accounts', 'asset', 'transactions', 'accountBalanceStatements', 'assetBalanceStatements'];
+  
+  for (const collection of collections) {
+    const records = await pb.collection(collection).getFullList();
+    for (const record of records) {
+      await pb.collection(collection).delete(record.id);
+    }
+    console.warn(`-> Deleted all records from ${collection}`);
+  }
+}
+
+async function getTagId(name, type) {
+  try {
+    const result = await pb.collection('tags').getFirstListItem(`name ~ "${name}" && for = "${type}"`);
+    return result.id;
+  } catch (error) {
+    return null;
+  }
 }
 
 async function seedAccounts() {
@@ -185,8 +201,10 @@ async function main() {
     const existingTransactions = await pb.collection('transactions').getList(1, 1);
     
     if (existingAccounts.totalItems > 0 || existingAssets.totalItems > 0 || existingTransactions.totalItems > 0) {
-      const confirmed = await askForConfirmation('-> Some data already exists. Do you want to proceed with seeding? (y/n): ');
-      if (!confirmed) {
+      const confirmed = await askForConfirmation('-> Existing data found. Do you want to delete all existing data and reseed? (y/n): ');
+      if (confirmed) {
+        await deleteAllData();
+      } else {
         console.warn('-> Seeding cancelled by user.');
         return;
       }

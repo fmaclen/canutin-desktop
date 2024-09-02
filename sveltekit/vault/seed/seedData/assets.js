@@ -1,8 +1,6 @@
-import { BalanceGroup } from '$lib/helpers/constants';
-
 export const assetSecurityTeslaDetails = {
 	name: 'Tesla',
-	balanceGroup: BalanceGroup.INVESTMENTS,
+	balanceGroup: 2,
 	tag: 'Security',
 	isSold: false,
 	symbol: 'TSLA'
@@ -10,7 +8,7 @@ export const assetSecurityTeslaDetails = {
 
 export const assetSecurityGamestopDetails = {
 	name: 'GameStop',
-	balanceGroup: BalanceGroup.INVESTMENTS,
+	balanceGroup: 2,
 	tag: 'Security',
 	isSold: false,
 	symbol: 'GME'
@@ -18,7 +16,7 @@ export const assetSecurityGamestopDetails = {
 
 export const assetCryptoBitcoinDetails = {
 	name: 'Bitcoin',
-	balanceGroup: BalanceGroup.INVESTMENTS,
+	balanceGroup: 2,
 	tag: 'Cryptocurrency',
 	isSold: false,
 	symbol: 'BTC'
@@ -26,7 +24,7 @@ export const assetCryptoBitcoinDetails = {
 
 export const assetCryptoEthereumDetails = {
 	name: 'Ethereum',
-	balanceGroup: BalanceGroup.INVESTMENTS,
+	balanceGroup: 2,
 	tag: 'Cryptocurrency',
 	isSold: false,
 	symbol: 'ETH'
@@ -34,14 +32,14 @@ export const assetCryptoEthereumDetails = {
 
 export const assetCollectibleDetails = {
 	name: 'Manchild Card Collection',
-	balanceGroup: BalanceGroup.OTHER_ASSETS,
+	balanceGroup: 3,
 	tag: 'Collectible',
 	isSold: false
 };
 
 export const assetVehicleDetails = {
 	name: `1998 Fiat Multipla`,
-	balanceGroup: BalanceGroup.OTHER_ASSETS,
+	balanceGroup: 3,
 	tag: 'Vehicle',
 	isSold: false
 };

@@ -1,8 +1,6 @@
-import { BalanceGroup } from '$lib/helpers/constants';
-
 export const accountCheckingDetails = {
 	name: "Bob's Laughable-Yield Checking",
-	balanceGroup: BalanceGroup.CASH,
+	balanceGroup: 0,
 	tag: 'Checking',
 	isAutoCalculated: true,
 	isClosed: false,
@@ -11,7 +9,7 @@ export const accountCheckingDetails = {
 
 export const accountSavingsDetails = {
 	name: 'Emergency Fund',
-	balanceGroup: BalanceGroup.CASH,
+	balanceGroup: 0,
 	tag: 'Savings',
 	isAutoCalculated: true,
 	isClosed: false,
@@ -20,8 +18,8 @@ export const accountSavingsDetails = {
 
 export const accountCreditCardDetails = {
 	name: "Alice's Limited Rewards",
-	balanceGroup: BalanceGroup.DEBT,
-	tag: 'Credit Card',
+	balanceGroup: 1,
+	tag: 'Credit card',
 	isAutoCalculated: true,
 	isClosed: false,
 	institution: 'Juggernaut Bank'
@@ -29,8 +27,8 @@ export const accountCreditCardDetails = {
 
 export const accountAutoLoanDetails = {
 	name: 'Fiat Auto Loan',
-	balanceGroup: BalanceGroup.DEBT,
-	tag: 'Auto Loan',
+	balanceGroup: 1,
+	tag: 'Auto loan',
 	isAutoCalculated: false,
 	isClosed: false,
 	institution: 'Fiat Financial Services'
@@ -38,7 +36,7 @@ export const accountAutoLoanDetails = {
 
 export const accountRothIraDetails = {
 	name: "Alice's Roth IRA",
-	balanceGroup: BalanceGroup.INVESTMENTS,
+	balanceGroup: 2,
 	tag: 'Roth IRA',
 	isAutoCalculated: false,
 	isClosed: false,
@@ -47,7 +45,7 @@ export const accountRothIraDetails = {
 
 export const account401kDetails = {
 	name: "Bob's 401k",
-	balanceGroup: BalanceGroup.INVESTMENTS,
+	balanceGroup: 2,
 	tag: '401k',
 	isAutoCalculated: false,
 	isClosed: false,
@@ -56,7 +54,7 @@ export const account401kDetails = {
 
 export const accountWalletDetails = {
 	name: 'Matress Wallet',
-	balanceGroup: BalanceGroup.CASH,
+	balanceGroup: 0,
 	tag: 'Wallet',
 	isAutoCalculated: false,
 	isClosed: false

@@ -1,5 +1,9 @@
 import { subMonths } from 'date-fns';
-import { dateInUTC } from '../../helpers/misc';
+
+// Strip timezone from date and set to UTC
+const dateInUTC = (date) => {
+	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0));
+};
 
 // Accounts
 export const accountAutoLoanBalanceStatements = [

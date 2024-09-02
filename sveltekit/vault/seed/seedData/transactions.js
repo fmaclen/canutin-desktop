@@ -1,10 +1,14 @@
 import { addDays, startOfMonth, subMonths } from 'date-fns';
-import { dateInUTC } from '$lib//helpers/misc';
+
+// Strip timezone from date and set to UTC
+const dateInUTC = (date) => {
+	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0));
+};
 
 const MONTHS_IN_SET = 24;
 
 export const accountCheckingTransactionSet = async () => {
-	const transactionSet = async (i: number) => [
+	const transactionSet = async (i) => [
 		{
 			description: 'Westside Apartments',
 			value: -2250,
@@ -80,7 +84,7 @@ export const accountCheckingTransactionSet = async () => {
 };
 
 export const accountSavingsTransactionSet = async () => {
-	const transactionSet = async (i: number) => [
+	const transactionSet = async (i) => [
 		{
 			description: 'Transfer from Ransack Checking',
 			value: 250,
@@ -100,7 +104,7 @@ export const accountSavingsTransactionSet = async () => {
 };
 
 export const accountCreditCardTransactionSet = async () => {
-	const transactionSet = async (i: number) => [
+	const transactionSet = async (i) => [
 		{
 			description: 'Evergreen Market',
 			value: -175.75,
