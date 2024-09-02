@@ -1,176 +1,210 @@
-import { PrismaClient } from '@prisma/client';
+import PocketBase from 'pocketbase';
+import readline from 'readline';
 
 import {
-	accountCheckingDetails,
-	accountSavingsDetails,
-	accountCreditCardDetails,
-	accountAutoLoanDetails,
-	accountRothIraDetails,
-	account401kDetails,
-	accountWalletDetails
-} from './seedData/accounts';
+  accountCheckingDetails,
+  accountSavingsDetails,
+  accountCreditCardDetails,
+  accountAutoLoanDetails,
+  accountRothIraDetails,
+  account401kDetails,
+  accountWalletDetails
+} from '$lib/seed/seedData/accounts';
+
 import {
-	assetSecurityTeslaDetails,
-	assetSecurityGamestopDetails,
-	assetCryptoBitcoinDetails,
-	assetCryptoEthereumDetails,
-	assetCollectibleDetails,
-	assetVehicleDetails
-} from './seedData/assets';
+  assetSecurityTeslaDetails,
+  assetSecurityGamestopDetails,
+  assetCryptoBitcoinDetails,
+  assetCryptoEthereumDetails,
+  assetCollectibleDetails,
+  assetVehicleDetails
+} from '$lib/seed/seedData/assets';
+
 import {
-	accountCheckingTransactionSet,
-	accountSavingsTransactionSet,
-	accountCreditCardTransactionSet
-} from './seedData/transactions';
+  accountCheckingTransactionSet,
+  accountSavingsTransactionSet,
+  accountCreditCardTransactionSet
+} from '$lib/seed/seedData/transactions';
+
 import {
-	account401kbalanceStatements,
-	accountAutoLoanBalanceStatements,
-	accountRothIraBalanceStatements,
-	accountWalletBalanceStatements,
-	assetTeslaBalanceStatements,
-	assetGamestopBalanceStatements,
-	assetBitcoinBalanceStatements,
-	assetEthereumBalanceStatements,
-	assetCollectibleBalanceStatements,
-	assetVehicleBalanceStatements
-} from './seedData/balanceStatements';
+  account401kbalanceStatements,
+  accountAutoLoanBalanceStatements,
+  accountRothIraBalanceStatements,
+  accountWalletBalanceStatements,
+  assetTeslaBalanceStatements,
+  assetGamestopBalanceStatements,
+  assetBitcoinBalanceStatements,
+  assetEthereumBalanceStatements,
+  assetCollectibleBalanceStatements,
+  assetVehicleBalanceStatements
+} from '$lib/seed/seedData/balanceStatements';
 
-const prisma = new PrismaClient();
+const pb = new PocketBase(process.env.POCKETBASE_URL || 'http://127.0.0.1:8090');
 
-const seedDemoData = async () => {
-	// Accounts
+function askForConfirmation(question: string) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
 
-	// Account: Checking
-	await prisma.account.create({
-		data: {
-			...accountCheckingDetails,
-			transactions: {
-				create: await accountCheckingTransactionSet()
-			}
-		}
-	});
+  return new Promise(resolve => {
+    rl.question(question, answer => {
+      rl.close();
+      resolve(answer.toLowerCase() === 'y');
+    });
+  });
+}
 
-	// Account: Savings
-	await prisma.account.create({
-		data: {
-			...accountSavingsDetails,
-			transactions: {
-				create: await accountSavingsTransactionSet()
-			}
-		}
-	});
+async function getTagId(name: string, type: string) {
+  const result = await pb.collection('tags').getFirstListItem(`name="${name}" && for="${type}"`);
+  return result.id;
+}
 
-	// Account: Credit card
-	await prisma.account.create({
-		data: {
-			...accountCreditCardDetails,
-			transactions: {
-				create: await accountCreditCardTransactionSet()
-			}
-		}
-	});
+async function seedAccounts() {
+  const accounts = [
+    accountCheckingDetails,
+    accountSavingsDetails,
+    accountCreditCardDetails,
+    accountAutoLoanDetails,
+    accountRothIraDetails,
+    account401kDetails,
+    accountWalletDetails
+  ];
 
-	// Account: Auto-loan
-	await prisma.account.create({
-		data: {
-			...accountAutoLoanDetails,
-			accountBalanceStatements: {
-				create: accountAutoLoanBalanceStatements
-			}
-		}
-	});
+  for (const account of accounts) {
+    const tagId = await getTagId(account.tag, 'accounts');
+    await pb.collection('accounts').create({
+      ...account,
+      tag: tagId
+    });
+  }
+  console.warn('-> Accounts seeded successfully');
+}
 
-	// Account: Roth IRA
-	await prisma.account.create({
-		data: {
-			...accountRothIraDetails,
-			accountBalanceStatements: {
-				create: accountRothIraBalanceStatements
-			}
-		}
-	});
+async function seedAssets() {
+  const assets = [
+    assetSecurityTeslaDetails,
+    assetSecurityGamestopDetails,
+    assetCryptoBitcoinDetails,
+    assetCryptoEthereumDetails,
+    assetCollectibleDetails,
+    assetVehicleDetails
+  ];
 
-	// Account: 401K
-	await prisma.account.create({
-		data: {
-			...account401kDetails,
-			accountBalanceStatements: {
-				create: account401kbalanceStatements
-			}
-		}
-	});
+  for (const asset of assets) {
+    const tagId = await getTagId(asset.tag, 'assets');
+    await pb.collection('asset').create({
+      ...asset,
+      tag: tagId
+    });
+  }
+  console.warn('-> Assets seeded successfully');
+}
 
-	// Account: Wallet
-	await prisma.account.create({
-		data: {
-			...accountWalletDetails,
-			accountBalanceStatements: {
-				create: accountWalletBalanceStatements
-			}
-		}
-	});
+async function seedTransactions() {
+  const checkingAccount = await pb.collection('accounts').getFirstListItem('name="Bob\'s Laughable-Yield Checking"');
+  const savingsAccount = await pb.collection('accounts').getFirstListItem('name="Emergency Fund"');
+  const creditCardAccount = await pb.collection('accounts').getFirstListItem('name="Alice\'s Limited Rewards"');
 
-	// Assets
+  const checkingTransactions = await accountCheckingTransactionSet();
+  const savingsTransactions = await accountSavingsTransactionSet();
+  const creditCardTransactions = await accountCreditCardTransactionSet();
 
-	// Asset: Security (Tesla)
-	await prisma.asset.create({
-		data: {
-			...assetSecurityTeslaDetails,
-			assetBalanceStatements: {
-				create: assetTeslaBalanceStatements
-			}
-		}
-	});
+  for (const transaction of checkingTransactions) {
+    const tagId = await getTagId(transaction.tag, 'transactions');
+    await pb.collection('transactions').create({
+      ...transaction,
+      account: checkingAccount.id,
+      tag: tagId
+    });
+  }
 
-	// Asset: Security (Gamestop)
-	await prisma.asset.create({
-		data: {
-			...assetSecurityGamestopDetails,
-			assetBalanceStatements: {
-				create: assetGamestopBalanceStatements
-			}
-		}
-	});
+  for (const transaction of savingsTransactions) {
+    const tagId = await getTagId(transaction.tag, 'transactions');
+    await pb.collection('transactions').create({
+      ...transaction,
+      account: savingsAccount.id,
+      tag: tagId
+    });
+  }
 
-	// Asset: Crypto (Bitcoin)
-	await prisma.asset.create({
-		data: {
-			...assetCryptoBitcoinDetails,
-			assetBalanceStatements: {
-				create: assetBitcoinBalanceStatements
-			}
-		}
-	});
+  for (const transaction of creditCardTransactions) {
+    const tagId = await getTagId(transaction.tag, 'transactions');
+    await pb.collection('transactions').create({
+      ...transaction,
+      account: creditCardAccount.id,
+      tag: tagId
+    });
+  }
 
-	// Asset: Crypto (Ethereum)
-	await prisma.asset.create({
-		data: {
-			...assetCryptoEthereumDetails,
-			assetBalanceStatements: {
-				create: assetEthereumBalanceStatements
-			}
-		}
-	});
+  console.warn('-> Transactions seeded successfully');
+}
 
-	// Asset: Collectible
-	await prisma.asset.create({
-		data: {
-			...assetCollectibleDetails,
-			assetBalanceStatements: {
-				create: assetCollectibleBalanceStatements
-			}
-		}
-	});
+async function seedBalanceStatements() {
+  const accounts = await pb.collection('accounts').getFullList();
+  const assets = await pb.collection('asset').getFullList();
 
-	// Asset: Vehicle
-	await prisma.asset.create({
-		data: {
-			...assetVehicleDetails,
-			assetBalanceStatements: {
-				create: assetVehicleBalanceStatements
-			}
-		}
-	});
-};
+  const balanceStatements = [
+    { account: '401k', data: account401kbalanceStatements },
+    { account: 'Auto Loan', data: accountAutoLoanBalanceStatements },
+    { account: 'Roth IRA', data: accountRothIraBalanceStatements },
+    { account: 'Wallet', data: accountWalletBalanceStatements },
+    { asset: 'Tesla', data: assetTeslaBalanceStatements },
+    { asset: 'GameStop', data: assetGamestopBalanceStatements },
+    { asset: 'Bitcoin', data: assetBitcoinBalanceStatements },
+    { asset: 'Ethereum', data: assetEthereumBalanceStatements },
+    { asset: 'Manchild Card Collection', data: assetCollectibleBalanceStatements },
+    { asset: '1998 Fiat Multipla', data: assetVehicleBalanceStatements }
+  ];
 
-export default seedDemoData;
+  for (const statement of balanceStatements) {
+    const item = statement.account
+      ? accounts.find(a => a.name.includes(statement.account))
+      : assets.find(a => a.name === statement.asset);
+
+    if (item) {
+      for (const balanceData of statement.data) {
+        await pb.collection(statement.account ? 'accountBalanceStatements' : 'assetBalanceStatements').create({
+          ...balanceData,
+          [statement.account ? 'account' : 'asset']: item.id
+        });
+      }
+    }
+  }
+
+  console.warn('-> Balance statements seeded successfully');
+}
+
+async function main() {
+  try {
+    await pb.admins.authWithPassword('playwright@example.com', 'playwright');
+
+    // Check if data already exists
+    const existingAccounts = await pb.collection('accounts').getList(1, 1);
+    const existingAssets = await pb.collection('asset').getList(1, 1);
+    const existingTransactions = await pb.collection('transactions').getList(1, 1);
+    
+    if (existingAccounts.totalItems > 0 || existingAssets.totalItems > 0 || existingTransactions.totalItems > 0) {
+      const confirmed = await askForConfirmation('-> Some data already exists. Do you want to proceed with seeding? (y/n): ');
+      if (!confirmed) {
+        console.warn('-> Seeding cancelled by user.');
+        return;
+      }
+    }
+
+    await seedAccounts();
+    await seedAssets();
+    await seedTransactions();
+    await seedBalanceStatements();
+
+    console.warn('-> All data seeded successfully');
+  } catch (error) {
+    console.warn('-> Error seeding data:', error);
+  }
+}
+
+main()
+  .catch((e) => {
+    console.warn('-> Error:', e);
+    process.exit(1);
+  });

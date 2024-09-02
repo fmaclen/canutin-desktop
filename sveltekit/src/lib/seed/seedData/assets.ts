@@ -1,10 +1,9 @@
 import { BalanceGroup } from '$lib/helpers/constants';
-import { getModelType } from '$lib/helpers/models.server';
 
 export const assetSecurityTeslaDetails = {
 	name: 'Tesla',
 	balanceGroup: BalanceGroup.INVESTMENTS,
-	assetTypeId: await getModelType('security', false),
+	tag: 'Security',
 	isSold: false,
 	symbol: 'TSLA'
 };
@@ -12,7 +11,7 @@ export const assetSecurityTeslaDetails = {
 export const assetSecurityGamestopDetails = {
 	name: 'GameStop',
 	balanceGroup: BalanceGroup.INVESTMENTS,
-	assetTypeId: await getModelType('security', false),
+	tag: 'Security',
 	isSold: false,
 	symbol: 'GME'
 };
@@ -20,7 +19,7 @@ export const assetSecurityGamestopDetails = {
 export const assetCryptoBitcoinDetails = {
 	name: 'Bitcoin',
 	balanceGroup: BalanceGroup.INVESTMENTS,
-	assetTypeId: await getModelType('cryptocurrency', false),
+	tag: 'Cryptocurrency',
 	isSold: false,
 	symbol: 'BTC'
 };
@@ -28,7 +27,7 @@ export const assetCryptoBitcoinDetails = {
 export const assetCryptoEthereumDetails = {
 	name: 'Ethereum',
 	balanceGroup: BalanceGroup.INVESTMENTS,
-	assetTypeId: await getModelType('cryptocurrency', false),
+	tag: 'Cryptocurrency',
 	isSold: false,
 	symbol: 'ETH'
 };
@@ -36,13 +35,13 @@ export const assetCryptoEthereumDetails = {
 export const assetCollectibleDetails = {
 	name: 'Manchild Card Collection',
 	balanceGroup: BalanceGroup.OTHER_ASSETS,
-	assetTypeId: await getModelType('collectible', false),
+	tag: 'Collectible',
 	isSold: false
 };
 
 export const assetVehicleDetails = {
 	name: `1998 Fiat Multipla`,
 	balanceGroup: BalanceGroup.OTHER_ASSETS,
-	assetTypeId: await getModelType('vehicle', false),
+	tag: 'Vehicle',
 	isSold: false
 };
