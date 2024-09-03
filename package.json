@@ -10,7 +10,10 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"server": "./pocketbase/pocketbase serve",
+		"seed:tags": "node ./pocketbase/seed/seedTags.js",
+		"seed:demo": "node ./pocketbase/seed/seedDemo.js"
 	},
 	"devDependencies": {
 		"@canutin/svelte-currency-input": "^0.11.4",
