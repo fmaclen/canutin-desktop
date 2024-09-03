@@ -1,35 +1,39 @@
 {
-  "name": "canutin",
-  "version": "0.0.0-development",
-  "description": "Personal finance platform",
-  "main": "main.js",
-  "license": "Apache License 2.0",
-  "scripts": {
-    "start": "node scripts/sveltekit-start.js",
-    "dev": "electron-esbuild dev",
-    "build": "electron-esbuild build",
-    "test": "jest --watchAll",
-    "package:release": "node scripts/package-release.js",
-    "package:electron": "node scripts/package-electron.js && electron-builder"
-  },
-  "devDependencies": {
-    "@types/jest": "29.5.12",
-    "@types/node": "^20.12.10",
-    "electron": "^30.0.2",
-    "electron-builder": "^25.0.3",
-    "electron-esbuild": "^8.0.0",
-    "electron-store": "^8.1.0",
-    "esbuild": "^0.18.0",
-    "jest": "^29.5.0",
-    "rimraf": "^3.0.2",
-    "ts-jest": "^29.1.2",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.7.4"
-  },
-  "author": {
-    "name": "Fernando Maclen",
-    "email": "hello@fernando.is",
-    "url": "https://fernando.is"
-  },
-  "private": true
+	"name": "canutin",
+	"version": "0.0.0-dev",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"test": "playwright test",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"lint": "prettier --check . && eslint .",
+		"format": "prettier --write ."
+	},
+	"devDependencies": {
+		"@canutin/svelte-currency-input": "^0.11.4",
+		"@playwright/test": "^1.28.1",
+		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/vite-plugin-svelte": "^4.0.0-next.6",
+		"@types/eslint": "^9.6.0",
+		"chart.js": "^4.4.4",
+		"date-fns": "^3.6.0",
+		"eslint": "^9.0.0",
+		"eslint-config-prettier": "^9.1.0",
+		"eslint-plugin-svelte": "^2.36.0",
+		"globals": "^15.0.0",
+		"pocketbase": "^0.21.5",
+		"prettier": "^3.1.1",
+		"prettier-plugin-svelte": "^3.1.2",
+		"sass": "^1.77.8",
+		"svelte": "^5.0.0-next.1",
+		"svelte-check": "^3.6.0",
+		"typescript": "^5.0.0",
+		"typescript-eslint": "^8.0.0",
+		"vite": "^5.0.3"
+	},
+	"type": "module"
 }

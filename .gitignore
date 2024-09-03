@@ -1,16 +1,21 @@
-.DS_Store
 node_modules
-dist
-resources/sveltekit
-*.vault
-*.vault-journal
-.vscode/settings.json
-*tar.gz
-.env
 
-# PocketBase
-pocketbase
-pb_data/
-pocketbase.exe
-LICENSE.md
-CHANGELOG.md
+# Output
+.output
+.vercel
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
