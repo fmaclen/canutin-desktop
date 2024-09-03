@@ -12,6 +12,7 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"server": "./pocketbase/pocketbase serve",
+    "typegen": "pocketbase-typegen --db ./pocketbase/pb_data/data.db -o ./src/lib/pocketbase-types.ts",
 		"seed:tags": "node ./pocketbase/seed/seedTags.js",
 		"seed:demo": "node ./pocketbase/seed/seedDemo.js"
 	},
@@ -29,6 +30,7 @@
 		"eslint-plugin-svelte": "^2.36.0",
 		"globals": "^15.0.0",
 		"pocketbase": "^0.21.5",
+		"pocketbase-typegen": "^1.2.1",
 		"prettier": "^3.1.1",
 		"prettier-plugin-svelte": "^3.1.2",
 		"sass": "^1.77.8",
