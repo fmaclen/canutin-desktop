@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { createAsset } from '$lib/pocketbase';
-import { assetCryptoBitcoinDetails, assetSecurityTeslaDetails } from '$lib/seed/data/assets';
+import { assetCryptoBitcoinDetails, assetSecurityGamestopDetails, assetSecurityTeslaDetails } from '$lib/seed/data/assets';
 import { createVerifiedUniqueUser } from '$lib/seed/data/user';
 
 import { signInAsUser } from './utils';
@@ -25,4 +25,16 @@ test('user can only see their own assets', async ({ page }) => {
 	await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
 	await expect(page.getByText('Bitcoin')).toBeVisible();
 	await expect(page.getByText('Tesla')).not.toBeVisible();
+});
+
+test('assets context is updated in real-time', async ({ page }) => {
+	const userAlice = await createVerifiedUniqueUser('alice');
+
+	await signInAsUser(page, userAlice);
+	await page.locator('nav a', { hasText: 'Assets' }).click();
+	await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
+	await expect(page.getByText('GameStop')).not.toBeVisible();
+
+	await createAsset(userAlice.id, assetSecurityGamestopDetails);
+	await expect(page.getByText('GameStop')).toBeVisible();
 });

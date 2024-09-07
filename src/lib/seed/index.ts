@@ -29,7 +29,7 @@ import {
 	type AssetDetails
 } from '$lib/seed/data/assets';
 import {
-	account401kbalanceStatements,
+	account401kBalanceStatements,
 	accountAutoLoanBalanceStatements,
 	accountRothIraBalanceStatements,
 	accountWalletBalanceStatements,
@@ -162,7 +162,7 @@ async function seedBalanceStatements(): Promise<void> {
 	const assets = await pb.collection('asset').getFullList();
 
 	const accountsWithBalanceStatements = [
-		{ account: '401k', data: account401kbalanceStatements },
+		{ account: '401k', data: account401kBalanceStatements },
 		{ account: 'Auto Loan', data: accountAutoLoanBalanceStatements },
 		{ account: 'Roth IRA', data: accountRothIraBalanceStatements },
 		{ account: 'Wallet', data: accountWalletBalanceStatements }
