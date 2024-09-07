@@ -5,8 +5,7 @@ import {
 	createAccountBalanceStatements,
 	createAsset,
 	createAssetBalanceStatements,
-	createTransactions,
-	POCKETBASE_SEED_DEFAULT_PASSWORD
+	createTransactions
 } from '$lib/pocketbase';
 import {
 	account401kDetails,
@@ -90,7 +89,7 @@ test('summary totals by balance group', async ({ page }) => {
 
 test('summary totals update in real-time', async ({ page }) => {
 	const pbAlice = await createVerifiedUniqueUser('alice');
-	
+
 	const account401k = await createAccount(pbAlice, account401kDetails);
 
 	await signInAsUser(page, pbAlice);
@@ -99,8 +98,12 @@ test('summary totals update in real-time', async ({ page }) => {
 	await expect(netWorthCard).toContainText('$0');
 	await expect(investmentsCard).toContainText('$0');
 
-	await createAccountBalanceStatements(pbAlice, account401k.id, account401kBalanceStatements.slice(0, 1));
-	
+	await createAccountBalanceStatements(
+		pbAlice,
+		account401k.id,
+		account401kBalanceStatements.slice(0, 1)
+	);
+
 	await expect(netWorthCard).toContainText('$4,251');
 	await expect(investmentsCard).toContainText('$4,251');
 });

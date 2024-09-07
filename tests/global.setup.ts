@@ -1,6 +1,10 @@
 import { test as setup } from '@playwright/test';
 
-import { pbAdmin, POCKETBASE_SEED_ADMIN_EMAIL, POCKETBASE_SEED_DEFAULT_PASSWORD } from '$lib/pocketbase';
+import {
+	pbAdmin,
+	POCKETBASE_SEED_ADMIN_EMAIL,
+	POCKETBASE_SEED_DEFAULT_PASSWORD
+} from '$lib/pocketbase';
 import { accountTypes, assetTypes, transactionCategories } from '$lib/seed/data/tags';
 
 setup('create admin account and seed tags', async () => {
@@ -11,7 +15,10 @@ setup('create admin account and seed tags', async () => {
 			passwordConfirm: POCKETBASE_SEED_DEFAULT_PASSWORD
 		});
 
-		await pbAdmin.admins.authWithPassword(POCKETBASE_SEED_ADMIN_EMAIL, POCKETBASE_SEED_DEFAULT_PASSWORD);
+		await pbAdmin.admins.authWithPassword(
+			POCKETBASE_SEED_ADMIN_EMAIL,
+			POCKETBASE_SEED_DEFAULT_PASSWORD
+		);
 
 		// Create transaction category tags
 		for (const categoryGroup of transactionCategories.categoryGroups) {

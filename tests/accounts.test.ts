@@ -6,11 +6,10 @@ import {
 	accountCreditCardDetails,
 	accountSavingsDetails
 } from '$lib/seed/data/accounts';
+import { accountSavingsTransactionSet } from '$lib/seed/data/transactions';
 import { createVerifiedUniqueUser } from '$lib/seed/data/user';
 
 import { signInAsUser } from './utils';
-import { accountSavingsTransactionSet } from '$lib/seed/data/transactions';
-
 
 test('user can only see their own accounts', async ({ page }) => {
 	const pbAlice = await createVerifiedUniqueUser('alice');

@@ -1,6 +1,6 @@
-import PocketBase, { type AuthModel } from 'pocketbase';
+import PocketBase from 'pocketbase';
 
-import type { TypedPocketBase, UsersResponse } from '$lib/pocketbase-types';
+import type { TypedPocketBase } from '$lib/pocketbase-types';
 import type { AccountDetails } from '$lib/seed/data/accounts';
 import type { BalanceStatementDetails } from '$lib/seed/data/balanceStatements';
 import type { TransactionDetails } from '$lib/seed/data/transactions';
