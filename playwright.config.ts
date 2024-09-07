@@ -11,6 +11,7 @@ const config: PlaywrightTestConfig = {
 			port: 4173
 		}
 	],
+	timeout: 5000,
 	fullyParallel: true,
 	testDir: 'tests',
 	testMatch: /(.+\.)?(test|spec)\.[jt]s/,

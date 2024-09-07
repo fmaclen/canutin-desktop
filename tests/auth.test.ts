@@ -91,6 +91,49 @@ test('offline scenario', async ({ page, context }) => {
 	await expect(page.locator('h1').getByText('The big picture')).toBeVisible();
 });
 
+test('auth refreshes every time the user navigates', async ({ page }) => {
+	const pbAlice = await createVerifiedUniqueUser('alice');
+
+	await signInAsUser(page, pbAlice);
+	await expect(page).toHaveURL('/');
+
+	// Set context offline
+	await page.locator('nav a', { hasText: 'Accounts' }).click();
+	await expect(page).toHaveURL('/accounts');
+
+	await page.route(`${POCKETBASE_DEFAULT_URL}/api/collections/users/auth-refresh`, (route) =>
+		route.abort()
+	);
+
+	// Test the offline behavior
+	await page.locator('nav a', { hasText: 'Assets' }).click();
+	await expect(page).toHaveURL('/auth');
+
+	await page.unroute(`${POCKETBASE_DEFAULT_URL}/api/collections/users/auth-refresh`);
+
+	// Sign in as before
+	await signInAsUser(page, pbAlice);
+	await page.locator('nav a', { hasText: 'Accounts' }).click();
+	await expect(page).toHaveURL('/accounts');
+
+	// Unverify the user
+	await pbAdmin.collection('users').update(pbAlice.authStore.model?.id, { verified: false });
+	await page.locator('nav a', { hasText: 'Assets' }).click();
+	await expect(page).toHaveURL('/auth');
+
+	// Re-verify the user
+	await pbAdmin.collection('users').update(pbAlice.authStore.model?.id, { verified: true });
+
+	// Delete the user
+	await signInAsUser(page, pbAlice);
+	await page.locator('nav a', { hasText: 'Accounts' }).click();
+	await expect(page).toHaveURL('/accounts');
+
+	await pbAdmin.collection('users').delete(pbAlice.authStore.model?.id);
+	await page.locator('nav a', { hasText: 'Assets' }).click();
+	await expect(page).toHaveURL('/auth');
+});
+
 test.skip('server URL persistence in localStorage', async ({ page }) => {
 	const pbAlice = await createVerifiedUniqueUser('alice');
 
