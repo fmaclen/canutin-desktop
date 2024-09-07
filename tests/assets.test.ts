@@ -7,20 +7,20 @@ import { createVerifiedUniqueUser } from '$lib/seed/data/user';
 import { signInAsUser } from './utils';
 
 test('user can only see their own assets', async ({ page }) => {
-	const userAlice = await createVerifiedUniqueUser('alice');
-	const userBob = await createVerifiedUniqueUser('bob');
+	const pbAlice = await createVerifiedUniqueUser('alice');
+	const pbBob = await createVerifiedUniqueUser('bob');
 
-	await createAsset(userAlice.id, assetSecurityTeslaDetails);
-	await createAsset(userBob.id, assetCryptoBitcoinDetails);
+	await createAsset(pbAlice, assetSecurityTeslaDetails);
+	await createAsset(pbBob, assetCryptoBitcoinDetails);
 
-	await signInAsUser(page, userAlice);
+	await signInAsUser(page, pbAlice);
 	await page.locator('nav a', { hasText: 'Assets' }).click();
 	await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
 	await expect(page.getByText('Bitcoin')).not.toBeVisible();
 	await expect(page.getByText('Tesla')).toBeVisible();
 
 	await page.getByText('Sign out').click();
-	await signInAsUser(page, userBob);
+	await signInAsUser(page, pbBob);
 	await page.locator('nav a', { hasText: 'Assets' }).click();
 	await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
 	await expect(page.getByText('Bitcoin')).toBeVisible();
@@ -28,13 +28,13 @@ test('user can only see their own assets', async ({ page }) => {
 });
 
 test('assets context is updated in real-time', async ({ page }) => {
-	const userAlice = await createVerifiedUniqueUser('alice');
+	const pbAlice = await createVerifiedUniqueUser('alice');
 
-	await signInAsUser(page, userAlice);
+	await signInAsUser(page, pbAlice);
 	await page.locator('nav a', { hasText: 'Assets' }).click();
 	await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
 	await expect(page.getByText('GameStop')).not.toBeVisible();
 
-	await createAsset(userAlice.id, assetSecurityGamestopDetails);
+	await createAsset(pbAlice, assetSecurityGamestopDetails);
 	await expect(page.getByText('GameStop')).toBeVisible();
 });

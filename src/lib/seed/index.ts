@@ -4,11 +4,11 @@ import {
 	createAsset,
 	createAssetBalanceStatements,
 	createTransactions,
-	getTagId,
-	pb,
+	pbAdmin,
 	POCKETBASE_SEED_ADMIN_EMAIL,
 	POCKETBASE_SEED_DEFAULT_PASSWORD
 } from '$lib/pocketbase';
+import type { TypedPocketBase } from '$lib/pocketbase-types';
 import {
 	account401kDetails,
 	accountAutoLoanDetails,
@@ -53,7 +53,7 @@ async function deleteAllData(): Promise<void> {
 	const collections = [
 		'users',
 		'accounts',
-		'asset',
+		'assets',
 		'transactions',
 		'accountBalanceStatements',
 		'assetBalanceStatements',
@@ -61,9 +61,9 @@ async function deleteAllData(): Promise<void> {
 	];
 
 	for (const collection of collections) {
-		const records = await pb.collection(collection).getFullList();
+		const records = await pbAdmin.collection(collection).getFullList();
 		for (const record of records) {
-			await pb.collection(collection).delete(record.id);
+			await pbAdmin.collection(collection).delete(record.id);
 		}
 		console.warn(`-> Deleted all records from ${collection}`);
 	}
@@ -73,7 +73,7 @@ async function seedTags(): Promise<void> {
 	// Create transaction category tags
 	for (const categoryGroup of transactionCategories.categoryGroups) {
 		// Create group tag
-		await pb.collection('tags').create({
+		await pbAdmin.collection('tags').create({
 			name: categoryGroup.name,
 			for: 'transactions',
 			isLabelGroup: true
@@ -81,7 +81,7 @@ async function seedTags(): Promise<void> {
 
 		// Create individual category tags
 		for (const category of categoryGroup.categories) {
-			await pb.collection('tags').create({
+			await pbAdmin.collection('tags').create({
 				name: category.name,
 				for: 'transactions',
 				isLabelGroup: false
@@ -91,7 +91,7 @@ async function seedTags(): Promise<void> {
 
 	// Create account type tags
 	for (const accountType of accountTypes) {
-		await pb.collection('tags').create({
+		await pbAdmin.collection('tags').create({
 			name: accountType.name,
 			for: 'accounts',
 			isLabelGroup: false
@@ -100,7 +100,7 @@ async function seedTags(): Promise<void> {
 
 	// Create asset type tags
 	for (const assetType of assetTypes) {
-		await pb.collection('tags').create({
+		await pbAdmin.collection('tags').create({
 			name: assetType.name,
 			for: 'assets',
 			isLabelGroup: false
@@ -109,7 +109,7 @@ async function seedTags(): Promise<void> {
 	console.warn('-> Tags seeded successfully');
 }
 
-async function seedAccounts(userId: string): Promise<void> {
+async function seedAccounts(pb: TypedPocketBase): Promise<void> {
 	const accounts: AccountDetails[] = [
 		accountCheckingDetails,
 		accountSavingsDetails,
@@ -120,11 +120,11 @@ async function seedAccounts(userId: string): Promise<void> {
 		accountWalletDetails
 	];
 
-	for (const account of accounts) await createAccount(userId, account);
+	for (const account of accounts) await createAccount(pb, account);
 	console.warn('-> Accounts seeded successfully');
 }
 
-async function seedAssets(userId: string): Promise<void> {
+async function seedAssets(pb: TypedPocketBase): Promise<void> {
 	const assets: AssetDetails[] = [
 		assetSecurityTeslaDetails,
 		assetSecurityGamestopDetails,
@@ -134,60 +134,62 @@ async function seedAssets(userId: string): Promise<void> {
 		assetVehicleDetails
 	];
 
-	for (const asset of assets) await createAsset(userId, asset);
+	for (const asset of assets) await createAsset(pb, asset);
 	console.warn('-> Assets seeded successfully');
 }
 
-async function seedTransactions(): Promise<void> {
+async function seedTransactions(pb: TypedPocketBase): Promise<void> {
 	const checkingAccount = await pb
 		.collection('accounts')
-		.getFirstListItem('name="Bob\'s Laughable-Yield Checking"');
-	const savingsAccount = await pb.collection('accounts').getFirstListItem('name="Emergency Fund"');
+		.getFirstListItem(`name="${accountCheckingDetails.name}"`);
+	const savingsAccount = await pb
+		.collection('accounts')
+		.getFirstListItem(`name="${accountSavingsDetails.name}"`);
 	const creditCardAccount = await pb
 		.collection('accounts')
-		.getFirstListItem('name="Alice\'s Limited Rewards"');
+		.getFirstListItem(`name="${accountCreditCardDetails.name}"`);
 
 	const checkingTransactions = await accountCheckingTransactionSet();
 	const savingsTransactions = await accountSavingsTransactionSet();
 	const creditCardTransactions = await accountCreditCardTransactionSet();
 
-	await createTransactions(checkingAccount.id, checkingTransactions);
-	await createTransactions(savingsAccount.id, savingsTransactions);
-	await createTransactions(creditCardAccount.id, creditCardTransactions);
+	await createTransactions(pb, checkingAccount.id, checkingTransactions);
+	await createTransactions(pb, savingsAccount.id, savingsTransactions);
+	await createTransactions(pb, creditCardAccount.id, creditCardTransactions);
 	console.warn('-> Transactions seeded successfully');
 }
 
-async function seedBalanceStatements(): Promise<void> {
+async function seedBalanceStatements(pb: TypedPocketBase): Promise<void> {
 	const accounts = await pb.collection('accounts').getFullList();
-	const assets = await pb.collection('asset').getFullList();
+	const assets = await pb.collection('assets').getFullList();
 
 	const accountsWithBalanceStatements = [
-		{ account: '401k', data: account401kBalanceStatements },
-		{ account: 'Auto Loan', data: accountAutoLoanBalanceStatements },
-		{ account: 'Roth IRA', data: accountRothIraBalanceStatements },
-		{ account: 'Wallet', data: accountWalletBalanceStatements }
+		{ account: account401kDetails.name, data: account401kBalanceStatements },
+		{ account: accountAutoLoanDetails.name, data: accountAutoLoanBalanceStatements },
+		{ account: accountRothIraDetails.name, data: accountRothIraBalanceStatements },
+		{ account: accountWalletDetails.name, data: accountWalletBalanceStatements }
 	];
 
 	for (const accountWithBalanceStatements of accountsWithBalanceStatements) {
 		const account = accounts.find((a) => a.name.includes(accountWithBalanceStatements.account));
 		if (!account) throw new Error(`Account not found: ${accountWithBalanceStatements.account}`);
-		await createAccountBalanceStatements(account.id, accountWithBalanceStatements.data);
+		await createAccountBalanceStatements(pb, account.id, accountWithBalanceStatements.data);
 	}
 	console.warn('-> Created account balance statements');
 
 	const assetsWithBalanceStatements = [
-		{ asset: 'Tesla', data: assetTeslaBalanceStatements },
-		{ asset: 'GameStop', data: assetGamestopBalanceStatements },
-		{ asset: 'Bitcoin', data: assetBitcoinBalanceStatements },
-		{ asset: 'Ethereum', data: assetEthereumBalanceStatements },
-		{ asset: 'Manchild Card Collection', data: assetCollectibleBalanceStatements },
-		{ asset: '1998 Fiat Multipla', data: assetVehicleBalanceStatements }
+		{ asset: assetSecurityTeslaDetails.name, data: assetTeslaBalanceStatements },
+		{ asset: assetSecurityGamestopDetails.name, data: assetGamestopBalanceStatements },
+		{ asset: assetCryptoBitcoinDetails.name, data: assetBitcoinBalanceStatements },
+		{ asset: assetCryptoEthereumDetails.name, data: assetEthereumBalanceStatements },
+		{ asset: assetCollectibleDetails.name, data: assetCollectibleBalanceStatements },
+		{ asset: assetVehicleDetails.name, data: assetVehicleBalanceStatements }
 	];
 
 	for (const assetWithBalanceStatements of assetsWithBalanceStatements) {
 		const asset = assets.find((a) => a.name.includes(assetWithBalanceStatements.asset));
 		if (!asset) throw new Error(`Asset not found: ${assetWithBalanceStatements.asset}`);
-		await createAssetBalanceStatements(asset.id, assetWithBalanceStatements.data);
+		await createAssetBalanceStatements(pb, asset.id, assetWithBalanceStatements.data);
 	}
 	console.warn('-> Created asset balance statements');
 }
@@ -195,13 +197,16 @@ async function seedBalanceStatements(): Promise<void> {
 async function createAndAuthAsAdmin(): Promise<void> {
 	try {
 		// Attempt to authenticate with existing admin credentials
-		await pb.admins.authWithPassword(POCKETBASE_SEED_ADMIN_EMAIL, POCKETBASE_SEED_DEFAULT_PASSWORD);
+		await pbAdmin.admins.authWithPassword(
+			POCKETBASE_SEED_ADMIN_EMAIL,
+			POCKETBASE_SEED_DEFAULT_PASSWORD
+		);
 		console.warn('-> Admin authenticated successfully');
 	} catch (error) {
 		console.warn('-> Admin authentication failed, attempting to create new admin account');
 		try {
 			// Attempt to create a new admin account
-			await pb.admins.create({
+			await pbAdmin.admins.create({
 				email: POCKETBASE_SEED_ADMIN_EMAIL,
 				password: POCKETBASE_SEED_DEFAULT_PASSWORD,
 				passwordConfirm: POCKETBASE_SEED_DEFAULT_PASSWORD
@@ -209,7 +214,7 @@ async function createAndAuthAsAdmin(): Promise<void> {
 			console.warn('-> New admin account created successfully');
 
 			// Authenticate with the newly created admin account
-			await pb.admins.authWithPassword(
+			await pbAdmin.admins.authWithPassword(
 				POCKETBASE_SEED_ADMIN_EMAIL,
 				POCKETBASE_SEED_DEFAULT_PASSWORD
 			);
@@ -223,19 +228,14 @@ async function createAndAuthAsAdmin(): Promise<void> {
 
 export async function createAndAuthAsUser() {
 	try {
-		const userAlice = await createVerifiedUniqueUser('alice');
-		console.warn('-> User created:', userAlice.email, POCKETBASE_SEED_DEFAULT_PASSWORD);
-
-		// Clear the admin auth
-		pb.authStore.clear();
-
-		// Auth as the user
-		await pb
-			.collection('users')
-			.authWithPassword(userAlice.email, POCKETBASE_SEED_DEFAULT_PASSWORD);
-		console.warn('-> User authenticated');
-
-		return userAlice;
+		const pbAlice = await createVerifiedUniqueUser('alice');
+		console.log('pbAlice', pbAlice.authStore.model);
+		console.warn(
+			'-> User created:',
+			pbAlice.authStore.model?.email,
+			POCKETBASE_SEED_DEFAULT_PASSWORD
+		);
+		return pbAlice;
 	} catch (error) {
 		console.warn('-> Error creating or verifying regular user:', error);
 		if (error instanceof Error && 'response' in error) {
@@ -254,10 +254,10 @@ async function main(): Promise<void> {
 
 		// User tasks
 		const user = await createAndAuthAsUser();
-		await seedAccounts(user.id);
-		await seedAssets(user.id);
-		await seedTransactions();
-		await seedBalanceStatements();
+		await seedAccounts(user);
+		await seedAssets(user);
+		await seedTransactions(user);
+		await seedBalanceStatements(user);
 
 		console.warn('-> All data seeded successfully');
 		process.exit(0);

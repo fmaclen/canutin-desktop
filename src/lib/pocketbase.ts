@@ -1,6 +1,6 @@
-import PocketBase from 'pocketbase';
+import PocketBase, { type AuthModel } from 'pocketbase';
 
-import type { TypedPocketBase } from '$lib/pocketbase-types';
+import type { TypedPocketBase, UsersResponse } from '$lib/pocketbase-types';
 import type { AccountDetails } from '$lib/seed/data/accounts';
 import type { BalanceStatementDetails } from '$lib/seed/data/balanceStatements';
 import type { TransactionDetails } from '$lib/seed/data/transactions';
@@ -11,27 +11,31 @@ export const POCKETBASE_DEFAULT_URL = 'http://127.0.0.1:8090';
 export const POCKETBASE_SEED_ADMIN_EMAIL = 'admin@canutin.com';
 export const POCKETBASE_SEED_DEFAULT_PASSWORD = '123qweasdzxc';
 
-export const pb = new PocketBase(POCKETBASE_DEFAULT_URL) as TypedPocketBase;
+export const pbAdmin = new PocketBase(POCKETBASE_DEFAULT_URL) as TypedPocketBase;
 
-export async function getTagId(name: string, type: string) {
+export async function getTagId(pb: PocketBase, name: string, type: string) {
 	const result = await pb
 		.collection('tags')
 		.getFirstListItem(`name ~ "${name}" && for = "${type}"`);
 	return result.id;
 }
 
-export async function createAccount(ownerId: string, account: AccountDetails) {
-	const tagId = await getTagId(account.tag, 'accounts');
+export async function createAccount(pb: PocketBase, account: AccountDetails) {
+	const tagId = await getTagId(pb, account.tag, 'accounts');
 	return await pb.collection('accounts').create({
 		...account,
 		tag: tagId,
-		owner: ownerId
+		owner: pb.authStore.model?.id
 	});
 }
 
-export async function createTransactions(accountId: string, transactions: TransactionDetails[]) {
+export async function createTransactions(
+	pb: PocketBase,
+	accountId: string,
+	transactions: TransactionDetails[]
+) {
 	for (const transaction of transactions) {
-		const tagId = await getTagId(transaction.tag, 'transactions');
+		const tagId = await getTagId(pb, transaction.tag, 'transactions');
 		await pb.collection('transactions').create({
 			...transaction,
 			account: accountId,
@@ -41,6 +45,7 @@ export async function createTransactions(accountId: string, transactions: Transa
 }
 
 export async function createAccountBalanceStatements(
+	pb: PocketBase,
 	accountId: string,
 	balanceStatements: BalanceStatementDetails[]
 ) {
@@ -53,6 +58,7 @@ export async function createAccountBalanceStatements(
 }
 
 export async function createAssetBalanceStatements(
+	pb: PocketBase,
 	assetId: string,
 	balanceStatements: BalanceStatementDetails[]
 ) {
@@ -64,11 +70,11 @@ export async function createAssetBalanceStatements(
 	}
 }
 
-export async function createAsset(ownerId: string, asset: AssetDetails) {
-	const tagId = await getTagId(asset.tag, 'assets');
+export async function createAsset(pb: PocketBase, asset: AssetDetails) {
+	const tagId = await getTagId(pb, asset.tag, 'assets');
 	return await pb.collection('assets').create({
 		...asset,
 		tag: tagId,
-		owner: ownerId
+		owner: pb.authStore.model?.id
 	});
 }

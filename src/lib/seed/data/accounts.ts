@@ -64,7 +64,7 @@ export const account401kDetails: AccountDetails = {
 export const accountWalletDetails: AccountDetails = {
 	name: 'Matress Wallet',
 	balanceGroup: 0,
-	tag: 'Wallet',
+	tag: 'Cash',
 	isAutoCalculated: false,
 	isClosed: false
 };

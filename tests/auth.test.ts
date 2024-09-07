@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test';
 
-import { pb, POCKETBASE_DEFAULT_URL, POCKETBASE_SEED_DEFAULT_PASSWORD } from '$lib/pocketbase';
+import { pbAdmin, POCKETBASE_DEFAULT_URL, POCKETBASE_SEED_DEFAULT_PASSWORD } from '$lib/pocketbase';
 import { createVerifiedUniqueUser } from '$lib/seed/data/user';
+
+import { signInAsUser } from './utils';
 
 test('authentication flow: redirects, invalid login, and user creation', async ({ page }) => {
 	// Cannot see app pages without signing in
@@ -25,11 +27,11 @@ test('authentication flow: redirects, invalid login, and user creation', async (
 	);
 
 	// Create the user, then un-verify them
-	const userAlice = await createVerifiedUniqueUser('alice');
-	await pb.collection('users').update(userAlice.id, { verified: false });
+	const pbAlice = await createVerifiedUniqueUser('alice');
+	await pbAdmin.collection('users').update(pbAlice.authStore.model?.id, { verified: false });
 
 	// Attempt to login with newly created (unverified) user
-	await page.getByLabel('Email').fill(userAlice.email);
+	await page.getByLabel('Email').fill(pbAlice.authStore.model?.email);
 	await page.getByLabel('Password').fill(POCKETBASE_SEED_DEFAULT_PASSWORD);
 	await page.getByRole('button', { name: 'Sign in' }).click();
 	await expect(page.locator('.auth-message')).toHaveText(
@@ -38,17 +40,14 @@ test('authentication flow: redirects, invalid login, and user creation', async (
 });
 
 test('verified user login, navigation, and sign out', async ({ page }) => {
-	const userAlice = await createVerifiedUniqueUser('alice');
+	const pbAlice = await createVerifiedUniqueUser('alice');
 
 	// User can now sign in
-	await page.goto('/auth');
-	await page.getByLabel('Email').fill(userAlice.email);
-	await page.getByLabel('Password').fill(POCKETBASE_SEED_DEFAULT_PASSWORD);
-	await page.getByRole('button', { name: 'Sign in' }).click();
+	await signInAsUser(page, pbAlice);
 	await expect(page).toHaveURL('/');
 	await expect(page.locator('h1').getByText('The big picture')).toBeVisible();
 	await expect(page.locator('h1').getByText('Balance sheet')).not.toBeVisible();
-	await expect(page.getByText(userAlice.email)).toBeVisible();
+	await expect(page.getByText(pbAlice.authStore.model?.email)).toBeVisible();
 
 	// Check there is no redirect to /auth
 	await page.getByRole('link', { name: 'Balance sheet' }).click();
@@ -69,14 +68,14 @@ test('verified user login, navigation, and sign out', async ({ page }) => {
 });
 
 test('offline scenario', async ({ page, context }) => {
-	const userAlice = await createVerifiedUniqueUser('alice');
+	const pbAlice = await createVerifiedUniqueUser('alice');
 
 	// Try to sign in while offline
-	await page.goto('/auth');
+	await page.goto('/');
+	await expect(page.locator('h1', { hasText: 'Sign in' })).toBeVisible();
 
-	// Simulate offline scenario
 	await context.setOffline(true);
-	await page.getByLabel('Email').fill(userAlice.email);
+	await page.getByLabel('Email').fill(pbAlice.authStore.model?.email);
 	await page.getByLabel('Password').fill(POCKETBASE_SEED_DEFAULT_PASSWORD);
 	await page.getByRole('button', { name: 'Sign in' }).click();
 
@@ -93,13 +92,10 @@ test('offline scenario', async ({ page, context }) => {
 });
 
 test.skip('server URL persistence in localStorage', async ({ page }) => {
-	const userAlice = await createVerifiedUniqueUser('alice');
+	const pbAlice = await createVerifiedUniqueUser('alice');
 
 	// Sign in
-	await page.goto('/auth');
-	await page.getByLabel('Email').fill(userAlice.email);
-	await page.getByLabel('Password').fill(POCKETBASE_SEED_DEFAULT_PASSWORD);
-	await page.getByRole('button', { name: 'Sign in' }).click();
+	await signInAsUser(page, pbAlice);
 	await expect(page).toHaveURL('/');
 
 	// Check initial localStorage value
