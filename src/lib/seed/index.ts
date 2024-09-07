@@ -44,23 +44,9 @@ import {
 	seedUniqueUser
 } from '$lib/seed/utils';
 
-function askForConfirmation(question: string): Promise<boolean> {
-	const rl = readline.createInterface({
-		input: process.stdin,
-		output: process.stdout
-	});
-
-	return new Promise((resolve) => {
-		rl.question(question, (answer) => {
-			rl.close();
-			resolve(answer.toLowerCase() === 'y');
-		});
-	});
-}
-
 async function deleteAllData(): Promise<void> {
 	const collections = [
-		'users', // Add users to the list of collections to clear
+		'users',
 		'accounts',
 		'asset',
 		'transactions',
@@ -90,19 +76,6 @@ async function getTagId(name: string, type: string): Promise<string | null> {
 }
 
 async function seedTags(): Promise<void> {
-	// Check if tags already exist
-	const existingTags = await pb.collection('tags').getList(1, 1);
-
-	if (existingTags.totalItems > 0) {
-		const confirmed = await askForConfirmation(
-			'-> Tags already exist. Do you want to proceed with seeding? (y/n): '
-		);
-		if (!confirmed) {
-			console.warn('-> Seeding cancelled by user');
-			return;
-		}
-	}
-
 	// Create transaction category tags
 	for (const categoryGroup of transactionCategories.categoryGroups) {
 		// Create group tag
@@ -139,6 +112,7 @@ async function seedTags(): Promise<void> {
 			isLabelGroup: false
 		});
 	}
+	console.warn('-> Tags seeded successfully');
 }
 
 async function seedAccounts(userId: string): Promise<void> {
@@ -223,7 +197,6 @@ async function seedTransactions(): Promise<void> {
 			tag: tagId
 		});
 	}
-
 	console.warn('-> Transactions seeded successfully');
 }
 
@@ -260,7 +233,6 @@ async function seedBalanceStatements(): Promise<void> {
 			}
 		}
 	}
-
 	console.warn('-> Balance statements seeded successfully');
 }
 
@@ -297,12 +269,6 @@ export async function createAndAuthAsUser() {
 	try {
 		const userAlice = await seedUniqueUser('alice');
 		console.warn('-> User created:', userAlice.email, POCKETBASE_SEED_DEFAULT_PASSWORD);
-
-		// Verify the user account by updating the 'verified' field
-		await pb.collection('users').update(userAlice.id, {
-			verified: true
-		});
-		console.warn('-> User account verified');
 
 		// Clear the admin auth
 		pb.authStore.clear();
