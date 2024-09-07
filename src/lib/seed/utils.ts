@@ -21,5 +21,7 @@ export async function seedUniqueUser(baseName: string) {
 		name: `${baseName.slice(0, 1).toUpperCase() + baseName.slice(1)} ${shortUUID}`
 	});
 
+	// Verify user
+	await pb.collection('users').update(user.id, { verified: true });
 	return user;
 }

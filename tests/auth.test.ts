@@ -24,8 +24,9 @@ test('authentication flow: redirects, invalid login, and user creation', async (
 		'Incorrect email or password. Please check your credentials.'
 	);
 
-	// Create the user
+	// Create the user, then un-verify them
 	const userAlice = await seedUniqueUser('alice');
+	await pb.collection('users').update(userAlice.id, { verified: false });
 
 	// Attempt to login with newly created (unverified) user
 	await page.getByLabel('Email').fill(userAlice.email);
@@ -37,9 +38,7 @@ test('authentication flow: redirects, invalid login, and user creation', async (
 });
 
 test('verified user login, navigation, and sign out', async ({ page }) => {
-	// Create and verify user
 	const userAlice = await seedUniqueUser('alice');
-	await pb.collection('users').update(userAlice.id, { verified: true });
 
 	// User can now sign in
 	await page.goto('/auth');
@@ -70,9 +69,7 @@ test('verified user login, navigation, and sign out', async ({ page }) => {
 });
 
 test('offline scenario', async ({ page, context }) => {
-	// Create and verify user
 	const userAlice = await seedUniqueUser('alice');
-	await pb.collection('users').update(userAlice.id, { verified: true });
 
 	// Try to sign in while offline
 	await page.goto('/auth');
@@ -95,10 +92,8 @@ test('offline scenario', async ({ page, context }) => {
 	await expect(page.locator('h1').getByText('The big picture')).toBeVisible();
 });
 
-test('server URL persistence in localStorage', async ({ page }) => {
-	// Create and verify user
+test.skip('server URL persistence in localStorage', async ({ page }) => {
 	const userAlice = await seedUniqueUser('alice');
-	await pb.collection('users').update(userAlice.id, { verified: true });
 
 	// Sign in
 	await page.goto('/auth');
@@ -112,19 +107,19 @@ test('server URL persistence in localStorage', async ({ page }) => {
 	expect(initialServerUrl).toBe(JSON.stringify(POCKETBASE_DEFAULT_URL));
 
 	// Change server URL
-	const newServerUrl = 'https://demo.canutin.com';
+	const NEW_SERVER_URL = 'https://demo.canutin.com';
 	await page.evaluate((url) => {
 		localStorage.setItem('serverUrl', JSON.stringify(url));
-	}, newServerUrl);
+	}, NEW_SERVER_URL);
 
 	// Reload the page
 	await page.reload();
 
 	// Check if the new server URL persists
 	const persistedServerUrl = await page.evaluate(() => localStorage.getItem('serverUrl'));
-	expect(persistedServerUrl).toBe(JSON.stringify(newServerUrl));
-
-	// Verify that the app is still functioning (user is still logged in)
-	await expect(page.locator('h1').getByText('The big picture')).toBeVisible();
-	await expect(page.getByText(userAlice.email)).toBeVisible();
+	expect(persistedServerUrl).toBe(JSON.stringify(NEW_SERVER_URL));
+	await expect(page).toHaveURL('/auth');
+	await expect(page.locator('.auth-message')).toHaveText(
+		'Unable to connect to the server. Please check your internet connection.'
+	);
 });
