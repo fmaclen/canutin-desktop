@@ -3,6 +3,8 @@ import { expect, test } from '@playwright/test';
 import {
 	createAccount,
 	createAccountBalanceStatements,
+	createAsset,
+	createAssetBalanceStatements,
 	createTransactions,
 	POCKETBASE_SEED_DEFAULT_PASSWORD
 } from '$lib/pocketbase';
@@ -11,7 +13,12 @@ import {
 	accountRothIraDetails,
 	accountSavingsDetails
 } from '$lib/seed/data/accounts';
-import { accountRothIraBalanceStatements } from '$lib/seed/data/balanceStatements';
+import { assetCollectibleDetails, assetSecurityTeslaDetails } from '$lib/seed/data/assets';
+import {
+	accountRothIraBalanceStatements,
+	assetCollectibleBalanceStatements,
+	assetTeslaBalanceStatements
+} from '$lib/seed/data/balanceStatements';
 import {
 	accountCreditCardTransactionSet,
 	accountSavingsTransactionSet
@@ -40,7 +47,19 @@ test('summary totals by balance group', async ({ page }) => {
 	);
 
 	// Create assets
-	// TOOO
+	// Balance group 3
+	const assetSecurityTesla = await createAsset(userAlice.id, assetSecurityTeslaDetails);
+	await createAssetBalanceStatements(
+		assetSecurityTesla.id,
+		assetTeslaBalanceStatements.slice(0, 2)
+	);
+
+	// Balance group 4
+	const assetCollectible = await createAsset(userAlice.id, assetCollectibleDetails);
+	await createAssetBalanceStatements(
+		assetCollectible.id,
+		assetCollectibleBalanceStatements.slice(0, 2)
+	);
 
 	// Sign in
 	await page.goto('/');
@@ -63,9 +82,9 @@ test('summary totals by balance group', async ({ page }) => {
 	await expect(investmentsCard).toBeVisible();
 	await expect(otherAssetsCard).toBeVisible();
 	await expect(otherAssetsCard).toBeVisible();
-	await expect(netWorthCard).toContainText('$18,725');
+	await expect(netWorthCard).toContainText('$63,225');
 	await expect(cashCard).toContainText('$500');
 	await expect(debtCard).toContainText('-$311');
-	await expect(investmentsCard).toContainText('$18,536');
-	await expect(otherAssetsCard).toContainText('$0');
+	await expect(investmentsCard).toContainText('$48,536');
+	await expect(otherAssetsCard).toContainText('$14,500');
 });

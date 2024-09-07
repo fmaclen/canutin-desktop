@@ -1,6 +1,7 @@
 import {
 	createAccount,
 	createAccountBalanceStatements,
+	createAsset,
 	createAssetBalanceStatements,
 	createTransactions,
 	getTagId,
@@ -119,9 +120,7 @@ async function seedAccounts(userId: string): Promise<void> {
 		accountWalletDetails
 	];
 
-	for (const account of accounts) {
-		await createAccount(userId, account);
-	}
+	for (const account of accounts) await createAccount(userId, account);
 	console.warn('-> Accounts seeded successfully');
 }
 
@@ -135,14 +134,7 @@ async function seedAssets(userId: string): Promise<void> {
 		assetVehicleDetails
 	];
 
-	for (const asset of assets) {
-		const tagId = await getTagId(asset.tag, 'assets');
-		await pb.collection('asset').create({
-			...asset,
-			tag: tagId,
-			owner: userId
-		});
-	}
+	for (const asset of assets) await createAsset(userId, asset);
 	console.warn('-> Assets seeded successfully');
 }
 

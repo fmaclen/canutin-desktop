@@ -1,10 +1,11 @@
+import { ClientResponseError } from 'pocketbase';
 import { getContext, setContext } from 'svelte';
 
 import type { AssetsResponse, TypedPocketBase } from '$lib/pocketbase-types';
 import { getPbClientContext } from '$lib/pocketbase.svelte';
 
 class Assets {
-	assets = $state<AssetsResponse[]>([]);
+	assets = $state<(AssetsResponse & { balance: number | null })[]>([]);
 	private pbClient = getPbClientContext();
 
 	private get pb(): TypedPocketBase {
@@ -18,10 +19,50 @@ class Assets {
 
 	private async fetchAssets() {
 		try {
-			const records = await this.pb.collection('assets').getFullList();
-			this.assets = records;
+			const assetsCollection = await this.pb.collection('assets').getFullList();
+			const assetsWithBalance = await Promise.all(
+				assetsCollection.map(async (asset) => {
+					try {
+						const balance = await this.getAssetBalance(asset);
+						return { ...asset, balance };
+					} catch (error) {
+						if (error instanceof ClientResponseError && error.isAbort) {
+							console.log('Asset balance fetch cancelled for:', asset.name);
+							return { ...asset, balance: null };
+						}
+						throw error;
+					}
+				})
+			);
+			this.assets = assetsWithBalance;
 		} catch (error) {
-			console.error('Error fetching assets:', error);
+			if (error instanceof ClientResponseError && error.isAbort) {
+				console.log('Assets fetch cancelled');
+			} else {
+				console.error('Error fetching assets:', error);
+			}
+		}
+	}
+
+	private async getAssetBalance(asset: AssetsResponse): Promise<number | null> {
+		try {
+			const latestStatement = await this.pb.collection('assetBalanceStatements').getList(1, 1, {
+				filter: `asset="${asset.id}"`,
+				sort: '-created',
+				requestKey: null // Disable auto-cancellation for this request
+			});
+			return latestStatement.items[0]?.value ?? null;
+		} catch (error) {
+			if (error instanceof ClientResponseError) {
+				if (error.isAbort) {
+					console.log('Balance fetch cancelled for asset:', asset.name);
+				} else {
+					console.error('Error fetching balance for asset:', asset.name, error);
+				}
+			} else {
+				console.error('Unexpected error fetching balance for asset:', asset.name, error);
+			}
+			return null;
 		}
 	}
 
@@ -31,13 +72,14 @@ class Assets {
 		});
 	}
 
-	private handleAssetChange(action: string, record: AssetsResponse) {
+	private async handleAssetChange(action: string, record: AssetsResponse) {
+		const assetWithBalance = { ...record, balance: await this.getAssetBalance(record) };
 		switch (action) {
 			case 'create':
-				this.assets = [record, ...this.assets];
+				this.assets = [assetWithBalance, ...this.assets];
 				break;
 			case 'update':
-				this.assets = this.assets.map((a) => (a.id === record.id ? record : a));
+				this.assets = this.assets.map((a) => (a.id === record.id ? assetWithBalance : a));
 				break;
 			case 'delete':
 				this.assets = this.assets.filter((a) => a.id !== record.id);

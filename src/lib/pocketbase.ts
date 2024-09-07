@@ -5,6 +5,8 @@ import type { AccountDetails } from '$lib/seed/data/accounts';
 import type { BalanceStatementDetails } from '$lib/seed/data/balanceStatements';
 import type { TransactionDetails } from '$lib/seed/data/transactions';
 
+import type { AssetDetails } from './seed/data/assets';
+
 export const POCKETBASE_DEFAULT_URL = 'http://127.0.0.1:8090';
 export const POCKETBASE_SEED_ADMIN_EMAIL = 'admin@canutin.com';
 export const POCKETBASE_SEED_DEFAULT_PASSWORD = '123qweasdzxc';
@@ -60,4 +62,13 @@ export async function createAssetBalanceStatements(
 			...balanceStatement
 		});
 	}
+}
+
+export async function createAsset(ownerId: string, asset: AssetDetails) {
+	const tagId = await getTagId(asset.tag, 'assets');
+	return await pb.collection('assets').create({
+		...asset,
+		tag: tagId,
+		owner: ownerId
+	});
 }
