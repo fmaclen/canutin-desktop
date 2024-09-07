@@ -1,17 +1,9 @@
 import { randomUUID } from 'crypto';
-import PocketBase from 'pocketbase';
 
-import { POCKETBASE_DEFAULT_URL } from '$lib/pocketbase';
-import type { TypedPocketBase } from '$lib/pocketbase-types';
+import { pb, POCKETBASE_SEED_ADMIN_EMAIL, POCKETBASE_SEED_DEFAULT_PASSWORD } from '$lib/pocketbase';
 
-export const POCKETBASE_SEED_ADMIN_EMAIL = 'admin@canutin.com';
-export const POCKETBASE_SEED_DEFAULT_PASSWORD = '123qweasdzxc';
-
-export const pb = new PocketBase(POCKETBASE_DEFAULT_URL) as TypedPocketBase;
-
-export async function seedUniqueUser(baseName: string) {
+export async function createVerifiedUniqueUser(baseName: string) {
 	await pb.admins.authWithPassword(POCKETBASE_SEED_ADMIN_EMAIL, POCKETBASE_SEED_DEFAULT_PASSWORD);
-
 	const shortUUID = randomUUID().split('-')[0];
 	const email = `${baseName}.${shortUUID}@canutin.com`;
 	const user = await pb.collection('users').create({
@@ -20,6 +12,6 @@ export async function seedUniqueUser(baseName: string) {
 		passwordConfirm: POCKETBASE_SEED_DEFAULT_PASSWORD,
 		name: `${baseName.slice(0, 1).toUpperCase() + baseName.slice(1)} ${shortUUID}`
 	});
-
+	await pb.collection('users').update(user.id, { verified: true });
 	return user;
 }

@@ -1,5 +1,13 @@
-import readline from 'readline';
-
+import {
+	createAccount,
+	createAccountBalanceStatements,
+	createAssetBalanceStatements,
+	createTransactions,
+	getTagId,
+	pb,
+	POCKETBASE_SEED_ADMIN_EMAIL,
+	POCKETBASE_SEED_DEFAULT_PASSWORD
+} from '$lib/pocketbase';
 import {
 	account401kDetails,
 	accountAutoLoanDetails,
@@ -9,7 +17,7 @@ import {
 	accountSavingsDetails,
 	accountWalletDetails,
 	type AccountDetails
-} from '$lib/seed/demo/accounts';
+} from '$lib/seed/data/accounts';
 import {
 	assetCollectibleDetails,
 	assetCryptoBitcoinDetails,
@@ -18,7 +26,7 @@ import {
 	assetSecurityTeslaDetails,
 	assetVehicleDetails,
 	type AssetDetails
-} from '$lib/seed/demo/assets';
+} from '$lib/seed/data/assets';
 import {
 	account401kbalanceStatements,
 	accountAutoLoanBalanceStatements,
@@ -30,37 +38,19 @@ import {
 	assetGamestopBalanceStatements,
 	assetTeslaBalanceStatements,
 	assetVehicleBalanceStatements
-} from '$lib/seed/demo/balanceStatements';
-import { accountTypes, assetTypes, transactionCategories } from '$lib/seed/demo/tags';
+} from '$lib/seed/data/balanceStatements';
+import { accountTypes, assetTypes, transactionCategories } from '$lib/seed/data/tags';
 import {
 	accountCheckingTransactionSet,
 	accountCreditCardTransactionSet,
 	accountSavingsTransactionSet
-} from '$lib/seed/demo/transactions';
-import {
-	pb,
-	POCKETBASE_SEED_ADMIN_EMAIL,
-	POCKETBASE_SEED_DEFAULT_PASSWORD,
-	seedUniqueUser
-} from '$lib/seed/utils';
+} from '$lib/seed/data/transactions';
 
-function askForConfirmation(question: string): Promise<boolean> {
-	const rl = readline.createInterface({
-		input: process.stdin,
-		output: process.stdout
-	});
-
-	return new Promise((resolve) => {
-		rl.question(question, (answer) => {
-			rl.close();
-			resolve(answer.toLowerCase() === 'y');
-		});
-	});
-}
+import { createVerifiedUniqueUser } from './data/user';
 
 async function deleteAllData(): Promise<void> {
 	const collections = [
-		'users', // Add users to the list of collections to clear
+		'users',
 		'accounts',
 		'asset',
 		'transactions',
@@ -78,31 +68,7 @@ async function deleteAllData(): Promise<void> {
 	}
 }
 
-async function getTagId(name: string, type: string): Promise<string | null> {
-	try {
-		const result = await pb
-			.collection('tags')
-			.getFirstListItem(`name ~ "${name}" && for = "${type}"`);
-		return result.id;
-	} catch (error) {
-		return null;
-	}
-}
-
 async function seedTags(): Promise<void> {
-	// Check if tags already exist
-	const existingTags = await pb.collection('tags').getList(1, 1);
-
-	if (existingTags.totalItems > 0) {
-		const confirmed = await askForConfirmation(
-			'-> Tags already exist. Do you want to proceed with seeding? (y/n): '
-		);
-		if (!confirmed) {
-			console.warn('-> Seeding cancelled by user');
-			return;
-		}
-	}
-
 	// Create transaction category tags
 	for (const categoryGroup of transactionCategories.categoryGroups) {
 		// Create group tag
@@ -139,6 +105,7 @@ async function seedTags(): Promise<void> {
 			isLabelGroup: false
 		});
 	}
+	console.warn('-> Tags seeded successfully');
 }
 
 async function seedAccounts(userId: string): Promise<void> {
@@ -153,12 +120,7 @@ async function seedAccounts(userId: string): Promise<void> {
 	];
 
 	for (const account of accounts) {
-		const tagId = await getTagId(account.tag, 'accounts');
-		await pb.collection('accounts').create({
-			...account,
-			tag: tagId,
-			owner: userId
-		});
+		await createAccount(userId, account);
 	}
 	console.warn('-> Accounts seeded successfully');
 }
@@ -197,33 +159,9 @@ async function seedTransactions(): Promise<void> {
 	const savingsTransactions = await accountSavingsTransactionSet();
 	const creditCardTransactions = await accountCreditCardTransactionSet();
 
-	for (const transaction of checkingTransactions) {
-		const tagId = await getTagId(transaction.tag, 'transactions');
-		await pb.collection('transactions').create({
-			...transaction,
-			account: checkingAccount.id,
-			tag: tagId
-		});
-	}
-
-	for (const transaction of savingsTransactions) {
-		const tagId = await getTagId(transaction.tag, 'transactions');
-		await pb.collection('transactions').create({
-			...transaction,
-			account: savingsAccount.id,
-			tag: tagId
-		});
-	}
-
-	for (const transaction of creditCardTransactions) {
-		const tagId = await getTagId(transaction.tag, 'transactions');
-		await pb.collection('transactions').create({
-			...transaction,
-			account: creditCardAccount.id,
-			tag: tagId
-		});
-	}
-
+	await createTransactions(checkingAccount.id, checkingTransactions);
+	await createTransactions(savingsAccount.id, savingsTransactions);
+	await createTransactions(creditCardAccount.id, creditCardTransactions);
 	console.warn('-> Transactions seeded successfully');
 }
 
@@ -231,11 +169,21 @@ async function seedBalanceStatements(): Promise<void> {
 	const accounts = await pb.collection('accounts').getFullList();
 	const assets = await pb.collection('asset').getFullList();
 
-	const balanceStatements = [
+	const accountsWithBalanceStatements = [
 		{ account: '401k', data: account401kbalanceStatements },
 		{ account: 'Auto Loan', data: accountAutoLoanBalanceStatements },
 		{ account: 'Roth IRA', data: accountRothIraBalanceStatements },
-		{ account: 'Wallet', data: accountWalletBalanceStatements },
+		{ account: 'Wallet', data: accountWalletBalanceStatements }
+	];
+
+	for (const accountWithBalanceStatements of accountsWithBalanceStatements) {
+		const account = accounts.find((a) => a.name.includes(accountWithBalanceStatements.account));
+		if (!account) throw new Error(`Account not found: ${accountWithBalanceStatements.account}`);
+		await createAccountBalanceStatements(account.id, accountWithBalanceStatements.data);
+	}
+	console.warn('-> Created account balance statements');
+
+	const assetsWithBalanceStatements = [
 		{ asset: 'Tesla', data: assetTeslaBalanceStatements },
 		{ asset: 'GameStop', data: assetGamestopBalanceStatements },
 		{ asset: 'Bitcoin', data: assetBitcoinBalanceStatements },
@@ -244,24 +192,12 @@ async function seedBalanceStatements(): Promise<void> {
 		{ asset: '1998 Fiat Multipla', data: assetVehicleBalanceStatements }
 	];
 
-	for (const statement of balanceStatements) {
-		const item = statement.account
-			? accounts.find((a) => a.name.includes(statement.account))
-			: assets.find((a) => a.name === statement.asset);
-
-		if (item) {
-			for (const balanceData of statement.data) {
-				await pb
-					.collection(statement.account ? 'accountBalanceStatements' : 'assetBalanceStatements')
-					.create({
-						...balanceData,
-						[statement.account ? 'account' : 'asset']: item.id
-					});
-			}
-		}
+	for (const assetWithBalanceStatements of assetsWithBalanceStatements) {
+		const asset = assets.find((a) => a.name.includes(assetWithBalanceStatements.asset));
+		if (!asset) throw new Error(`Asset not found: ${assetWithBalanceStatements.asset}`);
+		await createAssetBalanceStatements(asset.id, assetWithBalanceStatements.data);
 	}
-
-	console.warn('-> Balance statements seeded successfully');
+	console.warn('-> Created asset balance statements');
 }
 
 async function createAndAuthAsAdmin(): Promise<void> {
@@ -295,14 +231,8 @@ async function createAndAuthAsAdmin(): Promise<void> {
 
 export async function createAndAuthAsUser() {
 	try {
-		const userAlice = await seedUniqueUser('alice');
+		const userAlice = await createVerifiedUniqueUser('alice');
 		console.warn('-> User created:', userAlice.email, POCKETBASE_SEED_DEFAULT_PASSWORD);
-
-		// Verify the user account by updating the 'verified' field
-		await pb.collection('users').update(userAlice.id, {
-			verified: true
-		});
-		console.warn('-> User account verified');
 
 		// Clear the admin auth
 		pb.authStore.clear();

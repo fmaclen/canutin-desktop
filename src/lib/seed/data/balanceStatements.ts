@@ -1,11 +1,11 @@
 import { subMonths } from 'date-fns';
 
-interface BalanceStatement {
+export interface BalanceStatementDetails {
 	created: Date;
 	value: number;
 }
 
-interface AssetBalanceStatement extends BalanceStatement {
+interface AssetBalanceStatement extends BalanceStatementDetails {
 	quantity: number;
 	cost: number;
 }
@@ -16,7 +16,7 @@ const dateInUTC = (date: Date): Date => {
 };
 
 // Accounts
-export const accountAutoLoanBalanceStatements: BalanceStatement[] = [
+export const accountAutoLoanBalanceStatements: BalanceStatementDetails[] = [
 	{
 		created: dateInUTC(new Date()),
 		value: -21250
@@ -91,7 +91,7 @@ export const accountAutoLoanBalanceStatements: BalanceStatement[] = [
 	}
 ];
 
-export const accountRothIraBalanceStatements: BalanceStatement[] = [
+export const accountRothIraBalanceStatements: BalanceStatementDetails[] = [
 	{
 		created: dateInUTC(new Date()),
 		value: 18535.78
@@ -150,7 +150,7 @@ export const accountRothIraBalanceStatements: BalanceStatement[] = [
 	}
 ];
 
-export const account401kbalanceStatements: BalanceStatement[] = [
+export const account401kbalanceStatements: BalanceStatementDetails[] = [
 	{
 		created: dateInUTC(new Date()),
 		value: 4250.58
@@ -209,7 +209,7 @@ export const account401kbalanceStatements: BalanceStatement[] = [
 	}
 ];
 
-export const accountWalletBalanceStatements: BalanceStatement[] = [
+export const accountWalletBalanceStatements: BalanceStatementDetails[] = [
 	{
 		created: dateInUTC(subMonths(new Date(), 7)),
 		value: 1300
@@ -377,7 +377,7 @@ export const assetEthereumBalanceStatements: AssetBalanceStatement[] = [
 	}
 ];
 
-export const assetCollectibleBalanceStatements: BalanceStatement[] = [
+export const assetCollectibleBalanceStatements: BalanceStatementDetails[] = [
 	{
 		created: dateInUTC(subMonths(new Date(), 6)),
 		value: 14500
@@ -388,7 +388,7 @@ export const assetCollectibleBalanceStatements: BalanceStatement[] = [
 	}
 ];
 
-export const assetVehicleBalanceStatements: BalanceStatement[] = [
+export const assetVehicleBalanceStatements: BalanceStatementDetails[] = [
 	{
 		created: dateInUTC(subMonths(new Date(), 4)),
 		value: 38500

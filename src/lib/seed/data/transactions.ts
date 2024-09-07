@@ -1,6 +1,6 @@
 import { addDays, startOfMonth, subMonths } from 'date-fns';
 
-interface Transaction {
+export interface TransactionDetails {
 	description: string;
 	value: number;
 	date: Date;
@@ -16,8 +16,8 @@ const dateInUTC = (date: Date): Date => {
 
 const MONTHS_IN_SET = 24;
 
-export const accountCheckingTransactionSet = async (): Promise<Transaction[]> => {
-	const transactionSet = async (i: number): Promise<Transaction[]> => [
+export const accountCheckingTransactionSet = async (): Promise<TransactionDetails[]> => {
+	const transactionSet = async (i: number): Promise<TransactionDetails[]> => [
 		{
 			description: 'Westside Apartments',
 			value: -2250,
@@ -92,8 +92,8 @@ export const accountCheckingTransactionSet = async (): Promise<Transaction[]> =>
 	return transactions;
 };
 
-export const accountSavingsTransactionSet = async (): Promise<Transaction[]> => {
-	const transactionSet = async (i: number): Promise<Transaction[]> => [
+export const accountSavingsTransactionSet = async (): Promise<TransactionDetails[]> => {
+	const transactionSet = async (i: number): Promise<TransactionDetails[]> => [
 		{
 			description: 'Transfer from Ransack Checking',
 			value: 250,
@@ -112,8 +112,8 @@ export const accountSavingsTransactionSet = async (): Promise<Transaction[]> => 
 	return transactions;
 };
 
-export const accountCreditCardTransactionSet = async (): Promise<Transaction[]> => {
-	const transactionSet = async (i: number): Promise<Transaction[]> => [
+export const accountCreditCardTransactionSet = async (): Promise<TransactionDetails[]> => {
+	const transactionSet = async (i: number): Promise<TransactionDetails[]> => [
 		{
 			description: 'Evergreen Market',
 			value: -175.75,
