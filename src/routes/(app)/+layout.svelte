@@ -1,7 +1,8 @@
 <script lang="ts">
 	import LL from '$i18n/i18n-svelte';
+	import type { AuthModel } from 'pocketbase';
 
-	import { goto } from '$app/navigation';
+	import { goto, onNavigate } from '$app/navigation';
 	import { setAccountsContext } from '$lib/accounts.svelte';
 	import { setAssetsContext } from '$lib/assets.svelte';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
@@ -9,7 +10,7 @@
 	const { children } = $props();
 
 	const pbClient = getPbClientContext();
-	const currentUser = pbClient.pb.authStore.model;
+	let currentUser = $state<AuthModel | null>(pbClient.pb.authStore.model || null);
 
 	$effect.pre(() => {
 		if (currentUser && currentUser.verified) {
@@ -17,6 +18,15 @@
 			setAssetsContext();
 		} else {
 			goto('/auth');
+		}
+	});
+
+	onNavigate(async () => {
+		try {
+			const authData = await pbClient.pb.collection('users').authRefresh();
+			if (!authData.record.verified) handleSignOut();
+		} catch {
+			handleSignOut();
 		}
 	});
 
