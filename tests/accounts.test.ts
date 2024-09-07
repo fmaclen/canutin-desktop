@@ -18,7 +18,6 @@ test('user can only see their own accounts', async ({ page }) => {
 	await createAccount(userBob.id, accountCreditCardDetails);
 
 	await signInAsUser(page, userAlice);
-
 	await page.locator('nav a', { hasText: 'Accounts' }).click();
 	await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
 	await expect(page.getByText('JuggernautCard Limited Rewards')).not.toBeVisible();
@@ -26,7 +25,6 @@ test('user can only see their own accounts', async ({ page }) => {
 
 	await page.getByText('Sign out').click();
 	await signInAsUser(page, userBob);
-
 	await page.locator('nav a', { hasText: 'Accounts' }).click();
 	await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
 	await expect(page.getByText('JuggernautCard Limited Rewards')).toBeVisible();

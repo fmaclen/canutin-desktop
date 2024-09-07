@@ -14,7 +14,6 @@ test('user can only see their own assets', async ({ page }) => {
 	await createAsset(userBob.id, assetCryptoBitcoinDetails);
 
 	await signInAsUser(page, userAlice);
-
 	await page.locator('nav a', { hasText: 'Assets' }).click();
 	await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
 	await expect(page.getByText('Bitcoin')).not.toBeVisible();
@@ -22,7 +21,6 @@ test('user can only see their own assets', async ({ page }) => {
 
 	await page.getByText('Sign out').click();
 	await signInAsUser(page, userBob);
-
 	await page.locator('nav a', { hasText: 'Assets' }).click();
 	await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
 	await expect(page.getByText('Bitcoin')).toBeVisible();
