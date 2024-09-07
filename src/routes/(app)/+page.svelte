@@ -14,11 +14,11 @@
 
 	let balanceGroups = $derived.by(() => {
 		return {
-			netWorth: calculateBalanceGroupTotal(0),
-			cash: calculateBalanceGroupTotal(1),
-			debt: calculateBalanceGroupTotal(2),
-			investments: calculateBalanceGroupTotal(3),
-			otherAssets: calculateBalanceGroupTotal(4)
+			netWorth: calculateBalanceGroupTotal(),
+			cash: calculateBalanceGroupTotal(0),
+			debt: calculateBalanceGroupTotal(1),
+			investments: calculateBalanceGroupTotal(2),
+			otherAssets: calculateBalanceGroupTotal(3)
 		};
 	});
 </script>
