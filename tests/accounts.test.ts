@@ -1,11 +1,13 @@
 import { expect, test } from '@playwright/test';
 
-import { createAccount, createTransactions } from '$lib/pocketbase';
+import { createAccount, createAccountBalanceStatements, createTransactions } from '$lib/pocketbase';
 import {
+	accountAutoLoanDetails,
 	accountCheckingDetails,
 	accountCreditCardDetails,
 	accountSavingsDetails
 } from '$lib/seed/data/accounts';
+import { accountAutoLoanBalanceStatements } from '$lib/seed/data/balanceStatements';
 import { accountSavingsTransactionSet } from '$lib/seed/data/transactions';
 import { createVerifiedUniqueUser } from '$lib/seed/data/user';
 
@@ -50,4 +52,22 @@ test('accounts context is updated in real-time', async ({ page }) => {
 	const transactions = await accountSavingsTransactionSet();
 	await createTransactions(pbAlice, accountEmergencyFund.id, transactions.slice(0, 1));
 	await expect(accountRow).toContainText('$250');
+
+	// Create a non-auto-calculated account
+	await expect(page.getByText('Fiat Auto Loan')).not.toBeVisible();
+
+	const accountAutoLoan = await createAccount(pbAlice, accountAutoLoanDetails);
+	const accountAutoLoanRow = page.locator('tbody tr', {
+		hasText: 'Fiat Auto Loan'
+	});
+	await expect(accountAutoLoanRow).toBeVisible();
+	await expect(accountAutoLoanRow).toContainText('$0');
+
+	// Create a balance statement to update the account balance
+	await createAccountBalanceStatements(
+		pbAlice,
+		accountAutoLoan.id,
+		accountAutoLoanBalanceStatements.slice(0, 1)
+	);
+	await expect(accountAutoLoanRow).toContainText('-$21,250');
 });

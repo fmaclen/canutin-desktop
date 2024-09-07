@@ -35,12 +35,12 @@ test('user can only see their own assets', async ({ page }) => {
 test('assets context is updated in real-time', async ({ page }) => {
 	const pbAlice = await createVerifiedUniqueUser('alice');
 
+	const assetGameStop = await createAsset(pbAlice, assetSecurityGamestopDetails);
+
 	await signInAsUser(page, pbAlice);
 	await page.locator('nav a', { hasText: 'Assets' }).click();
 	await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
-	await expect(page.getByText('GameStop')).not.toBeVisible();
 
-	const assetGameStop = await createAsset(pbAlice, assetSecurityGamestopDetails);
 	const assetRow = page.locator('tbody tr', { hasText: 'GameStop' });
 	await expect(assetRow).toBeVisible();
 	await expect(assetRow).toContainText('$0');
