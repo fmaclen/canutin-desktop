@@ -1,7 +1,7 @@
 import { test as setup } from '@playwright/test';
 
 import { accountTypes, assetTypes, transactionCategories } from '$lib/seed/demo/tags';
-import { pb, POCKETBASE_SEED_ADMIN_EMAIL, POCKETBASE_SEED_DEFAULT_PASSWORD } from '$lib/seed/utils';
+import { pb, POCKETBASE_SEED_ADMIN_EMAIL, POCKETBASE_SEED_DEFAULT_PASSWORD } from '$lib/pocketbase';
 
 setup('create admin account and seed tags', async () => {
 	try {

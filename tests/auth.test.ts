@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { POCKETBASE_DEFAULT_URL } from '$lib/pocketbase';
-import { createUniqueUser, pb, POCKETBASE_SEED_DEFAULT_PASSWORD } from '$lib/seed/utils';
+import { createVerifiedUniqueUser, pb, POCKETBASE_SEED_DEFAULT_PASSWORD } from '$lib/pocketbase';
 
 test('authentication flow: redirects, invalid login, and user creation', async ({ page }) => {
 	// Cannot see app pages without signing in
@@ -25,7 +25,7 @@ test('authentication flow: redirects, invalid login, and user creation', async (
 	);
 
 	// Create the user, then un-verify them
-	const userAlice = await createUniqueUser('alice');
+	const userAlice = await createVerifiedUniqueUser('alice');
 	await pb.collection('users').update(userAlice.id, { verified: false });
 
 	// Attempt to login with newly created (unverified) user
@@ -38,7 +38,7 @@ test('authentication flow: redirects, invalid login, and user creation', async (
 });
 
 test('verified user login, navigation, and sign out', async ({ page }) => {
-	const userAlice = await createUniqueUser('alice');
+	const userAlice = await createVerifiedUniqueUser('alice');
 
 	// User can now sign in
 	await page.goto('/auth');
@@ -69,7 +69,7 @@ test('verified user login, navigation, and sign out', async ({ page }) => {
 });
 
 test('offline scenario', async ({ page, context }) => {
-	const userAlice = await createUniqueUser('alice');
+	const userAlice = await createVerifiedUniqueUser('alice');
 
 	// Try to sign in while offline
 	await page.goto('/auth');
@@ -93,7 +93,7 @@ test('offline scenario', async ({ page, context }) => {
 });
 
 test.skip('server URL persistence in localStorage', async ({ page }) => {
-	const userAlice = await createUniqueUser('alice');
+	const userAlice = await createVerifiedUniqueUser('alice');
 
 	// Sign in
 	await page.goto('/auth');

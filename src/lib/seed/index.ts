@@ -1,5 +1,3 @@
-import readline from 'readline';
-
 import {
 	account401kDetails,
 	accountAutoLoanDetails,
@@ -42,12 +40,12 @@ import {
 	createAccountBalanceStatements,
 	createAssetBalanceStatements,
 	createTransactions,
-	createUniqueUser,
+	createVerifiedUniqueUser,
 	getTagId,
 	pb,
 	POCKETBASE_SEED_ADMIN_EMAIL,
 	POCKETBASE_SEED_DEFAULT_PASSWORD
-} from '$lib/seed/utils';
+} from '$lib/pocketbase';
 
 async function deleteAllData(): Promise<void> {
 	const collections = [
@@ -232,7 +230,7 @@ async function createAndAuthAsAdmin(): Promise<void> {
 
 export async function createAndAuthAsUser() {
 	try {
-		const userAlice = await createUniqueUser('alice');
+		const userAlice = await createVerifiedUniqueUser('alice');
 		console.warn('-> User created:', userAlice.email, POCKETBASE_SEED_DEFAULT_PASSWORD);
 
 		// Clear the admin auth

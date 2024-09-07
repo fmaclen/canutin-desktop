@@ -14,12 +14,12 @@ import {
 	createAccount,
 	createAccountBalanceStatements,
 	createTransactions,
-	createUniqueUser,
+	createVerifiedUniqueUser,
 	POCKETBASE_SEED_DEFAULT_PASSWORD
-} from '$lib/seed/utils';
+} from '$lib/pocketbase';
 
 test('summary totals by balance group', async ({ page }) => {
-	const userAlice = await createUniqueUser('alice');
+	const userAlice = await createVerifiedUniqueUser('alice');
 
 	// Balance group 0 / auto-calculated
 	const accountSavings = await createAccount(userAlice.id, accountSavingsDetails);
