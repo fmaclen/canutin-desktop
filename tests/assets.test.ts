@@ -1,7 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-import { createAsset } from '$lib/pocketbase';
-import { assetCryptoBitcoinDetails, assetSecurityGamestopDetails, assetSecurityTeslaDetails } from '$lib/seed/data/assets';
+import { createAsset, createAssetBalanceStatements } from '$lib/pocketbase';
+import {
+	assetCryptoBitcoinDetails,
+	assetSecurityGamestopDetails,
+	assetSecurityTeslaDetails
+} from '$lib/seed/data/assets';
+import { assetGamestopBalanceStatements } from '$lib/seed/data/balanceStatements';
 import { createVerifiedUniqueUser } from '$lib/seed/data/user';
 
 import { signInAsUser } from './utils';
@@ -35,6 +40,15 @@ test('assets context is updated in real-time', async ({ page }) => {
 	await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();
 	await expect(page.getByText('GameStop')).not.toBeVisible();
 
-	await createAsset(pbAlice, assetSecurityGamestopDetails);
-	await expect(page.getByText('GameStop')).toBeVisible();
+	const assetGameStop = await createAsset(pbAlice, assetSecurityGamestopDetails);
+	const assetRow = page.locator('tbody tr', { hasText: 'GameStop' });
+	await expect(assetRow).toBeVisible();
+	await expect(assetRow).toContainText('$0');
+
+	await createAssetBalanceStatements(
+		pbAlice,
+		assetGameStop.id,
+		assetGamestopBalanceStatements.slice(0, 1)
+	);
+	await expect(assetRow).toContainText('$3,125');
 });

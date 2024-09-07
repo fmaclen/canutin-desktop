@@ -70,6 +70,11 @@ class Assets {
 		this.pb.collection('assets').subscribe('*', (e) => {
 			this.handleAssetChange(e.action, e.record);
 		});
+		this.pb.collection('assetBalanceStatements').subscribe('*', (e) => {
+			const asset = this.assets.find((a) => a.id === e.record.asset);
+			if (!asset) throw new Error('Balance statement asset not found');
+			this.handleAssetChange('update', asset);
+		});
 	}
 
 	private async handleAssetChange(action: string, record: AssetsResponse) {
