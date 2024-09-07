@@ -8,8 +8,8 @@ import type { RecordService } from 'pocketbase'
 export enum Collections {
 	AccountBalanceStatements = "accountBalanceStatements",
 	Accounts = "accounts",
-	Asset = "asset",
 	AssetBalanceStatements = "assetBalanceStatements",
+	Assets = "assets",
 	Events = "events",
 	Settings = "settings",
 	Tags = "tags",
@@ -56,20 +56,20 @@ export type AccountsRecord = {
 	tag?: RecordIdString
 }
 
-export type AssetRecord = {
+export type AssetBalanceStatementsRecord = {
+	asset: RecordIdString
+	cost?: number
+	quantity?: number
+	value?: number
+}
+
+export type AssetsRecord = {
 	balanceGroup?: number
 	isSold?: boolean
 	name: string
 	owner: RecordIdString
 	symbol?: string
 	tag?: RecordIdString
-}
-
-export type AssetBalanceStatementsRecord = {
-	asset: RecordIdString
-	cost?: number
-	quantity?: number
-	value?: number
 }
 
 export enum EventsAppearanceOptions {
@@ -125,8 +125,8 @@ export type UsersRecord = {
 // Response types include system fields and match responses from the PocketBase API
 export type AccountBalanceStatementsResponse<Texpand = unknown> = Required<AccountBalanceStatementsRecord> & BaseSystemFields<Texpand>
 export type AccountsResponse<Texpand = unknown> = Required<AccountsRecord> & BaseSystemFields<Texpand>
-export type AssetResponse<Texpand = unknown> = Required<AssetRecord> & BaseSystemFields<Texpand>
 export type AssetBalanceStatementsResponse<Texpand = unknown> = Required<AssetBalanceStatementsRecord> & BaseSystemFields<Texpand>
+export type AssetsResponse<Texpand = unknown> = Required<AssetsRecord> & BaseSystemFields<Texpand>
 export type EventsResponse<Texpand = unknown> = Required<EventsRecord> & BaseSystemFields<Texpand>
 export type SettingsResponse<Texpand = unknown> = Required<SettingsRecord> & BaseSystemFields<Texpand>
 export type TagsResponse<Texpand = unknown> = Required<TagsRecord> & BaseSystemFields<Texpand>
@@ -138,8 +138,8 @@ export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSyste
 export type CollectionRecords = {
 	accountBalanceStatements: AccountBalanceStatementsRecord
 	accounts: AccountsRecord
-	asset: AssetRecord
 	assetBalanceStatements: AssetBalanceStatementsRecord
+	assets: AssetsRecord
 	events: EventsRecord
 	settings: SettingsRecord
 	tags: TagsRecord
@@ -150,8 +150,8 @@ export type CollectionRecords = {
 export type CollectionResponses = {
 	accountBalanceStatements: AccountBalanceStatementsResponse
 	accounts: AccountsResponse
-	asset: AssetResponse
 	assetBalanceStatements: AssetBalanceStatementsResponse
+	assets: AssetsResponse
 	events: EventsResponse
 	settings: SettingsResponse
 	tags: TagsResponse
@@ -165,8 +165,8 @@ export type CollectionResponses = {
 export type TypedPocketBase = PocketBase & {
 	collection(idOrName: 'accountBalanceStatements'): RecordService<AccountBalanceStatementsResponse>
 	collection(idOrName: 'accounts'): RecordService<AccountsResponse>
-	collection(idOrName: 'asset'): RecordService<AssetResponse>
 	collection(idOrName: 'assetBalanceStatements'): RecordService<AssetBalanceStatementsResponse>
+	collection(idOrName: 'assets'): RecordService<AssetsResponse>
 	collection(idOrName: 'events'): RecordService<EventsResponse>
 	collection(idOrName: 'settings'): RecordService<SettingsResponse>
 	collection(idOrName: 'tags'): RecordService<TagsResponse>
