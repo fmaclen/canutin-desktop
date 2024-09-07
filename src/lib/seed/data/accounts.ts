@@ -8,7 +8,7 @@ export interface AccountDetails {
 }
 
 export const accountCheckingDetails: AccountDetails = {
-	name: "Bob's Laughable-Yield Checking",
+	name: 'Ransack Laughable-Yield Checking',
 	balanceGroup: 0,
 	tag: 'Checking',
 	isAutoCalculated: true,
@@ -26,7 +26,7 @@ export const accountSavingsDetails: AccountDetails = {
 };
 
 export const accountCreditCardDetails: AccountDetails = {
-	name: "Alice's Limited Rewards",
+	name: 'JuggernautCard Limited Rewards',
 	balanceGroup: 1,
 	tag: 'Credit card',
 	isAutoCalculated: true,
@@ -44,7 +44,7 @@ export const accountAutoLoanDetails: AccountDetails = {
 };
 
 export const accountRothIraDetails: AccountDetails = {
-	name: "Alice's Roth IRA",
+	name: 'Retirement Roth IRA',
 	balanceGroup: 2,
 	tag: 'Roth IRA',
 	isAutoCalculated: false,
@@ -53,7 +53,7 @@ export const accountRothIraDetails: AccountDetails = {
 };
 
 export const account401kDetails: AccountDetails = {
-	name: "Bob's 401k",
+	name: 'My 401k',
 	balanceGroup: 2,
 	tag: '401k',
 	isAutoCalculated: false,
@@ -64,7 +64,7 @@ export const account401kDetails: AccountDetails = {
 export const accountWalletDetails: AccountDetails = {
 	name: 'Matress Wallet',
 	balanceGroup: 0,
-	tag: 'Wallet',
+	tag: 'Cash',
 	isAutoCalculated: false,
 	isClosed: false
 };

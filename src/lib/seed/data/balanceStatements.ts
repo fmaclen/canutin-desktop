@@ -150,7 +150,7 @@ export const accountRothIraBalanceStatements: BalanceStatementDetails[] = [
 	}
 ];
 
-export const account401kbalanceStatements: BalanceStatementDetails[] = [
+export const account401kBalanceStatements: BalanceStatementDetails[] = [
 	{
 		created: dateInUTC(new Date()),
 		value: 4250.58

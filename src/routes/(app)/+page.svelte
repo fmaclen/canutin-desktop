@@ -1,14 +1,19 @@
 <script lang="ts">
 	import { getAccountsContext } from '$lib/accounts.svelte';
+	import { getAssetsContext } from '$lib/assets.svelte';
 	import { formatCurrency } from '$lib/utils';
 
 	const accountsStore = getAccountsContext();
+	const assetsStore = getAssetsContext();
 
 	function calculateBalanceGroupTotal(balanceGroup?: number) {
-		const rawTotal = accountsStore.accounts
+		const accountsInBalanceGroupTotal = accountsStore.accounts
 			.filter((account) => balanceGroup === undefined || account.balanceGroup === balanceGroup)
 			.reduce((acc, account) => acc + (account.balance ?? 0), 0);
-		return formatCurrency(rawTotal);
+		const assetsInBalanceGroupTotal = assetsStore.assets
+			.filter((asset) => balanceGroup === undefined || asset.balanceGroup === balanceGroup)
+			.reduce((acc, asset) => acc + (asset.balance ?? 0), 0);
+		return formatCurrency(accountsInBalanceGroupTotal + assetsInBalanceGroupTotal);
 	}
 
 	let balanceGroups = $derived.by(() => {

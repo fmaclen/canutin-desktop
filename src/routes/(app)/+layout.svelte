@@ -3,6 +3,7 @@
 
 	import { goto } from '$app/navigation';
 	import { setAccountsContext } from '$lib/accounts.svelte';
+	import { setAssetsContext } from '$lib/assets.svelte';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 
 	const { children } = $props();
@@ -13,6 +14,7 @@
 	$effect.pre(() => {
 		if (currentUser && currentUser.verified) {
 			setAccountsContext();
+			setAssetsContext();
 		} else {
 			goto('/auth');
 		}
