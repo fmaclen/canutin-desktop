@@ -8,7 +8,6 @@
 		const rawTotal = accountsStore.accounts
 			.filter((account) => balanceGroup === undefined || account.balanceGroup === balanceGroup)
 			.reduce((acc, account) => acc + (account.balance ?? 0), 0);
-
 		return formatCurrency(rawTotal);
 	}
 
@@ -25,29 +24,29 @@
 
 <h1>The big picture</h1>
 
-<h2>Summary</h2>
+<h3>Summary</h3>
 
 <div class="card">
-	<h3>Net worth</h3>
+	<h2>Net worth</h2>
 	{balanceGroups.netWorth}
 </div>
 
 <div class="card">
-	<h3>Cash</h3>
+	<h2>Cash</h2>
 	{balanceGroups.cash}
 </div>
 
 <div class="card">
-	<h3>Debt</h3>
+	<h2>Debt</h2>
 	{balanceGroups.debt}
 </div>
 
 <div class="card">
-	<h3>Investments</h3>
+	<h2>Investments</h2>
 	{balanceGroups.investments}
 </div>
 
 <div class="card">
-	<h3>Other assets</h3>
+	<h2>Other assets</h2>
 	{balanceGroups.otherAssets}
 </div>

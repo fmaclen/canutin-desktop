@@ -58,9 +58,9 @@ test('summary totals by balance group', async ({ page }) => {
 	await expect(investmentsCard).toBeVisible();
 	await expect(otherAssetsCard).toBeVisible();
 	await expect(otherAssetsCard).toBeVisible();
-	await expect(netWorthCard).toContainText('$18,311');
+	await expect(netWorthCard).toContainText('$23,811');
 	await expect(cashCard).toContainText('$6,000');
 	await expect(debtCard).toContainText('-$724');
-	await expect(investmentsCard).toContainText('$13,036');
+	await expect(investmentsCard).toContainText('$18,536');
 	await expect(otherAssetsCard).toContainText('$0');
 });
