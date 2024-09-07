@@ -13,14 +13,14 @@ export const POCKETBASE_SEED_DEFAULT_PASSWORD = '123qweasdzxc';
 
 export const pbAdmin = new PocketBase(POCKETBASE_DEFAULT_URL) as TypedPocketBase;
 
-export async function getTagId(pb: PocketBase, name: string, type: string) {
+export async function getTagId(pb: TypedPocketBase, name: string, type: string) {
 	const result = await pb
 		.collection('tags')
 		.getFirstListItem(`name ~ "${name}" && for = "${type}"`);
 	return result.id;
 }
 
-export async function createAccount(pb: PocketBase, account: AccountDetails) {
+export async function createAccount(pb: TypedPocketBase, account: AccountDetails) {
 	const tagId = await getTagId(pb, account.tag, 'accounts');
 	return await pb.collection('accounts').create({
 		...account,
@@ -30,7 +30,7 @@ export async function createAccount(pb: PocketBase, account: AccountDetails) {
 }
 
 export async function createTransactions(
-	pb: PocketBase,
+	pb: TypedPocketBase,
 	accountId: string,
 	transactions: TransactionDetails[]
 ) {
@@ -45,7 +45,7 @@ export async function createTransactions(
 }
 
 export async function createAccountBalanceStatements(
-	pb: PocketBase,
+	pb: TypedPocketBase,
 	accountId: string,
 	balanceStatements: BalanceStatementDetails[]
 ) {
@@ -58,7 +58,7 @@ export async function createAccountBalanceStatements(
 }
 
 export async function createAssetBalanceStatements(
-	pb: PocketBase,
+	pb: TypedPocketBase,
 	assetId: string,
 	balanceStatements: BalanceStatementDetails[]
 ) {
@@ -70,7 +70,7 @@ export async function createAssetBalanceStatements(
 	}
 }
 
-export async function createAsset(pb: PocketBase, asset: AssetDetails) {
+export async function createAsset(pb: TypedPocketBase, asset: AssetDetails) {
 	const tagId = await getTagId(pb, asset.tag, 'assets');
 	return await pb.collection('assets').create({
 		...asset,
