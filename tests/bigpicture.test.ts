@@ -1,26 +1,27 @@
 import { expect, test } from '@playwright/test';
 
 import {
-	accountCreditCardDetails,
-	accountRothIraDetails,
-	accountSavingsDetails
-} from '$lib/seed/demo/accounts';
-import { accountRothIraBalanceStatements } from '$lib/seed/demo/balanceStatements';
-import {
-	accountCreditCardTransactionSet,
-	accountSavingsTransactionSet
-} from '$lib/seed/demo/transactions';
-import {
 	createAccount,
 	createAccountBalanceStatements,
 	createTransactions,
-	createVerifiedUniqueUser,
 	POCKETBASE_SEED_DEFAULT_PASSWORD
 } from '$lib/pocketbase';
+import {
+	accountCreditCardDetails,
+	accountRothIraDetails,
+	accountSavingsDetails
+} from '$lib/seed/data/accounts';
+import { accountRothIraBalanceStatements } from '$lib/seed/data/balanceStatements';
+import {
+	accountCreditCardTransactionSet,
+	accountSavingsTransactionSet
+} from '$lib/seed/data/transactions';
+import { createVerifiedUniqueUser } from '$lib/seed/data/user';
 
 test('summary totals by balance group', async ({ page }) => {
 	const userAlice = await createVerifiedUniqueUser('alice');
 
+	// Create accounts
 	// Balance group 0 / auto-calculated
 	const accountSavings = await createAccount(userAlice.id, accountSavingsDetails);
 	let transactions = await accountSavingsTransactionSet();
@@ -37,6 +38,9 @@ test('summary totals by balance group', async ({ page }) => {
 		accountRothIra.id,
 		accountRothIraBalanceStatements.slice(0, 2)
 	);
+
+	// Create assets
+	// TOOO
 
 	// Sign in
 	await page.goto('/');

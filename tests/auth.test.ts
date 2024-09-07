@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-import { POCKETBASE_DEFAULT_URL } from '$lib/pocketbase';
-import { createVerifiedUniqueUser, pb, POCKETBASE_SEED_DEFAULT_PASSWORD } from '$lib/pocketbase';
+import { pb, POCKETBASE_DEFAULT_URL, POCKETBASE_SEED_DEFAULT_PASSWORD } from '$lib/pocketbase';
+import { createVerifiedUniqueUser } from '$lib/seed/data/user';
 
 test('authentication flow: redirects, invalid login, and user creation', async ({ page }) => {
 	// Cannot see app pages without signing in

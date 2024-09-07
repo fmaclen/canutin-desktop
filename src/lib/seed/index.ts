@@ -1,4 +1,14 @@
 import {
+	createAccount,
+	createAccountBalanceStatements,
+	createAssetBalanceStatements,
+	createTransactions,
+	getTagId,
+	pb,
+	POCKETBASE_SEED_ADMIN_EMAIL,
+	POCKETBASE_SEED_DEFAULT_PASSWORD
+} from '$lib/pocketbase';
+import {
 	account401kDetails,
 	accountAutoLoanDetails,
 	accountCheckingDetails,
@@ -7,7 +17,7 @@ import {
 	accountSavingsDetails,
 	accountWalletDetails,
 	type AccountDetails
-} from '$lib/seed/demo/accounts';
+} from '$lib/seed/data/accounts';
 import {
 	assetCollectibleDetails,
 	assetCryptoBitcoinDetails,
@@ -16,7 +26,7 @@ import {
 	assetSecurityTeslaDetails,
 	assetVehicleDetails,
 	type AssetDetails
-} from '$lib/seed/demo/assets';
+} from '$lib/seed/data/assets';
 import {
 	account401kbalanceStatements,
 	accountAutoLoanBalanceStatements,
@@ -28,24 +38,15 @@ import {
 	assetGamestopBalanceStatements,
 	assetTeslaBalanceStatements,
 	assetVehicleBalanceStatements
-} from '$lib/seed/demo/balanceStatements';
-import { accountTypes, assetTypes, transactionCategories } from '$lib/seed/demo/tags';
+} from '$lib/seed/data/balanceStatements';
+import { accountTypes, assetTypes, transactionCategories } from '$lib/seed/data/tags';
 import {
 	accountCheckingTransactionSet,
 	accountCreditCardTransactionSet,
 	accountSavingsTransactionSet
-} from '$lib/seed/demo/transactions';
-import {
-	createAccount,
-	createAccountBalanceStatements,
-	createAssetBalanceStatements,
-	createTransactions,
-	createVerifiedUniqueUser,
-	getTagId,
-	pb,
-	POCKETBASE_SEED_ADMIN_EMAIL,
-	POCKETBASE_SEED_DEFAULT_PASSWORD
-} from '$lib/pocketbase';
+} from '$lib/seed/data/transactions';
+
+import { createVerifiedUniqueUser } from './data/user';
 
 async function deleteAllData(): Promise<void> {
 	const collections = [
