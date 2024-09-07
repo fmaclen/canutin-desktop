@@ -25,6 +25,8 @@ import {
 } from '$lib/seed/data/transactions';
 import { createVerifiedUniqueUser } from '$lib/seed/data/user';
 
+import { signInAsUser } from './utils';
+
 test('summary totals by balance group', async ({ page }) => {
 	const userAlice = await createVerifiedUniqueUser('alice');
 
@@ -61,16 +63,8 @@ test('summary totals by balance group', async ({ page }) => {
 		assetCollectibleBalanceStatements.slice(0, 2)
 	);
 
-	// Sign in
-	await page.goto('/');
-	await page.getByLabel('Email').fill(userAlice.email);
-	await page.getByLabel('Password').fill(POCKETBASE_SEED_DEFAULT_PASSWORD);
-	await expect(page.locator('h1', { hasText: 'The big picture' })).not.toBeVisible();
-
-	await page.getByRole('button', { name: 'Sign in' }).click();
-	await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();
-
 	// Check the calculations
+	await signInAsUser(page, userAlice);
 	const netWorthCard = page.locator('.card', { hasText: 'Net worth' });
 	const cashCard = page.locator('.card', { hasText: 'Cash' });
 	const debtCard = page.locator('.card', { hasText: 'Debt' });
