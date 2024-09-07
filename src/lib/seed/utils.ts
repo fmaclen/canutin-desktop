@@ -50,13 +50,15 @@ export async function createAccount(ownerId: string, account: AccountDetails) {
 	});
 }
 
-export async function createTransaction(accountId: string, transaction: TransactionDetails) {
-	const tagId = await getTagId(transaction.tag, 'transactions');
-	return await pb.collection('transactions').create({
-		...transaction,
-		account: accountId,
-		tag: tagId
-	});
+export async function createTransactions(accountId: string, transactions: TransactionDetails[]) {
+	for (const transaction of transactions) {
+		const tagId = await getTagId(transaction.tag, 'transactions');
+		await pb.collection('transactions').create({
+			...transaction,
+			account: accountId,
+			tag: tagId
+		});
+	}
 }
 
 export async function createAccountBalanceStatements(

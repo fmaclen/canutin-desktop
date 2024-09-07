@@ -41,7 +41,7 @@ import {
 	createAccount,
 	createAccountBalanceStatements,
 	createAssetBalanceStatements,
-	createTransaction,
+	createTransactions,
 	createUniqueUser,
 	getTagId,
 	pb,
@@ -160,15 +160,9 @@ async function seedTransactions(): Promise<void> {
 	const savingsTransactions = await accountSavingsTransactionSet();
 	const creditCardTransactions = await accountCreditCardTransactionSet();
 
-	for (const transaction of checkingTransactions) {
-		await createTransaction(checkingAccount.id, transaction);
-	}
-	for (const transaction of savingsTransactions) {
-		await createTransaction(savingsAccount.id, transaction);
-	}
-	for (const transaction of creditCardTransactions) {
-		await createTransaction(creditCardAccount.id, transaction);
-	}
+	await createTransactions(checkingAccount.id, checkingTransactions);
+	await createTransactions(savingsAccount.id, savingsTransactions);
+	await createTransactions(creditCardAccount.id, creditCardTransactions);
 	console.warn('-> Transactions seeded successfully');
 }
 
@@ -185,8 +179,8 @@ async function seedBalanceStatements(): Promise<void> {
 
 	for (const accountWithBalanceStatements of accountsWithBalanceStatements) {
 		const account = accounts.find((a) => a.name.includes(accountWithBalanceStatements.account));
-		if (account)
-			await createAccountBalanceStatements(account.id, accountWithBalanceStatements.data);
+		if (!account) throw new Error(`Account not found: ${accountWithBalanceStatements.account}`);
+		await createAccountBalanceStatements(account.id, accountWithBalanceStatements.data);
 	}
 	console.warn('-> Created account balance statements');
 
@@ -201,7 +195,8 @@ async function seedBalanceStatements(): Promise<void> {
 
 	for (const assetWithBalanceStatements of assetsWithBalanceStatements) {
 		const asset = assets.find((a) => a.name.includes(assetWithBalanceStatements.asset));
-		if (asset) await createAssetBalanceStatements(asset.id, assetWithBalanceStatements.data);
+		if (!asset) throw new Error(`Asset not found: ${assetWithBalanceStatements.asset}`);
+		await createAssetBalanceStatements(asset.id, assetWithBalanceStatements.data);
 	}
 	console.warn('-> Created asset balance statements');
 }
