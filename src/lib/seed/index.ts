@@ -38,10 +38,15 @@ import {
 	accountSavingsTransactionSet
 } from '$lib/seed/demo/transactions';
 import {
+	createAccount,
+	createAccountBalanceStatements,
+	createAssetBalanceStatements,
+	createTransaction,
+	createUniqueUser,
+	getTagId,
 	pb,
 	POCKETBASE_SEED_ADMIN_EMAIL,
-	POCKETBASE_SEED_DEFAULT_PASSWORD,
-	seedUniqueUser
+	POCKETBASE_SEED_DEFAULT_PASSWORD
 } from '$lib/seed/utils';
 
 async function deleteAllData(): Promise<void> {
@@ -61,17 +66,6 @@ async function deleteAllData(): Promise<void> {
 			await pb.collection(collection).delete(record.id);
 		}
 		console.warn(`-> Deleted all records from ${collection}`);
-	}
-}
-
-async function getTagId(name: string, type: string): Promise<string | null> {
-	try {
-		const result = await pb
-			.collection('tags')
-			.getFirstListItem(`name ~ "${name}" && for = "${type}"`);
-		return result.id;
-	} catch (error) {
-		return null;
 	}
 }
 
@@ -127,12 +121,7 @@ async function seedAccounts(userId: string): Promise<void> {
 	];
 
 	for (const account of accounts) {
-		const tagId = await getTagId(account.tag, 'accounts');
-		await pb.collection('accounts').create({
-			...account,
-			tag: tagId,
-			owner: userId
-		});
+		await createAccount(userId, account);
 	}
 	console.warn('-> Accounts seeded successfully');
 }
@@ -172,30 +161,13 @@ async function seedTransactions(): Promise<void> {
 	const creditCardTransactions = await accountCreditCardTransactionSet();
 
 	for (const transaction of checkingTransactions) {
-		const tagId = await getTagId(transaction.tag, 'transactions');
-		await pb.collection('transactions').create({
-			...transaction,
-			account: checkingAccount.id,
-			tag: tagId
-		});
+		await createTransaction(checkingAccount.id, transaction);
 	}
-
 	for (const transaction of savingsTransactions) {
-		const tagId = await getTagId(transaction.tag, 'transactions');
-		await pb.collection('transactions').create({
-			...transaction,
-			account: savingsAccount.id,
-			tag: tagId
-		});
+		await createTransaction(savingsAccount.id, transaction);
 	}
-
 	for (const transaction of creditCardTransactions) {
-		const tagId = await getTagId(transaction.tag, 'transactions');
-		await pb.collection('transactions').create({
-			...transaction,
-			account: creditCardAccount.id,
-			tag: tagId
-		});
+		await createTransaction(creditCardAccount.id, transaction);
 	}
 	console.warn('-> Transactions seeded successfully');
 }
@@ -204,11 +176,21 @@ async function seedBalanceStatements(): Promise<void> {
 	const accounts = await pb.collection('accounts').getFullList();
 	const assets = await pb.collection('asset').getFullList();
 
-	const balanceStatements = [
+	const accountsWithBalanceStatements = [
 		{ account: '401k', data: account401kbalanceStatements },
 		{ account: 'Auto Loan', data: accountAutoLoanBalanceStatements },
 		{ account: 'Roth IRA', data: accountRothIraBalanceStatements },
-		{ account: 'Wallet', data: accountWalletBalanceStatements },
+		{ account: 'Wallet', data: accountWalletBalanceStatements }
+	];
+
+	for (const accountWithBalanceStatements of accountsWithBalanceStatements) {
+		const account = accounts.find((a) => a.name.includes(accountWithBalanceStatements.account));
+		if (account)
+			await createAccountBalanceStatements(account.id, accountWithBalanceStatements.data);
+	}
+	console.warn('-> Created account balance statements');
+
+	const assetsWithBalanceStatements = [
 		{ asset: 'Tesla', data: assetTeslaBalanceStatements },
 		{ asset: 'GameStop', data: assetGamestopBalanceStatements },
 		{ asset: 'Bitcoin', data: assetBitcoinBalanceStatements },
@@ -217,23 +199,11 @@ async function seedBalanceStatements(): Promise<void> {
 		{ asset: '1998 Fiat Multipla', data: assetVehicleBalanceStatements }
 	];
 
-	for (const statement of balanceStatements) {
-		const item = statement.account
-			? accounts.find((a) => a.name.includes(statement.account))
-			: assets.find((a) => a.name === statement.asset);
-
-		if (item) {
-			for (const balanceData of statement.data) {
-				await pb
-					.collection(statement.account ? 'accountBalanceStatements' : 'assetBalanceStatements')
-					.create({
-						...balanceData,
-						[statement.account ? 'account' : 'asset']: item.id
-					});
-			}
-		}
+	for (const assetWithBalanceStatements of assetsWithBalanceStatements) {
+		const asset = assets.find((a) => a.name.includes(assetWithBalanceStatements.asset));
+		if (asset) await createAssetBalanceStatements(asset.id, assetWithBalanceStatements.data);
 	}
-	console.warn('-> Balance statements seeded successfully');
+	console.warn('-> Created asset balance statements');
 }
 
 async function createAndAuthAsAdmin(): Promise<void> {
@@ -267,7 +237,7 @@ async function createAndAuthAsAdmin(): Promise<void> {
 
 export async function createAndAuthAsUser() {
 	try {
-		const userAlice = await seedUniqueUser('alice');
+		const userAlice = await createUniqueUser('alice');
 		console.warn('-> User created:', userAlice.email, POCKETBASE_SEED_DEFAULT_PASSWORD);
 
 		// Clear the admin auth

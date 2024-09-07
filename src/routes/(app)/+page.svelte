@@ -27,13 +27,27 @@
 
 <h2>Summary</h2>
 
-<h3>Net worth</h3>
-{balanceGroups.netWorth}
-<h3>Cash</h3>
-{balanceGroups.cash}
-<h3>Debt</h3>
-{balanceGroups.debt}
-<h3>Investments</h3>
-{balanceGroups.investments}
-<h3>Other assets</h3>
-{balanceGroups.otherAssets}
+<div class="card">
+	<h3>Net worth</h3>
+	{balanceGroups.netWorth}
+</div>
+
+<div class="card">
+	<h3>Cash</h3>
+	{balanceGroups.cash}
+</div>
+
+<div class="card">
+	<h3>Debt</h3>
+	{balanceGroups.debt}
+</div>
+
+<div class="card">
+	<h3>Investments</h3>
+	{balanceGroups.investments}
+</div>
+
+<div class="card">
+	<h3>Other assets</h3>
+	{balanceGroups.otherAssets}
+</div>
