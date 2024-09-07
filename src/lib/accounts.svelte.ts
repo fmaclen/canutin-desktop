@@ -97,6 +97,16 @@ class Accounts {
 		this.pb.collection('accounts').subscribe('*', (e) => {
 			this.handleAccountChange(e.action, e.record);
 		});
+		this.pb.collection('accountBalanceStatements').subscribe('*', (e) => {
+			const account = this.accounts.find((a) => a.id === e.record.account);
+			if (!account) throw new Error('Balance statement account not found');
+			this.handleAccountChange('update', account);
+		});
+		this.pb.collection('transactions').subscribe('*', (e) => {
+			const account = this.accounts.find((a) => a.id === e.record.account);
+			if (!account) throw new Error('Transaction account not found');
+			this.handleAccountChange('update', account);
+		});
 	}
 
 	private async handleAccountChange(action: string, record: AccountsResponse) {
