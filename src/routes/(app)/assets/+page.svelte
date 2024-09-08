@@ -1,17 +1,19 @@
 <script lang="ts">
+	import LL from '$i18n/i18n-svelte';
+
 	import { getAssetsContext } from '$lib/assets.svelte';
 	import { formatCurrency } from '$lib/utils';
 
 	const assetsStore = getAssetsContext();
 </script>
 
-<h1>Assets</h1>
+<h1>{$LL.ASSETS()}</h1>
 
 <table>
 	<thead>
 		<tr>
-			<th>Name</th>
-			<th>Balance</th>
+			<th>{$LL.NAME()}</th>
+			<th>{$LL.BALANCE()}</th>
 		</tr>
 	</thead>
 	<tbody>

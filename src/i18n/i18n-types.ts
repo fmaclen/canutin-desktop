@@ -34,6 +34,10 @@ type RootTranslation = {
 	 */
 	AUTHENTICATION_FAILED: string
 	/**
+	 * B​a​l​a​n​c​e
+	 */
+	BALANCE: string
+	/**
 	 * B​a​l​a​n​c​e​ ​S​h​e​e​t
 	 */
 	BALANCE_SHEET: string
@@ -53,6 +57,10 @@ type RootTranslation = {
 	 * I​n​c​o​r​r​e​c​t​ ​e​m​a​i​l​ ​o​r​ ​p​a​s​s​w​o​r​d​.​ ​P​l​e​a​s​e​ ​c​h​e​c​k​ ​y​o​u​r​ ​c​r​e​d​e​n​t​i​a​l​s​.
 	 */
 	INCORRECT_CREDENTIALS: string
+	/**
+	 * N​a​m​e
+	 */
+	NAME: string
 	/**
 	 * P​a​s​s​w​o​r​d
 	 */
@@ -109,6 +117,10 @@ export type TranslationFunctions = {
 	 */
 	AUTHENTICATION_FAILED: () => LocalizedString
 	/**
+	 * Balance
+	 */
+	BALANCE: () => LocalizedString
+	/**
 	 * Balance Sheet
 	 */
 	BALANCE_SHEET: () => LocalizedString
@@ -128,6 +140,10 @@ export type TranslationFunctions = {
 	 * Incorrect email or password. Please check your credentials.
 	 */
 	INCORRECT_CREDENTIALS: () => LocalizedString
+	/**
+	 * Name
+	 */
+	NAME: () => LocalizedString
 	/**
 	 * Password
 	 */
