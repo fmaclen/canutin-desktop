@@ -1,9 +1,17 @@
 <script lang="ts">
-	import { eachMonthOfInterval, endOfMonth, isAfter, isBefore, isEqual, sub } from 'date-fns';
+	import {
+		eachMonthOfInterval,
+		endOfMonth,
+		format,
+		isAfter,
+		isBefore,
+		isEqual,
+		sub
+	} from 'date-fns';
 
 	import type { TransactionsResponse } from '$lib/pocketbase-types';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
-	import { dateInUTC, proportionBetween } from '$lib/utils';
+	import { dateInUTC, formatCurrency, proportionBetween } from '$lib/utils';
 
 	interface PeriodCashflow {
 		id: number;
@@ -70,7 +78,7 @@
 
 	async function getCashflow() {
 		const transactions = await pbClient.pb.collection('transactions').getFullList({
-			filter: `date >= "${monthsInPeriod[0].toISOString()}" && date <= "${monthsInPeriod[monthsInPeriod.length - 1].toISOString()}"`
+			filter: `date >= "${monthsInPeriod[0].toISOString()}" && date <= "${endOfMonth(today).toISOString()}"`
 		});
 
 		const getTransactionsInPeriod = (
@@ -78,11 +86,12 @@
 			from: Date,
 			to: Date
 		) => {
-			return transactions.filter(
-				(transaction) =>
+			return transactions.filter((transaction) => {
+				return (
 					(isBefore(from, transaction.date) || isEqual(from, transaction.date)) &&
 					isAfter(to, transaction.date)
-			);
+				);
+			});
 		};
 
 		// Get the income, expense and surplus totals for each month
@@ -201,6 +210,7 @@
 
 	let cashflow: Cashflow = $state(zeroedCashflow());
 	let trailingCashflow: TrailingCashflow = $derived.by(() => getTrailingCashflow());
+	let trailingCashflowPeriod: 'last6Months' | 'last12Months' = $state('last6Months');
 
 	$effect(() => {
 		getCashflow();
@@ -209,8 +219,62 @@
 
 <h3>Cashflow</h3>
 
-{JSON.stringify(cashflow.periods)}
+<table>
+	<thead>
+		<tr>
+			<th>Month</th>
+			<th>Income</th>
+			<th>Expenses</th>
+			<th>Balance</th>
+			<th>Height</th>
+		</tr>
+	</thead>
+	<tbody>
+		{#each cashflow.periods as period}
+			{@const isJanuary = period.month.getMonth() === 0}
+			{@const isPeriodHighestSurplus = cashflow.chart.highestSurplus === period.surplus}
+			{@const isPeriodLowestSurplus = cashflow.chart.lowestSurplus === period.surplus}
+			<tr style={`color: ${isPeriodHighestSurplus ? 'green' : isPeriodLowestSurplus ? 'red' : ''}`}>
+				<td>
+					<time>
+						{format(period.month, 'MMM')}
+						{isJanuary ? `'${format(period.month, 'yy')}` : ''}
+					</time>
+				</td>
+				<td>{formatCurrency(period.income)}</td>
+				<td>{formatCurrency(period.expenses)}</td>
+				<td>{formatCurrency(period.surplus)}</td>
+				<td>{period.chartRatio}%</td>
+			</tr>
+		{/each}
+	</tbody>
+</table>
 
 <h3>Trailing Cashflow</h3>
 
-{JSON.stringify(trailingCashflow)}
+<nav>
+	<button onclick={() => (trailingCashflowPeriod = 'last6Months')}>Previous 6 months</button>
+	<button onclick={() => (trailingCashflowPeriod = 'last12Months')}>Previous 12 months</button>
+</nav>
+
+{#if trailingCashflowPeriod === 'last6Months'}
+	<div class="card">
+		Income per month <p>{formatCurrency(trailingCashflow.last6Months.incomeAverage)}</p>
+	</div>
+	<div class="card">
+		Expenses per month <p>{formatCurrency(trailingCashflow.last6Months.expensesAverage)}</p>
+	</div>
+	<div class="card">
+		Balance per month <p>{formatCurrency(trailingCashflow.last6Months.surplusAverage)}</p>
+	</div>
+{:else}
+	<div class="card">
+		Income per month <p>{formatCurrency(trailingCashflow.last12Months.incomeAverage)}</p>
+	</div>
+	<div class="card">
+		Expenses per month <p>{formatCurrency(trailingCashflow.last12Months.expensesAverage)}</p>
+	</div>
+	<div class="card">
+		Balance per month <p>{formatCurrency(trailingCashflow.last12Months.surplusAverage)}</p>
+	</div>
+{/if}
