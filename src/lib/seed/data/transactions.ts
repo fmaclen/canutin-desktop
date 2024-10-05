@@ -16,7 +16,9 @@ const dateInUTC = (date: Date): Date => {
 
 const MONTHS_IN_SET = 24;
 
-export const accountCheckingTransactionSet = async (months: number = MONTHS_IN_SET): Promise<TransactionDetails[]> => {
+export const accountCheckingTransactionSet = async (
+	months: number = MONTHS_IN_SET
+): Promise<TransactionDetails[]> => {
 	const transactionSet = async (i: number): Promise<TransactionDetails[]> => [
 		{
 			description: 'Westside Apartments',
@@ -92,7 +94,9 @@ export const accountCheckingTransactionSet = async (months: number = MONTHS_IN_S
 	return transactions;
 };
 
-export const accountSavingsTransactionSet = async (months: number = MONTHS_IN_SET): Promise<TransactionDetails[]> => {
+export const accountSavingsTransactionSet = async (
+	months: number = MONTHS_IN_SET
+): Promise<TransactionDetails[]> => {
 	const transactionSet = async (i: number): Promise<TransactionDetails[]> => [
 		{
 			description: 'Transfer from Ransack Checking',
@@ -112,7 +116,9 @@ export const accountSavingsTransactionSet = async (months: number = MONTHS_IN_SE
 	return transactions;
 };
 
-export const accountCreditCardTransactionSet = async (months: number = MONTHS_IN_SET): Promise<TransactionDetails[]> => {
+export const accountCreditCardTransactionSet = async (
+	months: number = MONTHS_IN_SET
+): Promise<TransactionDetails[]> => {
 	const transactionSet = async (i: number): Promise<TransactionDetails[]> => [
 		{
 			description: 'Evergreen Market',

@@ -22,7 +22,6 @@ import {
 	assetTeslaBalanceStatements
 } from '$lib/seed/data/balanceStatements';
 import {
-	accountCheckingTransactionSet,
 	accountCreditCardTransactionSet,
 	accountSavingsTransactionSet
 } from '$lib/seed/data/transactions';
@@ -112,8 +111,6 @@ test('summary totals update in real-time', async ({ page }) => {
 
 test('cashflow calculations', async ({ page }) => {
 	const pbAlice = await createVerifiedUniqueUser('alice');
-
-	console.log(pbAlice.authStore.model?.email);
 
 	// Create transactions
 	const accountSavings = await createAccount(pbAlice, accountSavingsDetails);
