@@ -146,6 +146,7 @@
 				? Math.min(...negativeBalancePeriods.map((p) => p.balance))
 				: 0;
 
+		// The positive and negative ratios are used to calculate the height of the chart bars
 		const balanceRange = highestBalance + Math.abs(lowestBalance);
 		let positiveRatio = proportionBetween(highestBalance, balanceRange);
 		let negativeRatio = proportionBetween(Math.abs(lowestBalance), balanceRange);
