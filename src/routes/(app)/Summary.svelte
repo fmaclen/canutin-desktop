@@ -32,26 +32,26 @@
 <h3>{$LL.SUMMARY()}</h3>
 
 <div class="card">
-	<h2>{$LL.NET_WORTH()}</h2>
-	{balanceGroups.netWorth}
+	{$LL.NET_WORTH()}
+	<p>{balanceGroups.netWorth}</p>
 </div>
 
 <div class="card">
-	<h2>{$LL.CASH()}</h2>
-	{balanceGroups.cash}
+	{$LL.CASH()}
+	<p>{balanceGroups.cash}</p>
 </div>
 
 <div class="card">
-	<h2>{$LL.DEBT()}</h2>
-	{balanceGroups.debt}
+	{$LL.DEBT()}
+	<p>{balanceGroups.debt}</p>
 </div>
 
 <div class="card">
-	<h2>{$LL.INVESTMENTS()}</h2>
-	{balanceGroups.investments}
+	{$LL.INVESTMENTS()}
+	<p>{balanceGroups.investments}</p>
 </div>
 
 <div class="card">
-	<h2>{$LL.OTHER_ASSETS()}</h2>
-	{balanceGroups.otherAssets}
+	{$LL.OTHER_ASSETS()}
+	<p>{balanceGroups.otherAssets}</p>
 </div>

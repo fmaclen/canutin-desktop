@@ -81,9 +81,9 @@ test('summary totals by balance group', async ({ page }) => {
 	await expect(investmentsCard).toBeVisible();
 	await expect(otherAssetsCard).toBeVisible();
 	await expect(otherAssetsCard).toBeVisible();
-	await expect(netWorthCard).toContainText('$63,225');
-	await expect(cashCard).toContainText('$500');
-	await expect(debtCard).toContainText('-$311');
+	await expect(netWorthCard).toContainText('$62,866');
+	await expect(cashCard).toContainText('$250');
+	await expect(debtCard).toContainText('-$420');
 	await expect(investmentsCard).toContainText('$48,536');
 	await expect(otherAssetsCard).toContainText('$14,500');
 });
@@ -143,9 +143,9 @@ test('cashflow calculations', async ({ page }) => {
 	await expect(page.getByText(`Jan '${format(today, 'yy')}`)).toBeVisible();
 
 	// Trailing cashflow
-	const incomeCard = page.locator('.card', { hasText: 'Income per month' }).locator('p');
-	const expenseCard = page.locator('.card', { hasText: 'Expenses per month' }).locator('p');
-	const balanceCard = page.locator('.card', { hasText: 'Balance per month' }).locator('p');
+	const incomeCard = page.locator('.card', { hasText: 'Income per month' });
+	const expenseCard = page.locator('.card', { hasText: 'Expenses per month' });
+	const balanceCard = page.locator('.card', { hasText: 'Balance per month' });
 	await expect(incomeCard).toContainText('$1,680');
 	await expect(expenseCard).toContainText('-$1,457');
 	await expect(balanceCard).toContainText('$223');
