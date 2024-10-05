@@ -1,4 +1,5 @@
 <script lang="ts">
+	import LL from '$i18n/i18n-svelte';
 	import {
 		eachMonthOfInterval,
 		endOfMonth,
@@ -18,15 +19,15 @@
 		month: Date;
 		income: number;
 		expenses: number;
-		surplus: number;
+		balance: number;
 		chartRatio: number;
+		isHighestBalance: boolean;
+		isLowestBalance: boolean;
 	}
 
 	interface CashflowChart {
 		positiveRatio: number;
 		negativeRatio: number;
-		highestSurplus: number;
-		lowestSurplus: number;
 	}
 
 	interface Cashflow {
@@ -37,7 +38,7 @@
 	interface PeriodAverageCashflow {
 		incomeAverage: number;
 		expensesAverage: number;
-		surplusAverage: number;
+		balanceAverage: number;
 	}
 
 	interface TrailingCashflow {
@@ -64,15 +65,17 @@
 				id: index,
 				income: 0,
 				expenses: 0,
-				surplus: 0,
+				balance: 0,
 				month: dateInUTC(month),
-				chartRatio: 0
+				chartRatio: 0,
+				isHighestBalance: false,
+				isLowestBalance: false
 			});
 		}
 
 		return {
 			periods,
-			chart: { positiveRatio: 0, negativeRatio: 0, highestSurplus: 0, lowestSurplus: 0 }
+			chart: { positiveRatio: 0, negativeRatio: 0 }
 		};
 	}
 
@@ -94,7 +97,7 @@
 			});
 		};
 
-		// Get the income, expense and surplus totals for each month
+		// Get the income, expense and balance totals for each month
 		let cashflowPeriods = monthsInPeriod.reduce((acc: PeriodCashflow[], month, id) => {
 			const transactionsInPeriod = getTransactionsInPeriod(
 				transactions,
@@ -112,7 +115,7 @@
 				(acc, { value }) => (value < 0 ? value + acc : acc),
 				0
 			);
-			const surplus = expenses + income;
+			const balance = expenses + income;
 
 			return [
 				...acc,
@@ -120,32 +123,32 @@
 					id,
 					income,
 					expenses,
-					surplus,
+					balance,
 					month,
 					// We don't know the value of `chartRatio` at this point so we set it to 0.
-					// It will be overwriten later after we get the `highestSurplus` and `lowestSurplus`.
-					chartRatio: 0
+					// It will be overwriten later after we get the `highestBalance` and `lowestBalance`.
+					chartRatio: 0,
+					isHighestBalance: false,
+					isLowestBalance: false
 				}
 			];
 		}, []);
 
-		// Get the highest positive surplus
-		const positiveSurplusPeriods = cashflowPeriods.filter(({ surplus }) => surplus > 0);
-		const highestSurplus =
-			positiveSurplusPeriods.length > 0
-				? positiveSurplusPeriods.sort((a, b) => b.surplus - a.surplus)[0].surplus
+		// Get the highest positive balance and lowest negative balance
+		const positiveBalancePeriods = cashflowPeriods.filter(({ balance }) => balance > 0);
+		const negativeBalancePeriods = cashflowPeriods.filter(({ balance }) => balance < 0);
+		const highestBalance =
+			positiveBalancePeriods.length > 0
+				? Math.max(...positiveBalancePeriods.map((p) => p.balance))
+				: 0;
+		const lowestBalance =
+			negativeBalancePeriods.length > 0
+				? Math.min(...negativeBalancePeriods.map((p) => p.balance))
 				: 0;
 
-		// Get the lowest negative surplus
-		const negativeSurplusPeriods = cashflowPeriods.filter(({ surplus }) => surplus < 0);
-		const lowestSurplus =
-			negativeSurplusPeriods.length > 0
-				? negativeSurplusPeriods.sort((a, b) => a.surplus - b.surplus)[0].surplus
-				: 0;
-
-		const surplusRange = highestSurplus + Math.abs(lowestSurplus);
-		let positiveRatio = proportionBetween(highestSurplus, surplusRange);
-		let negativeRatio = proportionBetween(Math.abs(lowestSurplus), surplusRange);
+		const balanceRange = highestBalance + Math.abs(lowestBalance);
+		let positiveRatio = proportionBetween(highestBalance, balanceRange);
+		let negativeRatio = proportionBetween(Math.abs(lowestBalance), balanceRange);
 
 		if (positiveRatio > negativeRatio) {
 			const isNegativeRatioZero = negativeRatio === 0;
@@ -157,22 +160,24 @@
 			positiveRatio = isPositiveRatioZero ? 0 : 1;
 		}
 
-		// Update the chartRatio for each period
+		// Update the chartRatio and set isHighestBalance and isLowestBalance for each period
 		cashflowPeriods = cashflowPeriods.map((cashflowPeriod) => {
 			const chartRatio =
-				cashflowPeriod.surplus > 0
-					? proportionBetween(cashflowPeriod.surplus, highestSurplus)
-					: proportionBetween(Math.abs(cashflowPeriod.surplus), Math.abs(lowestSurplus));
+				cashflowPeriod.balance > 0
+					? proportionBetween(cashflowPeriod.balance, highestBalance)
+					: proportionBetween(Math.abs(cashflowPeriod.balance), Math.abs(lowestBalance));
 
 			return {
 				...cashflowPeriod,
-				chartRatio: chartRatio
+				chartRatio: chartRatio,
+				isHighestBalance: cashflowPeriod.balance === highestBalance && highestBalance !== 0,
+				isLowestBalance: cashflowPeriod.balance === lowestBalance && lowestBalance !== 0
 			};
 		});
 
 		cashflow = {
 			periods: cashflowPeriods,
-			chart: { positiveRatio, negativeRatio, highestSurplus, lowestSurplus }
+			chart: { positiveRatio, negativeRatio }
 		};
 	}
 
@@ -189,19 +194,19 @@
 				return {
 					incomeAverage: 0,
 					expensesAverage: 0,
-					surplusAverage: 0
+					balanceAverage: 0
 				};
 			}
 
 			const incomeAverage = cashflowPeriods.reduce((acc, { income }) => income + acc, 0) / period;
 			const expensesAverage =
 				cashflowPeriods.reduce((acc, { expenses }) => expenses + acc, 0) / period;
-			const surplusAverage = expensesAverage + incomeAverage;
+			const balanceAverage = expensesAverage + incomeAverage;
 
 			return {
 				incomeAverage,
 				expensesAverage,
-				surplusAverage
+				balanceAverage
 			};
 		};
 
@@ -217,7 +222,7 @@
 	});
 </script>
 
-<h3>Cashflow</h3>
+<h3>{$LL.CASHFLOW()}</h3>
 
 <table>
 	<thead>
@@ -232,9 +237,9 @@
 	<tbody>
 		{#each cashflow.periods as period}
 			{@const isJanuary = period.month.getMonth() === 0}
-			{@const isPeriodHighestSurplus = cashflow.chart.highestSurplus === period.surplus}
-			{@const isPeriodLowestSurplus = cashflow.chart.lowestSurplus === period.surplus}
-			<tr style={`color: ${isPeriodHighestSurplus ? 'green' : isPeriodLowestSurplus ? 'red' : ''}`}>
+			<tr
+				style={`color: ${period.isHighestBalance ? 'green' : period.isLowestBalance ? 'red' : ''}`}
+			>
 				<td>
 					<time>
 						{format(period.month, 'MMM')}
@@ -243,38 +248,51 @@
 				</td>
 				<td>{formatCurrency(period.income)}</td>
 				<td>{formatCurrency(period.expenses)}</td>
-				<td>{formatCurrency(period.surplus)}</td>
+				<td>{formatCurrency(period.balance)}</td>
 				<td>{period.chartRatio}%</td>
 			</tr>
 		{/each}
 	</tbody>
 </table>
 
-<h3>Trailing Cashflow</h3>
+<h3>{$LL.TRAILING_CASHFLOW()}</h3>
 
 <nav>
-	<button onclick={() => (trailingCashflowPeriod = 'last6Months')}>Previous 6 months</button>
-	<button onclick={() => (trailingCashflowPeriod = 'last12Months')}>Previous 12 months</button>
+	<button onclick={() => (trailingCashflowPeriod = 'last6Months')}>
+		{$LL.PREVIOUS_6_MONTHS()}
+	</button>
+	<button onclick={() => (trailingCashflowPeriod = 'last12Months')}>
+		{$LL.PREVIOUS_12_MONTHS()}
+	</button>
 </nav>
 
-{#if trailingCashflowPeriod === 'last6Months'}
-	<div class="card">
-		Income per month <p>{formatCurrency(trailingCashflow.last6Months.incomeAverage)}</p>
-	</div>
-	<div class="card">
-		Expenses per month <p>{formatCurrency(trailingCashflow.last6Months.expensesAverage)}</p>
-	</div>
-	<div class="card">
-		Balance per month <p>{formatCurrency(trailingCashflow.last6Months.surplusAverage)}</p>
-	</div>
-{:else}
-	<div class="card">
-		Income per month <p>{formatCurrency(trailingCashflow.last12Months.incomeAverage)}</p>
-	</div>
-	<div class="card">
-		Expenses per month <p>{formatCurrency(trailingCashflow.last12Months.expensesAverage)}</p>
-	</div>
-	<div class="card">
-		Balance per month <p>{formatCurrency(trailingCashflow.last12Months.surplusAverage)}</p>
-	</div>
-{/if}
+<div class="card">
+	{$LL.INCOME_PER_MONTH()}
+	<p>
+		{formatCurrency(
+			trailingCashflowPeriod === 'last6Months'
+				? trailingCashflow.last6Months.incomeAverage
+				: trailingCashflow.last12Months.incomeAverage
+		)}
+	</p>
+</div>
+<div class="card">
+	{$LL.EXPENSES_PER_MONTH()}
+	<p>
+		{formatCurrency(
+			trailingCashflowPeriod === 'last6Months'
+				? trailingCashflow.last6Months.expensesAverage
+				: trailingCashflow.last12Months.expensesAverage
+		)}
+	</p>
+</div>
+<div class="card">
+	{$LL.BALANCE_PER_MONTH()}
+	<p>
+		{formatCurrency(
+			trailingCashflowPeriod === 'last6Months'
+				? trailingCashflow.last6Months.balanceAverage
+				: trailingCashflow.last12Months.balanceAverage
+		)}
+	</p>
+</div>
