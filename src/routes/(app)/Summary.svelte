@@ -1,4 +1,6 @@
 <script lang="ts">
+	import LL from '$i18n/i18n-svelte';
+
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import { getAssetsContext } from '$lib/assets.svelte';
 	import { formatCurrency } from '$lib/utils';
@@ -27,30 +29,29 @@
 	});
 </script>
 
-
-<h3>Summary</h3>
+<h3>{$LL.SUMMARY()}</h3>
 
 <div class="card">
-	<h2>Net worth</h2>
+	<h2>{$LL.NET_WORTH()}</h2>
 	{balanceGroups.netWorth}
 </div>
 
 <div class="card">
-	<h2>Cash</h2>
+	<h2>{$LL.CASH()}</h2>
 	{balanceGroups.cash}
 </div>
 
 <div class="card">
-	<h2>Debt</h2>
+	<h2>{$LL.DEBT()}</h2>
 	{balanceGroups.debt}
 </div>
 
 <div class="card">
-	<h2>Investments</h2>
+	<h2>{$LL.INVESTMENTS()}</h2>
 	{balanceGroups.investments}
 </div>
 
 <div class="card">
-	<h2>Other assets</h2>
+	<h2>{$LL.OTHER_ASSETS()}</h2>
 	{balanceGroups.otherAssets}
 </div>
