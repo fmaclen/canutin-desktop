@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { format, subMonths } from 'date-fns';
 
 import {
 	createAccount,
@@ -34,13 +35,13 @@ test('summary totals by balance group', async ({ page }) => {
 	// Create accounts
 	// Balance group 0 / auto-calculated
 	const accountSavings = await createAccount(pbAlice, accountSavingsDetails);
-	let transactions = await accountSavingsTransactionSet();
-	await createTransactions(pbAlice, accountSavings.id, transactions.slice(0, 2));
+	let transactions = await accountSavingsTransactionSet(1);
+	await createTransactions(pbAlice, accountSavings.id, transactions);
 
 	// Balance group 1 / auto-calculated
 	const accountCreditCard = await createAccount(pbAlice, accountCreditCardDetails);
-	transactions = await accountCreditCardTransactionSet();
-	await createTransactions(pbAlice, accountCreditCard.id, transactions.slice(0, 2));
+	transactions = await accountCreditCardTransactionSet(1);
+	await createTransactions(pbAlice, accountCreditCard.id, transactions);
 
 	// Balance group 2 / not auto-calculated
 	const accountRothIra = await createAccount(pbAlice, accountRothIraDetails);
@@ -80,9 +81,9 @@ test('summary totals by balance group', async ({ page }) => {
 	await expect(investmentsCard).toBeVisible();
 	await expect(otherAssetsCard).toBeVisible();
 	await expect(otherAssetsCard).toBeVisible();
-	await expect(netWorthCard).toContainText('$63,225');
-	await expect(cashCard).toContainText('$500');
-	await expect(debtCard).toContainText('-$311');
+	await expect(netWorthCard).toContainText('$62,866');
+	await expect(cashCard).toContainText('$250');
+	await expect(debtCard).toContainText('-$420');
 	await expect(investmentsCard).toContainText('$48,536');
 	await expect(otherAssetsCard).toContainText('$14,500');
 });
@@ -106,4 +107,58 @@ test('summary totals update in real-time', async ({ page }) => {
 
 	await expect(netWorthCard).toContainText('$4,251');
 	await expect(investmentsCard).toContainText('$4,251');
+});
+
+test('cashflow calculations', async ({ page }) => {
+	const pbAlice = await createVerifiedUniqueUser('alice');
+
+	// Create transactions
+	const accountSavings = await createAccount(pbAlice, accountSavingsDetails);
+	let transactions = await accountSavingsTransactionSet(12);
+	await createTransactions(pbAlice, accountSavings.id, transactions);
+
+	const accountCreditCard = await createAccount(pbAlice, accountCreditCardDetails);
+	transactions = await accountCreditCardTransactionSet(6);
+	await createTransactions(pbAlice, accountCreditCard.id, transactions);
+
+	await signInAsUser(page, pbAlice);
+
+	// Cashflow chart
+	const today = new Date();
+	const period = page.locator('tbody tr');
+	await expect(period.first()).toContainText(`${format(subMonths(today, 12), 'MMM')}`);
+	await expect(period.first()).toContainText('$0');
+	await expect(period.first()).toContainText('0%'); // TODO: should assert the CSS height
+	await expect(period.nth(7)).toHaveAttribute('style', 'color: red'); // TODO: Lowest balance should be visible
+	await expect(period.nth(7)).toContainText('-$315');
+	await expect(period.nth(7)).toContainText('100%'); // TODO: should assert the CSS height
+	await expect(period.nth(9)).toHaveAttribute('style', 'color: green'); // TODO: Highest balance should be visible
+	await expect(period.nth(9)).toContainText('$410');
+	await expect(period.nth(9)).toContainText('100%'); // TODO: should assert the CSS height
+	await expect(period.last()).toContainText(`${format(today, 'MMM')}`);
+	await expect(period.last()).toContainText('-$170');
+	await expect(period.last()).toContainText('54.02%'); // TODO: should assert the CSS height
+
+	// The January period should always includes the abbreviated year
+	await expect(page.getByText(`Jan '${format(today, 'yy')}`)).toBeVisible();
+
+	// Trailing cashflow
+	const incomeCard = page.locator('.card', { hasText: 'Income per month' });
+	const expenseCard = page.locator('.card', { hasText: 'Expenses per month' });
+	const balanceCard = page.locator('.card', { hasText: 'Balance per month' });
+	await expect(incomeCard).toContainText('$1,680');
+	await expect(expenseCard).toContainText('-$1,457');
+	await expect(balanceCard).toContainText('$223');
+
+	// Switch to the previous 12 months
+	await page.getByText('Previous 12 months').click();
+	await expect(incomeCard).toContainText('$944');
+	await expect(expenseCard).toContainText('-$729');
+	await expect(balanceCard).toContainText('$216');
+
+	// Switch back to the previous 6 months
+	await page.getByText('Previous 6 months').click();
+	await expect(incomeCard).toContainText('$1,680');
+	await expect(expenseCard).toContainText('-$1,457');
+	await expect(balanceCard).toContainText('$223');
 });
