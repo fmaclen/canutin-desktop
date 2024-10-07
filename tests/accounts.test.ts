@@ -78,6 +78,14 @@ test('accounts list is displayed correctly and updated in real-time', async ({ p
 	await createAccountBalanceStatements(
 		pbAlice,
 		accountAutoLoan.id,
+		accountAutoLoanBalanceStatements.slice(1, 2)
+	);
+	await expect(accountAutoLoanRow).toContainText('-$23,500');
+
+	// Create a newer balance statement
+	await createAccountBalanceStatements(
+		pbAlice,
+		accountAutoLoan.id,
 		accountAutoLoanBalanceStatements.slice(0, 1)
 	);
 	await expect(accountAutoLoanRow).toContainText('-$21,250');

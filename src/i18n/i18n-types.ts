@@ -30,6 +30,10 @@ type RootTranslation = {
 	 */
 	ADD_OR_UPDATE_DATA: string
 	/**
+	 * A​s​s​e​t​ ​T​y​p​e
+	 */
+	ASSET_TYPE: string
+	/**
 	 * A​s​s​e​t​s
 	 */
 	ASSETS: string
@@ -74,6 +78,10 @@ type RootTranslation = {
 	 */
 	CONNECTION_ERROR: string
 	/**
+	 * C​o​s​t
+	 */
+	COST: string
+	/**
 	 * D​e​b​t
 	 */
 	DEBT: string
@@ -109,6 +117,10 @@ type RootTranslation = {
 	 * N​o​ ​a​c​c​o​u​n​t​s​ ​f​o​u​n​d
 	 */
 	NO_ACCOUNTS_FOUND: string
+	/**
+	 * N​o​ ​a​s​s​e​t​s​ ​f​o​u​n​d
+	 */
+	NO_ASSETS_FOUND: string
 	/**
 	 * I​n​v​e​s​t​m​e​n​t​s
 	 */
@@ -154,6 +166,10 @@ type RootTranslation = {
 	 */
 	SUMMARY: string
 	/**
+	 * S​y​m​b​o​l
+	 */
+	SYMBOL: string
+	/**
 	 * T​h​e​ ​b​i​g​ ​p​i​c​t​u​r​e
 	 */
 	THE_BIG_PICTURE: string
@@ -169,6 +185,14 @@ type RootTranslation = {
 	 * T​r​e​n​d​s
 	 */
 	TRENDS: string
+	/**
+	 * V​a​l​u​e
+	 */
+	VALUE: string
+	/**
+	 * Q​u​a​n​t​i​t​y
+	 */
+	QUANTITY: string
 }
 
 export type TranslationFunctions = {
@@ -188,6 +212,10 @@ export type TranslationFunctions = {
 	 * Add or update data
 	 */
 	ADD_OR_UPDATE_DATA: () => LocalizedString
+	/**
+	 * Asset Type
+	 */
+	ASSET_TYPE: () => LocalizedString
 	/**
 	 * Assets
 	 */
@@ -233,6 +261,10 @@ export type TranslationFunctions = {
 	 */
 	CONNECTION_ERROR: () => LocalizedString
 	/**
+	 * Cost
+	 */
+	COST: () => LocalizedString
+	/**
 	 * Debt
 	 */
 	DEBT: () => LocalizedString
@@ -268,6 +300,10 @@ export type TranslationFunctions = {
 	 * No accounts found
 	 */
 	NO_ACCOUNTS_FOUND: () => LocalizedString
+	/**
+	 * No assets found
+	 */
+	NO_ASSETS_FOUND: () => LocalizedString
 	/**
 	 * Investments
 	 */
@@ -313,6 +349,10 @@ export type TranslationFunctions = {
 	 */
 	SUMMARY: () => LocalizedString
 	/**
+	 * Symbol
+	 */
+	SYMBOL: () => LocalizedString
+	/**
 	 * The big picture
 	 */
 	THE_BIG_PICTURE: () => LocalizedString
@@ -328,6 +368,14 @@ export type TranslationFunctions = {
 	 * Trends
 	 */
 	TRENDS: () => LocalizedString
+	/**
+	 * Value
+	 */
+	VALUE: () => LocalizedString
+	/**
+	 * Quantity
+	 */
+	QUANTITY: () => LocalizedString
 }
 
 export type Formatters = {}

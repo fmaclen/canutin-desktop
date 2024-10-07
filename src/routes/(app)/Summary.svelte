@@ -14,7 +14,7 @@
 			.reduce((acc, account) => acc + (account.balance ?? 0), 0);
 		const assetsInBalanceGroupTotal = assetsStore.assets
 			.filter((asset) => balanceGroup === undefined || asset.balanceGroup === balanceGroup)
-			.reduce((acc, asset) => acc + (asset.balance ?? 0), 0);
+			.reduce((acc, asset) => acc + (asset.value ?? 0), 0);
 		return formatCurrency(accountsInBalanceGroupTotal + assetsInBalanceGroupTotal);
 	}
 
