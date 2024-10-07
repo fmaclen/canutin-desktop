@@ -1,11 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { format } from 'date-fns';
 
-import {
-	createAccount,
-	createAccountBalanceStatements,
-	createTransactions
-} from '$lib/pocketbase';
+import { createAccount, createAccountBalanceStatements, createTransactions } from '$lib/pocketbase';
 import {
 	accountAutoLoanDetails,
 	accountCheckingDetails,
