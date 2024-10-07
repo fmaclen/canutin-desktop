@@ -46,6 +46,10 @@ type RootTranslation = {
 	 */
 	BALANCE: string
 	/**
+	 * B​a​l​a​n​c​e​ ​p​e​r​ ​m​o​n​t​h
+	 */
+	BALANCE_PER_MONTH: string
+	/**
 	 * B​a​l​a​n​c​e​ ​S​h​e​e​t
 	 */
 	BALANCE_SHEET: string
@@ -58,13 +62,33 @@ type RootTranslation = {
 	 */
 	CANUTIN_SERVER_URL: string
 	/**
+	 * C​a​s​h
+	 */
+	CASH: string
+	/**
+	 * C​a​s​h​f​l​o​w
+	 */
+	CASHFLOW: string
+	/**
 	 * U​n​a​b​l​e​ ​t​o​ ​c​o​n​n​e​c​t​ ​t​o​ ​t​h​e​ ​s​e​r​v​e​r​.​ ​P​l​e​a​s​e​ ​c​h​e​c​k​ ​y​o​u​r​ ​i​n​t​e​r​n​e​t​ ​c​o​n​n​e​c​t​i​o​n​.
 	 */
 	CONNECTION_ERROR: string
 	/**
+	 * D​e​b​t
+	 */
+	DEBT: string
+	/**
 	 * E​m​a​i​l
 	 */
 	EMAIL: string
+	/**
+	 * E​x​p​e​n​s​e​s​ ​p​e​r​ ​m​o​n​t​h
+	 */
+	EXPENSES_PER_MONTH: string
+	/**
+	 * I​n​c​o​m​e​ ​p​e​r​ ​m​o​n​t​h
+	 */
+	INCOME_PER_MONTH: string
 	/**
 	 * I​n​c​o​r​r​e​c​t​ ​e​m​a​i​l​ ​o​r​ ​p​a​s​s​w​o​r​d​.​ ​P​l​e​a​s​e​ ​c​h​e​c​k​ ​y​o​u​r​ ​c​r​e​d​e​n​t​i​a​l​s​.
 	 */
@@ -86,9 +110,29 @@ type RootTranslation = {
 	 */
 	NO_ACCOUNTS_FOUND: string
 	/**
+	 * I​n​v​e​s​t​m​e​n​t​s
+	 */
+	INVESTMENTS: string
+	/**
+	 * N​e​t​ ​w​o​r​t​h
+	 */
+	NET_WORTH: string
+	/**
+	 * O​t​h​e​r​ ​a​s​s​e​t​s
+	 */
+	OTHER_ASSETS: string
+	/**
 	 * P​a​s​s​w​o​r​d
 	 */
 	PASSWORD: string
+	/**
+	 * P​r​e​v​i​o​u​s​ ​1​2​ ​m​o​n​t​h​s
+	 */
+	PREVIOUS_12_MONTHS: string
+	/**
+	 * P​r​e​v​i​o​u​s​ ​6​ ​m​o​n​t​h​s
+	 */
+	PREVIOUS_6_MONTHS: string
 	/**
 	 * S​e​t​t​i​n​g​s
 	 */
@@ -106,9 +150,17 @@ type RootTranslation = {
 	 */
 	SIGN_OUT: string
 	/**
+	 * S​u​m​m​a​r​y
+	 */
+	SUMMARY: string
+	/**
 	 * T​h​e​ ​b​i​g​ ​p​i​c​t​u​r​e
 	 */
 	THE_BIG_PICTURE: string
+	/**
+	 * T​r​a​i​l​i​n​g​ ​C​a​s​h​f​l​o​w
+	 */
+	TRAILING_CASHFLOW: string
 	/**
 	 * T​r​a​n​s​a​c​t​i​o​n​s
 	 */
@@ -153,6 +205,10 @@ export type TranslationFunctions = {
 	 */
 	BALANCE: () => LocalizedString
 	/**
+	 * Balance per month
+	 */
+	BALANCE_PER_MONTH: () => LocalizedString
+	/**
 	 * Balance Sheet
 	 */
 	BALANCE_SHEET: () => LocalizedString
@@ -165,13 +221,33 @@ export type TranslationFunctions = {
 	 */
 	CANUTIN_SERVER_URL: () => LocalizedString
 	/**
+	 * Cash
+	 */
+	CASH: () => LocalizedString
+	/**
+	 * Cashflow
+	 */
+	CASHFLOW: () => LocalizedString
+	/**
 	 * Unable to connect to the server. Please check your internet connection.
 	 */
 	CONNECTION_ERROR: () => LocalizedString
 	/**
+	 * Debt
+	 */
+	DEBT: () => LocalizedString
+	/**
 	 * Email
 	 */
 	EMAIL: () => LocalizedString
+	/**
+	 * Expenses per month
+	 */
+	EXPENSES_PER_MONTH: () => LocalizedString
+	/**
+	 * Income per month
+	 */
+	INCOME_PER_MONTH: () => LocalizedString
 	/**
 	 * Incorrect email or password. Please check your credentials.
 	 */
@@ -193,9 +269,29 @@ export type TranslationFunctions = {
 	 */
 	NO_ACCOUNTS_FOUND: () => LocalizedString
 	/**
+	 * Investments
+	 */
+	INVESTMENTS: () => LocalizedString
+	/**
+	 * Net worth
+	 */
+	NET_WORTH: () => LocalizedString
+	/**
+	 * Other assets
+	 */
+	OTHER_ASSETS: () => LocalizedString
+	/**
 	 * Password
 	 */
 	PASSWORD: () => LocalizedString
+	/**
+	 * Previous 12 months
+	 */
+	PREVIOUS_12_MONTHS: () => LocalizedString
+	/**
+	 * Previous 6 months
+	 */
+	PREVIOUS_6_MONTHS: () => LocalizedString
 	/**
 	 * Settings
 	 */
@@ -213,9 +309,17 @@ export type TranslationFunctions = {
 	 */
 	SIGN_OUT: () => LocalizedString
 	/**
+	 * Summary
+	 */
+	SUMMARY: () => LocalizedString
+	/**
 	 * The big picture
 	 */
 	THE_BIG_PICTURE: () => LocalizedString
+	/**
+	 * Trailing Cashflow
+	 */
+	TRAILING_CASHFLOW: () => LocalizedString
 	/**
 	 * Transactions
 	 */

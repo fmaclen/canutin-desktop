@@ -16,7 +16,9 @@ const dateInUTC = (date: Date): Date => {
 
 const MONTHS_IN_SET = 24;
 
-export const accountCheckingTransactionSet = async (): Promise<TransactionDetails[]> => {
+export const accountCheckingTransactionSet = async (
+	months: number = MONTHS_IN_SET
+): Promise<TransactionDetails[]> => {
 	const transactionSet = async (i: number): Promise<TransactionDetails[]> => [
 		{
 			description: 'Westside Apartments',
@@ -85,14 +87,16 @@ export const accountCheckingTransactionSet = async (): Promise<TransactionDetail
 	];
 
 	let transactions = await transactionSet(0);
-	for (let i = 1; i < MONTHS_IN_SET; i++) {
+	for (let i = 1; i < months; i++) {
 		transactions = transactions.concat(await transactionSet(i));
 	}
 
 	return transactions;
 };
 
-export const accountSavingsTransactionSet = async (): Promise<TransactionDetails[]> => {
+export const accountSavingsTransactionSet = async (
+	months: number = MONTHS_IN_SET
+): Promise<TransactionDetails[]> => {
 	const transactionSet = async (i: number): Promise<TransactionDetails[]> => [
 		{
 			description: 'Transfer from Ransack Checking',
@@ -105,14 +109,16 @@ export const accountSavingsTransactionSet = async (): Promise<TransactionDetails
 	];
 
 	let transactions = await transactionSet(0);
-	for (let i = 1; i < MONTHS_IN_SET; i++) {
+	for (let i = 1; i < months; i++) {
 		transactions = transactions.concat(await transactionSet(i));
 	}
 
 	return transactions;
 };
 
-export const accountCreditCardTransactionSet = async (): Promise<TransactionDetails[]> => {
+export const accountCreditCardTransactionSet = async (
+	months: number = MONTHS_IN_SET
+): Promise<TransactionDetails[]> => {
 	const transactionSet = async (i: number): Promise<TransactionDetails[]> => [
 		{
 			description: 'Evergreen Market',
@@ -342,7 +348,7 @@ export const accountCreditCardTransactionSet = async (): Promise<TransactionDeta
 	];
 
 	let transactions = await transactionSet(0);
-	for (let i = 1; i < MONTHS_IN_SET; i++) {
+	for (let i = 1; i < months; i++) {
 		transactions = transactions.concat(await transactionSet(i));
 	}
 
