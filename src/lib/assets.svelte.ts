@@ -1,11 +1,18 @@
 import { ClientResponseError } from 'pocketbase';
 import { getContext, setContext } from 'svelte';
 
-import type { AssetsResponse, TypedPocketBase } from '$lib/pocketbase-types';
+import type { AssetsResponse, TagsResponse, TypedPocketBase } from '$lib/pocketbase-types';
 import { getPbClientContext } from '$lib/pocketbase.svelte';
 
+interface Asset extends AssetsResponse {
+	value: number | null;
+	cost: number | null;
+	quantity: number | null;
+	expand: { tag: TagsResponse };
+}
+
 class Assets {
-	assets = $state<(AssetsResponse & { balance: number | null })[]>([]);
+	assets = $state<Asset[]>([]);
 	private pbClient = getPbClientContext();
 
 	private get pb(): TypedPocketBase {
@@ -19,12 +26,14 @@ class Assets {
 
 	private async fetchAssets() {
 		try {
-			const assetsCollection = await this.pb.collection('assets').getFullList();
+			const assetsCollection = await this.pb
+				.collection('assets')
+				.getFullList<Asset>({ expand: 'tag' });
 			const assetsWithBalance = await Promise.all(
 				assetsCollection.map(async (asset) => {
 					try {
-						const balance = await this.getAssetBalance(asset);
-						return { ...asset, balance };
+						const { value, cost, quantity } = await this.getAssetBalance(asset);
+						return { ...asset, value, cost, quantity };
 					} catch (error) {
 						if (error instanceof ClientResponseError && error.isAbort) {
 							console.log('Asset balance fetch cancelled for:', asset.name);
@@ -44,14 +53,20 @@ class Assets {
 		}
 	}
 
-	private async getAssetBalance(asset: AssetsResponse): Promise<number | null> {
+	private async getAssetBalance(
+		asset: Asset
+	): Promise<{ value: number | null; cost: number | null; quantity: number | null }> {
 		try {
 			const latestStatement = await this.pb.collection('assetBalanceStatements').getList(1, 1, {
 				filter: `asset="${asset.id}"`,
 				sort: '-created',
 				requestKey: null // Disable auto-cancellation for this request
 			});
-			return latestStatement.items[0]?.value ?? null;
+			return {
+				value: latestStatement.items[0]?.value ?? null,
+				cost: latestStatement.items[0]?.cost ?? null,
+				quantity: latestStatement.items[0]?.quantity ?? null
+			};
 		} catch (error) {
 			if (error instanceof ClientResponseError) {
 				if (error.isAbort) {
@@ -62,14 +77,18 @@ class Assets {
 			} else {
 				console.error('Unexpected error fetching balance for asset:', asset.name, error);
 			}
-			return null;
+			return { value: null, cost: null, quantity: null };
 		}
 	}
 
 	private subscribeToAssetChanges() {
-		this.pb.collection('assets').subscribe('*', (e) => {
-			this.handleAssetChange(e.action, e.record);
-		});
+		this.pb.collection('assets').subscribe(
+			'*',
+			(e) => {
+				this.handleAssetChange(e.action, e.record as Asset);
+			},
+			{ expand: 'tag' }
+		);
 		this.pb.collection('assetBalanceStatements').subscribe('*', (e) => {
 			const asset = this.assets.find((a) => a.id === e.record.asset);
 			if (!asset) throw new Error('Balance statement asset not found');
@@ -77,8 +96,9 @@ class Assets {
 		});
 	}
 
-	private async handleAssetChange(action: string, record: AssetsResponse) {
-		const assetWithBalance = { ...record, balance: await this.getAssetBalance(record) };
+	private async handleAssetChange(action: string, record: Asset) {
+		const { value, cost, quantity } = await this.getAssetBalance(record);
+		const assetWithBalance = { ...record, value, cost, quantity };
 		switch (action) {
 			case 'create':
 				this.assets = [assetWithBalance, ...this.assets];
@@ -90,6 +110,9 @@ class Assets {
 				this.assets = this.assets.filter((a) => a.id !== record.id);
 				break;
 		}
+
+		// Sort by name
+		this.assets = this.assets.sort((a, b) => a.name.localeCompare(b.name));
 	}
 
 	dispose() {

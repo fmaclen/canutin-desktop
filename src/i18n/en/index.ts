@@ -5,6 +5,7 @@ const en = {
 	ACCOUNT_TYPE: 'Account Type',
 	ACCOUNT_VERIFICATION_REQUIRED: 'An admin must verify your account before you can sign in',
 	ADD_OR_UPDATE_DATA: 'Add or update data',
+	ASSET_TYPE: 'Asset Type',
 	ASSETS: 'Assets',
 	AUTO_CALCULATED: 'Auto-calculated',
 	AUTHENTICATION_FAILED: 'Authentication failed. Please try again.',
@@ -16,6 +17,7 @@ const en = {
 	CASH: 'Cash',
 	CASHFLOW: 'Cashflow',
 	CONNECTION_ERROR: 'Unable to connect to the server. Please check your internet connection.',
+	COST: 'Cost',
 	DEBT: 'Debt',
 	EMAIL: 'Email',
 	EXPENSES_PER_MONTH: 'Expenses per month',
@@ -25,6 +27,7 @@ const en = {
 	LAST_UPDATED: 'Last Updated',
 	NAME: 'Name',
 	NO_ACCOUNTS_FOUND: 'No accounts found',
+	NO_ASSETS_FOUND: 'No assets found',
 	INVESTMENTS: 'Investments',
 	NET_WORTH: 'Net worth',
 	OTHER_ASSETS: 'Other assets',
@@ -36,10 +39,13 @@ const en = {
 	SIGN_IN_BUTTON: 'Sign in',
 	SIGN_OUT: 'Sign out',
 	SUMMARY: 'Summary',
+	SYMBOL: 'Symbol',
 	THE_BIG_PICTURE: 'The big picture',
 	TRAILING_CASHFLOW: 'Trailing Cashflow',
 	TRANSACTIONS: 'Transactions',
-	TRENDS: 'Trends'
+	TRENDS: 'Trends',
+	VALUE: 'Value',
+	QUANTITY: 'Quantity'
 } satisfies BaseTranslation;
 
 export default en;
