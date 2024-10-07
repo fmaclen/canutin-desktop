@@ -18,6 +18,7 @@ const en = {
 	INSTITUTION: 'Institution',
 	LAST_UPDATED: 'Last Updated',
 	NAME: 'Name',
+	NO_ACCOUNTS_FOUND: 'No accounts found',
 	PASSWORD: 'Password',
 	SETTINGS: 'Settings',
 	SIGN_IN: 'Sign in',

@@ -82,6 +82,10 @@ type RootTranslation = {
 	 */
 	NAME: string
 	/**
+	 * N​o​ ​a​c​c​o​u​n​t​s​ ​f​o​u​n​d
+	 */
+	NO_ACCOUNTS_FOUND: string
+	/**
 	 * P​a​s​s​w​o​r​d
 	 */
 	PASSWORD: string
@@ -184,6 +188,10 @@ export type TranslationFunctions = {
 	 * Name
 	 */
 	NAME: () => LocalizedString
+	/**
+	 * No accounts found
+	 */
+	NO_ACCOUNTS_FOUND: () => LocalizedString
 	/**
 	 * Password
 	 */

@@ -124,7 +124,6 @@ class Accounts {
 	private async handleAccountChange(action: string, record: Account) {
 		const accountWithBalance = { ...record, balance: await this.getAccountBalance(record) };
 
-		console.log('Account change:', action, record);
 		switch (action) {
 			case 'create':
 				this.accounts = [accountWithBalance, ...this.accounts];
@@ -136,6 +135,9 @@ class Accounts {
 				this.accounts = this.accounts.filter((a) => a.id !== record.id);
 				break;
 		}
+
+		// Sort by name
+		this.accounts = this.accounts.sort((a, b) => a.name.localeCompare(b.name));
 	}
 
 	dispose() {
