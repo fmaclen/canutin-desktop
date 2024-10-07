@@ -3,13 +3,19 @@ import { getContext, setContext } from 'svelte';
 
 import type {
 	AccountsResponse,
+	TagsResponse,
 	TransactionsResponse,
 	TypedPocketBase
 } from '$lib/pocketbase-types';
 import { getPbClientContext } from '$lib/pocketbase.svelte';
 
+interface Account extends AccountsResponse {
+	balance: number | null;
+	expand: { tag: TagsResponse };
+}
+
 class Accounts {
-	accounts = $state<(AccountsResponse & { balance: number | null })[]>([]);
+	accounts = $state<Account[]>([]);
 	private pbClient = getPbClientContext();
 
 	private get pb(): TypedPocketBase {
@@ -23,7 +29,9 @@ class Accounts {
 
 	private async fetchAccounts() {
 		try {
-			const accountsCollection = await this.pb.collection('accounts').getFullList();
+			const accountsCollection = await this.pb
+				.collection('accounts')
+				.getFullList<Account>({ expand: 'tag' });
 			const accountsWithBalance = await Promise.all(
 				accountsCollection.map(async (account) => {
 					try {
@@ -48,7 +56,7 @@ class Accounts {
 		}
 	}
 
-	private async getAccountBalance(account: AccountsResponse): Promise<number | null> {
+	private async getAccountBalance(account: Account): Promise<number | null> {
 		try {
 			if (account.isAutoCalculated) {
 				let transactions: TransactionsResponse[] = [];
@@ -94,9 +102,13 @@ class Accounts {
 	}
 
 	private subscribeToAccountChanges() {
-		this.pb.collection('accounts').subscribe('*', (e) => {
-			this.handleAccountChange(e.action, e.record);
-		});
+		this.pb.collection('accounts').subscribe(
+			'*',
+			(e) => {
+				this.handleAccountChange(e.action, e.record as Account);
+			},
+			{ expand: 'tag' }
+		);
 		this.pb.collection('accountBalanceStatements').subscribe('*', (e) => {
 			const account = this.accounts.find((a) => a.id === e.record.account);
 			if (!account) throw new Error('Balance statement account not found');
@@ -109,8 +121,9 @@ class Accounts {
 		});
 	}
 
-	private async handleAccountChange(action: string, record: AccountsResponse) {
+	private async handleAccountChange(action: string, record: Account) {
 		const accountWithBalance = { ...record, balance: await this.getAccountBalance(record) };
+
 		switch (action) {
 			case 'create':
 				this.accounts = [accountWithBalance, ...this.accounts];
@@ -122,6 +135,9 @@ class Accounts {
 				this.accounts = this.accounts.filter((a) => a.id !== record.id);
 				break;
 		}
+
+		// Sort by name
+		this.accounts = this.accounts.sort((a, b) => a.name.localeCompare(b.name));
 	}
 
 	dispose() {

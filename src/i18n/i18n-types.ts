@@ -18,6 +18,10 @@ type RootTranslation = {
 	 */
 	ACCOUNTS: string
 	/**
+	 * A​c​c​o​u​n​t​ ​T​y​p​e
+	 */
+	ACCOUNT_TYPE: string
+	/**
 	 * A​n​ ​a​d​m​i​n​ ​m​u​s​t​ ​v​e​r​i​f​y​ ​y​o​u​r​ ​a​c​c​o​u​n​t​ ​b​e​f​o​r​e​ ​y​o​u​ ​c​a​n​ ​s​i​g​n​ ​i​n
 	 */
 	ACCOUNT_VERIFICATION_REQUIRED: string
@@ -29,6 +33,10 @@ type RootTranslation = {
 	 * A​s​s​e​t​s
 	 */
 	ASSETS: string
+	/**
+	 * A​u​t​o​-​c​a​l​c​u​l​a​t​e​d
+	 */
+	AUTO_CALCULATED: string
 	/**
 	 * A​u​t​h​e​n​t​i​c​a​t​i​o​n​ ​f​a​i​l​e​d​.​ ​P​l​e​a​s​e​ ​t​r​y​ ​a​g​a​i​n​.
 	 */
@@ -45,6 +53,10 @@ type RootTranslation = {
 	 * B​a​l​a​n​c​e​ ​S​h​e​e​t
 	 */
 	BALANCE_SHEET: string
+	/**
+	 * B​a​l​a​n​c​e​ ​T​y​p​e
+	 */
+	BALANCE_TYPE: string
 	/**
 	 * C​a​n​u​t​i​n​ ​S​e​r​v​e​r​ ​U​R​L
 	 */
@@ -82,13 +94,25 @@ type RootTranslation = {
 	 */
 	INCORRECT_CREDENTIALS: string
 	/**
-	 * I​n​v​e​s​t​m​e​n​t​s
+	 * I​n​s​t​i​t​u​t​i​o​n
 	 */
-	INVESTMENTS: string
+	INSTITUTION: string
+	/**
+	 * L​a​s​t​ ​U​p​d​a​t​e​d
+	 */
+	LAST_UPDATED: string
 	/**
 	 * N​a​m​e
 	 */
 	NAME: string
+	/**
+	 * N​o​ ​a​c​c​o​u​n​t​s​ ​f​o​u​n​d
+	 */
+	NO_ACCOUNTS_FOUND: string
+	/**
+	 * I​n​v​e​s​t​m​e​n​t​s
+	 */
+	INVESTMENTS: string
 	/**
 	 * N​e​t​ ​w​o​r​t​h
 	 */
@@ -153,6 +177,10 @@ export type TranslationFunctions = {
 	 */
 	ACCOUNTS: () => LocalizedString
 	/**
+	 * Account Type
+	 */
+	ACCOUNT_TYPE: () => LocalizedString
+	/**
 	 * An admin must verify your account before you can sign in
 	 */
 	ACCOUNT_VERIFICATION_REQUIRED: () => LocalizedString
@@ -164,6 +192,10 @@ export type TranslationFunctions = {
 	 * Assets
 	 */
 	ASSETS: () => LocalizedString
+	/**
+	 * Auto-calculated
+	 */
+	AUTO_CALCULATED: () => LocalizedString
 	/**
 	 * Authentication failed. Please try again.
 	 */
@@ -180,6 +212,10 @@ export type TranslationFunctions = {
 	 * Balance Sheet
 	 */
 	BALANCE_SHEET: () => LocalizedString
+	/**
+	 * Balance Type
+	 */
+	BALANCE_TYPE: () => LocalizedString
 	/**
 	 * Canutin Server URL
 	 */
@@ -217,13 +253,25 @@ export type TranslationFunctions = {
 	 */
 	INCORRECT_CREDENTIALS: () => LocalizedString
 	/**
-	 * Investments
+	 * Institution
 	 */
-	INVESTMENTS: () => LocalizedString
+	INSTITUTION: () => LocalizedString
+	/**
+	 * Last Updated
+	 */
+	LAST_UPDATED: () => LocalizedString
 	/**
 	 * Name
 	 */
 	NAME: () => LocalizedString
+	/**
+	 * No accounts found
+	 */
+	NO_ACCOUNTS_FOUND: () => LocalizedString
+	/**
+	 * Investments
+	 */
+	INVESTMENTS: () => LocalizedString
 	/**
 	 * Net worth
 	 */
