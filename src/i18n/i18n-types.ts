@@ -18,7 +18,7 @@ type RootTranslation = {
 	 */
 	ACCOUNTS: string
 	/**
-	 * A​c​c​o​u​n​t​ ​T​y​p​e
+	 * A​c​c​o​u​n​t​ ​t​y​p​e
 	 */
 	ACCOUNT_TYPE: string
 	/**
@@ -30,7 +30,7 @@ type RootTranslation = {
 	 */
 	ADD_OR_UPDATE_DATA: string
 	/**
-	 * A​s​s​e​t​ ​T​y​p​e
+	 * A​s​s​e​t​ ​t​y​p​e
 	 */
 	ASSET_TYPE: string
 	/**
@@ -54,15 +54,15 @@ type RootTranslation = {
 	 */
 	BALANCE_PER_MONTH: string
 	/**
-	 * B​a​l​a​n​c​e​ ​S​h​e​e​t
+	 * B​a​l​a​n​c​e​ ​s​h​e​e​t
 	 */
 	BALANCE_SHEET: string
 	/**
-	 * B​a​l​a​n​c​e​ ​T​y​p​e
+	 * B​a​l​a​n​c​e​ ​t​y​p​e
 	 */
 	BALANCE_TYPE: string
 	/**
-	 * C​a​n​u​t​i​n​ ​S​e​r​v​e​r​ ​U​R​L
+	 * C​a​n​u​t​i​n​ ​s​e​r​v​e​r​ ​U​R​L
 	 */
 	CANUTIN_SERVER_URL: string
 	/**
@@ -106,7 +106,7 @@ type RootTranslation = {
 	 */
 	INSTITUTION: string
 	/**
-	 * L​a​s​t​ ​U​p​d​a​t​e​d
+	 * L​a​s​t​ ​u​p​d​a​t​e​d
 	 */
 	LAST_UPDATED: string
 	/**
@@ -174,7 +174,7 @@ type RootTranslation = {
 	 */
 	THE_BIG_PICTURE: string
 	/**
-	 * T​r​a​i​l​i​n​g​ ​C​a​s​h​f​l​o​w
+	 * T​r​a​i​l​i​n​g​ ​c​a​s​h​f​l​o​w
 	 */
 	TRAILING_CASHFLOW: string
 	/**
@@ -201,7 +201,7 @@ export type TranslationFunctions = {
 	 */
 	ACCOUNTS: () => LocalizedString
 	/**
-	 * Account Type
+	 * Account type
 	 */
 	ACCOUNT_TYPE: () => LocalizedString
 	/**
@@ -213,7 +213,7 @@ export type TranslationFunctions = {
 	 */
 	ADD_OR_UPDATE_DATA: () => LocalizedString
 	/**
-	 * Asset Type
+	 * Asset type
 	 */
 	ASSET_TYPE: () => LocalizedString
 	/**
@@ -237,15 +237,15 @@ export type TranslationFunctions = {
 	 */
 	BALANCE_PER_MONTH: () => LocalizedString
 	/**
-	 * Balance Sheet
+	 * Balance sheet
 	 */
 	BALANCE_SHEET: () => LocalizedString
 	/**
-	 * Balance Type
+	 * Balance type
 	 */
 	BALANCE_TYPE: () => LocalizedString
 	/**
-	 * Canutin Server URL
+	 * Canutin server URL
 	 */
 	CANUTIN_SERVER_URL: () => LocalizedString
 	/**
@@ -289,7 +289,7 @@ export type TranslationFunctions = {
 	 */
 	INSTITUTION: () => LocalizedString
 	/**
-	 * Last Updated
+	 * Last updated
 	 */
 	LAST_UPDATED: () => LocalizedString
 	/**
@@ -357,7 +357,7 @@ export type TranslationFunctions = {
 	 */
 	THE_BIG_PICTURE: () => LocalizedString
 	/**
-	 * Trailing Cashflow
+	 * Trailing cashflow
 	 */
 	TRAILING_CASHFLOW: () => LocalizedString
 	/**

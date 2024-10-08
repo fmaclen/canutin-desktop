@@ -4,8 +4,8 @@ import { getContext, setContext } from 'svelte';
 import type { AssetsResponse, TagsResponse, TypedPocketBase } from '$lib/pocketbase-types';
 import { getPbClientContext } from '$lib/pocketbase.svelte';
 
-interface Asset extends AssetsResponse {
-	value: number | null;
+export interface Asset extends AssetsResponse {
+	balance: number | null;
 	cost: number | null;
 	quantity: number | null;
 	expand: { tag: TagsResponse };
@@ -32,8 +32,8 @@ class Assets {
 			const assetsWithBalance = await Promise.all(
 				assetsCollection.map(async (asset) => {
 					try {
-						const { value, cost, quantity } = await this.getAssetBalance(asset);
-						return { ...asset, value, cost, quantity };
+						const { balance, cost, quantity } = await this.getAssetBalance(asset);
+						return { ...asset, balance, cost, quantity };
 					} catch (error) {
 						if (error instanceof ClientResponseError && error.isAbort) {
 							console.log('Asset balance fetch cancelled for:', asset.name);
@@ -55,7 +55,7 @@ class Assets {
 
 	private async getAssetBalance(
 		asset: Asset
-	): Promise<{ value: number | null; cost: number | null; quantity: number | null }> {
+	): Promise<{ balance: number | null; cost: number | null; quantity: number | null }> {
 		try {
 			const latestStatement = await this.pb.collection('assetBalanceStatements').getList(1, 1, {
 				filter: `asset="${asset.id}"`,
@@ -63,7 +63,7 @@ class Assets {
 				requestKey: null // Disable auto-cancellation for this request
 			});
 			return {
-				value: latestStatement.items[0]?.value ?? null,
+				balance: latestStatement.items[0]?.value ?? null,
 				cost: latestStatement.items[0]?.cost ?? null,
 				quantity: latestStatement.items[0]?.quantity ?? null
 			};
@@ -77,7 +77,7 @@ class Assets {
 			} else {
 				console.error('Unexpected error fetching balance for asset:', asset.name, error);
 			}
-			return { value: null, cost: null, quantity: null };
+			return { balance: null, cost: null, quantity: null };
 		}
 	}
 
@@ -97,8 +97,8 @@ class Assets {
 	}
 
 	private async handleAssetChange(action: string, record: Asset) {
-		const { value, cost, quantity } = await this.getAssetBalance(record);
-		const assetWithBalance = { ...record, value, cost, quantity };
+		const { balance, cost, quantity } = await this.getAssetBalance(record);
+		const assetWithBalance = { ...record, balance, cost, quantity };
 		switch (action) {
 			case 'create':
 				this.assets = [assetWithBalance, ...this.assets];
