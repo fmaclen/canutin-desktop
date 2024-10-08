@@ -13,6 +13,8 @@ export function calculateTotalBalance(
 	balanceGroup?: number
 ) {
 	return accountsOrAssets
-		.filter((accountOrAsset) => balanceGroup === undefined || accountOrAsset.balanceGroup === balanceGroup)
+		.filter(
+			(accountOrAsset) => balanceGroup === undefined || accountOrAsset.balanceGroup === balanceGroup
+		)
 		.reduce((acc, accountOrAsset) => acc + (accountOrAsset.balance ?? 0), 0);
 }

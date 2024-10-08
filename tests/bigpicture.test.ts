@@ -14,7 +14,11 @@ import {
 	accountRothIraDetails,
 	accountSavingsDetails
 } from '$lib/seed/data/accounts';
-import { assetCollectibleDetails, assetSecurityGamestopDetails, assetSecurityTeslaDetails } from '$lib/seed/data/assets';
+import {
+	assetCollectibleDetails,
+	assetSecurityGamestopDetails,
+	assetSecurityTeslaDetails
+} from '$lib/seed/data/assets';
 import {
 	account401kBalanceStatements,
 	accountRothIraBalanceStatements,
