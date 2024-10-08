@@ -14,11 +14,12 @@ import {
 	accountRothIraDetails,
 	accountSavingsDetails
 } from '$lib/seed/data/accounts';
-import { assetCollectibleDetails, assetSecurityTeslaDetails } from '$lib/seed/data/assets';
+import { assetCollectibleDetails, assetSecurityGamestopDetails, assetSecurityTeslaDetails } from '$lib/seed/data/assets';
 import {
 	account401kBalanceStatements,
 	accountRothIraBalanceStatements,
 	assetCollectibleBalanceStatements,
+	assetGamestopBalanceStatements,
 	assetTeslaBalanceStatements
 } from '$lib/seed/data/balanceStatements';
 import {
@@ -35,12 +36,12 @@ test('summary totals by balance group', async ({ page }) => {
 	// Create accounts
 	// Balance group 0 / auto-calculated
 	const accountSavings = await createAccount(pbAlice, accountSavingsDetails);
-	let transactions = await accountSavingsTransactionSet(1);
+	let transactions = await accountSavingsTransactionSet(2);
 	await createTransactions(pbAlice, accountSavings.id, transactions);
 
 	// Balance group 1 / auto-calculated
 	const accountCreditCard = await createAccount(pbAlice, accountCreditCardDetails);
-	transactions = await accountCreditCardTransactionSet(1);
+	transactions = await accountCreditCardTransactionSet(2);
 	await createTransactions(pbAlice, accountCreditCard.id, transactions);
 
 	// Balance group 2 / not auto-calculated
@@ -48,16 +49,22 @@ test('summary totals by balance group', async ({ page }) => {
 	await createAccountBalanceStatements(
 		pbAlice,
 		accountRothIra.id,
-		accountRothIraBalanceStatements.slice(0, 2)
+		accountRothIraBalanceStatements.slice(0, 1)
 	);
 
-	// Create assets
+	// Create 2 assets
 	// Balance group 3
 	const assetSecurityTesla = await createAsset(pbAlice, assetSecurityTeslaDetails);
 	await createAssetBalanceStatements(
 		pbAlice,
 		assetSecurityTesla.id,
-		assetTeslaBalanceStatements.slice(0, 2)
+		assetTeslaBalanceStatements.slice(0, 1)
+	);
+	const assetSecurityGamestop = await createAsset(pbAlice, assetSecurityGamestopDetails);
+	await createAssetBalanceStatements(
+		pbAlice,
+		assetSecurityGamestop.id,
+		assetGamestopBalanceStatements.slice(0, 1)
 	);
 
 	// Balance group 4
@@ -65,7 +72,7 @@ test('summary totals by balance group', async ({ page }) => {
 	await createAssetBalanceStatements(
 		pbAlice,
 		assetCollectible.id,
-		assetCollectibleBalanceStatements.slice(0, 2)
+		assetCollectibleBalanceStatements.slice(0, 1)
 	);
 
 	// Check the calculations
@@ -81,11 +88,43 @@ test('summary totals by balance group', async ({ page }) => {
 	await expect(investmentsCard).toBeVisible();
 	await expect(otherAssetsCard).toBeVisible();
 	await expect(otherAssetsCard).toBeVisible();
-	await expect(netWorthCard).toContainText('$62,866');
-	await expect(cashCard).toContainText('$250');
-	await expect(debtCard).toContainText('-$420');
-	await expect(investmentsCard).toContainText('$48,536');
+	await expect(netWorthCard).toContainText('$66,321');
+	await expect(cashCard).toContainText('$500');
+	await expect(debtCard).toContainText('-$340');
+	await expect(investmentsCard).toContainText('$51,661');
 	await expect(otherAssetsCard).toContainText('$14,500');
+
+	// Check the balance sheet calculations
+	await page.getByText('Balance sheet').click();
+	await expect(netWorthCard).not.toBeVisible();
+	await expect(cashCard).toContainText('$500');
+	await expect(debtCard).toContainText('-$340');
+	await expect(investmentsCard).toContainText('$51,661');
+	await expect(otherAssetsCard).toContainText('$14,500');
+
+	// Check the accounts and assets are grouped correctly
+	const savingsCardGroup = page.locator('.card-group', { hasText: 'Savings' });
+	await expect(savingsCardGroup).toContainText('Emergency Fund');
+	await expect(savingsCardGroup).toContainText('$500');
+
+	const creditCardCardGroup = page.locator('.card-group', { hasText: 'Credit card' });
+	await expect(creditCardCardGroup).toContainText('JuggernautCard Limited Rewards');
+	await expect(creditCardCardGroup).toContainText('-$340');
+
+	const rothIraCardGroup = page.locator('.card-group', { hasText: 'Roth IRA (US)' });
+	await expect(rothIraCardGroup).toContainText('Roth IRA (US)');
+	await expect(rothIraCardGroup).toContainText('$18,536');
+
+	const securityCardGroup = page.locator('.card-group', { hasText: 'Security' });
+	await expect(securityCardGroup).toContainText('$33,125');
+	await expect(securityCardGroup).toContainText('Tesla');
+	await expect(securityCardGroup).toContainText('$30,000');
+	await expect(securityCardGroup).toContainText('GameStop');
+	await expect(securityCardGroup).toContainText('$3,125');
+
+	const otherAssetsCardGroup = page.locator('.card-group', { hasText: 'Collectible' });
+	await expect(otherAssetsCardGroup).toContainText('Manchild Card Collection');
+	await expect(otherAssetsCardGroup).toContainText('$14,500');
 });
 
 test('summary totals update in real-time', async ({ page }) => {

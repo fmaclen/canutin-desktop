@@ -33,7 +33,7 @@
 					<td>{asset.symbol ? asset.symbol : '~'}</td>
 					<td>{asset.quantity ? asset.quantity : '~'}</td>
 					<td>{asset.cost ? formatCurrency(asset.cost) : '~'}</td>
-					<td>{formatCurrency(asset.value ?? 0)}</td>
+					<td>{formatCurrency(asset.balance ?? 0)}</td>
 					<td>{format(asset.updated, 'MMM d, yyyy')}</td>
 				</tr>
 			{/each}

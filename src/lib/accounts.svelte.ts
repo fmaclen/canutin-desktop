@@ -9,7 +9,7 @@ import type {
 } from '$lib/pocketbase-types';
 import { getPbClientContext } from '$lib/pocketbase.svelte';
 
-interface Account extends AccountsResponse {
+export interface Account extends AccountsResponse {
 	balance: number | null;
 	expand: { tag: TagsResponse };
 }
