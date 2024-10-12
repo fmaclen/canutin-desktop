@@ -3,10 +3,13 @@
 	import { format } from 'date-fns';
 
 	import { getAssetsContext } from '$lib/assets.svelte';
+	import Head from '$lib/components/Head.svelte';
 	import { formatCurrency } from '$lib/utils';
 
 	const assetsStore = getAssetsContext();
 </script>
+
+<Head title={$LL.ASSETS()} />
 
 <h1>{$LL.ASSETS()}</h1>
 

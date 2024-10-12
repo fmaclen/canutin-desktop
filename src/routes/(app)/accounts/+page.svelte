@@ -3,10 +3,13 @@
 	import { format } from 'date-fns';
 
 	import { getAccountsContext } from '$lib/accounts.svelte';
+	import Head from '$lib/components/Head.svelte';
 	import { formatCurrency } from '$lib/utils';
 
 	const accountsStore = getAccountsContext();
 </script>
+
+<Head title={$LL.ACCOUNTS()} />
 
 <h1>{$LL.ACCOUNTS()}</h1>
 

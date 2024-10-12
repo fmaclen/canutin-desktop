@@ -4,6 +4,7 @@
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import { getAssetsContext } from '$lib/assets.svelte';
 	import { BalanceGroup, calculateTotalBalance } from '$lib/balanceGroups';
+	import Head from '$lib/components/Head.svelte';
 	import { formatCurrency } from '$lib/utils';
 
 	const accountsStore = getAccountsContext();
@@ -30,6 +31,8 @@
 		});
 	});
 </script>
+
+<Head title={$LL.BALANCE_SHEET()} />
 
 <h1>{$LL.BALANCE_SHEET()}</h1>
 

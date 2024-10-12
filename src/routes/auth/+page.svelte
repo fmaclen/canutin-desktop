@@ -1,6 +1,7 @@
 <script lang="ts">
 	import LL from '$i18n/i18n-svelte';
 
+	import Head from '$lib/components/Head.svelte';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 
 	let email = $state('');
@@ -13,6 +14,8 @@
 		await pbClient.signIn(email, password);
 	}
 </script>
+
+<Head title={$LL.SIGN_IN()} />
 
 <h1>{$LL.SIGN_IN()}</h1>
 
