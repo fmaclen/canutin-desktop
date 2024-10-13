@@ -38,13 +38,13 @@ type RootTranslation = {
 	 */
 	ASSETS: string
 	/**
-	 * A​u​t​o​-​c​a​l​c​u​l​a​t​e​d
-	 */
-	AUTO_CALCULATED: string
-	/**
 	 * A​u​t​h​e​n​t​i​c​a​t​i​o​n​ ​f​a​i​l​e​d​.​ ​P​l​e​a​s​e​ ​t​r​y​ ​a​g​a​i​n​.
 	 */
 	AUTHENTICATION_FAILED: string
+	/**
+	 * A​u​t​o​-​c​a​l​c​u​l​a​t​e​d
+	 */
+	AUTO_CALCULATED: string
 	/**
 	 * B​a​l​a​n​c​e
 	 */
@@ -90,6 +90,10 @@ type RootTranslation = {
 	 */
 	EMAIL: string
 	/**
+	 * E​r​r​o​r
+	 */
+	ERROR: string
+	/**
 	 * E​x​p​e​n​s​e​s​ ​p​e​r​ ​m​o​n​t​h
 	 */
 	EXPENSES_PER_MONTH: string
@@ -106,6 +110,14 @@ type RootTranslation = {
 	 */
 	INSTITUTION: string
 	/**
+	 * I​n​t​e​r​n​a​l​ ​s​e​r​v​e​r​ ​e​r​r​o​r
+	 */
+	INTERNAL_SERVER_ERROR: string
+	/**
+	 * I​n​v​e​s​t​m​e​n​t​s
+	 */
+	INVESTMENTS: string
+	/**
 	 * L​a​s​t​ ​u​p​d​a​t​e​d
 	 */
 	LAST_UPDATED: string
@@ -113,6 +125,10 @@ type RootTranslation = {
 	 * N​a​m​e
 	 */
 	NAME: string
+	/**
+	 * N​e​t​ ​w​o​r​t​h
+	 */
+	NET_WORTH: string
 	/**
 	 * N​o​ ​a​c​c​o​u​n​t​s​ ​f​o​u​n​d
 	 */
@@ -122,13 +138,9 @@ type RootTranslation = {
 	 */
 	NO_ASSETS_FOUND: string
 	/**
-	 * I​n​v​e​s​t​m​e​n​t​s
+	 * N​o​t​ ​f​o​u​n​d
 	 */
-	INVESTMENTS: string
-	/**
-	 * N​e​t​ ​w​o​r​t​h
-	 */
-	NET_WORTH: string
+	NOT_FOUND: string
 	/**
 	 * O​t​h​e​r​ ​a​s​s​e​t​s
 	 */
@@ -145,6 +157,10 @@ type RootTranslation = {
 	 * P​r​e​v​i​o​u​s​ ​6​ ​m​o​n​t​h​s
 	 */
 	PREVIOUS_6_MONTHS: string
+	/**
+	 * Q​u​a​n​t​i​t​y
+	 */
+	QUANTITY: string
 	/**
 	 * S​e​t​t​i​n​g​s
 	 */
@@ -189,10 +205,6 @@ type RootTranslation = {
 	 * V​a​l​u​e
 	 */
 	VALUE: string
-	/**
-	 * Q​u​a​n​t​i​t​y
-	 */
-	QUANTITY: string
 }
 
 export type TranslationFunctions = {
@@ -221,13 +233,13 @@ export type TranslationFunctions = {
 	 */
 	ASSETS: () => LocalizedString
 	/**
-	 * Auto-calculated
-	 */
-	AUTO_CALCULATED: () => LocalizedString
-	/**
 	 * Authentication failed. Please try again.
 	 */
 	AUTHENTICATION_FAILED: () => LocalizedString
+	/**
+	 * Auto-calculated
+	 */
+	AUTO_CALCULATED: () => LocalizedString
 	/**
 	 * Balance
 	 */
@@ -273,6 +285,10 @@ export type TranslationFunctions = {
 	 */
 	EMAIL: () => LocalizedString
 	/**
+	 * Error
+	 */
+	ERROR: () => LocalizedString
+	/**
 	 * Expenses per month
 	 */
 	EXPENSES_PER_MONTH: () => LocalizedString
@@ -289,6 +305,14 @@ export type TranslationFunctions = {
 	 */
 	INSTITUTION: () => LocalizedString
 	/**
+	 * Internal server error
+	 */
+	INTERNAL_SERVER_ERROR: () => LocalizedString
+	/**
+	 * Investments
+	 */
+	INVESTMENTS: () => LocalizedString
+	/**
 	 * Last updated
 	 */
 	LAST_UPDATED: () => LocalizedString
@@ -296,6 +320,10 @@ export type TranslationFunctions = {
 	 * Name
 	 */
 	NAME: () => LocalizedString
+	/**
+	 * Net worth
+	 */
+	NET_WORTH: () => LocalizedString
 	/**
 	 * No accounts found
 	 */
@@ -305,13 +333,9 @@ export type TranslationFunctions = {
 	 */
 	NO_ASSETS_FOUND: () => LocalizedString
 	/**
-	 * Investments
+	 * Not found
 	 */
-	INVESTMENTS: () => LocalizedString
-	/**
-	 * Net worth
-	 */
-	NET_WORTH: () => LocalizedString
+	NOT_FOUND: () => LocalizedString
 	/**
 	 * Other assets
 	 */
@@ -328,6 +352,10 @@ export type TranslationFunctions = {
 	 * Previous 6 months
 	 */
 	PREVIOUS_6_MONTHS: () => LocalizedString
+	/**
+	 * Quantity
+	 */
+	QUANTITY: () => LocalizedString
 	/**
 	 * Settings
 	 */
@@ -372,10 +400,6 @@ export type TranslationFunctions = {
 	 * Value
 	 */
 	VALUE: () => LocalizedString
-	/**
-	 * Quantity
-	 */
-	QUANTITY: () => LocalizedString
 }
 
 export type Formatters = {}
