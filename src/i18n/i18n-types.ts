@@ -94,6 +94,18 @@ type RootTranslation = {
 	 */
 	EXPENSES_PER_MONTH: string
 	/**
+	 * E​r​r​o​r
+	 */
+	ERROR: string
+	/**
+	 * I​n​t​e​r​n​a​l​ ​s​e​r​v​e​r​ ​e​r​r​o​r
+	 */
+	INTERNAL_SERVER_ERROR: string
+	/**
+	 * N​o​t​ ​f​o​u​n​d
+	 */
+	NOT_FOUND: string
+	/**
 	 * I​n​c​o​m​e​ ​p​e​r​ ​m​o​n​t​h
 	 */
 	INCOME_PER_MONTH: string
@@ -276,6 +288,18 @@ export type TranslationFunctions = {
 	 * Expenses per month
 	 */
 	EXPENSES_PER_MONTH: () => LocalizedString
+	/**
+	 * Error
+	 */
+	ERROR: () => LocalizedString
+	/**
+	 * Internal server error
+	 */
+	INTERNAL_SERVER_ERROR: () => LocalizedString
+	/**
+	 * Not found
+	 */
+	NOT_FOUND: () => LocalizedString
 	/**
 	 * Income per month
 	 */
