@@ -18,7 +18,7 @@ test('page titles', async ({ page }) => {
 	await signInAsUser(page, pbAlice);
 	await expect(page).toHaveTitle('The big picture • Canutin');
 	await expect(page).toHaveURL('/');
-	
+
 	await page.goto('/balance-sheet');
 	await expect(page).toHaveTitle('Balance sheet • Canutin');
 	await expect(page).toHaveURL('/balance-sheet');
