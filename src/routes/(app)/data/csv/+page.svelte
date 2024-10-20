@@ -48,6 +48,7 @@
 		description?: string;
 		value?: number;
 		tag?: string;
+		import: string;
 	}
 
 	const previewTransactions: PreviewTransaction[] = $derived.by(() => {
@@ -56,24 +57,16 @@
 				date: handleDateField(row[columnMapping.date]),
 				description: row[columnMapping.description],
 				value: handleValueField(row),
-				tag: row[columnMapping.tag]
+				tag: row[columnMapping.tag],
+				import: JSON.stringify(row)
 			};
 		});
 	});
 
 	const importTransactions: TransactionDetails[] = $derived.by(() => {
-		return previewTransactions
-			.filter((transaction): transaction is Required<TransactionDetails> =>
-				isTransactionImportable(transaction)
-			)
-			.map((transaction) => {
-				return {
-					date: transaction.date,
-					description: transaction.description,
-					value: transaction.value,
-					tag: transaction?.tag
-				};
-			});
+		return previewTransactions.filter((transaction): transaction is Required<TransactionDetails> =>
+			isTransactionImportable(transaction)
+		);
 	});
 
 	function handleFileChange(event: Event) {
@@ -228,7 +221,9 @@
 						{:else if field === 'value' && transaction.value !== undefined}
 							{transaction.value ? formatCurrency(transaction.value) : '~'}
 						{:else if field === 'account' && columnMapping.account}
-							{@const account = accountsStore.accounts.find((account) => account.id === columnMapping.account)}
+							{@const account = accountsStore.accounts.find(
+								(account) => account.id === columnMapping.account
+							)}
 							{account ? account.name : '~'}
 						{:else}
 							{(transaction[field as keyof PreviewTransaction] as any) || '~'}

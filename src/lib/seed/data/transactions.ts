@@ -4,6 +4,7 @@ export interface TransactionDetails {
 	description: string;
 	value: number;
 	date: Date;
+	import?: string;
 	tag?: string;
 	isExcluded?: boolean;
 	isPending?: boolean;
