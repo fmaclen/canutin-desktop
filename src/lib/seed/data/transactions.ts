@@ -4,9 +4,9 @@ export interface TransactionDetails {
 	description: string;
 	value: number;
 	date: Date;
-	tag: string;
-	isExcluded: boolean;
-	isPending: boolean;
+	tag?: string;
+	isExcluded?: boolean;
+	isPending?: boolean;
 }
 
 // Strip timezone from date and set to UTC

@@ -1,12 +1,16 @@
 <script lang="ts">
-	import { format, parse } from 'date-fns';
+	import { format } from 'date-fns';
 	import Papa from 'papaparse';
 
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import Head from '$lib/components/Head.svelte';
+	import { createTransactions } from '$lib/pocketbase';
 	import type { TransactionsRecord } from '$lib/pocketbase-types';
+	import { getPbClientContext } from '$lib/pocketbase.svelte';
+	import type { TransactionDetails } from '$lib/seed/data/transactions';
 	import { dateInUTC, formatCurrency } from '$lib/utils';
 
+	const pbClient = getPbClientContext();
 	let file: File | null = $state(null);
 	let csvData: any[] = $state([]);
 	let csvHeaders: string[] = $state([]);
@@ -25,6 +29,7 @@
 	let useDualValueColumns = $state(false);
 	let positiveValueColumn = $state('');
 	let negativeValueColumn = $state('');
+	let isImporting = $state(false);
 
 	const accountsStore = getAccountsContext();
 
@@ -38,19 +43,37 @@
 
 	const hasNoHeaders = $derived(!csvHeaders.length);
 
-	const transactionsToImport: any[] = $derived.by(() => {
+	interface PreviewTransaction {
+		date?: Date;
+		description?: string;
+		value?: number;
+		tag?: string;
+	}
+
+	const previewTransactions: PreviewTransaction[] = $derived.by(() => {
 		return csvData.map((row) => {
 			return {
 				date: handleDateField(row[columnMapping.date]),
 				description: row[columnMapping.description],
 				value: handleValueField(row),
-				tag: row[columnMapping.tag],
-				account: accountsStore.accounts.find((account) => account.id === row[columnMapping.account])
-					?.id,
-				isExcluded: false,
-				isPending: false
+				tag: row[columnMapping.tag]
 			};
 		});
+	});
+
+	const importTransactions: TransactionDetails[] = $derived.by(() => {
+		return previewTransactions
+			.filter((transaction): transaction is Required<TransactionDetails> =>
+				isTransactionImportable(transaction)
+			)
+			.map((transaction) => {
+				return {
+					date: transaction.date,
+					description: transaction.description,
+					value: transaction.value,
+					tag: transaction?.tag
+				};
+			});
 	});
 
 	function handleFileChange(event: Event) {
@@ -69,24 +92,36 @@
 		}
 	}
 
-	function handleDateField(date: string): Date | null {
-		if (!date) return null;
+	function handleDateField(date: string): Date | undefined {
+		if (!date) return undefined;
 		return dateInUTC(new Date(date));
 	}
 
-	function formatValueField(value: string, isNegative: boolean = false): number | null {
-		if (!value) return null;
+	function formatValueField(value: string, isNegative: boolean = false): number | undefined {
+		if (!value) return undefined;
 		let parsedValue = value ? parseFloat(value.replace(/[^\d.-]/g, '')) : 0;
 		if (isNegative) parsedValue = parsedValue * -1;
 		return parsedValue;
 	}
 
 	function handleValueField(row: any) {
-		let value: number | null = null;
+		let value: number | undefined = undefined;
 		if (useDualValueColumns) value = formatValueField(row[positiveValueColumn]);
 		if (useDualValueColumns && !value) value = formatValueField(row[negativeValueColumn], true);
 		if (!useDualValueColumns) value = formatValueField(row[columnMapping.value]);
 		return value;
+	}
+
+	async function importData() {
+		if (!importTransactions.length) return;
+		isImporting = true;
+		await createTransactions(pbClient.pb, columnMapping.account, importTransactions);
+		isImporting = false;
+	}
+
+	function isTransactionImportable(transaction: PreviewTransaction): boolean {
+		const { date, description, value } = transaction;
+		return date !== undefined && description !== undefined && value !== undefined;
 	}
 </script>
 
@@ -173,7 +208,8 @@
 	</select>
 </div>
 
-<h2>Preview</h2>
+<h2>Columns preview</h2>
+
 <table>
 	<thead>
 		<tr>
@@ -183,18 +219,19 @@
 		</tr>
 	</thead>
 	<tbody>
-		{#each transactionsToImport.slice(0, 5) as transaction}
-			<tr>
+		{#each previewTransactions.slice(0, 5) as transaction}
+			<tr style={isTransactionImportable(transaction) ? 'background-color: aquamarine;' : ''}>
 				{#each transactionFields as field}
 					<td>
-						{#if field === 'date' && transaction.date}
-							{format(transaction.date, 'MMM d, yyyy')}
-						{:else if field === 'value' && transaction.value}
-							{formatCurrency(transaction.value)}
-						{:else if field === 'account' && transaction.account}
-							{accountsStore.accounts.find((account) => account.id === transaction.account)?.name}
+						{#if field === 'date'}
+							{transaction.date ? format(transaction.date, 'MMM d, yyyy') : '~'}
+						{:else if field === 'value' && transaction.value !== undefined}
+							{transaction.value ? formatCurrency(transaction.value) : '~'}
+						{:else if field === 'account' && columnMapping.account}
+							{@const account = accountsStore.accounts.find((account) => account.id === columnMapping.account)}
+							{account ? account.name : '~'}
 						{:else}
-							{transaction[field] || ''}
+							{(transaction[field as keyof PreviewTransaction] as any) || '~'}
 						{/if}
 					</td>
 				{/each}
@@ -207,4 +244,7 @@
 	</tbody>
 </table>
 
-<button onclick={() => console.log('Import data')} disabled={hasNoHeaders}>Import Data</button>
+<h3>Transactions found in file: {previewTransactions.length}</h3>
+<h3>Transactions that can be imported: {importTransactions.length}</h3>
+
+<button onclick={importData} disabled={hasNoHeaders}>Import Data</button>
