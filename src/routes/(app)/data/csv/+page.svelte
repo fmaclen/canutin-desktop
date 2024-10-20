@@ -80,8 +80,8 @@
 
 	function formatValueField(value: string, isNegative: boolean = false): number | null {
 		if (!value) return null;
-		let parsedValue = parseFloat(value?.replace(/[^\d.-]/g, '') || '0');
-		if (isNegative && parsedValue > 0) parsedValue = parsedValue * -1;
+		let parsedValue = value ? parseFloat(value.replace(/[^\d.-]/g, '')) : 0;
+		if (isNegative) parsedValue = parsedValue * -1;
 		return parsedValue;
 	}
 
