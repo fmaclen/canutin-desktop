@@ -24,11 +24,13 @@
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0-next.6",
 		"@types/eslint": "^9.6.0",
+		"@types/papaparse": "^5.3.14",
 		"concurrently": "^8.2.2",
 		"eslint": "^9.0.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.36.0",
 		"globals": "^15.0.0",
+		"papaparse": "^5.4.1",
 		"pocketbase": "^0.21.5",
 		"pocketbase-typegen": "^1.2.1",
 		"prettier": "^3.1.1",
@@ -42,9 +44,9 @@
 		"vite-node": "^2.0.5"
 	},
 	"optionalDependencies": {
-		"@sveltejs/adapter-cloudflare": "^4.7.2",
+		"@cloudflare/workerd-linux-64": "1.20240903.0",
 		"@rollup/rollup-linux-x64-gnu": "^4.21.2",
-		"@cloudflare/workerd-linux-64": "1.20240903.0"
+		"@sveltejs/adapter-cloudflare": "^4.7.2"
 	},
 	"type": "module"
 }

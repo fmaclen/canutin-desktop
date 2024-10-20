@@ -1,0 +1,216 @@
+<script lang="ts">
+	import { format } from 'date-fns';
+	import Papa from 'papaparse';
+
+	import { getAccountsContext } from '$lib/accounts.svelte';
+	import Head from '$lib/components/Head.svelte';
+	import type { TransactionsRecord } from '$lib/pocketbase-types';
+	import { formatCurrency } from '$lib/utils';
+
+	let file: File | null = $state(null);
+	let csvData: any[] = $state([]);
+	let csvHeaders: string[] = $state([]);
+
+	let columnMapping: Record<keyof TransactionsRecord, string> = $state({
+		date: '',
+		description: '',
+		value: '',
+		isExcluded: '',
+		isPending: '',
+		tag: '',
+		account: '',
+		import: ''
+	});
+
+	let dateFormat = $state('');
+	let useDualValueColumns = $state(false);
+	let positiveValueColumn = $state('');
+	let negativeValueColumn = $state('');
+
+	const accountsStore = getAccountsContext();
+
+	const transactionFields: (keyof TransactionsRecord)[] = [
+		'date',
+		'description',
+		'value',
+		'tag',
+		'account'
+	];
+
+	const hasNoHeaders = $derived.by(() => {
+		return !csvHeaders.length;
+	});
+
+	const transactionsToImport: any[] = $derived.by(() => {
+		return csvData.map((row) => {
+			return {
+				date: handleDateField(row[columnMapping.date]),
+				description: row[columnMapping.description],
+				value: handleValueField(row),
+				tag: row[columnMapping.tag],
+				account: accountsStore.accounts.find((account) => account.id === row[columnMapping.account])
+					?.id,
+				isExcluded: false,
+				isPending: false
+			};
+		});
+	});
+
+	function handleFileChange(event: Event) {
+		const input = event.target as HTMLInputElement;
+		if (input.files) {
+			file = input.files[0];
+			if (!file) return;
+
+			Papa.parse(file, {
+				complete: (results) => {
+					csvData = results.data;
+					csvHeaders = results.meta.fields ?? [];
+				},
+				header: true
+			});
+		}
+	}
+
+	function handleDateField(date: string): Date | null {
+		// TODO: make sure we force the date to be in UTC
+		if (!date) return null;
+		return new Date(date);
+	}
+
+	function formatValueField(value: string, isNegative: boolean = false): number | null {
+		if (!value) return null;
+		let parsedValue = parseFloat(value?.replace(/[^\d.-]/g, '') || '0');
+		if (isNegative && parsedValue > 0) parsedValue = parsedValue * -1;
+		return parsedValue;
+	}
+
+	function handleValueField(row: any) {
+		let value: number | null = null;
+		if (useDualValueColumns) value = formatValueField(row[positiveValueColumn]);
+		if (useDualValueColumns && !value) value = formatValueField(row[negativeValueColumn], true);
+		if (!useDualValueColumns) value = formatValueField(row[columnMapping.value]);
+		return value;
+	}
+</script>
+
+<Head title="Import transactions from CSV" />
+
+<h1>Import transactions from CSV</h1>
+
+<div class="field">
+	<label for="file">File</label>
+	<input type="file" id="file" accept=".csv" onchange={handleFileChange} />
+</div>
+
+<div class="field">
+	<label for="accountColumn">Account</label>
+	<select id="accountColumn" bind:value={columnMapping.account} disabled={hasNoHeaders}>
+		{#each accountsStore.accounts as account}
+			<option value={account.id}>{account.name}</option>
+		{/each}
+	</select>
+</div>
+
+<h2>Mapping columns</h2>
+
+<div class="field">
+	<label for="dateColumn">Date</label>
+	<select id="dateColumn" bind:value={columnMapping.date} disabled={hasNoHeaders}>
+		{#each csvHeaders as header}
+			<option value={header}>{header}</option>
+		{/each}
+	</select>
+	<label for="dateColumnFormat">Format (optional)</label>
+	<input type="text" id="dateColumnFormat" bind:value={dateFormat} disabled={!columnMapping.date} />
+</div>
+
+<div class="field">
+	<label for="descriptionColumn">Description</label>
+	<select id="descriptionColumn" bind:value={columnMapping.description} disabled={hasNoHeaders}>
+		{#each csvHeaders as header}
+			<option value={header}>{header}</option>
+		{/each}
+	</select>
+</div>
+
+<div class="field">
+	<label for="valueColumn">Amount</label>
+	<input
+		type="checkbox"
+		id="useDualValueColumns"
+		bind:checked={useDualValueColumns}
+		disabled={hasNoHeaders}
+	/>
+	<label for="useDualValueColumns">Positive and negative values are in separate columns</label>
+	{#if useDualValueColumns}
+		<div>
+			Positive value:
+			<select id="positiveValueColumn" bind:value={positiveValueColumn} disabled={hasNoHeaders}>
+				{#each csvHeaders as header}
+					<option value={header}>{header}</option>
+				{/each}
+			</select>
+		</div>
+		<div>
+			Negative value:
+			<select id="negativeValueColumn" bind:value={negativeValueColumn} disabled={hasNoHeaders}>
+				{#each csvHeaders as header}
+					<option value={header}>{header}</option>
+				{/each}
+			</select>
+		</div>
+	{:else}
+		<br />
+		<select id="valueColumn" bind:value={columnMapping.value} disabled={hasNoHeaders}>
+			{#each csvHeaders as header}
+				<option value={header}>{header}</option>
+			{/each}
+		</select>
+	{/if}
+</div>
+
+<div class="field">
+	<label for="tagColumn">Tag (optional)</label>
+	<select id="tagColumn" bind:value={columnMapping.tag} disabled={hasNoHeaders}>
+		{#each csvHeaders as header}
+			<option value={header}>{header}</option>
+		{/each}
+	</select>
+</div>
+
+<h2>Preview</h2>
+<table>
+	<thead>
+		<tr>
+			{#each transactionFields as field}
+				<th>{field}</th>
+			{/each}
+		</tr>
+	</thead>
+	<tbody>
+		{#each transactionsToImport.slice(0, 5) as transaction}
+			<tr>
+				{#each transactionFields as field}
+					<td>
+						{#if field === 'date' && transaction.date}
+							{format(transaction.date, 'MMM d, yyyy')}
+						{:else if field === 'value' && transaction.value}
+							{formatCurrency(transaction.value)}
+						{:else if field === 'account' && transaction.account}
+							{accountsStore.accounts.find((account) => account.id === transaction.account)?.name}
+						{:else}
+							{transaction[field] || ''}
+						{/if}
+					</td>
+				{/each}
+			</tr>
+		{:else}
+			<tr>
+				<td colspan={transactionFields.length}>No data to preview</td>
+			</tr>
+		{/each}
+	</tbody>
+</table>
+
+<button onclick={() => console.log('Import data')} disabled={hasNoHeaders}>Import Data</button>

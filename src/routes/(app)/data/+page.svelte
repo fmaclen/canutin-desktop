@@ -7,3 +7,5 @@
 <Head title={$LL.ADD_OR_UPDATE_DATA()} />
 
 <h1>{$LL.ADD_OR_UPDATE_DATA()}</h1>
+
+<a href="/data/csv">Import transactions from CSV</a>
