@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { format } from 'date-fns';
+	import { format, parse } from 'date-fns';
 	import Papa from 'papaparse';
 
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import Head from '$lib/components/Head.svelte';
 	import type { TransactionsRecord } from '$lib/pocketbase-types';
-	import { formatCurrency } from '$lib/utils';
+	import { dateInUTC, formatCurrency } from '$lib/utils';
 
 	let file: File | null = $state(null);
 	let csvData: any[] = $state([]);
@@ -22,7 +22,6 @@
 		import: ''
 	});
 
-	let dateFormat = $state('');
 	let useDualValueColumns = $state(false);
 	let positiveValueColumn = $state('');
 	let negativeValueColumn = $state('');
@@ -37,9 +36,7 @@
 		'account'
 	];
 
-	const hasNoHeaders = $derived.by(() => {
-		return !csvHeaders.length;
-	});
+	const hasNoHeaders = $derived(!csvHeaders.length);
 
 	const transactionsToImport: any[] = $derived.by(() => {
 		return csvData.map((row) => {
@@ -73,9 +70,8 @@
 	}
 
 	function handleDateField(date: string): Date | null {
-		// TODO: make sure we force the date to be in UTC
 		if (!date) return null;
-		return new Date(date);
+		return dateInUTC(new Date(date));
 	}
 
 	function formatValueField(value: string, isNegative: boolean = false): number | null {
@@ -121,8 +117,6 @@
 			<option value={header}>{header}</option>
 		{/each}
 	</select>
-	<label for="dateColumnFormat">Format (optional)</label>
-	<input type="text" id="dateColumnFormat" bind:value={dateFormat} disabled={!columnMapping.date} />
 </div>
 
 <div class="field">
@@ -142,7 +136,7 @@
 		bind:checked={useDualValueColumns}
 		disabled={hasNoHeaders}
 	/>
-	<label for="useDualValueColumns">Positive and negative values are in separate columns</label>
+	<label for="useDualValueColumns">Positive and negative amounts are in separate columns</label>
 	{#if useDualValueColumns}
 		<div>
 			Positive value:
