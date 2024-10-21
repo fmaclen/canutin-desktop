@@ -137,12 +137,17 @@
 
 <h2>Mapping columns</h2>
 
+{#snippet headerOptions()}
+	<option value=""></option>
+	{#each csvHeaders as header}
+		<option value={header}>{header}</option>
+	{/each}
+{/snippet}
+
 <div class="field">
 	<label for="dateColumn">Date</label>
 	<select id="dateColumn" bind:value={columnMapping.date} disabled={isMappingFieldDisabled}>
-		{#each csvHeaders as header}
-			<option value={header}>{header}</option>
-		{/each}
+		{@render headerOptions()}
 	</select>
 </div>
 
@@ -153,9 +158,7 @@
 		bind:value={columnMapping.description}
 		disabled={isMappingFieldDisabled}
 	>
-		{#each csvHeaders as header}
-			<option value={header}>{header}</option>
-		{/each}
+		{@render headerOptions()}
 	</select>
 </div>
 
@@ -177,9 +180,7 @@
 				bind:value={positiveValueColumn}
 				disabled={isMappingFieldDisabled}
 			>
-				{#each csvHeaders as header}
-					<option value={header}>{header}</option>
-				{/each}
+				{@render headerOptions()}
 			</select>
 		</div>
 		<div>
@@ -189,17 +190,13 @@
 				bind:value={negativeValueColumn}
 				disabled={isMappingFieldDisabled}
 			>
-				{#each csvHeaders as header}
-					<option value={header}>{header}</option>
-				{/each}
+				{@render headerOptions()}
 			</select>
 		</div>
 	{:else}
 		<div>
 			<select id="valueColumn" bind:value={columnMapping.value} disabled={isMappingFieldDisabled}>
-				{#each csvHeaders as header}
-					<option value={header}>{header}</option>
-				{/each}
+				{@render headerOptions()}
 			</select>
 		</div>
 	{/if}
@@ -208,9 +205,7 @@
 <div class="field">
 	<label for="tagColumn">Tag (optional)</label>
 	<select id="tagColumn" bind:value={columnMapping.tag} disabled={isMappingFieldDisabled}>
-		{#each csvHeaders as header}
-			<option value={header}>{header}</option>
-		{/each}
+		{@render headerOptions()}
 	</select>
 </div>
 
