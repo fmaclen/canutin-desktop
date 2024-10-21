@@ -42,6 +42,7 @@
 	];
 
 	const hasNoHeaders = $derived(!csvHeaders.length);
+	const isMappingFieldDisabled = $derived(hasNoHeaders || !columnMapping.account);
 
 	interface PreviewTransaction {
 		date?: Date;
@@ -140,7 +141,7 @@
 
 <div class="field">
 	<label for="dateColumn">Date</label>
-	<select id="dateColumn" bind:value={columnMapping.date} disabled={hasNoHeaders}>
+	<select id="dateColumn" bind:value={columnMapping.date} disabled={isMappingFieldDisabled}>
 		{#each csvHeaders as header}
 			<option value={header}>{header}</option>
 		{/each}
@@ -149,7 +150,11 @@
 
 <div class="field">
 	<label for="descriptionColumn">Description</label>
-	<select id="descriptionColumn" bind:value={columnMapping.description} disabled={hasNoHeaders}>
+	<select
+		id="descriptionColumn"
+		bind:value={columnMapping.description}
+		disabled={isMappingFieldDisabled}
+	>
 		{#each csvHeaders as header}
 			<option value={header}>{header}</option>
 		{/each}
@@ -158,17 +163,22 @@
 
 <div class="field">
 	<label for="valueColumn">Amount</label>
+
 	<input
 		type="checkbox"
 		id="useDualValueColumns"
 		bind:checked={useDualValueColumns}
-		disabled={hasNoHeaders}
+		disabled={isMappingFieldDisabled}
 	/>
 	<label for="useDualValueColumns">Positive and negative amounts are in separate columns</label>
 	{#if useDualValueColumns}
 		<div>
 			Positive value:
-			<select id="positiveValueColumn" bind:value={positiveValueColumn} disabled={hasNoHeaders}>
+			<select
+				id="positiveValueColumn"
+				bind:value={positiveValueColumn}
+				disabled={isMappingFieldDisabled}
+			>
 				{#each csvHeaders as header}
 					<option value={header}>{header}</option>
 				{/each}
@@ -176,25 +186,30 @@
 		</div>
 		<div>
 			Negative value:
-			<select id="negativeValueColumn" bind:value={negativeValueColumn} disabled={hasNoHeaders}>
+			<select
+				id="negativeValueColumn"
+				bind:value={negativeValueColumn}
+				disabled={isMappingFieldDisabled}
+			>
 				{#each csvHeaders as header}
 					<option value={header}>{header}</option>
 				{/each}
 			</select>
 		</div>
 	{:else}
-		<br />
-		<select id="valueColumn" bind:value={columnMapping.value} disabled={hasNoHeaders}>
-			{#each csvHeaders as header}
-				<option value={header}>{header}</option>
-			{/each}
-		</select>
+		<div>
+			<select id="valueColumn" bind:value={columnMapping.value} disabled={isMappingFieldDisabled}>
+				{#each csvHeaders as header}
+					<option value={header}>{header}</option>
+				{/each}
+			</select>
+		</div>
 	{/if}
 </div>
 
 <div class="field">
 	<label for="tagColumn">Tag (optional)</label>
-	<select id="tagColumn" bind:value={columnMapping.tag} disabled={hasNoHeaders}>
+	<select id="tagColumn" bind:value={columnMapping.tag} disabled={isMappingFieldDisabled}>
 		{#each csvHeaders as header}
 			<option value={header}>{header}</option>
 		{/each}
