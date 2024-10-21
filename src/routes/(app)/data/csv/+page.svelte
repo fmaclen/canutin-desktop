@@ -88,6 +88,8 @@
 
 	function handleDateField(date: string): Date | undefined {
 		if (!date) return undefined;
+		console.error('handleDateField.date', new Date(date));
+		console.error('handleDateField.dateInUTC(new Date(date)', dateInUTC(new Date(date)));
 		return dateInUTC(new Date(date));
 	}
 
@@ -221,6 +223,7 @@
 	</thead>
 	<tbody>
 		{#each previewTransactions.slice(0, 5) as transaction}
+			{@const toto = console.error('previewTransactions.transaction.date', transaction.date)}
 			<tr style={isTransactionImportable(transaction) ? 'background-color: aquamarine;' : ''}>
 				{#each transactionFields as field}
 					<td>
