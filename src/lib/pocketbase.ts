@@ -13,15 +13,19 @@ export const POCKETBASE_SEED_DEFAULT_PASSWORD = '123qweasdzxc';
 
 export const pbAdmin = new PocketBase(POCKETBASE_DEFAULT_URL) as TypedPocketBase;
 
-export async function getTagId(pb: TypedPocketBase, name: string, type: string) {
+export async function getTagId(
+	pb: TypedPocketBase,
+	type: string,
+	name?: string
+): Promise<string | undefined> {
 	const result = await pb
 		.collection('tags')
 		.getFirstListItem(`name ~ "${name}" && for = "${type}"`);
-	return result.id;
+	return result.id ?? undefined;
 }
 
 export async function createAccount(pb: TypedPocketBase, account: AccountDetails) {
-	const tagId = await getTagId(pb, account.tag, 'accounts');
+	const tagId = await getTagId(pb, 'accounts', account.tag);
 	return await pb.collection('accounts').create({
 		...account,
 		tag: tagId,
@@ -35,7 +39,7 @@ export async function createTransactions(
 	transactions: TransactionDetails[]
 ) {
 	for (const transaction of transactions) {
-		const tagId = await getTagId(pb, transaction.tag, 'transactions');
+		const tagId = transaction.tag ? await getTagId(pb, 'transactions', transaction.tag) : undefined;
 		await pb.collection('transactions').create({
 			...transaction,
 			account: accountId,
@@ -71,7 +75,7 @@ export async function createAssetBalanceStatements(
 }
 
 export async function createAsset(pb: TypedPocketBase, asset: AssetDetails) {
-	const tagId = await getTagId(pb, asset.tag, 'assets');
+	const tagId = await getTagId(pb, 'assets', asset.tag);
 	return await pb.collection('assets').create({
 		...asset,
 		tag: tagId,

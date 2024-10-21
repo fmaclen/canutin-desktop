@@ -39,7 +39,7 @@ class Accounts {
 						return { ...account, balance };
 					} catch (error) {
 						if (error instanceof ClientResponseError && error.isAbort) {
-							console.log('Account balance fetch cancelled for:', account.name);
+							console.warn('Account balance fetch cancelled for:', account.name);
 							return { ...account, balance: null };
 						}
 						throw error;
@@ -90,7 +90,7 @@ class Accounts {
 		} catch (error) {
 			if (error instanceof ClientResponseError) {
 				if (error.isAbort) {
-					console.log('Balance fetch cancelled for account:', account.name);
+					console.warn('Balance fetch cancelled for account:', account.name);
 				} else {
 					console.error('Error fetching balance for account:', account.name, error);
 				}
