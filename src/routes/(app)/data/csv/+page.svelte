@@ -29,7 +29,6 @@
 	let useDualValueColumns = $state(false);
 	let positiveValueColumn = $state('');
 	let negativeValueColumn = $state('');
-	let isImporting = $state(false);
 
 	const accountsStore = getAccountsContext();
 
@@ -41,8 +40,7 @@
 		'account'
 	];
 
-	const hasNoHeaders = $derived(!csvHeaders.length);
-	const isMappingFieldDisabled = $derived(hasNoHeaders || !columnMapping.account);
+	const isMappingFieldDisabled = $derived(!csvHeaders.length || !columnMapping.account);
 
 	interface PreviewTransaction {
 		date?: Date;
@@ -110,9 +108,7 @@
 
 	async function importData() {
 		if (!importTransactions.length) return;
-		isImporting = true;
 		await createTransactions(pbClient.pb, columnMapping.account, importTransactions);
-		isImporting = false;
 	}
 
 	function isTransactionImportable(transaction: PreviewTransaction): boolean {
@@ -132,7 +128,7 @@
 
 <div class="field">
 	<label for="accountColumn">Account</label>
-	<select id="accountColumn" bind:value={columnMapping.account} disabled={hasNoHeaders}>
+	<select id="accountColumn" bind:value={columnMapping.account} disabled={!csvHeaders.length}>
 		{#each accountsStore.accounts as account}
 			<option value={account.id}>{account.name}</option>
 		{/each}
