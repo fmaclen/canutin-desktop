@@ -22,7 +22,7 @@ export async function getTagId(pb: TypedPocketBase, type: string, name?: string)
 }
 
 export async function createAccount(pb: TypedPocketBase, account: AccountDetails) {
-	const tagId = await getTagId(pb, account.tag, 'accounts');
+	const tagId = await getTagId(pb, 'accounts', account.tag);
 	return await pb.collection('accounts').create({
 		...account,
 		tag: tagId,
@@ -72,7 +72,7 @@ export async function createAssetBalanceStatements(
 }
 
 export async function createAsset(pb: TypedPocketBase, asset: AssetDetails) {
-	const tagId = await getTagId(pb, asset.tag, 'assets');
+	const tagId = await getTagId(pb, 'assets', asset.tag);
 	return await pb.collection('assets').create({
 		...asset,
 		tag: tagId,
