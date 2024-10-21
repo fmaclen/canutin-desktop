@@ -53,15 +53,17 @@
 	}
 
 	const previewTransactions: PreviewTransaction[] = $derived.by(() => {
-		return csvData.map((row) => {
-			return {
-				date: handleDateField(row[columnMapping.date]),
-				description: row[columnMapping.description],
-				value: handleValueField(row),
-				tag: row[columnMapping.tag],
-				import: JSON.stringify(row)
-			};
-		});
+		return csvData
+			.filter((row) => row[columnMapping.date])
+			.map((row) => {
+				return {
+					date: handleDateField(row[columnMapping.date]),
+					description: row[columnMapping.description],
+					value: handleValueField(row),
+					tag: row[columnMapping.tag],
+					import: JSON.stringify(row)
+				};
+			});
 	});
 
 	const importTransactions: TransactionDetails[] = $derived.by(() => {
@@ -234,7 +236,7 @@
 						{#if field === 'date'}
 							{transaction.date ? format(transaction.date, 'MMM d, yyyy') : '~'}
 						{:else if field === 'value' && transaction.value !== undefined}
-							{transaction.value ? formatCurrency(transaction.value) : '~'}
+							{transaction.value ? formatCurrency(transaction.value, 2) : '~'}
 						{:else if field === 'account' && columnMapping.account}
 							{@const account = accountsStore.accounts.find(
 								(account) => account.id === columnMapping.account
@@ -257,4 +259,4 @@
 <h3>Transactions found in file: {previewTransactions.length}</h3>
 <h3>Transactions that can be imported: {importTransactions.length}</h3>
 
-<button onclick={importData} disabled={hasNoHeaders}>Import Data</button>
+<button onclick={importData} disabled={!importTransactions.length}> Import </button>

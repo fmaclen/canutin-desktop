@@ -13,11 +13,14 @@ export const POCKETBASE_SEED_DEFAULT_PASSWORD = '123qweasdzxc';
 
 export const pbAdmin = new PocketBase(POCKETBASE_DEFAULT_URL) as TypedPocketBase;
 
-export async function getTagId(pb: TypedPocketBase, type: string, name?: string): Promise<string | undefined> {
+export async function getTagId(
+	pb: TypedPocketBase,
+	type: string,
+	name?: string
+): Promise<string | undefined> {
 	const result = await pb
 		.collection('tags')
 		.getFirstListItem(`name ~ "${name}" && for = "${type}"`);
-		debugger;
 	return result.id ?? undefined;
 }
 
