@@ -8,7 +8,7 @@
 	import type { TransactionsRecord } from '$lib/pocketbase-types';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { TransactionDetails } from '$lib/seed/data/transactions';
-	import { dateInUTC, formatCurrency, utcDateInLocalTimezone } from '$lib/utils';
+	import { formatCurrency, utcDateInLocalTimezone } from '$lib/utils';
 
 	const pbClient = getPbClientContext();
 	let file: File | null = $state(null);
