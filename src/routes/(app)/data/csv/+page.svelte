@@ -14,6 +14,9 @@
 	let file: File | null = $state(null);
 	let csvData: any[] = $state([]);
 	let csvHeaders: string[] = $state([]);
+	let errorMessage = $state<string | null>(null);
+	let isImporting = $state(false);
+	let wasSuccessful = $state(false);
 
 	let columnMapping: Record<keyof TransactionsRecord, string> = $state({
 		date: '',
@@ -26,9 +29,9 @@
 		import: ''
 	});
 
-	let useDualValueColumns = $state(false);
-	let positiveValueColumn = $state('');
-	let negativeValueColumn = $state('');
+	let useCreditDebitColumns = $state(false);
+	let creditColumn = $state('');
+	let debitColumn = $state('');
 
 	const accountsStore = getAccountsContext();
 
@@ -88,8 +91,6 @@
 
 	function handleDateField(date: string): Date | undefined {
 		if (!date) return undefined;
-		console.error('handleDateField.date', new Date(date));
-		console.error('handleDateField.dateInUTC(new Date(date)', dateInUTC(new Date(date)));
 		return dateInUTC(new Date(date));
 	}
 
@@ -102,20 +103,38 @@
 
 	function handleValueField(row: any) {
 		let value: number | undefined = undefined;
-		if (useDualValueColumns) value = formatValueField(row[positiveValueColumn]);
-		if (useDualValueColumns && !value) value = formatValueField(row[negativeValueColumn], true);
-		if (!useDualValueColumns) value = formatValueField(row[columnMapping.value]);
+		if (useCreditDebitColumns) value = formatValueField(row[creditColumn]);
+		if (useCreditDebitColumns && !value) value = formatValueField(row[debitColumn], true);
+		if (!useCreditDebitColumns) value = formatValueField(row[columnMapping.value]);
 		return value;
 	}
 
 	async function importData() {
+		wasSuccessful = false;
+		errorMessage = null;
 		if (!importTransactions.length) return;
-		await createTransactions(pbClient.pb, columnMapping.account, importTransactions);
+		try {
+			isImporting = true;
+			await createTransactions(pbClient.pb, columnMapping.account, importTransactions);
+			wasSuccessful = true;
+		} catch (error) {
+			errorMessage = error instanceof Error ? error.message : 'Unknown error';
+		} finally {
+			isImporting = false;
+		}
 	}
 
 	function isTransactionImportable(transaction: PreviewTransaction): boolean {
 		const { date, description, value } = transaction;
 		return date !== undefined && description !== undefined && value !== undefined;
+	}
+
+	function resetImport() {
+		file = null;
+		csvData = [];
+		csvHeaders = [];
+		errorMessage = null;
+		wasSuccessful = false;
 	}
 </script>
 
@@ -125,7 +144,7 @@
 
 <div class="field">
 	<label for="file">File</label>
-	<input type="file" id="file" accept=".csv" onchange={handleFileChange} />
+	<input type="file" id="file" accept=".csv" bind:value={file} onchange={handleFileChange} />
 </div>
 
 <div class="field">
@@ -169,27 +188,27 @@
 
 	<input
 		type="checkbox"
-		id="useDualValueColumns"
-		bind:checked={useDualValueColumns}
+		id="useCreditDebitColumns"
+		bind:checked={useCreditDebitColumns}
 		disabled={isMappingFieldDisabled}
 	/>
-	<label for="useDualValueColumns">Positive and negative amounts are in separate columns</label>
-	{#if useDualValueColumns}
+	<label for="useCreditDebitColumns">Credits and debits are in separate columns</label>
+	{#if useCreditDebitColumns}
 		<div>
-			Positive value:
+			<label for="creditColumn">Credits</label>
 			<select
-				id="positiveValueColumn"
-				bind:value={positiveValueColumn}
+				id="creditColumn"
+				bind:value={creditColumn}
 				disabled={isMappingFieldDisabled}
 			>
 				{@render headerOptions()}
 			</select>
 		</div>
 		<div>
-			Negative value:
+			<label for="debitsColumn">Debits</label>
 			<select
-				id="negativeValueColumn"
-				bind:value={negativeValueColumn}
+				id="debitsColumn"
+				bind:value={debitColumn}
 				disabled={isMappingFieldDisabled}
 			>
 				{@render headerOptions()}
@@ -223,7 +242,6 @@
 	</thead>
 	<tbody>
 		{#each previewTransactions.slice(0, 5) as transaction}
-			{@const toto = console.error('previewTransactions.transaction.date', transaction.date)}
 			<tr style={isTransactionImportable(transaction) ? 'background-color: aquamarine;' : ''}>
 				{#each transactionFields as field}
 					<td>
@@ -253,4 +271,29 @@
 <h3>Transactions found in file: {previewTransactions.length}</h3>
 <h3>Transactions that can be imported: {importTransactions.length}</h3>
 
-<button onclick={importData} disabled={!importTransactions.length}> Import </button>
+{#if errorMessage}
+	<p class="error">{errorMessage}</p>
+{/if}
+
+{#if wasSuccessful}
+	<p class="success">Import successful</p>
+	<button onclick={resetImport}>New import</button>
+	<a href="/balance-sheet">Balance sheet</a>
+{:else}
+	<button
+		onclick={importData}
+		disabled={!importTransactions.length || isImporting || wasSuccessful}
+	>
+		Import
+	</button>
+{/if}
+
+<style>
+	.error {
+		color: tomato;
+	}
+
+	.success {
+		color: seagreen;
+	}
+</style>
