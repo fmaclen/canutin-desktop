@@ -74,7 +74,7 @@ test('assets list is displayed correctly and updated in real-time', async ({ pag
 	);
 	await expect(assetBitcoinRow).toContainText('Bitcoin');
 	await expect(assetBitcoinRow).toContainText('Cryptocurrency');
-	await expect(assetBitcoinRow).toContainText('$43,500');
+	await expect(assetBitcoinRow).toContainText('$43,500'); // Flaky assertion
 	await expect(assetBitcoinRow).toContainText('1.4');
 	await expect(assetBitcoinRow).toContainText('$60,900');
 	await expect(assetBitcoinRow).toContainText(formattedToday);
