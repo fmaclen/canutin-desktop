@@ -12,7 +12,7 @@
 
 	const pbClient = getPbClientContext();
 	let file: File | null = $state(null);
-	let csvData: any[] = $state([]);
+	let csvData: Record<string, string | number | null>[] = $state([]);
 	let csvHeaders: string[] = $state([]);
 	let errorMessage = $state<string | null>(null);
 	let isImporting = $state(false);
@@ -58,10 +58,10 @@
 			.filter((row) => row[columnMapping.date])
 			.map((row) => {
 				return {
-					date: handleDateField(row[columnMapping.date]),
-					description: row[columnMapping.description],
+					date: handleDateField(row[columnMapping.date] as string),
+					description: row[columnMapping.description] as string,
+					tag: row[columnMapping.tag] as string,
 					value: handleValueField(row),
-					tag: row[columnMapping.tag],
 					import: JSON.stringify(row)
 				};
 			});
@@ -81,7 +81,7 @@
 
 			Papa.parse(file, {
 				complete: (results) => {
-					csvData = results.data;
+					csvData = results.data as Record<string, string | number | null>[];
 					csvHeaders = results.meta.fields ?? [];
 				},
 				header: true
@@ -101,11 +101,11 @@
 		return parsedValue;
 	}
 
-	function handleValueField(row: any) {
+	function handleValueField(row: Record<string, string | number | null>) {
 		let value: number | undefined = undefined;
-		if (useCreditDebitColumns) value = formatValueField(row[creditColumn]);
-		if (useCreditDebitColumns && !value) value = formatValueField(row[debitColumn], true);
-		if (!useCreditDebitColumns) value = formatValueField(row[columnMapping.value]);
+		if (useCreditDebitColumns) value = formatValueField(row[creditColumn] as string);
+		if (useCreditDebitColumns && !value) value = formatValueField(row[debitColumn] as string, true);
+		if (!useCreditDebitColumns) value = formatValueField(row[columnMapping.value] as string);
 		return value;
 	}
 
@@ -196,21 +196,13 @@
 	{#if useCreditDebitColumns}
 		<div>
 			<label for="creditColumn">Credits</label>
-			<select
-				id="creditColumn"
-				bind:value={creditColumn}
-				disabled={isMappingFieldDisabled}
-			>
+			<select id="creditColumn" bind:value={creditColumn} disabled={isMappingFieldDisabled}>
 				{@render headerOptions()}
 			</select>
 		</div>
 		<div>
 			<label for="debitsColumn">Debits</label>
-			<select
-				id="debitsColumn"
-				bind:value={debitColumn}
-				disabled={isMappingFieldDisabled}
-			>
+			<select id="debitsColumn" bind:value={debitColumn} disabled={isMappingFieldDisabled}>
 				{@render headerOptions()}
 			</select>
 		</div>
@@ -255,7 +247,7 @@
 							)}
 							{account ? account.name : '~'}
 						{:else}
-							{(transaction[field as keyof PreviewTransaction] as any) || '~'}
+							{(transaction[field as keyof PreviewTransaction] as string | number | null) || '~'}
 						{/if}
 					</td>
 				{/each}
