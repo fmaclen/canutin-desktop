@@ -24,3 +24,11 @@ export const proportionBetween = (num1: number, num2: number) => {
 export const dateInUTC = (date: Date) => {
 	return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0));
 };
+
+// Converts a date to UTC and then to the local timezone
+export const utcDateInLocalTimezone = (date: Date) => {
+	const offset = date.getTimezoneOffset();
+	return new Date(
+		Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() + (offset > 0 ? 1 : 0), 0, 0, 0)
+	);
+};

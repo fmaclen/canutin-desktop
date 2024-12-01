@@ -8,7 +8,7 @@
 	import type { TransactionsRecord } from '$lib/pocketbase-types';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { TransactionDetails } from '$lib/seed/data/transactions';
-	import { dateInUTC, formatCurrency } from '$lib/utils';
+	import { dateInUTC, formatCurrency, utcDateInLocalTimezone } from '$lib/utils';
 
 	const pbClient = getPbClientContext();
 	let file: File | null = $state(null);
@@ -92,13 +92,7 @@
 	function handleDateField(date: string): Date | undefined {
 		if (!date) return undefined;
 		const parsed = new Date(date);
-		console.warn(
-			'Timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone,
-			'Input:', date, 
-			'Parsed:', parsed.toISOString(), 
-			'UTC:', dateInUTC(parsed).toISOString()
-		);
-		return dateInUTC(parsed);
+		return utcDateInLocalTimezone(parsed);
 	}
 
 	function formatValueField(value: string, isNegative: boolean = false): number | undefined {

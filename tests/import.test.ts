@@ -58,7 +58,7 @@ test('imports a CSV file', async ({ page }) => {
 
 	const firstRow = page.locator('tbody tr').first();
 	await expect(firstRow).toContainText(accountCheckingDetails.name);
-	await expect(firstRow).toContainText('Jan 11, 2024');
+	await expect(firstRow).toContainText('Jan 12, 2024');
 	await expect(firstRow).toContainText('~');
 	await expect(firstRow).not.toContainText('Coto');
 	await expect(firstRow).not.toContainText('-$765.29');
