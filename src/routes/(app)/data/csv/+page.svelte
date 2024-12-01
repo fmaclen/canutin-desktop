@@ -91,7 +91,14 @@
 
 	function handleDateField(date: string): Date | undefined {
 		if (!date) return undefined;
-		return dateInUTC(new Date(date));
+		const parsed = new Date(date);
+		console.warn(
+			'Timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone,
+			'Input:', date, 
+			'Parsed:', parsed.toISOString(), 
+			'UTC:', dateInUTC(parsed).toISOString()
+		);
+		return dateInUTC(parsed);
 	}
 
 	function formatValueField(value: string, isNegative: boolean = false): number | undefined {
