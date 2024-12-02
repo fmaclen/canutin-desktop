@@ -68,7 +68,7 @@ const en = {
 	IMPORT: 'Import',
 	IMPORT_SUCCESSFUL: 'Import successful',
 	NEW_IMPORT: 'New import',
-	REVIEW_IMPORT: 'Review import',
+	REVIEW_IMPORT: 'Review import'
 } satisfies BaseTranslation;
 
 export default en;

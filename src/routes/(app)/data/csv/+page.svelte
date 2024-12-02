@@ -1,4 +1,5 @@
 <script lang="ts">
+	import LL from '$i18n/i18n-svelte';
 	import { format } from 'date-fns';
 	import Papa from 'papaparse';
 
@@ -9,7 +10,6 @@
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { TransactionDetails } from '$lib/seed/data/transactions';
 	import { formatCurrency, utcDateInLocalTimezone } from '$lib/utils';
-	import LL from '$i18n/i18n-svelte';
 
 	const pbClient = getPbClientContext();
 	let file: File | null = $state(null);
