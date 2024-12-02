@@ -11,14 +11,33 @@
 	import type { TransactionDetails } from '$lib/seed/data/transactions';
 	import { formatCurrency } from '$lib/utils';
 
+	interface PreviewTransaction {
+		date?: Date;
+		description?: string;
+		value?: number;
+		tag?: string;
+		import: string;
+	}
+
 	const pbClient = getPbClientContext();
+	const accountsStore = getAccountsContext();
+	const transactionFields: (keyof TransactionsRecord)[] = [
+		'date',
+		'description',
+		'value',
+		'tag',
+		'account'
+	];
+
 	let file: File | null = $state(null);
 	let csvData: Record<string, string | number | null>[] = $state([]);
 	let csvHeaders: string[] = $state([]);
+	let useCreditDebitColumns = $state(false);
+	let creditColumn = $state('');
+	let debitColumn = $state('');
 	let errorMessage = $state<string | null>(null);
 	let isImporting = $state(false);
 	let wasSuccessful = $state(false);
-
 	let columnMapping: Record<keyof TransactionsRecord, string> = $state({
 		date: '',
 		description: '',
@@ -30,29 +49,7 @@
 		import: ''
 	});
 
-	let useCreditDebitColumns = $state(false);
-	let creditColumn = $state('');
-	let debitColumn = $state('');
-
-	const accountsStore = getAccountsContext();
-
-	const transactionFields: (keyof TransactionsRecord)[] = [
-		'date',
-		'description',
-		'value',
-		'tag',
-		'account'
-	];
-
 	const isMappingFieldDisabled = $derived(!csvHeaders.length || !columnMapping.account);
-
-	interface PreviewTransaction {
-		date?: Date;
-		description?: string;
-		value?: number;
-		tag?: string;
-		import: string;
-	}
 
 	const previewTransactions: PreviewTransaction[] = $derived.by(() => {
 		return (
