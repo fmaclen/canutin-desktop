@@ -175,11 +175,11 @@ test('imports a CSV with missing key values', async ({ page }) => {
 	await page.getByLabel('Credits', { exact: true }).selectOption('Deposit');
 
 	// Verify that only one transaction can be imported
-	await expect(page.getByText('Transactions found in file: 4')).toBeVisible();
-	await expect(page.getByText('Transactions that can be imported: 1')).toBeVisible();
+	await expect(page.getByText('Transactions found in file: 5')).toBeVisible();
+	await expect(page.getByText('Transactions that can be imported: 2')).toBeVisible();
 
 	// Check that the rows that can be imported have the 'success-bg' class
-	await expect(page.locator('tbody tr.success-bg')).toHaveCount(1);
+	await expect(page.locator('tbody tr.success-bg')).toHaveCount(2);
 
 	// Attempt to import and verify the result
 	await page.getByText('Import', { exact: true }).click();

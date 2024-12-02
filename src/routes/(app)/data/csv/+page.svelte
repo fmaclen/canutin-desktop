@@ -104,7 +104,7 @@
 		if (useCreditDebitColumns) value = formatValueField(row[creditColumn] as string);
 		if (useCreditDebitColumns && !value) value = formatValueField(row[debitColumn] as string, true);
 		if (!useCreditDebitColumns) value = formatValueField(row[columnMapping.value] as string);
-		return value ?? 0;
+		return value;
 	}
 
 	async function importData() {
@@ -124,7 +124,7 @@
 
 	function isTransactionImportable(transaction: PreviewTransaction): boolean {
 		const { date, description, value } = transaction;
-		return !!date && !!description && !!value;
+		return !!date && !!description && typeof value === 'number';
 	}
 
 	function resetImport() {
@@ -240,8 +240,8 @@
 					<td>
 						{#if field === 'date'}
 							{transaction.date ? format(transaction.date, 'MMM d, yyyy') : '~'}
-						{:else if field === 'value' && transaction.value !== undefined}
-							{transaction.value ? formatCurrency(transaction.value, 2) : '~'}
+						{:else if field === 'value'}
+							{typeof transaction.value === 'number' ? formatCurrency(transaction.value, 2) : '~'}
 						{:else if field === 'account' && columnMapping.account}
 							{@const account = accountsStore.accounts.find(
 								(account) => account.id === columnMapping.account
