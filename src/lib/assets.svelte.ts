@@ -36,7 +36,7 @@ class Assets {
 						return { ...asset, balance, cost, quantity };
 					} catch (error) {
 						if (error instanceof ClientResponseError && error.isAbort) {
-							console.log('Asset balance fetch cancelled for:', asset.name);
+							console.warn('Asset balance fetch cancelled for:', asset.name);
 							return { ...asset, balance: null };
 						}
 						throw error;
@@ -46,7 +46,7 @@ class Assets {
 			this.assets = assetsWithBalance;
 		} catch (error) {
 			if (error instanceof ClientResponseError && error.isAbort) {
-				console.log('Assets fetch cancelled');
+				console.error('Assets fetch cancelled');
 			} else {
 				console.error('Error fetching assets:', error);
 			}
@@ -70,7 +70,7 @@ class Assets {
 		} catch (error) {
 			if (error instanceof ClientResponseError) {
 				if (error.isAbort) {
-					console.log('Balance fetch cancelled for asset:', asset.name);
+					console.warn('Balance fetch cancelled for asset:', asset.name);
 				} else {
 					console.error('Error fetching balance for asset:', asset.name, error);
 				}

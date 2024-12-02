@@ -20,6 +20,9 @@ class PocketBaseClient {
 	constructor() {
 		this.pb = new PocketBase(POCKETBASE_DEFAULT_URL) as TypedPocketBase;
 
+		// Disable auto-cancel of duplicated pending requests
+		this.pb.autoCancellation(false);
+
 		$effect(() => {
 			this.checkAuthIsValid();
 		});
