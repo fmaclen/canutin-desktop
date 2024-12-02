@@ -77,7 +77,7 @@ test('imports a CSV file', async ({ page }) => {
 	await expect(page.getByText('Transactions that can be imported: 2')).toBeVisible();
 
 	await importButton.click();
-	await page.getByText('Balance sheet').click();
+	await page.getByText('Review import').click();
 	await expect(checkingAccountBalance).not.toContainText('$0');
 	await expect(checkingAccountBalance).toContainText('-$948');
 });
@@ -154,4 +154,38 @@ test('handles import errors gracefully', async ({ page }) => {
 	await page.getByText('Import', { exact: true }).click();
 	await expect(page.getByText(/error/i)).toBeVisible();
 	await expect(page.locator('.error')).toContainText('Internal Server Error');
+});
+
+test('imports a CSV with missing key values', async ({ page }) => {
+	await page.goto('/');
+	const pbAlice = await createVerifiedUniqueUser('alice');
+	await signInAsUser(page, pbAlice);
+	await createAccount(pbAlice, accountCheckingDetails);
+
+	await page.getByText('Add or update data').click();
+	await page.getByText('Import transactions from CSV').click();
+	await page.getByLabel('File').setInputFiles('tests/fixtures/MOSTLY_INCOMPLETE_FILE.csv');
+	await page.getByLabel('Account').selectOption(accountCheckingDetails.name);
+
+	// Map the columns correctly
+	await page.getByLabel('Date').selectOption('Date');
+	await page.getByLabel('Description').selectOption('Description');
+	await page.getByLabel('Credits and debits are in separate columns').check();
+	await page.getByLabel('Debits', { exact: true }).selectOption('Withdrawal');
+	await page.getByLabel('Credits', { exact: true }).selectOption('Deposit');
+
+	// Verify that only one transaction can be imported
+	await expect(page.getByText('Transactions found in file: 4')).toBeVisible();
+	await expect(page.getByText('Transactions that can be imported: 1')).toBeVisible();
+
+	// Attempt to import and verify the result
+	await page.getByText('Import', { exact: true }).click();
+	await expect(page.getByText('Import successful')).toBeVisible();
+
+	// Check that the account balance has been updated
+	await page.getByText('Review import').click();
+	const checkingAccountBalance = page
+		.locator('li', { hasText: accountCheckingDetails.name })
+		.last();
+	await expect(checkingAccountBalance).toContainText('-$100');
 });

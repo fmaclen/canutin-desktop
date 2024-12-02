@@ -54,17 +54,22 @@
 	}
 
 	const previewTransactions: PreviewTransaction[] = $derived.by(() => {
-		return csvData
-			.filter((row) => row[columnMapping.date])
-			.map((row) => {
-				return {
-					date: handleDateField(row[columnMapping.date] as string),
-					description: row[columnMapping.description] as string,
-					tag: row[columnMapping.tag] as string,
-					value: handleValueField(row),
-					import: JSON.stringify(row)
-				};
-			});
+		return (
+			csvData
+				// Filter out CSV headers
+				.filter((row) => Object.values(row).some((value) => value !== null && value !== ''))
+				// Filter out rows where date or description are not set
+				.filter((row) => row[columnMapping.date] || row[columnMapping.description])
+				.map((row) => {
+					return {
+						date: handleDateField(row[columnMapping.date] as string),
+						description: row[columnMapping.description] as string,
+						tag: row[columnMapping.tag] as string,
+						value: handleValueField(row),
+						import: JSON.stringify(row)
+					};
+				})
+		);
 	});
 
 	const importTransactions: TransactionDetails[] = $derived.by(() => {
@@ -107,7 +112,7 @@
 		if (useCreditDebitColumns) value = formatValueField(row[creditColumn] as string);
 		if (useCreditDebitColumns && !value) value = formatValueField(row[debitColumn] as string, true);
 		if (!useCreditDebitColumns) value = formatValueField(row[columnMapping.value] as string);
-		return value;
+		return value ?? 0;
 	}
 
 	async function importData() {
@@ -127,7 +132,7 @@
 
 	function isTransactionImportable(transaction: PreviewTransaction): boolean {
 		const { date, description, value } = transaction;
-		return date !== undefined && description !== undefined && value !== undefined;
+		return !!date && !!description && !!value;
 	}
 
 	function resetImport() {
@@ -225,6 +230,9 @@
 
 <h2>Columns preview</h2>
 
+<h3>Transactions found in file: {previewTransactions.length}</h3>
+<h3>Transactions that can be imported: {importTransactions.length}</h3>
+
 <table>
 	<thead>
 		<tr>
@@ -261,9 +269,6 @@
 	</tbody>
 </table>
 
-<h3>Transactions found in file: {previewTransactions.length}</h3>
-<h3>Transactions that can be imported: {importTransactions.length}</h3>
-
 {#if errorMessage}
 	<p class="error">{errorMessage}</p>
 {/if}
@@ -271,7 +276,7 @@
 {#if wasSuccessful}
 	<p class="success">Import successful</p>
 	<button onclick={resetImport}>New import</button>
-	<a href="/balance-sheet">Balance sheet</a>
+	<a href="/balance-sheet">Review import</a>
 {:else}
 	<button
 		onclick={importData}
