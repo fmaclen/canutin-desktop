@@ -178,6 +178,9 @@ test('imports a CSV with missing key values', async ({ page }) => {
 	await expect(page.getByText('Transactions found in file: 4')).toBeVisible();
 	await expect(page.getByText('Transactions that can be imported: 1')).toBeVisible();
 
+	// Check that the rows that can be imported have the 'success-bg' class
+	await expect(page.locator('tbody tr.success-bg')).toHaveCount(1);
+
 	// Attempt to import and verify the result
 	await page.getByText('Import', { exact: true }).click();
 	await expect(page.getByText('Import successful')).toBeVisible();

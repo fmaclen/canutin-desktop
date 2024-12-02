@@ -46,7 +46,7 @@ class Assets {
 			this.assets = assetsWithBalance;
 		} catch (error) {
 			if (error instanceof ClientResponseError && error.isAbort) {
-				console.log('Assets fetch cancelled');
+				console.error('Assets fetch cancelled');
 			} else {
 				console.error('Error fetching assets:', error);
 			}

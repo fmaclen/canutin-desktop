@@ -49,7 +49,7 @@ class Accounts {
 			this.accounts = accountsWithBalance;
 		} catch (error) {
 			if (error instanceof ClientResponseError && error.isAbort) {
-				console.log('Accounts fetch cancelled');
+				console.error('Accounts fetch cancelled');
 			} else {
 				console.error('Error fetching accounts:', error);
 			}

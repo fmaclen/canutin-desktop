@@ -14,6 +14,10 @@ export type Translations = RootTranslation
 
 type RootTranslation = {
 	/**
+	 * A​c​c​o​u​n​t
+	 */
+	ACCOUNT: string
+	/**
 	 * A​c​c​o​u​n​t​s
 	 */
 	ACCOUNTS: string
@@ -205,9 +209,89 @@ type RootTranslation = {
 	 * V​a​l​u​e
 	 */
 	VALUE: string
+	/**
+	 * I​m​p​o​r​t​ ​t​r​a​n​s​a​c​t​i​o​n​s
+	 */
+	IMPORT_TRANSACTIONS: string
+	/**
+	 * I​m​p​o​r​t​ ​t​r​a​n​s​a​c​t​i​o​n​s​ ​f​r​o​m​ ​C​S​V
+	 */
+	IMPORT_TRANSACTIONS_FROM_CSV: string
+	/**
+	 * F​i​l​e
+	 */
+	FILE: string
+	/**
+	 * M​a​p​p​i​n​g​ ​c​o​l​u​m​n​s
+	 */
+	MAPPING_COLUMNS: string
+	/**
+	 * D​a​t​e
+	 */
+	DATE: string
+	/**
+	 * D​e​s​c​r​i​p​t​i​o​n
+	 */
+	DESCRIPTION: string
+	/**
+	 * A​m​o​u​n​t
+	 */
+	AMOUNT: string
+	/**
+	 * C​r​e​d​i​t​s​ ​a​n​d​ ​d​e​b​i​t​s​ ​a​r​e​ ​i​n​ ​s​e​p​a​r​a​t​e​ ​c​o​l​u​m​n​s
+	 */
+	CREDITS_DEBITS_SEPARATE: string
+	/**
+	 * C​r​e​d​i​t​s
+	 */
+	CREDITS: string
+	/**
+	 * D​e​b​i​t​s
+	 */
+	DEBITS: string
+	/**
+	 * T​a​g​ ​(​o​p​t​i​o​n​a​l​)
+	 */
+	TAG_OPTIONAL: string
+	/**
+	 * C​o​l​u​m​n​s​ ​p​r​e​v​i​e​w
+	 */
+	COLUMNS_PREVIEW: string
+	/**
+	 * T​r​a​n​s​a​c​t​i​o​n​s​ ​f​o​u​n​d​ ​i​n​ ​f​i​l​e
+	 */
+	TRANSACTIONS_FOUND: string
+	/**
+	 * T​r​a​n​s​a​c​t​i​o​n​s​ ​t​h​a​t​ ​c​a​n​ ​b​e​ ​i​m​p​o​r​t​e​d
+	 */
+	TRANSACTIONS_IMPORTABLE: string
+	/**
+	 * N​o​ ​d​a​t​a​ ​t​o​ ​p​r​e​v​i​e​w
+	 */
+	NO_DATA_PREVIEW: string
+	/**
+	 * I​m​p​o​r​t
+	 */
+	IMPORT: string
+	/**
+	 * I​m​p​o​r​t​ ​s​u​c​c​e​s​s​f​u​l
+	 */
+	IMPORT_SUCCESSFUL: string
+	/**
+	 * N​e​w​ ​i​m​p​o​r​t
+	 */
+	NEW_IMPORT: string
+	/**
+	 * R​e​v​i​e​w​ ​i​m​p​o​r​t
+	 */
+	REVIEW_IMPORT: string
 }
 
 export type TranslationFunctions = {
+	/**
+	 * Account
+	 */
+	ACCOUNT: () => LocalizedString
 	/**
 	 * Accounts
 	 */
@@ -400,6 +484,82 @@ export type TranslationFunctions = {
 	 * Value
 	 */
 	VALUE: () => LocalizedString
+	/**
+	 * Import transactions
+	 */
+	IMPORT_TRANSACTIONS: () => LocalizedString
+	/**
+	 * Import transactions from CSV
+	 */
+	IMPORT_TRANSACTIONS_FROM_CSV: () => LocalizedString
+	/**
+	 * File
+	 */
+	FILE: () => LocalizedString
+	/**
+	 * Mapping columns
+	 */
+	MAPPING_COLUMNS: () => LocalizedString
+	/**
+	 * Date
+	 */
+	DATE: () => LocalizedString
+	/**
+	 * Description
+	 */
+	DESCRIPTION: () => LocalizedString
+	/**
+	 * Amount
+	 */
+	AMOUNT: () => LocalizedString
+	/**
+	 * Credits and debits are in separate columns
+	 */
+	CREDITS_DEBITS_SEPARATE: () => LocalizedString
+	/**
+	 * Credits
+	 */
+	CREDITS: () => LocalizedString
+	/**
+	 * Debits
+	 */
+	DEBITS: () => LocalizedString
+	/**
+	 * Tag (optional)
+	 */
+	TAG_OPTIONAL: () => LocalizedString
+	/**
+	 * Columns preview
+	 */
+	COLUMNS_PREVIEW: () => LocalizedString
+	/**
+	 * Transactions found in file
+	 */
+	TRANSACTIONS_FOUND: () => LocalizedString
+	/**
+	 * Transactions that can be imported
+	 */
+	TRANSACTIONS_IMPORTABLE: () => LocalizedString
+	/**
+	 * No data to preview
+	 */
+	NO_DATA_PREVIEW: () => LocalizedString
+	/**
+	 * Import
+	 */
+	IMPORT: () => LocalizedString
+	/**
+	 * Import successful
+	 */
+	IMPORT_SUCCESSFUL: () => LocalizedString
+	/**
+	 * New import
+	 */
+	NEW_IMPORT: () => LocalizedString
+	/**
+	 * Review import
+	 */
+	REVIEW_IMPORT: () => LocalizedString
 }
 
 export type Formatters = {}

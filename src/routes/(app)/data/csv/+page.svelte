@@ -9,6 +9,7 @@
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { TransactionDetails } from '$lib/seed/data/transactions';
 	import { formatCurrency, utcDateInLocalTimezone } from '$lib/utils';
+	import LL from '$i18n/i18n-svelte';
 
 	const pbClient = getPbClientContext();
 	let file: File | null = $state(null);
@@ -144,17 +145,17 @@
 	}
 </script>
 
-<Head title="Import transactions from CSV" />
+<Head title={$LL.IMPORT_TRANSACTIONS_FROM_CSV()} />
 
-<h1>Import transactions from CSV</h1>
+<h1>{$LL.IMPORT_TRANSACTIONS_FROM_CSV()}</h1>
 
 <div class="field">
-	<label for="file">File</label>
+	<label for="file">{$LL.FILE()}</label>
 	<input type="file" id="file" accept=".csv" bind:value={file} onchange={handleFileChange} />
 </div>
 
 <div class="field">
-	<label for="accountColumn">Account</label>
+	<label for="accountColumn">{$LL.ACCOUNT()}</label>
 	<select id="accountColumn" bind:value={columnMapping.account} disabled={!csvHeaders.length}>
 		{#each accountsStore.accounts as account}
 			<option value={account.id}>{account.name}</option>
@@ -162,7 +163,7 @@
 	</select>
 </div>
 
-<h2>Mapping columns</h2>
+<h2>{$LL.MAPPING_COLUMNS()}</h2>
 
 {#snippet headerOptions()}
 	<option value=""></option>
@@ -172,14 +173,14 @@
 {/snippet}
 
 <div class="field">
-	<label for="dateColumn">Date</label>
+	<label for="dateColumn">{$LL.DATE()}</label>
 	<select id="dateColumn" bind:value={columnMapping.date} disabled={isMappingFieldDisabled}>
 		{@render headerOptions()}
 	</select>
 </div>
 
 <div class="field">
-	<label for="descriptionColumn">Description</label>
+	<label for="descriptionColumn">{$LL.DESCRIPTION()}</label>
 	<select
 		id="descriptionColumn"
 		bind:value={columnMapping.description}
@@ -190,7 +191,7 @@
 </div>
 
 <div class="field">
-	<label for="valueColumn">Amount</label>
+	<label for="valueColumn">{$LL.AMOUNT()}</label>
 
 	<input
 		type="checkbox"
@@ -198,16 +199,16 @@
 		bind:checked={useCreditDebitColumns}
 		disabled={isMappingFieldDisabled}
 	/>
-	<label for="useCreditDebitColumns">Credits and debits are in separate columns</label>
+	<label for="useCreditDebitColumns">{$LL.CREDITS_DEBITS_SEPARATE()}</label>
 	{#if useCreditDebitColumns}
 		<div>
-			<label for="creditColumn">Credits</label>
+			<label for="creditColumn">{$LL.CREDITS()}</label>
 			<select id="creditColumn" bind:value={creditColumn} disabled={isMappingFieldDisabled}>
 				{@render headerOptions()}
 			</select>
 		</div>
 		<div>
-			<label for="debitsColumn">Debits</label>
+			<label for="debitsColumn">{$LL.DEBITS()}</label>
 			<select id="debitsColumn" bind:value={debitColumn} disabled={isMappingFieldDisabled}>
 				{@render headerOptions()}
 			</select>
@@ -222,16 +223,16 @@
 </div>
 
 <div class="field">
-	<label for="tagColumn">Tag (optional)</label>
+	<label for="tagColumn">{$LL.TAG_OPTIONAL()}</label>
 	<select id="tagColumn" bind:value={columnMapping.tag} disabled={isMappingFieldDisabled}>
 		{@render headerOptions()}
 	</select>
 </div>
 
-<h2>Columns preview</h2>
+<h2>{$LL.COLUMNS_PREVIEW()}</h2>
 
-<h3>Transactions found in file: {previewTransactions.length}</h3>
-<h3>Transactions that can be imported: {importTransactions.length}</h3>
+<h3>{$LL.TRANSACTIONS_FOUND()}: {previewTransactions.length}</h3>
+<h3>{$LL.TRANSACTIONS_IMPORTABLE()}: {importTransactions.length}</h3>
 
 <table>
 	<thead>
@@ -243,7 +244,7 @@
 	</thead>
 	<tbody>
 		{#each previewTransactions.slice(0, 5) as transaction}
-			<tr style={isTransactionImportable(transaction) ? 'background-color: aquamarine;' : ''}>
+			<tr class:success-bg={isTransactionImportable(transaction)}>
 				{#each transactionFields as field}
 					<td>
 						{#if field === 'date'}
@@ -263,7 +264,7 @@
 			</tr>
 		{:else}
 			<tr>
-				<td colspan={transactionFields.length}>No data to preview</td>
+				<td colspan={transactionFields.length}>{$LL.NO_DATA_PREVIEW()}</td>
 			</tr>
 		{/each}
 	</tbody>
@@ -274,15 +275,15 @@
 {/if}
 
 {#if wasSuccessful}
-	<p class="success">Import successful</p>
-	<button onclick={resetImport}>New import</button>
-	<a href="/balance-sheet">Review import</a>
+	<p class="success">{$LL.IMPORT_SUCCESSFUL()}</p>
+	<button onclick={resetImport}>{$LL.NEW_IMPORT()}</button>
+	<a href="/balance-sheet">{$LL.REVIEW_IMPORT()}</a>
 {:else}
 	<button
 		onclick={importData}
 		disabled={!importTransactions.length || isImporting || wasSuccessful}
 	>
-		Import
+		{$LL.IMPORT()}
 	</button>
 {/if}
 
@@ -293,5 +294,10 @@
 
 	.success {
 		color: seagreen;
+	}
+
+	.success-bg {
+		color: white;
+		background-color: seagreen;
 	}
 </style>

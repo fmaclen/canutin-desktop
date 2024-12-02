@@ -1,6 +1,7 @@
 import type { BaseTranslation } from '../i18n-types';
 
 const en = {
+	ACCOUNT: 'Account',
 	ACCOUNTS: 'Accounts',
 	ACCOUNT_TYPE: 'Account type',
 	ACCOUNT_VERIFICATION_REQUIRED: 'An admin must verify your account before you can sign in',
@@ -48,7 +49,26 @@ const en = {
 	TRAILING_CASHFLOW: 'Trailing cashflow',
 	TRANSACTIONS: 'Transactions',
 	TRENDS: 'Trends',
-	VALUE: 'Value'
+	VALUE: 'Value',
+	IMPORT_TRANSACTIONS: 'Import transactions',
+	IMPORT_TRANSACTIONS_FROM_CSV: 'Import transactions from CSV',
+	FILE: 'File',
+	MAPPING_COLUMNS: 'Mapping columns',
+	DATE: 'Date',
+	DESCRIPTION: 'Description',
+	AMOUNT: 'Amount',
+	CREDITS_DEBITS_SEPARATE: 'Credits and debits are in separate columns',
+	CREDITS: 'Credits',
+	DEBITS: 'Debits',
+	TAG_OPTIONAL: 'Tag (optional)',
+	COLUMNS_PREVIEW: 'Columns preview',
+	TRANSACTIONS_FOUND: 'Transactions found in file',
+	TRANSACTIONS_IMPORTABLE: 'Transactions that can be imported',
+	NO_DATA_PREVIEW: 'No data to preview',
+	IMPORT: 'Import',
+	IMPORT_SUCCESSFUL: 'Import successful',
+	NEW_IMPORT: 'New import',
+	REVIEW_IMPORT: 'Review import',
 } satisfies BaseTranslation;
 
 export default en;

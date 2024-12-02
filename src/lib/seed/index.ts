@@ -229,7 +229,6 @@ async function createAndAuthAsAdmin(): Promise<void> {
 export async function createAndAuthAsUser() {
 	try {
 		const pbAlice = await createVerifiedUniqueUser('alice');
-		console.log('pbAlice', pbAlice.authStore.model);
 		console.warn(
 			'-> User created:',
 			pbAlice.authStore.model?.email,
