@@ -9,7 +9,7 @@
 	import type { TransactionsRecord } from '$lib/pocketbase-types';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { TransactionDetails } from '$lib/seed/data/transactions';
-	import { formatCurrency, utcDateInLocalTimezone } from '$lib/utils';
+	import { formatCurrency } from '$lib/utils';
 
 	const pbClient = getPbClientContext();
 	let file: File | null = $state(null);
@@ -63,7 +63,7 @@
 				.filter((row) => row[columnMapping.date] || row[columnMapping.description])
 				.map((row) => {
 					return {
-						date: handleDateField(row[columnMapping.date] as string),
+						date: row[columnMapping.date] ? new Date(row[columnMapping.date] as string) : undefined,
 						description: row[columnMapping.description] as string,
 						tag: row[columnMapping.tag] as string,
 						value: handleValueField(row),
@@ -93,12 +93,6 @@
 				header: true
 			});
 		}
-	}
-
-	function handleDateField(date: string): Date | undefined {
-		if (!date) return undefined;
-		const parsed = new Date(date);
-		return utcDateInLocalTimezone(parsed);
 	}
 
 	function formatValueField(value: string, isNegative: boolean = false): number | undefined {
