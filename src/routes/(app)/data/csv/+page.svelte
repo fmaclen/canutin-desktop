@@ -92,10 +92,10 @@
 		}
 	}
 
-	function formatValueField(value: string, isNegative: boolean = false): number | undefined {
+	function formatValueField(value: string, isDebit: boolean = false): number | undefined {
 		if (!value) return undefined;
 		let parsedValue = value ? parseFloat(value.replace(/[^\d.-]/g, '')) : 0;
-		if (isNegative) parsedValue = parsedValue * -1;
+		if (isDebit) parsedValue = parsedValue * -1;
 		return parsedValue;
 	}
 
