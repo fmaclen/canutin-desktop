@@ -185,7 +185,11 @@
 <p>{$LL.AMOUNT()}</p>
 
 <Field>
-	<Field.Toggle label={$LL.CREDITS_DEBITS_SEPARATE()} id="useCreditDebitColumns" bind:checked={useCreditDebitColumns} />
+	<Field.Toggle
+		label={$LL.CREDITS_DEBITS_SEPARATE()}
+		id="useCreditDebitColumns"
+		bind:checked={useCreditDebitColumns}
+	/>
 </Field>
 
 {#if useCreditDebitColumns}
@@ -193,23 +197,26 @@
 		<Field.Label id="creditColumn">{$LL.CREDITS()}</Field.Label>
 		<Field.Select id="creditColumn" bind:value={creditColumn} disabled={isMappingFieldDisabled}>
 			{@render headerOptions()}
-			</Field.Select>
-		</Field>
+		</Field.Select>
+	</Field>
 	<Field>
 		<Field.Label id="debitsColumn">{$LL.DEBITS()}</Field.Label>
 		<Field.Select id="debitsColumn" bind:value={debitColumn} disabled={isMappingFieldDisabled}>
 			{@render headerOptions()}
-			</Field.Select>
+		</Field.Select>
 	</Field>
 {:else}
 	<Field>
 		<Field.Label id="valueColumn">{$LL.AMOUNT()}</Field.Label>
-		<Field.Select id="valueColumn" bind:value={columnMapping.value} disabled={isMappingFieldDisabled}>
+		<Field.Select
+			id="valueColumn"
+			bind:value={columnMapping.value}
+			disabled={isMappingFieldDisabled}
+		>
 			{@render headerOptions()}
 		</Field.Select>
 	</Field>
 {/if}
-
 
 <Field>
 	<Field.Label id="tagColumn">{$LL.TAG_OPTIONAL()}</Field.Label>
