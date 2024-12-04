@@ -4,6 +4,7 @@
 	import Papa from 'papaparse';
 
 	import { getAccountsContext } from '$lib/accounts.svelte';
+	import Field from '$lib/components/Field';
 	import Head from '$lib/components/Head.svelte';
 	import { createTransactions } from '$lib/pocketbase';
 	import type { TransactionsRecord } from '$lib/pocketbase-types';
@@ -140,19 +141,19 @@
 
 <h1>{$LL.IMPORT_TRANSACTIONS_FROM_CSV()}</h1>
 
-<div class="field">
-	<label for="file">{$LL.FILE()}</label>
-	<input type="file" id="file" accept=".csv" bind:value={file} onchange={handleFileChange} />
-</div>
+<Field>
+	<Field.Label id="file">{$LL.FILE()}</Field.Label>
+	<Field.Input type="file" id="file" accept=".csv" bind:value={file} onchange={handleFileChange} />
+</Field>
 
-<div class="field">
-	<label for="accountColumn">{$LL.ACCOUNT()}</label>
-	<select id="accountColumn" bind:value={columnMapping.account} disabled={!csvHeaders.length}>
+<Field>
+	<Field.Label id="accountColumn">{$LL.ACCOUNT()}</Field.Label>
+	<Field.Select id="accountColumn" bind:value={columnMapping.account} disabled={!csvHeaders.length}>
 		{#each accountsStore.accounts as account}
 			<option value={account.id}>{account.name}</option>
 		{/each}
-	</select>
-</div>
+	</Field.Select>
+</Field>
 
 <h2>{$LL.MAPPING_COLUMNS()}</h2>
 
@@ -163,62 +164,66 @@
 	{/each}
 {/snippet}
 
-<div class="field">
-	<label for="dateColumn">{$LL.DATE()}</label>
-	<select id="dateColumn" bind:value={columnMapping.date} disabled={isMappingFieldDisabled}>
+<Field>
+	<Field.Label id="dateColumn">{$LL.DATE()}</Field.Label>
+	<Field.Select id="dateColumn" bind:value={columnMapping.date} disabled={isMappingFieldDisabled}>
 		{@render headerOptions()}
-	</select>
-</div>
+	</Field.Select>
+</Field>
 
-<div class="field">
-	<label for="descriptionColumn">{$LL.DESCRIPTION()}</label>
-	<select
+<Field>
+	<Field.Label id="descriptionColumn">{$LL.DESCRIPTION()}</Field.Label>
+	<Field.Select
 		id="descriptionColumn"
 		bind:value={columnMapping.description}
 		disabled={isMappingFieldDisabled}
 	>
 		{@render headerOptions()}
-	</select>
-</div>
+	</Field.Select>
+</Field>
 
-<div class="field">
-	<label for="valueColumn">{$LL.AMOUNT()}</label>
+<p>{$LL.AMOUNT()}</p>
 
-	<input
-		type="checkbox"
+<Field>
+	<Field.Toggle
+		label={$LL.CREDITS_DEBITS_SEPARATE()}
 		id="useCreditDebitColumns"
 		bind:checked={useCreditDebitColumns}
-		disabled={isMappingFieldDisabled}
 	/>
-	<label for="useCreditDebitColumns">{$LL.CREDITS_DEBITS_SEPARATE()}</label>
-	{#if useCreditDebitColumns}
-		<div>
-			<label for="creditColumn">{$LL.CREDITS()}</label>
-			<select id="creditColumn" bind:value={creditColumn} disabled={isMappingFieldDisabled}>
-				{@render headerOptions()}
-			</select>
-		</div>
-		<div>
-			<label for="debitsColumn">{$LL.DEBITS()}</label>
-			<select id="debitsColumn" bind:value={debitColumn} disabled={isMappingFieldDisabled}>
-				{@render headerOptions()}
-			</select>
-		</div>
-	{:else}
-		<div>
-			<select id="valueColumn" bind:value={columnMapping.value} disabled={isMappingFieldDisabled}>
-				{@render headerOptions()}
-			</select>
-		</div>
-	{/if}
-</div>
+</Field>
 
-<div class="field">
-	<label for="tagColumn">{$LL.TAG_OPTIONAL()}</label>
-	<select id="tagColumn" bind:value={columnMapping.tag} disabled={isMappingFieldDisabled}>
+{#if useCreditDebitColumns}
+	<Field>
+		<Field.Label id="creditColumn">{$LL.CREDITS()}</Field.Label>
+		<Field.Select id="creditColumn" bind:value={creditColumn} disabled={isMappingFieldDisabled}>
+			{@render headerOptions()}
+		</Field.Select>
+	</Field>
+	<Field>
+		<Field.Label id="debitsColumn">{$LL.DEBITS()}</Field.Label>
+		<Field.Select id="debitsColumn" bind:value={debitColumn} disabled={isMappingFieldDisabled}>
+			{@render headerOptions()}
+		</Field.Select>
+	</Field>
+{:else}
+	<Field>
+		<Field.Label id="valueColumn">{$LL.AMOUNT()}</Field.Label>
+		<Field.Select
+			id="valueColumn"
+			bind:value={columnMapping.value}
+			disabled={isMappingFieldDisabled}
+		>
+			{@render headerOptions()}
+		</Field.Select>
+	</Field>
+{/if}
+
+<Field>
+	<Field.Label id="tagColumn">{$LL.TAG_OPTIONAL()}</Field.Label>
+	<Field.Select id="tagColumn" bind:value={columnMapping.tag} disabled={isMappingFieldDisabled}>
 		{@render headerOptions()}
-	</select>
-</div>
+	</Field.Select>
+</Field>
 
 <h2>{$LL.COLUMNS_PREVIEW()}</h2>
 

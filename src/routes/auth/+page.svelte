@@ -1,17 +1,20 @@
 <script lang="ts">
 	import LL from '$i18n/i18n-svelte';
 
+	import Field from '$lib/components/Field';
 	import Head from '$lib/components/Head.svelte';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 
-	let email = $state('');
-	let password = $state('');
+	let auth = $state({
+		email: '',
+		password: '123qweasdzxc' // TODO: Remove this
+	});
 
 	const pbClient = getPbClientContext();
 
 	async function handleLogin(e: Event) {
 		e.preventDefault();
-		await pbClient.signIn(email, password);
+		await pbClient.signIn(auth.email, auth.password);
 	}
 </script>
 
@@ -24,24 +27,32 @@
 {/if}
 
 <form onsubmit={(e) => handleLogin(e)}>
-	<div>
-		<label for="serverUrl">{$LL.CANUTIN_SERVER_URL()}</label>
-		<input type="url" id="serverUrl" bind:value={pbClient.serverUrl.value} required />
-	</div>
-	<div>
-		<label for="email">{$LL.EMAIL()}</label>
-		<input type="email" id="email" name="email" bind:value={email} required />
-	</div>
-	<div>
-		<label for="password">{$LL.PASSWORD()}</label>
-		<input type="password" id="password" name="password" bind:value={password} required />
-	</div>
+	<Field>
+		<Field.Label id="serverUrl">{$LL.CANUTIN_SERVER_URL()}</Field.Label>
+		<Field.Input type="url" id="serverUrl" bind:value={pbClient.serverUrl.value} required />
+	</Field>
+
+	<Field>
+		<Field.Label id="email">{$LL.EMAIL()}</Field.Label>
+		<Field.Input type="email" id="email" bind:value={auth.email} required />
+	</Field>
+
+	<Field>
+		<Field.Label id="password">{$LL.PASSWORD()}</Field.Label>
+		<Field.Input type="password" id="password" bind:value={auth.password} required />
+	</Field>
+
 	<button type="submit">{$LL.SIGN_IN_BUTTON()}</button>
 </form>
 
 <style>
+	form {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
 	.auth-message {
-		color: red;
-		margin-bottom: 1em;
+		color: tomato;
 	}
 </style>
