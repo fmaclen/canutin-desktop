@@ -1,7 +1,7 @@
 <script lang="ts">
 	interface Props {
 		id: string;
-		value?: string | File | null;
+		value?: string | File | null | number;
 		disabled?: boolean;
 		placeholder?: string;
 		type?: 'text' | 'password' | 'email' | 'number' | 'date' | 'url' | 'file';

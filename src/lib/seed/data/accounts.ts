@@ -7,6 +7,10 @@ export interface AccountDetails {
 	institution?: string;
 }
 
+export interface NewAccountDetails extends Omit<AccountDetails, 'id'> {
+	balance: number;
+}
+
 export const accountCheckingDetails: AccountDetails = {
 	name: 'Ransack Laughable-Yield Checking',
 	balanceGroup: 0,

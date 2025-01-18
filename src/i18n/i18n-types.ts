@@ -30,6 +30,10 @@ type RootTranslation = {
 	 */
 	ACCOUNT_VERIFICATION_REQUIRED: string
 	/**
+	 * A​d​d​ ​a​c​c​o​u​n​t
+	 */
+	ADD_ACCOUNT: string
+	/**
 	 * A​d​d​ ​o​r​ ​u​p​d​a​t​e​ ​d​a​t​a
 	 */
 	ADD_OR_UPDATE_DATA: string
@@ -285,6 +289,22 @@ type RootTranslation = {
 	 * R​e​v​i​e​w​ ​i​m​p​o​r​t
 	 */
 	REVIEW_IMPORT: string
+	/**
+	 * T​a​g
+	 */
+	TAG: string
+	/**
+	 * B​a​l​a​n​c​e​ ​g​r​o​u​p
+	 */
+	BALANCE_GROUP: string
+	/**
+	 * C​l​o​s​e​d
+	 */
+	CLOSED: string
+	/**
+	 * A​d​d
+	 */
+	ADD: string
 }
 
 export type TranslationFunctions = {
@@ -304,6 +324,10 @@ export type TranslationFunctions = {
 	 * An admin must verify your account before you can sign in
 	 */
 	ACCOUNT_VERIFICATION_REQUIRED: () => LocalizedString
+	/**
+	 * Add account
+	 */
+	ADD_ACCOUNT: () => LocalizedString
 	/**
 	 * Add or update data
 	 */
@@ -560,6 +584,22 @@ export type TranslationFunctions = {
 	 * Review import
 	 */
 	REVIEW_IMPORT: () => LocalizedString
+	/**
+	 * Tag
+	 */
+	TAG: () => LocalizedString
+	/**
+	 * Balance group
+	 */
+	BALANCE_GROUP: () => LocalizedString
+	/**
+	 * Closed
+	 */
+	CLOSED: () => LocalizedString
+	/**
+	 * Add
+	 */
+	ADD: () => LocalizedString
 }
 
 export type Formatters = {}

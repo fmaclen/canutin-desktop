@@ -5,6 +5,7 @@ const en = {
 	ACCOUNTS: 'Accounts',
 	ACCOUNT_TYPE: 'Account type',
 	ACCOUNT_VERIFICATION_REQUIRED: 'An admin must verify your account before you can sign in',
+	ADD_ACCOUNT: 'Add account',
 	ADD_OR_UPDATE_DATA: 'Add or update data',
 	ASSET_TYPE: 'Asset type',
 	ASSETS: 'Assets',
@@ -68,7 +69,11 @@ const en = {
 	IMPORT: 'Import',
 	IMPORT_SUCCESSFUL: 'Import successful',
 	NEW_IMPORT: 'New import',
-	REVIEW_IMPORT: 'Review import'
+	REVIEW_IMPORT: 'Review import',
+	TAG: 'Tag',
+	BALANCE_GROUP: 'Balance group',
+	CLOSED: 'Closed',
+	ADD: 'Add'
 } satisfies BaseTranslation;
 
 export default en;

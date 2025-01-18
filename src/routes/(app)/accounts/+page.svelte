@@ -13,6 +13,8 @@
 
 <h1>{$LL.ACCOUNTS()}</h1>
 
+<a href="/accounts/new">{$LL.ADD_ACCOUNT()}</a>
+
 {#if !accountsStore.accounts.length}
 	<p>{$LL.NO_ACCOUNTS_FOUND()}</p>
 {:else}
@@ -30,7 +32,7 @@
 		<tbody>
 			{#each accountsStore.accounts as account}
 				<tr>
-					<td>{account.name}</td>
+					<td><a href="/accounts/{account.id}">{account.name}</a></td>
 					<td>{account.institution}</td>
 					<td>{account.expand.tag.name}</td>
 					<td>{account.isAutoCalculated ? $LL.AUTO_CALCULATED() : '~'}</td>

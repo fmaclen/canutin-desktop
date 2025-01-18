@@ -109,7 +109,7 @@ export type TagsRecord = {
 
 export type TransactionsRecord<Timport = unknown> = {
 	account?: RecordIdString
-	date?: IsoDateString
+	date: IsoDateString
 	description: string
 	import?: null | Timport
 	isExcluded?: boolean
