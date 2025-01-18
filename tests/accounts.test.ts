@@ -99,11 +99,11 @@ test('accounts list is displayed correctly and updated in real-time', async ({ p
 test('user can perform CRUD operations on accounts', async ({ page }) => {
 	const pbAlice = await createVerifiedUniqueUser('alice');
 	await signInAsUser(page, pbAlice);
-	
+
 	// Navigate to accounts page
 	await page.locator('nav a', { hasText: 'Accounts' }).click();
 	await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
-	
+
 	// Create new account
 	await expect(page.getByText('No accounts found')).toBeVisible();
 	await page.getByRole('link', { name: 'Add account' }).click();
@@ -113,7 +113,7 @@ test('user can perform CRUD operations on accounts', async ({ page }) => {
 	await page.getByLabel('Institution').fill('Meridian Trust Bank');
 	await page.getByLabel('Balance').fill('1234.56');
 	await page.getByRole('button', { name: 'Add' }).click();
-	
+
 	// Redirects to accounts page
 	await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
 	await expect(page).toHaveURL('/accounts');
@@ -125,23 +125,23 @@ test('user can perform CRUD operations on accounts', async ({ page }) => {
 	await expect(accountRow).toContainText('$1,234.56');
 	await expect(accountRow).toContainText('Meridian Trust Bank');
 	await expect(accountRow).toContainText('Checking');
-	
+
 	// Edit account
 	await accountRow.getByRole('link', { name: 'Edit' }).click();
 	await page.getByLabel('Name').fill('Premier Plus Checking');
 	await page.getByLabel('Balance').fill('5678.90');
 	await page.getByRole('button', { name: 'Save' }).click();
-	
+
 	// Verify changes
 	const updatedRow = page.locator('tbody tr', { hasText: 'Premier Plus Checking' });
 	await expect(updatedRow).toBeVisible();
 	await expect(updatedRow).toContainText('$5,678.90');
-	
+
 	// Delete account
 	await updatedRow.getByRole('link', { name: 'Edit' }).click();
 	await page.getByRole('button', { name: 'Delete' }).click();
 	await page.getByRole('button', { name: 'Confirm' }).click();
-	
+
 	// Verify account was deleted
 	await expect(page.getByText('Premier Plus Checking')).not.toBeVisible();
 	await expect(page.getByText('No accounts found')).toBeVisible();
