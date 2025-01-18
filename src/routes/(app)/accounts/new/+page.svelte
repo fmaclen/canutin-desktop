@@ -2,12 +2,16 @@
 	import LL from '$i18n/i18n-svelte';
 
 	import { goto } from '$app/navigation';
+	import { getAccountsContext } from '$lib/accounts.svelte';
 	import { BalanceGroup } from '$lib/balanceGroups';
 	import Field from '$lib/components/Field';
 	import Head from '$lib/components/Head.svelte';
 	import { createAccount, createAccountBalanceStatements } from '$lib/pocketbase';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { NewAccountDetails } from '$lib/seed/data/accounts';
+
+	const pbClient = getPbClientContext();
+	const accountsStore = getAccountsContext();
 
 	let newAccount: NewAccountDetails = $state({
 		name: '',
@@ -18,8 +22,6 @@
 		isClosed: false,
 		balance: 0
 	});
-
-	const pbClient = getPbClientContext();
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
@@ -47,11 +49,12 @@
 		<Field.Label id="institution">{$LL.INSTITUTION()}</Field.Label>
 		<Field.Input id="institution" bind:value={newAccount.institution} />
 	</Field>
-
 	<Field>
 		<Field.Label id="accountTag">{$LL.TAG()}</Field.Label>
 		<Field.Select id="accountTag" bind:value={newAccount.tag}>
-			<option value="checking">Checking</option>
+			{#each accountsStore.tags as tag}
+				<option value={tag.id}>{tag.name}</option>
+			{/each}
 		</Field.Select>
 	</Field>
 
