@@ -22,6 +22,8 @@
 		tag: { name: '', id: '' }
 	});
 
+	$inspect(accountDraft);
+
 	async function onSubmit(e: Event) {
 		e.preventDefault();
 		const account = await createAccount(pbClient.pb, accountDraft);
@@ -30,6 +32,8 @@
 				value: accountDraft.balance ?? 0
 			}
 		]);
+
+		console.warn('account', account);
 		goto(`/accounts`);
 	}
 </script>
@@ -38,4 +42,4 @@
 
 <h1>{$LL.ADD_ACCOUNT()}</h1>
 
-<Form {accountDraft} {onSubmit} />
+<Form bind:accountDraft {onSubmit} />

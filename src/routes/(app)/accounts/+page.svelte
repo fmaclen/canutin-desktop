@@ -36,7 +36,7 @@
 					<td>{account.institution}</td>
 					<td>{account.expand.tag.name}</td>
 					<td>{account.isAutoCalculated ? $LL.AUTO_CALCULATED() : '~'}</td>
-					<td>{formatCurrency(account.balance ?? 0, 2)}</td>
+					<td>{formatCurrency(account.balance ?? 0, 2, 2)}</td>
 					<td>{format(account.updated, 'MMM d, yyyy')}</td>
 				</tr>
 			{/each}

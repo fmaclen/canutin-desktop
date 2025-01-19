@@ -5,6 +5,8 @@
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import { BalanceGroup } from '$lib/balanceGroups';
 	import Head from '$lib/components/Head.svelte';
+	import { updateAccount } from '$lib/pocketbase';
+	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { AccountDraft } from '$lib/seed/data/accounts';
 
 	import Form from '../Form.svelte';
@@ -12,7 +14,9 @@
 
 	let { data }: { data: PageData } = $props();
 
-	const accounts = getAccountsContext();
+	const pbClient = getPbClientContext();
+	const accountsStore = getAccountsContext();
+
 	let accountDraft: AccountDraft = $state({
 		name: '',
 		institution: '',
@@ -24,7 +28,9 @@
 	});
 
 	$effect(() => {
-		const account = accounts.accounts.find((a) => a.id === data.accountId);
+		if (!accountsStore.accounts.length) return;
+		const account = accountsStore.accounts.find((a) => a.id === data.accountId);
+
 		if (account) {
 			accountDraft = {
 				...account,
@@ -38,7 +44,7 @@
 
 	async function onSubmit(e: Event) {
 		e.preventDefault();
-		// TODO
+		await updateAccount(pbClient.pb, accountDraft);
 		goto(`/accounts`);
 	}
 </script>
@@ -47,4 +53,4 @@
 
 <h1>{accountDraft.name}</h1>
 
-<Form {accountDraft} {onSubmit} />
+<Form bind:accountDraft {onSubmit} />
