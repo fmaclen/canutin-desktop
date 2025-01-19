@@ -33,5 +33,6 @@
 		{id}
 		{accept}
 		{onchange}
+		step={type === 'number' ? 'any' : undefined}
 	/>
 </div>
