@@ -138,9 +138,3 @@ test('user can create, edit, and delete accounts', async ({ page }) => {
 	await expect(updatedRow).toContainText('$5,678.90');
 });
 
-test('wrong account id returns 404', async ({ page }) => {
-	const pbAlice = await createVerifiedUniqueUser('alice');
-	await signInAsUser(page, pbAlice);
-	await page.goto('/accounts/123');
-	await expect(page).toHaveURL('/404');
-});

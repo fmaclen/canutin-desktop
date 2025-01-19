@@ -28,7 +28,6 @@
 	});
 
 	$effect(() => {
-		if (!accountsStore.accounts.length) return;
 		const account = accountsStore.accounts.find((a) => a.id === data.accountId);
 
 		if (account) {
@@ -37,8 +36,6 @@
 				tag: { name: account.expand.tag.name ?? '', id: account.expand.tag.id ?? '' },
 				balance: account.balance ?? 0
 			};
-		} else {
-			goto('/404');
 		}
 	});
 

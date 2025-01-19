@@ -13,13 +13,13 @@
 		onSubmit: (e: Event) => Promise<void>;
 	}
 
-	const { accountDraft = $bindable(), onSubmit = $bindable() }: Props = $props();
+	const { accountDraft = $bindable(), onSubmit }: Props = $props();
 </script>
 
 <form onsubmit={onSubmit}>
 	<Field>
 		<Field.Label id="name">{$LL.NAME()}</Field.Label>
-		<Field.Input id="name" bind:value={accountDraft.name} />
+		<Field.Input id="name" bind:value={accountDraft.name} required />
 	</Field>
 
 	<Field>
@@ -29,9 +29,9 @@
 
 	<Field>
 		<Field.Label id="accountTag">{$LL.TAG()}</Field.Label>
-		<Field.Select id="accountTag" bind:value={accountDraft.tag.id}>
+		<Field.Select id="accountTag" bind:value={accountDraft.tag.id} required>
 			{#each accountsStore.tags as tag}
-				<option value={tag.id}>
+				<option value={tag.id} selected={tag.id === accountDraft.tag.id}>
 					{tag.name}
 				</option>
 			{/each}
@@ -40,7 +40,13 @@
 
 	<Field>
 		<Field.Label id="balance">{$LL.BALANCE()}</Field.Label>
-		<Field.Input id="balance" type="number" bind:value={accountDraft.balance} />
+		<Field.Input
+			id="balance"
+			type="number"
+			bind:value={accountDraft.balance}
+			required={!accountDraft.isAutoCalculated}
+			disabled={accountDraft.isAutoCalculated}
+		/>
 		<Field.Toggle
 			id="isAutoCalculated"
 			bind:checked={accountDraft.isAutoCalculated}
@@ -50,11 +56,25 @@
 
 	<Field>
 		<Field.Label id="balanceGroup">{$LL.BALANCE_GROUP()}</Field.Label>
-		<Field.Select id="balanceGroup" bind:value={accountDraft.balanceGroup}>
-			<option value={BalanceGroup.CASH}>{$LL.CASH()}</option>
-			<option value={BalanceGroup.DEBT}>{$LL.DEBT()}</option>
-			<option value={BalanceGroup.INVESTMENTS}>{$LL.INVESTMENTS()}</option>
-			<option value={BalanceGroup.OTHER_ASSETS}>{$LL.OTHER_ASSETS()}</option>
+		<Field.Select id="balanceGroup" bind:value={accountDraft.balanceGroup} required>
+			<option value={BalanceGroup.CASH} selected={accountDraft.balanceGroup === BalanceGroup.CASH}>
+				{$LL.CASH()}
+			</option>
+			<option value={BalanceGroup.DEBT} selected={accountDraft.balanceGroup === BalanceGroup.DEBT}>
+				{$LL.DEBT()}
+			</option>
+			<option
+				value={BalanceGroup.INVESTMENTS}
+				selected={accountDraft.balanceGroup === BalanceGroup.INVESTMENTS}
+			>
+				{$LL.INVESTMENTS()}
+			</option>
+			<option
+				value={BalanceGroup.OTHER_ASSETS}
+				selected={accountDraft.balanceGroup === BalanceGroup.OTHER_ASSETS}
+			>
+				{$LL.OTHER_ASSETS()}
+			</option>
 		</Field.Select>
 	</Field>
 
@@ -62,5 +82,7 @@
 		<Field.Toggle id="isClosed" bind:checked={accountDraft.isClosed} label={$LL.CLOSED()} />
 	</Field>
 
-	<button>{accountDraft.id ? $LL.UPDATE() : $LL.ADD()}</button>
+	<button type="submit">
+		{accountDraft.id ? $LL.UPDATE() : $LL.ADD()}
+	</button>
 </form>

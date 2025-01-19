@@ -32,8 +32,6 @@
 				value: accountDraft.balance ?? 0
 			}
 		]);
-
-		console.warn('account', account);
 		goto(`/accounts`);
 	}
 </script>
