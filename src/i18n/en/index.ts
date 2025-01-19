@@ -73,7 +73,8 @@ const en = {
 	TAG: 'Tag',
 	BALANCE_GROUP: 'Balance group',
 	CLOSED: 'Closed',
-	ADD: 'Add'
+	ADD: 'Add',
+	UPDATE: 'Update'
 } satisfies BaseTranslation;
 
 export default en;

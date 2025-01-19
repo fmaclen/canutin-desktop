@@ -305,6 +305,10 @@ type RootTranslation = {
 	 * A​d​d
 	 */
 	ADD: string
+	/**
+	 * U​p​d​a​t​e
+	 */
+	UPDATE: string
 }
 
 export type TranslationFunctions = {
@@ -600,6 +604,10 @@ export type TranslationFunctions = {
 	 * Add
 	 */
 	ADD: () => LocalizedString
+	/**
+	 * Update
+	 */
+	UPDATE: () => LocalizedString
 }
 
 export type Formatters = {}

@@ -17,7 +17,7 @@ import {
 	accountRothIraDetails,
 	accountSavingsDetails,
 	accountWalletDetails,
-	type AccountDetails
+	type AccountDraft
 } from '$lib/seed/data/accounts';
 import {
 	assetCollectibleDetails,
@@ -110,7 +110,7 @@ async function seedTags(): Promise<void> {
 }
 
 async function seedAccounts(pb: TypedPocketBase): Promise<void> {
-	const accounts: AccountDetails[] = [
+	const accounts: AccountDraft[] = [
 		accountCheckingDetails,
 		accountSavingsDetails,
 		accountCreditCardDetails,
