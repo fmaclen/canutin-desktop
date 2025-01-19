@@ -146,3 +146,10 @@ test('user can perform CRUD operations on accounts', async ({ page }) => {
 	await expect(page.getByText('Premier Plus Checking')).not.toBeVisible();
 	await expect(page.getByText('No accounts found')).toBeVisible();
 });
+
+test('wrong account id returns 404', async ({ page }) => {
+	const pbAlice = await createVerifiedUniqueUser('alice');
+	await signInAsUser(page, pbAlice);
+	await page.goto('/accounts/123');
+	await expect(page).toHaveURL('/404');
+});
