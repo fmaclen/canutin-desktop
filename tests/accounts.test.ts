@@ -96,7 +96,7 @@ test('accounts list is displayed correctly and updated in real-time', async ({ p
 	await expect(accountRows.last()).toContainText('Fiat Auto Loan');
 });
 
-test('user can perform CRUD operations on accounts', async ({ page }) => {
+test('user can create, edit, and delete accounts', async ({ page }) => {
 	const pbAlice = await createVerifiedUniqueUser('alice');
 	await signInAsUser(page, pbAlice);
 
@@ -107,11 +107,11 @@ test('user can perform CRUD operations on accounts', async ({ page }) => {
 	// Create new account
 	await expect(page.getByText('No accounts found')).toBeVisible();
 	await page.getByRole('link', { name: 'Add account' }).click();
-	await page.getByLabel('Name').fill('Everyday Essentials Checking');
-	await page.getByLabel('Account type').selectOption('Checking');
+	await page.getByLabel('Name').fill('Emergency Fund');
+	await page.getByLabel('Tag').selectOption('Savings');
 	await page.getByLabel('Balance group').selectOption('Cash');
 	await page.getByLabel('Institution').fill('Meridian Trust Bank');
-	await page.getByLabel('Balance').fill('1234.56');
+	await page.getByLabel('Balance', { exact: true }).fill('1234.56');
 	await page.getByRole('button', { name: 'Add' }).click();
 
 	// Redirects to accounts page
@@ -120,16 +120,16 @@ test('user can perform CRUD operations on accounts', async ({ page }) => {
 	await expect(page.getByText('No accounts found')).not.toBeVisible();
 
 	// Verify account was created
-	const accountRow = page.locator('tbody tr', { hasText: 'Everyday Essentials Checking' });
+	const accountRow = page.locator('tbody tr', { hasText: 'Emergency Fund' });
 	await expect(accountRow).toBeVisible();
 	await expect(accountRow).toContainText('$1,234.56');
 	await expect(accountRow).toContainText('Meridian Trust Bank');
-	await expect(accountRow).toContainText('Checking');
+	await expect(accountRow).toContainText('Savings');
 
 	// Edit account
-	await accountRow.getByRole('link', { name: 'Edit' }).click();
+	await page.getByRole('link', { name: 'Emergency Fund' }).click();
 	await page.getByLabel('Name').fill('Premier Plus Checking');
-	await page.getByLabel('Balance').fill('5678.90');
+	await page.getByLabel('Balance', { exact: true }).fill('5678.90');
 	await page.getByRole('button', { name: 'Save' }).click();
 
 	// Verify changes
