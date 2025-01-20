@@ -33,21 +33,6 @@ export async function createAccount(pb: TypedPocketBase, account: AccountDraft) 
 	});
 }
 
-export async function updateAccount(pb: TypedPocketBase, account: AccountDraft) {
-	if (!account.id || !account.tag.id)
-		throw new Error("Account and tag id's are required to update an account");
-
-	if (account.balance) {
-		await createAccountBalanceStatements(pb, account.id, [{ value: account.balance }]);
-	}
-
-	return await pb.collection('accounts').update(account.id, {
-		...account,
-		tag: account.tag.id,
-		owner: pb.authStore.model?.id
-	});
-}
-
 export async function createTransactions(
 	pb: TypedPocketBase,
 	accountId: string,

@@ -5,7 +5,7 @@
 	import { goto } from '$app/navigation';
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import Head from '$lib/components/Head.svelte';
-	import { updateAccount } from '$lib/pocketbase';
+	import { createAccountBalanceStatements } from '$lib/pocketbase';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { AccountDraft } from '$lib/seed/data/accounts';
 
@@ -35,8 +35,20 @@
 
 	async function onSubmit(e: Event) {
 		e.preventDefault();
-		if (!accountDraft) return;
-		await updateAccount(pbClient.pb, accountDraft);
+		if (!accountDraft?.id || !accountDraft.tag.id)
+			throw new Error("Account and tag id's are required to update an account");
+
+		if (accountDraft.balance) {
+			await createAccountBalanceStatements(pbClient.pb, accountDraft.id, [
+				{ value: accountDraft.balance }
+			]);
+		}
+
+		await pbClient.pb.collection('accounts').update(accountDraft.id, {
+			...accountDraft,
+			tag: accountDraft.tag.id,
+			owner: pbClient.pb.authStore.model?.id
+		});
 		goto(`/accounts`);
 	}
 </script>
