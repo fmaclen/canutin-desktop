@@ -95,3 +95,69 @@ test('accounts list is displayed correctly and updated in real-time', async ({ p
 	await expect(accountRows.first()).toContainText('Emergency Fund');
 	await expect(accountRows.last()).toContainText('Fiat Auto Loan');
 });
+
+test('user can create, edit, and delete accounts', async ({ page }) => {
+	const pbAlice = await createVerifiedUniqueUser('alice');
+	await signInAsUser(page, pbAlice);
+
+	// Navigate to accounts page
+	await page.locator('nav a', { hasText: 'Accounts' }).click();
+	await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
+
+	// Create new account
+	await expect(page.getByText('No accounts found')).toBeVisible();
+	await page.getByRole('link', { name: 'Add account' }).click();
+	await page.getByLabel('Name').fill('Emergency Fund');
+	await page.getByLabel('Tag').selectOption('Savings');
+	await page.getByLabel('Balance group').selectOption('Other assets');
+	await page.getByLabel('Institution').fill('Meridian Trust Bank');
+	await page.getByLabel('Balance', { exact: true }).fill('1234.56');
+	await page.getByRole('button', { name: 'Add' }).click();
+
+	// Redirects to accounts page
+	await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
+	await expect(page).toHaveURL('/accounts');
+	await expect(page.getByText('No accounts found')).not.toBeVisible();
+
+	// Verify account was created
+	const accountRow = page.locator('tbody tr', { hasText: 'Emergency Fund' });
+	await expect(accountRow).toBeVisible();
+	await expect(accountRow).toContainText('Meridian Trust Bank');
+	await expect(accountRow).toContainText('Savings');
+	await expect(accountRow).toContainText('$1,234.56');
+
+	// Check the existing account loaded correctly
+	await page.getByRole('link', { name: 'Emergency Fund' }).click();
+	await expect(page.getByLabel('Name')).toHaveValue('Emergency Fund');
+	await expect(page.getByLabel('Balance', { exact: true })).toHaveValue('1234.56');
+	await expect(page.getByLabel('Tag').locator('option:checked')).toHaveText('Savings');
+	await expect(page.getByLabel('Institution')).toHaveValue('Meridian Trust Bank');
+	await expect(page.getByLabel('Balance group').locator('option:checked')).toHaveText(
+		'Other assets'
+	);
+
+	// Edit account
+	await page.getByLabel('Name').fill('Premier Plus Checking');
+	await page.getByLabel('Institution').fill('Ransack Bank');
+	await page.getByLabel('Tag').selectOption('Checking');
+	await page.getByLabel('Auto-calculated').check();
+	await expect(page.getByLabel('Balance', { exact: true })).toBeDisabled();
+	await page.getByLabel('Balance group').selectOption('Cash');
+
+	await page.getByRole('button', { name: 'Update' }).click();
+
+	// Verify changes
+	const updatedRow = page.locator('tbody tr', { hasText: 'Premier Plus Checking' });
+	await expect(updatedRow).toBeVisible();
+	await expect(updatedRow).toContainText('Ransack Bank');
+	await expect(updatedRow).toContainText('Checking');
+	await expect(updatedRow).toContainText('$0.00');
+	await expect(updatedRow).toContainText('Auto-calculated');
+});
+
+test('wrong account id returns 404', async ({ page }) => {
+	const pbAlice = await createVerifiedUniqueUser('alice');
+	await signInAsUser(page, pbAlice);
+	await page.goto('/accounts/wrong-account-id');
+	await expect(page).toHaveURL('/404');
+});

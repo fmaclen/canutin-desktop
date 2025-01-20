@@ -16,6 +16,7 @@ export interface Account extends AccountsResponse {
 
 class Accounts {
 	accounts = $state<Account[]>([]);
+	tags = $state<TagsResponse[]>([]);
 	private pbClient = getPbClientContext();
 
 	private get pb(): TypedPocketBase {
@@ -25,6 +26,16 @@ class Accounts {
 	constructor() {
 		this.fetchAccounts();
 		this.subscribeToAccountChanges();
+		this.fetchAccountTags();
+		this.subscribeToAccountTagsChanges();
+	}
+
+	async getAccount(id: string): Promise<Account> {
+		const account = await this.pb.collection('accounts').getOne(id, {
+			expand: 'tag'
+		});
+		const balance = await this.getAccountBalance(account);
+		return { ...account, balance };
 	}
 
 	private async fetchAccounts() {
@@ -140,8 +151,19 @@ class Accounts {
 		this.accounts = this.accounts.sort((a, b) => a.name.localeCompare(b.name));
 	}
 
+	private async fetchAccountTags() {
+		this.tags = await this.pb
+			.collection('tags')
+			.getFullList<TagsResponse>({ filter: 'for="accounts"' });
+	}
+
+	private subscribeToAccountTagsChanges() {
+		this.pb.collection('tags').subscribe('*', () => this.fetchAccountTags());
+	}
+
 	dispose() {
 		this.pb.collection('accounts').unsubscribe();
+		this.pb.collection('tags').unsubscribe();
 	}
 }
 

@@ -3,7 +3,7 @@
 
 	interface Props {
 		id: string;
-		value?: string;
+		value?: string | number;
 		disabled?: boolean;
 		placeholder?: string;
 		required?: boolean;

@@ -1,8 +1,8 @@
 import { subMonths } from 'date-fns';
 
 export interface BalanceStatementDetails {
-	created: Date;
 	value: number;
+	created?: Date;
 }
 
 interface AssetBalanceStatement extends BalanceStatementDetails {

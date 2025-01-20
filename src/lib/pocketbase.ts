@@ -1,7 +1,7 @@
 import PocketBase from 'pocketbase';
 
 import type { TypedPocketBase } from '$lib/pocketbase-types';
-import type { AccountDetails } from '$lib/seed/data/accounts';
+import type { AccountDraft } from '$lib/seed/data/accounts';
 import type { BalanceStatementDetails } from '$lib/seed/data/balanceStatements';
 import type { TransactionDetails } from '$lib/seed/data/transactions';
 
@@ -24,11 +24,11 @@ export async function getTagId(
 	return result.id ?? undefined;
 }
 
-export async function createAccount(pb: TypedPocketBase, account: AccountDetails) {
-	const tagId = await getTagId(pb, 'accounts', account.tag);
+export async function createAccount(pb: TypedPocketBase, account: AccountDraft) {
+	const tag = account.tag.id ?? (await getTagId(pb, 'accounts', account.tag.name));
 	return await pb.collection('accounts').create({
 		...account,
-		tag: tagId,
+		tag,
 		owner: pb.authStore.model?.id
 	});
 }
