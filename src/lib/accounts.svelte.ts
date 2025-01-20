@@ -30,6 +30,14 @@ class Accounts {
 		this.subscribeToAccountTagsChanges();
 	}
 
+	async getAccount(id: string): Promise<Account> {
+		const account = await this.pb.collection('accounts').getOne(id, {
+			expand: 'tag'
+		});
+		const balance = await this.getAccountBalance(account);
+		return { ...account, balance };
+	}
+
 	private async fetchAccounts() {
 		try {
 			const accountsCollection = await this.pb

@@ -22,8 +22,6 @@
 		tag: { name: '', id: '' }
 	});
 
-	$inspect(accountDraft);
-
 	async function onSubmit(e: Event) {
 		e.preventDefault();
 		const account = await createAccount(pbClient.pb, accountDraft);
