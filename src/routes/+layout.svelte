@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '../app.css';
+	import '../app.pcss';
 
 	import { setLocale } from '$i18n/i18n-svelte';
 	import { loadLocale } from '$i18n/i18n-util.sync';
