@@ -13,8 +13,7 @@
 
 	const pbClient = getPbClientContext();
 
-	async function handleLogin(e: Event) {
-		e.preventDefault();
+	async function handleLogin() {
 		await pbClient.signIn(auth.email, auth.password);
 	}
 </script>
@@ -22,12 +21,13 @@
 <Head title={$LL.SIGN_IN()} />
 
 <div class="layout">
-	
-	<form onsubmit={(e) => handleLogin(e)}>
+	<form>
 		<h1>{$LL.SIGN_IN()}</h1>
+
 		{#if pbClient.authMessage}
 			<p class="auth-message">{pbClient.authMessage}</p>
 		{/if}
+
 		<Field>
 			<Field.Label id="serverUrl">{$LL.CANUTIN_SERVER_URL()}</Field.Label>
 			<Field.Input type="url" id="serverUrl" bind:value={pbClient.serverUrl.value} required />
@@ -43,7 +43,7 @@
 			<Field.Input type="password" id="password" bind:value={auth.password} required />
 		</Field>
 
-		<Button variant="primary" title={$LL.SIGN_IN_BUTTON()}>
+		<Button onclick={handleLogin} variant="primary" title={$LL.SIGN_IN_BUTTON()}>
 			{$LL.SIGN_IN_BUTTON()}
 		</Button>
 	</form>
@@ -51,15 +51,15 @@
 
 <style lang="postcss">
 	.layout {
-		@apply flex flex-col h-screen justify-center;
+		@apply flex h-screen flex-col justify-center;
 	}
 
 	h1 {
-		@apply text-center text-2xl font-bold tracking-tight mr-auto mb-8;
+		@apply mb-8 mr-auto text-center text-2xl font-bold tracking-tight;
 	}
 
 	form {
-		@apply flex w-96 flex-col gap-4 rounded-md bg-chromeo-50 px-8 py-12 shadow mx-auto;
+		@apply mx-auto flex w-96 flex-col items-start gap-4 rounded-md bg-chromeo-50 px-8 py-12 shadow;
 	}
 
 	.auth-message {

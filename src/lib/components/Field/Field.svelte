@@ -14,6 +14,6 @@
 
 <style lang="postcss">
 	.field {
-		@apply flex flex-col w-full gap-2;
+		@apply flex w-full flex-col gap-2;
 	}
 </style>

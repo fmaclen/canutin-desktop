@@ -4,7 +4,7 @@
 	interface Props {
 		title: string;
 		children: Snippet;
-		onclick?: () => void;
+		onclick: () => void;
 		disabled?: boolean;
 		variant?: 'default' | 'icon' | 'primary' | 'mobile';
 	}
@@ -39,7 +39,7 @@
 	}
 
 	.button--primary {
-		@apply bg-accent text-white border-accent;
+		@apply border-accent bg-accent text-white;
 		@apply hover:border-accent hover:bg-accent/80;
 	}
 
