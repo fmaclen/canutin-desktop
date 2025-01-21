@@ -11,3 +11,9 @@
 <div class="field">
 	{@render children()}
 </div>
+
+<style lang="postcss">
+	.field {
+		@apply flex flex-col w-full gap-2;
+	}
+</style>

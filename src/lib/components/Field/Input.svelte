@@ -25,7 +25,7 @@
 <div class="field-input">
 	<input
 		bind:value
-		class="input"
+		class="field-input__input"
 		{type}
 		{disabled}
 		{placeholder}
@@ -36,3 +36,15 @@
 		step={type === 'number' ? 'any' : undefined}
 	/>
 </div>
+
+<style lang="postcss">
+	.field-input {
+		@apply flex w-full items-center rounded bg-chromeo-200 outline-2 outline-chromeo-800;
+		@apply focus-within:bg-transparent focus-within:outline;
+	}
+
+	.field-input__input {
+		@apply block w-full bg-transparent p-2 font-mono text-xs text-chromeo-900 outline-none;
+		@apply placeholder:text-chromeo-950/30;
+	}
+</style>

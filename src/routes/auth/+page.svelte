@@ -1,6 +1,7 @@
 <script lang="ts">
 	import LL from '$i18n/i18n-svelte';
 
+	import Button from '$lib/components/Button.svelte';
 	import Field from '$lib/components/Field';
 	import Head from '$lib/components/Head.svelte';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
@@ -20,36 +21,45 @@
 
 <Head title={$LL.SIGN_IN()} />
 
-<h1>{$LL.SIGN_IN()}</h1>
+<div class="layout">
+	
+	<form onsubmit={(e) => handleLogin(e)}>
+		<h1>{$LL.SIGN_IN()}</h1>
+		{#if pbClient.authMessage}
+			<p class="auth-message">{pbClient.authMessage}</p>
+		{/if}
+		<Field>
+			<Field.Label id="serverUrl">{$LL.CANUTIN_SERVER_URL()}</Field.Label>
+			<Field.Input type="url" id="serverUrl" bind:value={pbClient.serverUrl.value} required />
+		</Field>
 
-{#if pbClient.authMessage}
-	<p class="auth-message">{pbClient.authMessage}</p>
-{/if}
+		<Field>
+			<Field.Label id="email">{$LL.EMAIL()}</Field.Label>
+			<Field.Input type="email" id="email" bind:value={auth.email} required />
+		</Field>
 
-<form onsubmit={(e) => handleLogin(e)}>
-	<Field>
-		<Field.Label id="serverUrl">{$LL.CANUTIN_SERVER_URL()}</Field.Label>
-		<Field.Input type="url" id="serverUrl" bind:value={pbClient.serverUrl.value} required />
-	</Field>
+		<Field>
+			<Field.Label id="password">{$LL.PASSWORD()}</Field.Label>
+			<Field.Input type="password" id="password" bind:value={auth.password} required />
+		</Field>
 
-	<Field>
-		<Field.Label id="email">{$LL.EMAIL()}</Field.Label>
-		<Field.Input type="email" id="email" bind:value={auth.email} required />
-	</Field>
+		<Button variant="primary" title={$LL.SIGN_IN_BUTTON()}>
+			{$LL.SIGN_IN_BUTTON()}
+		</Button>
+	</form>
+</div>
 
-	<Field>
-		<Field.Label id="password">{$LL.PASSWORD()}</Field.Label>
-		<Field.Input type="password" id="password" bind:value={auth.password} required />
-	</Field>
+<style lang="postcss">
+	.layout {
+		@apply flex flex-col h-screen justify-center;
+	}
 
-	<button type="submit">{$LL.SIGN_IN_BUTTON()}</button>
-</form>
+	h1 {
+		@apply text-center text-2xl font-bold tracking-tight mr-auto mb-8;
+	}
 
-<style>
 	form {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
+		@apply flex w-96 flex-col gap-4 rounded-md bg-chromeo-50 px-8 py-12 shadow mx-auto;
 	}
 
 	.auth-message {
