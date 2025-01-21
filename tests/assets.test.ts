@@ -28,7 +28,7 @@ test('user can only see their own assets', async ({ page }) => {
 	await expect(page.getByText('Bitcoin')).not.toBeVisible();
 	await expect(page.getByText('Tesla')).toBeVisible();
 
-	await page.getByText('Sign out').click();
+	await page.getByTitle('Sign out').click();
 	await signInAsUser(page, pbBob);
 	await page.locator('nav a', { hasText: 'Assets' }).click();
 	await expect(page.locator('h1', { hasText: 'Assets' })).toBeVisible();

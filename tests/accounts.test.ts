@@ -27,7 +27,7 @@ test('user can only see their own accounts', async ({ page }) => {
 	await expect(page.getByText('JuggernautCard Limited Rewards')).not.toBeVisible();
 	await expect(page.getByText('Ransack Laughable-Yield Checking')).toBeVisible();
 
-	await page.getByText('Sign out').click();
+	await page.getByTitle('Sign out').click();
 	await signInAsUser(page, pbBob);
 	await page.locator('nav a', { hasText: 'Accounts' }).click();
 	await expect(page.locator('h1', { hasText: 'Accounts' })).toBeVisible();
