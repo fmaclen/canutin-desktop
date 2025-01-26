@@ -15,7 +15,7 @@
 	</label>
 {/if}
 
-<style lang="postcss">
+<style>
 	.field-label {
 		@apply text-xs font-medium tracking-wide opacity-60;
 	}

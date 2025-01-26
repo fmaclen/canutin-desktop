@@ -1,6 +1,7 @@
 <script lang="ts">
 	import LL from '$i18n/i18n-svelte';
 	import type { AuthModel } from 'pocketbase';
+	import type { Snippet } from 'svelte';
 
 	import { goto, onNavigate } from '$app/navigation';
 	import { setAccountsContext } from '$lib/accounts.svelte';
@@ -36,23 +37,34 @@
 	}
 </script>
 
-<div class="layout">
+{#snippet navLink(href: string, label: string)}
+	<a class="sidebar__a text-sm font-semibold" {href}>{label}</a>
+{/snippet}
+
+{#snippet navSection(children: Snippet)}
+	<nav class="sidebar__nav flex flex-col gap-4 px-8 py-4">
+		{@render children()}
+	</nav>
+{/snippet}
+
+<div class="layout flex h-screen">
 	{#if currentUser}
-		<aside class="sidebar">
-			<nav class="sidebar__nav">
-				<a class="sidebar__a" href="/">{$LL.THE_BIG_PICTURE()}</a>
-				<a class="sidebar__a" href="/balance-sheet">{$LL.BALANCE_SHEET()}</a>
-				<a class="sidebar__a" href="/trends">{$LL.TRENDS()}</a>
+		<aside class="sidebar bg-chromeo-100 flex h-full max-w-64 flex-col py-4">
+			<nav class="sidebar__nav flex flex-col gap-4 px-8 py-4">
+				{@render navLink('/', $LL.THE_BIG_PICTURE())}
+				{@render navLink('/balance-sheet', $LL.BALANCE_SHEET())}
+				{@render navLink('/trends', $LL.TRENDS())}
 			</nav>
-			<nav class="sidebar__nav">
-				<a class="sidebar__a" href="/transactions">{$LL.TRANSACTIONS()}</a>
-				<a class="sidebar__a" href="/accounts">{$LL.ACCOUNTS()}</a>
-				<a class="sidebar__a" href="/assets">{$LL.ASSETS()}</a>
+
+			<nav class="sidebar__nav flex flex-col gap-4 px-8 py-4">
+				{@render navLink('/transactions', $LL.TRANSACTIONS())}
+				{@render navLink('/accounts', $LL.ACCOUNTS())}
+				{@render navLink('/assets', $LL.ASSETS())}
 			</nav>
-			<nav class="sidebar__nav">
-				<!-- <a class="sidebar__a" href="/settings">{$LL.SETTINGS()}</a> -->
-				<a class="sidebar__a" href="/data">{$LL.ADD_OR_UPDATE_DATA()}</a>
-				<div class="sidebar__user">
+
+			<nav class="sidebar__nav flex flex-col gap-4 px-8 py-4 mt-auto">
+				{@render navLink('/data', $LL.ADD_OR_UPDATE_DATA())}
+				<div class="sidebar__user flex flex-row gap-2">
 					<button class="sidebar__button" onclick={handleSignOut} title={$LL.SIGN_OUT()}>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -66,41 +78,11 @@
 							/>
 						</svg>
 					</button>
-					<span class="sidebar__email">{currentUser.email}</span>
+					<span class="sidebar__email text-sm">{currentUser.email}</span>
 				</div>
 			</nav>
 		</aside>
 
-		{@render children()}
+		<!-- {@render children()} -->
 	{/if}
 </div>
-
-<style lang="postcss">
-	.layout {
-		@apply flex h-screen;
-	}
-
-	.sidebar {
-		@apply flex h-full max-w-64 flex-col bg-chromeo-100 py-4;
-	}
-
-	.sidebar__a {
-		@apply text-sm font-semibold;
-	}
-
-	.sidebar__nav {
-		@apply flex flex-col gap-4 px-8 py-4;
-
-		&:last-child {
-			@apply mt-auto;
-		}
-	}
-
-	.sidebar__user {
-		@apply flex flex-row gap-2;
-	}
-
-	.sidebar__email {
-		@apply w-full overflow-hidden truncate text-ellipsis text-sm;
-	}
-</style>

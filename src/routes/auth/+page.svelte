@@ -49,7 +49,7 @@
 	</form>
 </div>
 
-<style lang="postcss">
+<style>
 	.layout {
 		@apply flex h-screen flex-col justify-center;
 	}

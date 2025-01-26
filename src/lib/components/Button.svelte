@@ -20,7 +20,7 @@
 	{/if}
 </button>
 
-<style lang="postcss">
+<style>
 	.button {
 		@apply flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-semibold tracking-tight;
 		@apply disabled:cursor-not-allowed disabled:opacity-50;

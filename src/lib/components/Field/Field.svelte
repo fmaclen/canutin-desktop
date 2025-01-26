@@ -12,7 +12,7 @@
 	{@render children()}
 </div>
 
-<style lang="postcss">
+<style>
 	.field {
 		@apply flex w-full flex-col gap-2;
 	}
