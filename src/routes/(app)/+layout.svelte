@@ -1,7 +1,6 @@
 <script lang="ts">
 	import LL from '$i18n/i18n-svelte';
 	import type { AuthModel } from 'pocketbase';
-	import type { Snippet } from 'svelte';
 
 	import { goto, onNavigate } from '$app/navigation';
 	import { setAccountsContext } from '$lib/accounts.svelte';
@@ -37,35 +36,34 @@
 	}
 </script>
 
-{#snippet navLink(href: string, label: string)}
+{#snippet sidebar__a(href: string, label: string)}
 	<a class="sidebar__a text-sm font-semibold" {href}>{label}</a>
-{/snippet}
-
-{#snippet navSection(children: Snippet)}
-	<nav class="sidebar__nav flex flex-col gap-4 px-8 py-4">
-		{@render children()}
-	</nav>
 {/snippet}
 
 <div class="layout flex h-screen">
 	{#if currentUser}
 		<aside class="sidebar bg-chromeo-100 flex h-full max-w-64 flex-col py-4">
 			<nav class="sidebar__nav flex flex-col gap-4 px-8 py-4">
-				{@render navLink('/', $LL.THE_BIG_PICTURE())}
-				{@render navLink('/balance-sheet', $LL.BALANCE_SHEET())}
-				{@render navLink('/trends', $LL.TRENDS())}
+				{@render sidebar__a('/', $LL.THE_BIG_PICTURE())}
+				{@render sidebar__a('/balance-sheet', $LL.BALANCE_SHEET())}
+				{@render sidebar__a('/trends', $LL.TRENDS())}
 			</nav>
 
 			<nav class="sidebar__nav flex flex-col gap-4 px-8 py-4">
-				{@render navLink('/transactions', $LL.TRANSACTIONS())}
-				{@render navLink('/accounts', $LL.ACCOUNTS())}
-				{@render navLink('/assets', $LL.ASSETS())}
+				{@render sidebar__a('/transactions', $LL.TRANSACTIONS())}
+				{@render sidebar__a('/accounts', $LL.ACCOUNTS())}
+				{@render sidebar__a('/assets', $LL.ASSETS())}
 			</nav>
 
-			<nav class="sidebar__nav flex flex-col gap-4 px-8 py-4 mt-auto">
-				{@render navLink('/data', $LL.ADD_OR_UPDATE_DATA())}
+			<nav class="sidebar__nav mt-auto flex flex-col gap-4 px-8 py-4">
+				{@render sidebar__a('/data', $LL.ADD_OR_UPDATE_DATA())}
 				<div class="sidebar__user flex flex-row gap-2">
-					<button class="sidebar__button" onclick={handleSignOut} title={$LL.SIGN_OUT()}>
+					<button 
+						class="sidebar__button" 
+						onclick={handleSignOut} 
+						title={$LL.SIGN_OUT()}
+						aria-label={$LL.SIGN_OUT()}
+					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="1.25rem"
@@ -83,6 +81,6 @@
 			</nav>
 		</aside>
 
-		<!-- {@render children()} -->
+		{@render children()}
 	{/if}
 </div>

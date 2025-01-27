@@ -8,12 +8,6 @@
 	let { children }: Props = $props();
 </script>
 
-<div class="field">
+<div class="field flex w-full flex-col gap-2">
 	{@render children()}
 </div>
-
-<style>
-	.field {
-		@apply flex w-full flex-col gap-2;
-	}
-</style>

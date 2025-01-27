@@ -10,13 +10,7 @@
 </script>
 
 {#if children}
-	<label for={id} class="field-label">
+	<label for={id} class="text-xs font-medium tracking-wide opacity-60">
 		{@render children()}
 	</label>
 {/if}
-
-<style>
-	.field-label {
-		@apply text-xs font-medium tracking-wide opacity-60;
-	}
-</style>

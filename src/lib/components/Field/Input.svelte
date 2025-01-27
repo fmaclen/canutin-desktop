@@ -22,10 +22,13 @@
 	}: Props = $props();
 </script>
 
-<div class="field-input">
+<div class={[
+	'flex w-full items-center rounded bg-chromeo-200 outline-2 outline-chromeo-800',
+	'focus-within:bg-transparent focus-within:outline'
+]}>
 	<input
 		bind:value
-		class="field-input__input"
+		class="block w-full bg-transparent p-2 font-mono text-xs text-chromeo-900 outline-none placeholder:text-chromeo-950/30"
 		{type}
 		{disabled}
 		{placeholder}
@@ -36,15 +39,3 @@
 		step={type === 'number' ? 'any' : undefined}
 	/>
 </div>
-
-<style>
-	.field-input {
-		@apply flex w-full items-center rounded bg-chromeo-200 outline-2 outline-chromeo-800;
-		@apply focus-within:bg-transparent focus-within:outline;
-	}
-
-	.field-input__input {
-		@apply block w-full bg-transparent p-2 font-mono text-xs text-chromeo-900 outline-none;
-		@apply placeholder:text-chromeo-950/30;
-	}
-</style>
