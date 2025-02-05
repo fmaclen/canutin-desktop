@@ -6,13 +6,14 @@
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
+	import MainHeader from '$lib/components/MainHeader.svelte';
 	import { createAccountBalanceStatements } from '$lib/pocketbase';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { AccountDraft } from '$lib/seed/data/accounts';
 
 	import Form from '../Form.svelte';
 	import type { PageData } from './$types';
-	import MainHeader from '$lib/components/MainHeader.svelte';
+
 	const pbClient = getPbClientContext();
 	const accountsStore = getAccountsContext();
 

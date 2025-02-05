@@ -8,6 +8,6 @@
 	let { children }: Props = $props();
 </script>
 
-<h3 class="font-mono uppercase tracking-widest text-xs text-chromeo-700">
+<h3 class="text-chromeo-700 font-mono text-xs tracking-widest uppercase">
 	{@render children()}
 </h3>

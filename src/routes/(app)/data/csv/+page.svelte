@@ -6,14 +6,14 @@
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import Field from '$lib/components/Field';
 	import H1 from '$lib/components/H1.svelte';
+	import H3 from '$lib/components/H3.svelte';
 	import Head from '$lib/components/Head.svelte';
+	import MainHeader from '$lib/components/MainHeader.svelte';
 	import { createTransactions } from '$lib/pocketbase';
 	import type { TransactionsRecord } from '$lib/pocketbase-types';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { TransactionDetails } from '$lib/seed/data/transactions';
 	import { formatCurrency } from '$lib/utils';
-	import H3 from '$lib/components/H3.svelte';
-	import MainHeader from '$lib/components/MainHeader.svelte';
 
 	interface PreviewTransaction {
 		date?: Date;

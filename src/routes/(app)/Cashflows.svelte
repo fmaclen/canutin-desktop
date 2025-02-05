@@ -11,12 +11,12 @@
 	} from 'date-fns';
 
 	import H3 from '$lib/components/H3.svelte';
+	import KeyValue from '$lib/components/KeyValue.svelte';
 	import Plate from '$lib/components/Plate.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import type { TransactionsResponse } from '$lib/pocketbase-types';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import { dateInUTC, formatCurrency, proportionBetween } from '$lib/utils';
-	import KeyValue from '$lib/components/KeyValue.svelte';
 
 	interface PeriodCashflow {
 		id: number;

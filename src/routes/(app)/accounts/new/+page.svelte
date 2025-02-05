@@ -5,12 +5,13 @@
 	import { BalanceGroup } from '$lib/balanceGroups';
 	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
+	import MainHeader from '$lib/components/MainHeader.svelte';
 	import { createAccount, createAccountBalanceStatements } from '$lib/pocketbase';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { AccountDraft } from '$lib/seed/data/accounts';
 
 	import Form from '../Form.svelte';
-	import MainHeader from '$lib/components/MainHeader.svelte';
+
 	const pbClient = getPbClientContext();
 
 	let accountDraft: AccountDraft = $state({

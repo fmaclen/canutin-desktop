@@ -8,6 +8,6 @@
 	let { children }: Props = $props();
 </script>
 
-<section class="container mx-auto my-12 px-24 flex flex-col gap-2">
+<section class="container mx-auto my-12 flex flex-col gap-2 px-24">
 	{@render children()}
 </section>
