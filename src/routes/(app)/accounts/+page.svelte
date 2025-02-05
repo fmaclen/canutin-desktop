@@ -3,6 +3,7 @@
 	import { format } from 'date-fns';
 
 	import { getAccountsContext } from '$lib/accounts.svelte';
+	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
 	import { formatCurrency } from '$lib/utils';
 
@@ -11,7 +12,7 @@
 
 <Head title={$LL.ACCOUNTS()} />
 
-<h1>{$LL.ACCOUNTS()}</h1>
+<H1>{$LL.ACCOUNTS()}</H1>
 
 <a href="/accounts/new">{$LL.ADD_ACCOUNT()}</a>
 

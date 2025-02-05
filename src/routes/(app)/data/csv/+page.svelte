@@ -5,6 +5,7 @@
 
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import Field from '$lib/components/Field';
+	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
 	import { createTransactions } from '$lib/pocketbase';
 	import type { TransactionsRecord } from '$lib/pocketbase-types';
@@ -139,7 +140,7 @@
 
 <Head title={$LL.IMPORT_TRANSACTIONS_FROM_CSV()} />
 
-<h1>{$LL.IMPORT_TRANSACTIONS_FROM_CSV()}</h1>
+<H1>{$LL.IMPORT_TRANSACTIONS_FROM_CSV()}</H1>
 
 <Field>
 	<Field.Label id="file">{$LL.FILE()}</Field.Label>

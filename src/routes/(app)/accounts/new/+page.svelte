@@ -3,6 +3,7 @@
 
 	import { goto } from '$app/navigation';
 	import { BalanceGroup } from '$lib/balanceGroups';
+	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
 	import { createAccount, createAccountBalanceStatements } from '$lib/pocketbase';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
@@ -36,6 +37,6 @@
 
 <Head title={$LL.ADD_ACCOUNT()} />
 
-<h1>{$LL.ADD_ACCOUNT()}</h1>
+<H1>{$LL.ADD_ACCOUNT()}</H1>
 
 <Form bind:accountDraft {onSubmit} />

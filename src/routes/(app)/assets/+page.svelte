@@ -3,6 +3,7 @@
 	import { format } from 'date-fns';
 
 	import { getAssetsContext } from '$lib/assets.svelte';
+	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
 	import { formatCurrency } from '$lib/utils';
 
@@ -11,7 +12,7 @@
 
 <Head title={$LL.ASSETS()} />
 
-<h1>{$LL.ASSETS()}</h1>
+<H1>{$LL.ASSETS()}</H1>
 
 {#if !assetsStore.assets.length}
 	<p>{$LL.NO_ASSETS_FOUND()}</p>

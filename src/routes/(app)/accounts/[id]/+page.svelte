@@ -4,6 +4,7 @@
 
 	import { goto } from '$app/navigation';
 	import { getAccountsContext } from '$lib/accounts.svelte';
+	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
 	import { createAccountBalanceStatements } from '$lib/pocketbase';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
@@ -56,7 +57,7 @@
 <Head title={accountDraft?.name ? [accountDraft.name, $LL.ACCOUNT()] : 'Loading'} />
 
 {#if accountDraft}
-	<h1>{accountDraft.name}</h1>
+	<H1>{accountDraft.name}</H1>
 
 	<Form bind:accountDraft {onSubmit} />
 {/if}
