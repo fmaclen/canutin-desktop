@@ -16,6 +16,7 @@
 	import type { TransactionsResponse } from '$lib/pocketbase-types';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import { dateInUTC, formatCurrency, proportionBetween } from '$lib/utils';
+	import KeyValue from '$lib/components/KeyValue.svelte';
 
 	interface PeriodCashflow {
 		id: number;
@@ -279,34 +280,34 @@
 
 	<div class="grid grid-cols-3 gap-2">
 		<Plate>
-			{$LL.INCOME_PER_MONTH()}
-			<p>
-				{formatCurrency(
+			<KeyValue
+				key={$LL.INCOME_PER_MONTH()}
+				value={formatCurrency(
 					trailingCashflowPeriod === 'last6Months'
 						? trailingCashflow.last6Months.incomeAverage
 						: trailingCashflow.last12Months.incomeAverage
 				)}
-			</p>
+			/>
 		</Plate>
 		<Plate>
-			{$LL.EXPENSES_PER_MONTH()}
-			<p>
-				{formatCurrency(
+			<KeyValue
+				key={$LL.EXPENSES_PER_MONTH()}
+				value={formatCurrency(
 					trailingCashflowPeriod === 'last6Months'
 						? trailingCashflow.last6Months.expensesAverage
 						: trailingCashflow.last12Months.expensesAverage
 				)}
-			</p>
+			/>
 		</Plate>
 		<Plate>
-			{$LL.BALANCE_PER_MONTH()}
-			<p>
-				{formatCurrency(
+			<KeyValue
+				key={$LL.BALANCE_PER_MONTH()}
+				value={formatCurrency(
 					trailingCashflowPeriod === 'last6Months'
 						? trailingCashflow.last6Months.balanceAverage
 						: trailingCashflow.last12Months.balanceAverage
 				)}
-			</p>
+			/>
 		</Plate>
 	</div>
 </Section>

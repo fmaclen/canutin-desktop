@@ -5,6 +5,7 @@
 	import { getAssetsContext } from '$lib/assets.svelte';
 	import { BalanceGroup, calculateTotalBalance } from '$lib/balanceGroups';
 	import H3 from '$lib/components/H3.svelte';
+	import KeyValue from '$lib/components/KeyValue.svelte';
 	import Plate from '$lib/components/Plate.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import { formatCurrency } from '$lib/utils';
@@ -39,29 +40,25 @@
 
 		<Plate variant="cash">
 			<div class="summary__cash flex flex-row justify-between">
-				<p class="text-sm font-bold">{$LL.CASH()}</p>
-				<p class="font-mono">{formatCurrency(balanceGroups.cash)}</p>
+				<KeyValue key={$LL.CASH()} value={formatCurrency(balanceGroups.cash)} />
 			</div>
 		</Plate>
 
 		<Plate variant="investments">
 			<div class="summary__investments flex flex-row justify-between">
-				<p class="text-sm font-bold">{$LL.INVESTMENTS()}</p>
-				<p class="font-mono">{formatCurrency(balanceGroups.investments)}</p>
+				<KeyValue key={$LL.INVESTMENTS()} value={formatCurrency(balanceGroups.investments)} />
 			</div>
 		</Plate>
 
 		<Plate variant="debt">
 			<div class="summary__debt text-chromeo-50 flex flex-row justify-between">
-				<p class="text-sm font-bold">{$LL.DEBT()}</p>
-				<p class="font-mono">{formatCurrency(balanceGroups.debt)}</p>
+				<KeyValue key={$LL.DEBT()} value={formatCurrency(balanceGroups.debt)} />
 			</div>
 		</Plate>
 
 		<Plate variant="otherAssets">
 			<div class="summary__other-assets flex flex-row justify-between">
-				<p class="text-sm font-bold">{$LL.OTHER_ASSETS()}</p>
-				<p class="font-mono">{formatCurrency(balanceGroups.otherAssets)}</p>
+				<KeyValue key={$LL.OTHER_ASSETS()} value={formatCurrency(balanceGroups.otherAssets)} />
 			</div>
 		</Plate>
 	</div>
