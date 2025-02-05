@@ -83,6 +83,8 @@
 			</nav>
 		</aside>
 
-		{@render children()}
+		<main class="h-full w-full overflow-y-auto">
+			{@render children()}
+		</main>
 	{/if}
 </div>

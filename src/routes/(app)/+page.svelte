@@ -10,7 +10,16 @@
 
 <Head title={$LL.THE_BIG_PICTURE()} />
 
-	<H1>{$LL.THE_BIG_PICTURE()}</H1>
+<header class="bg-chromeo-100 flex flex-row justify-between">
+	<div class="container mx-auto py-6 px-24">
+		<H1>{$LL.THE_BIG_PICTURE()}</H1>
+	</div>
+</header>
 
-<Summary />
-<Cashflows />
+<section class="container mx-auto my-12 px-24">
+	<Summary />
+</section>
+
+<section class="container mx-auto my-12 px-24">
+	<Cashflows />
+</section>
