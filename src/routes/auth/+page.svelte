@@ -22,7 +22,7 @@
 
 <div class="layout flex h-screen flex-col justify-center">
 	<form class="mx-auto flex w-96 flex-col items-start gap-4 rounded-md bg-chromeo-50 px-8 py-12 shadow">
-		<h1 class="text-2xl font-bold tracking-tight">{$LL.SIGN_IN()}</h1>
+		<h1 class="text-2xl font-bold tracking-tight text-chromeo-950">{$LL.SIGN_IN()}</h1>
 
 		{#if pbClient.authMessage}
 			<p class="auth-message text-red-500">{pbClient.authMessage}</p>

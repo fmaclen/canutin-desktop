@@ -23,8 +23,8 @@
 </script>
 
 <div class={[
-	'flex w-full items-center rounded bg-chromeo-200 outline-2 outline-chromeo-800',
-	'focus-within:bg-transparent focus-within:outline'
+	'flex w-full items-center rounded bg-chromeo-200 outline-1 outline-chromeo-500',
+	'focus-within:bg-transparent focus-within:outline-chromeo-900 focus-within:outline-2'
 ]}>
 	<input
 		bind:value

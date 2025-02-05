@@ -10,7 +10,7 @@
 </script>
 
 {#if children}
-	<label for={id} class="text-xs font-medium tracking-wide opacity-60">
+	<label for={id} class="text-xs font-medium">
 		{@render children()}
 	</label>
 {/if}

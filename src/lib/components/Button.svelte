@@ -6,22 +6,22 @@
 		children: Snippet;
 		onclick: () => void;
 		disabled?: boolean;
-		variant?: 'icon' | 'primary' | 'mobile';
+		variant?: 'icon' | 'primary' | 'mobile' | 'default';
 	}
 
-	let { title, children, onclick, disabled, variant }: Props = $props();
+	let { title, children, onclick, disabled, variant = 'default' }: Props = $props();
 
 	// Define base classes that are always applied
 	const baseClasses = [
 		'flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-semibold tracking-tight',
 		'disabled:cursor-not-allowed disabled:opacity-50',
 		'active:scale-90',
-		'transition-all duration-100',
-		'hover:border-chromeo-300 hover:bg-chromeo-300'
+		'transition-all duration-100'
 	];
 
 	// Define variant-specific classes
 	const variantClasses = {
+		default: 'hover:border-chromeo-300 hover:bg-chromeo-300',
 		icon: 'p-0',
 		primary: 'border-accent bg-accent text-white hover:border-accent hover:bg-accent/80',
 		mobile: 'md:hidden'
@@ -29,7 +29,7 @@
 </script>
 
 <button
-	class={baseClasses.concat(variant ? variantClasses[variant] : [])}
+	class={baseClasses.concat(variantClasses[variant])}
 	type="button"
 	{title}
 	{onclick}

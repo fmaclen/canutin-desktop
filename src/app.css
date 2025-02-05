@@ -2,40 +2,20 @@
 @import "tailwindcss/theme";
 
 @theme {
-	--color-chromeo-50: 0 0% 99%;
-	--color-chromeo-100: 0 0% 97%;
-	--color-chromeo-200: 0 0% 91%;
-	--color-chromeo-300: 0 0% 81%;
-	--color-chromeo-400: 0 0% 67%;
-	--color-chromeo-500: 0 0% 50%;
-	--color-chromeo-600: 0 0% 25%;
-	--color-chromeo-700: 0 0% 24%;
-	--color-chromeo-800: 0 0% 21%;
-	--color-chromeo-900: 0 0% 16%;
-	--color-chromeo-950: 0 0% 1%;
+	--color-chromeo-50: hsl(26, 6%, 99%);
+	--color-chromeo-100: hsl(26, 6%, 98%);
+	--color-chromeo-200: hsl(26, 6%, 96%);
+	--color-chromeo-300: hsl(26, 6%, 92%);
+	--color-chromeo-400: hsl(26, 6%, 86%);
+	--color-chromeo-500: hsl(26, 6%, 79%);
+	--color-chromeo-600: hsl(26, 6%, 71%);
+	--color-chromeo-700: hsl(26, 6%, 60%);
+	--color-chromeo-800: hsl(26, 6%, 48%);
+	--color-chromeo-900: hsl(26, 6%, 35%);
+	--color-chromeo-950: hsl(26, 6%, 20%);
 
-	--color-border: 0 0% 87%;
-
-	--color-accent-50: 211.85deg 97.24% 42.55%;
+	--color-accent: hsl(211.85deg 97.24% 42.55%);
 }
-
-/* html.dark {
-	--color-chromeo-50: 0 0% 25%;
-	--color-chromeo-100: 0 0% 24%;
-	--color-chromeo-200: 0 0% 21%;
-	--color-chromeo-300: 0 0% 16%;
-	--color-chromeo-400: 0 0% 10%;
-	--color-chromeo-500: 0 0% 1%;
-	--color-chromeo-600: 0 0% 50%;
-	--color-chromeo-700: 0 0% 67%;
-	--color-chromeo-800: 0 0% 81%;
-	--color-chromeo-900: 0 0% 91%;
-	--color-chromeo-950: 0 0% 99%;
-
-	--color-border: 0 0% 33%;
-
-	--color-accent: 211.85deg 97.24% 42.55%;
-} */
 
 body {
 	@apply bg-chromeo-200 text-chromeo-800;

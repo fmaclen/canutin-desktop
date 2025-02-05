@@ -37,7 +37,7 @@
 </script>
 
 {#snippet sidebar__a(href: string, label: string)}
-	<a class="sidebar__a text-sm font-semibold" {href}>{label}</a>
+	<a class="sidebar__a hover:text-chromeo-950 text-sm font-semibold" {href}>{label}</a>
 {/snippet}
 
 <div class="layout flex h-screen">
@@ -58,9 +58,9 @@
 			<nav class="sidebar__nav mt-auto flex flex-col gap-4 px-8 py-4">
 				{@render sidebar__a('/data', $LL.ADD_OR_UPDATE_DATA())}
 				<div class="sidebar__user flex flex-row gap-2">
-					<button 
-						class="sidebar__button" 
-						onclick={handleSignOut} 
+					<button
+						class="sidebar__button hover:text-chromeo-950 cursor-pointer"
+						onclick={handleSignOut}
 						title={$LL.SIGN_OUT()}
 						aria-label={$LL.SIGN_OUT()}
 					>
@@ -76,7 +76,9 @@
 							/>
 						</svg>
 					</button>
-					<span class="sidebar__email text-sm">{currentUser.email}</span>
+					<span class="sidebar__email overflow-hidden text-sm text-ellipsis"
+						>{currentUser.email}</span
+					>
 				</div>
 			</nav>
 		</aside>
