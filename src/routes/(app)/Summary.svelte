@@ -4,8 +4,10 @@
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import { getAssetsContext } from '$lib/assets.svelte';
 	import { BalanceGroup, calculateTotalBalance } from '$lib/balanceGroups';
-	import { formatCurrency } from '$lib/utils';
 	import H3 from '$lib/components/H3.svelte';
+	import Section from '$lib/components/Section.svelte';
+	import { formatCurrency } from '$lib/utils';
+
 	const accountsStore = getAccountsContext();
 	const assetsStore = getAssetsContext();
 
@@ -21,29 +23,33 @@
 	});
 </script>
 
-<H3>{$LL.SUMMARY()}</H3>
+<Section>
+	<H3>{$LL.SUMMARY()}</H3>
 
-<div class="card">
-	{$LL.NET_WORTH()}
-	<p>{formatCurrency(balanceGroups.netWorth)}</p>
-</div>
+	<div class="summary">
+		<div class="card">
+			{$LL.NET_WORTH()}
+			<p>{formatCurrency(balanceGroups.netWorth)}</p>
+		</div>
 
-<div class="card">
-	{$LL.CASH()}
-	<p>{formatCurrency(balanceGroups.cash)}</p>
-</div>
+		<div class="card">
+			{$LL.CASH()}
+			<p>{formatCurrency(balanceGroups.cash)}</p>
+		</div>
 
-<div class="card">
-	{$LL.DEBT()}
-	<p>{formatCurrency(balanceGroups.debt)}</p>
-</div>
+		<div class="card">
+			{$LL.DEBT()}
+			<p>{formatCurrency(balanceGroups.debt)}</p>
+		</div>
 
-<div class="card">
-	{$LL.INVESTMENTS()}
-	<p>{formatCurrency(balanceGroups.investments)}</p>
-</div>
+		<div class="card">
+			{$LL.INVESTMENTS()}
+			<p>{formatCurrency(balanceGroups.investments)}</p>
+		</div>
 
-<div class="card">
-	{$LL.OTHER_ASSETS()}
-	<p>{formatCurrency(balanceGroups.otherAssets)}</p>
-</div>
+		<div class="card">
+			{$LL.OTHER_ASSETS()}
+			<p>{formatCurrency(balanceGroups.otherAssets)}</p>
+		</div>
+	</div>
+</Section>

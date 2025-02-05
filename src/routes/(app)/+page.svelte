@@ -16,10 +16,5 @@
 	</div>
 </header>
 
-<section class="container mx-auto my-12 px-24">
-	<Summary />
-</section>
-
-<section class="container mx-auto my-12 px-24">
-	<Cashflows />
-</section>
+<Summary />
+<Cashflows />
