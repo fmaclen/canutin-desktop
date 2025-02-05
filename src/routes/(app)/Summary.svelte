@@ -5,7 +5,7 @@
 	import { getAssetsContext } from '$lib/assets.svelte';
 	import { BalanceGroup, calculateTotalBalance } from '$lib/balanceGroups';
 	import { formatCurrency } from '$lib/utils';
-
+	import H3 from '$lib/components/H3.svelte';
 	const accountsStore = getAccountsContext();
 	const assetsStore = getAssetsContext();
 
@@ -21,7 +21,7 @@
 	});
 </script>
 
-<h3>{$LL.SUMMARY()}</h3>
+<H3>{$LL.SUMMARY()}</H3>
 
 <div class="card">
 	{$LL.NET_WORTH()}

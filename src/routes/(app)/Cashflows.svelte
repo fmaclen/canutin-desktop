@@ -13,6 +13,7 @@
 	import type { TransactionsResponse } from '$lib/pocketbase-types';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import { dateInUTC, formatCurrency, proportionBetween } from '$lib/utils';
+	import H3 from '$lib/components/H3.svelte';
 
 	interface PeriodCashflow {
 		id: number;
@@ -223,7 +224,7 @@
 	});
 </script>
 
-<h3>{$LL.CASHFLOW()}</h3>
+<H3>{$LL.CASHFLOW()}</H3>
 
 <table>
 	<thead>
@@ -256,7 +257,7 @@
 	</tbody>
 </table>
 
-<h3>{$LL.TRAILING_CASHFLOW()}</h3>
+<H3>{$LL.TRAILING_CASHFLOW()}</H3>
 
 <nav>
 	<button onclick={() => (trailingCashflowPeriod = 'last6Months')}>

@@ -12,6 +12,7 @@
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { TransactionDetails } from '$lib/seed/data/transactions';
 	import { formatCurrency } from '$lib/utils';
+	import H3 from '$lib/components/H3.svelte';
 
 	interface PreviewTransaction {
 		date?: Date;
@@ -226,10 +227,10 @@
 	</Field.Select>
 </Field>
 
-<h2>{$LL.COLUMNS_PREVIEW()}</h2>
+<H3>{$LL.COLUMNS_PREVIEW()}</H3>
 
-<h3>{$LL.TRANSACTIONS_FOUND()}: {previewTransactions.length}</h3>
-<h3>{$LL.TRANSACTIONS_IMPORTABLE()}: {importTransactions.length}</h3>
+<h2>{$LL.TRANSACTIONS_FOUND()}: {previewTransactions.length}</h2>
+<h2>{$LL.TRANSACTIONS_IMPORTABLE()}: {importTransactions.length}</h2>
 
 <table>
 	<thead>
