@@ -9,7 +9,7 @@
 	let { children, variant = 'default' }: Props = $props();
 
 	// Define base classes that are always applied
-	const baseClasses = ['plate shadow p-4 rounded-md'];
+	const baseClasses = ['plate shadow rounded-md'];
 
 	// Define variant-specific classes
 	const variantClasses = {

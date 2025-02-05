@@ -32,8 +32,8 @@
 		<div class="col-span-1 row-span-2">
 			<Plate variant="netWorth">
 				<div class="summary__net-worth flex h-full flex-col justify-between">
-					<p class="text-sm font-bold">{$LL.NET_WORTH()}</p>
-					<p class="font-mono text-3xl font-light">{formatCurrency(balanceGroups.netWorth)}</p>
+					<p class="text-sm font-bold p-4">{$LL.NET_WORTH()}</p>
+					<p class="font-mono text-3xl font-light px-4 pb-4">{formatCurrency(balanceGroups.netWorth)}</p>
 				</div>
 			</Plate>
 		</div>

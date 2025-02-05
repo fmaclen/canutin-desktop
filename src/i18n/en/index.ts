@@ -12,6 +12,7 @@ const en = {
 	AUTHENTICATION_FAILED: 'Authentication failed. Please try again.',
 	AUTO_CALCULATED: 'Auto-calculated',
 	BALANCE: 'Balance',
+	BALANCES: 'Balances',
 	BALANCE_PER_MONTH: 'Balance per month',
 	BALANCE_SHEET: 'Balance sheet',
 	BALANCE_TYPE: 'Balance type',

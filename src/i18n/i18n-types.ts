@@ -58,6 +58,10 @@ type RootTranslation = {
 	 */
 	BALANCE: string
 	/**
+	 * B​a​l​a​n​c​e​s
+	 */
+	BALANCES: string
+	/**
 	 * B​a​l​a​n​c​e​ ​p​e​r​ ​m​o​n​t​h
 	 */
 	BALANCE_PER_MONTH: string
@@ -356,6 +360,10 @@ export type TranslationFunctions = {
 	 * Balance
 	 */
 	BALANCE: () => LocalizedString
+	/**
+	 * Balances
+	 */
+	BALANCES: () => LocalizedString
 	/**
 	 * Balance per month
 	 */

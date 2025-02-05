@@ -5,8 +5,12 @@
 	import { getAssetsContext } from '$lib/assets.svelte';
 	import { BalanceGroup, calculateTotalBalance } from '$lib/balanceGroups';
 	import H1 from '$lib/components/H1.svelte';
+	import H3 from '$lib/components/H3.svelte';
 	import Head from '$lib/components/Head.svelte';
+	import KeyValue from '$lib/components/KeyValue.svelte';
 	import MainHeader from '$lib/components/MainHeader.svelte';
+	import Plate from '$lib/components/Plate.svelte';
+	import Section from '$lib/components/Section.svelte';
 	import { formatCurrency } from '$lib/utils';
 
 	const accountsStore = getAccountsContext();
@@ -40,48 +44,55 @@
 	<H1>{$LL.BALANCE_SHEET()}</H1>
 </MainHeader>
 
-<ul>
-	{#each balanceGroups as balanceGroup, index}
-		<li>
-			<div class="card">
-				<strong>
-					{#if index === BalanceGroup.CASH}
-						{$LL.CASH()}
-					{:else if index === BalanceGroup.DEBT}
-						{$LL.DEBT()}
-					{:else if index === BalanceGroup.INVESTMENTS}
-						{$LL.INVESTMENTS()}
-					{:else if index === BalanceGroup.OTHER_ASSETS}
-						{$LL.OTHER_ASSETS()}
-					{/if}
-				</strong>
-				<span>
-					{formatCurrency(balanceGroup.balance)}
-				</span>
-			</div>
+<Section>
+	<H3>{$LL.BALANCES()}</H3>
 
-			<ul class="card-group">
-				{#each Object.entries(balanceGroup.groups) as [name, accountsOrAssets]}
-					{#if accountsOrAssets}
-						<li>
-							<strong>{name}</strong>
-							<span>
-								{formatCurrency(calculateTotalBalance(accountsOrAssets))}
-							</span>
-							<ul>
-								{#each accountsOrAssets as accountOrAsset}
-									<li>
-										{accountOrAsset.name}
-										<span>
-											{formatCurrency(accountOrAsset.balance ?? 0)}
-										</span>
-									</li>
-								{/each}
-							</ul>
-						</li>
-					{/if}
-				{/each}
-			</ul>
-		</li>
-	{/each}
-</ul>
+	<ul class="balance-sheet grid grid-cols-4 gap-6">
+		{#each balanceGroups as balanceGroup, index}
+			<li class="balance-sheet__item flex flex-col gap-3">
+				{#if index === BalanceGroup.CASH}
+					<Plate variant="cash">
+						<KeyValue key={$LL.CASH()} value={formatCurrency(balanceGroup.balance)} />
+					</Plate>
+				{:else if index === BalanceGroup.DEBT}
+					<Plate variant="debt">
+						<KeyValue key={$LL.DEBT()} value={formatCurrency(balanceGroup.balance)} />
+					</Plate>
+				{:else if index === BalanceGroup.INVESTMENTS}
+					<Plate variant="investments">
+						<KeyValue key={$LL.INVESTMENTS()} value={formatCurrency(balanceGroup.balance)} />
+					</Plate>
+				{:else if index === BalanceGroup.OTHER_ASSETS}
+					<Plate variant="otherAssets">
+						<KeyValue key={$LL.OTHER_ASSETS()} value={formatCurrency(balanceGroup.balance)} />
+					</Plate>
+				{/if}
+
+				<ul class="card-group">
+					{#each Object.entries(balanceGroup.groups) as [name, accountsOrAssets]}
+						{#if accountsOrAssets}
+							<li>
+								<Plate>
+									<KeyValue
+										key={name}
+										value={formatCurrency(calculateTotalBalance(accountsOrAssets))}
+									/>
+									<ul>
+										{#each accountsOrAssets as accountOrAsset}
+											<li>
+												{accountOrAsset.name}
+												<span>
+													{formatCurrency(accountOrAsset.balance ?? 0)}
+												</span>
+											</li>
+										{/each}
+									</ul>
+								</Plate>
+							</li>
+						{/if}
+					{/each}
+				</ul>
+			</li>
+		{/each}
+	</ul>
+</Section>
