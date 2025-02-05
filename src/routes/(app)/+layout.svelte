@@ -42,7 +42,9 @@
 
 <div class="layout flex h-screen">
 	{#if currentUser}
-		<aside class="sidebar bg-chromeo-100 flex h-full max-w-64 flex-col py-4">
+		<aside
+			class="sidebar bg-chromeo-100 border-chromeo-300 flex h-full max-w-64 flex-col border-r py-4"
+		>
 			<nav class="sidebar__nav flex flex-col gap-4 px-8 py-4">
 				{@render sidebar__a('/', $LL.THE_BIG_PICTURE())}
 				{@render sidebar__a('/balance-sheet', $LL.BALANCE_SHEET())}

@@ -5,6 +5,7 @@
 	import { getAssetsContext } from '$lib/assets.svelte';
 	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
+	import MainHeader from '$lib/components/MainHeader.svelte';
 	import { formatCurrency } from '$lib/utils';
 
 	const assetsStore = getAssetsContext();
@@ -12,7 +13,9 @@
 
 <Head title={$LL.ASSETS()} />
 
-<H1>{$LL.ASSETS()}</H1>
+<MainHeader>
+	<H1>{$LL.ASSETS()}</H1>
+</MainHeader>
 
 {#if !assetsStore.assets.length}
 	<p>{$LL.NO_ASSETS_FOUND()}</p>

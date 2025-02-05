@@ -6,6 +6,7 @@
 	import { BalanceGroup, calculateTotalBalance } from '$lib/balanceGroups';
 	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
+	import MainHeader from '$lib/components/MainHeader.svelte';
 	import { formatCurrency } from '$lib/utils';
 
 	const accountsStore = getAccountsContext();
@@ -35,7 +36,9 @@
 
 <Head title={$LL.BALANCE_SHEET()} />
 
-<H1>{$LL.BALANCE_SHEET()}</H1>
+<MainHeader>
+	<H1>{$LL.BALANCE_SHEET()}</H1>
+</MainHeader>
 
 <ul>
 	{#each balanceGroups as balanceGroup, index}

@@ -3,6 +3,7 @@
 
 	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
+	import MainHeader from '$lib/components/MainHeader.svelte';
 
 	import Cashflows from './Cashflows.svelte';
 	import Summary from './Summary.svelte';
@@ -10,11 +11,9 @@
 
 <Head title={$LL.THE_BIG_PICTURE()} />
 
-<header class="bg-chromeo-100 flex flex-row justify-between">
-	<div class="container mx-auto px-24 py-6">
-		<H1>{$LL.THE_BIG_PICTURE()}</H1>
-	</div>
-</header>
+<MainHeader>
+	<H1>{$LL.THE_BIG_PICTURE()}</H1>
+</MainHeader>
 
 <Summary />
 <Cashflows />

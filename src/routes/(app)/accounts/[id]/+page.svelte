@@ -12,7 +12,7 @@
 
 	import Form from '../Form.svelte';
 	import type { PageData } from './$types';
-
+	import MainHeader from '$lib/components/MainHeader.svelte';
 	const pbClient = getPbClientContext();
 	const accountsStore = getAccountsContext();
 
@@ -57,7 +57,9 @@
 <Head title={accountDraft?.name ? [accountDraft.name, $LL.ACCOUNT()] : 'Loading'} />
 
 {#if accountDraft}
-	<H1>{accountDraft.name}</H1>
+	<MainHeader>
+		<H1>{accountDraft.name}</H1>
+	</MainHeader>
 
 	<Form bind:accountDraft {onSubmit} />
 {/if}

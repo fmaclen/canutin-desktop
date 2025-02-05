@@ -10,7 +10,7 @@
 	import type { AccountDraft } from '$lib/seed/data/accounts';
 
 	import Form from '../Form.svelte';
-
+	import MainHeader from '$lib/components/MainHeader.svelte';
 	const pbClient = getPbClientContext();
 
 	let accountDraft: AccountDraft = $state({
@@ -37,6 +37,8 @@
 
 <Head title={$LL.ADD_ACCOUNT()} />
 
-<H1>{$LL.ADD_ACCOUNT()}</H1>
+<MainHeader>
+	<H1>{$LL.ADD_ACCOUNT()}</H1>
+</MainHeader>
 
 <Form bind:accountDraft {onSubmit} />

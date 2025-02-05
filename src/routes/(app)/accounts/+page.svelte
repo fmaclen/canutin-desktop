@@ -5,6 +5,7 @@
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
+	import MainHeader from '$lib/components/MainHeader.svelte';
 	import { formatCurrency } from '$lib/utils';
 
 	const accountsStore = getAccountsContext();
@@ -12,7 +13,9 @@
 
 <Head title={$LL.ACCOUNTS()} />
 
-<H1>{$LL.ACCOUNTS()}</H1>
+<MainHeader>
+	<H1>{$LL.ACCOUNTS()}</H1>
+</MainHeader>
 
 <a href="/accounts/new">{$LL.ADD_ACCOUNT()}</a>
 

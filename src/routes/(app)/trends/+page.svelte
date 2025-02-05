@@ -3,8 +3,11 @@
 
 	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
+	import MainHeader from '$lib/components/MainHeader.svelte';
 </script>
 
 <Head title={$LL.TRENDS()} />
 
-<H1>{$LL.TRENDS()}</H1>
+<MainHeader>
+	<H1>{$LL.TRENDS()}</H1>
+</MainHeader>

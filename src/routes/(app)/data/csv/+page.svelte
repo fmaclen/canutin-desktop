@@ -13,6 +13,7 @@
 	import type { TransactionDetails } from '$lib/seed/data/transactions';
 	import { formatCurrency } from '$lib/utils';
 	import H3 from '$lib/components/H3.svelte';
+	import MainHeader from '$lib/components/MainHeader.svelte';
 
 	interface PreviewTransaction {
 		date?: Date;
@@ -141,7 +142,9 @@
 
 <Head title={$LL.IMPORT_TRANSACTIONS_FROM_CSV()} />
 
-<H1>{$LL.IMPORT_TRANSACTIONS_FROM_CSV()}</H1>
+<MainHeader>
+	<H1>{$LL.IMPORT_TRANSACTIONS_FROM_CSV()}</H1>
+</MainHeader>
 
 <Field>
 	<Field.Label id="file">{$LL.FILE()}</Field.Label>
