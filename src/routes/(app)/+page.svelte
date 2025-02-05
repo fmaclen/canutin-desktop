@@ -11,7 +11,7 @@
 <Head title={$LL.THE_BIG_PICTURE()} />
 
 <header class="bg-chromeo-100 flex flex-row justify-between">
-	<div class="container mx-auto py-6 px-24">
+	<div class="container mx-auto px-24 py-6">
 		<H1>{$LL.THE_BIG_PICTURE()}</H1>
 	</div>
 </header>

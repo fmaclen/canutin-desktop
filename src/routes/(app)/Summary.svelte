@@ -5,6 +5,7 @@
 	import { getAssetsContext } from '$lib/assets.svelte';
 	import { BalanceGroup, calculateTotalBalance } from '$lib/balanceGroups';
 	import H3 from '$lib/components/H3.svelte';
+	import Plate from '$lib/components/Plate.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import { formatCurrency } from '$lib/utils';
 
@@ -26,30 +27,42 @@
 <Section>
 	<H3>{$LL.SUMMARY()}</H3>
 
-	<div class="summary">
-		<div class="card">
-			{$LL.NET_WORTH()}
-			<p>{formatCurrency(balanceGroups.netWorth)}</p>
+	<div class="summary grid grid-cols-3 gap-2">
+		<div class="col-span-1 row-span-2">
+			<Plate variant="netWorth">
+				<div class="summary__net-worth flex h-full flex-col justify-between">
+					<p class="text-sm font-bold">{$LL.NET_WORTH()}</p>
+					<p class="font-mono text-3xl font-light">{formatCurrency(balanceGroups.netWorth)}</p>
+				</div>
+			</Plate>
 		</div>
 
-		<div class="card">
-			{$LL.CASH()}
-			<p>{formatCurrency(balanceGroups.cash)}</p>
-		</div>
+		<Plate variant="cash">
+			<div class="summary__cash flex flex-row justify-between">
+				<p class="text-sm font-bold">{$LL.CASH()}</p>
+				<p class="font-mono">{formatCurrency(balanceGroups.cash)}</p>
+			</div>
+		</Plate>
 
-		<div class="card">
-			{$LL.DEBT()}
-			<p>{formatCurrency(balanceGroups.debt)}</p>
-		</div>
+		<Plate variant="investments">
+			<div class="summary__investments flex flex-row justify-between">
+				<p class="text-sm font-bold">{$LL.INVESTMENTS()}</p>
+				<p class="font-mono">{formatCurrency(balanceGroups.investments)}</p>
+			</div>
+		</Plate>
 
-		<div class="card">
-			{$LL.INVESTMENTS()}
-			<p>{formatCurrency(balanceGroups.investments)}</p>
-		</div>
+		<Plate variant="debt">
+			<div class="summary__debt text-chromeo-50 flex flex-row justify-between">
+				<p class="text-sm font-bold">{$LL.DEBT()}</p>
+				<p class="font-mono">{formatCurrency(balanceGroups.debt)}</p>
+			</div>
+		</Plate>
 
-		<div class="card">
-			{$LL.OTHER_ASSETS()}
-			<p>{formatCurrency(balanceGroups.otherAssets)}</p>
-		</div>
+		<Plate variant="otherAssets">
+			<div class="summary__other-assets flex flex-row justify-between">
+				<p class="text-sm font-bold">{$LL.OTHER_ASSETS()}</p>
+				<p class="font-mono">{formatCurrency(balanceGroups.otherAssets)}</p>
+			</div>
+		</Plate>
 	</div>
 </Section>

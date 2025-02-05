@@ -11,6 +11,7 @@
 	} from 'date-fns';
 
 	import H3 from '$lib/components/H3.svelte';
+	import Plate from '$lib/components/Plate.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import type { TransactionsResponse } from '$lib/pocketbase-types';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
@@ -228,78 +229,84 @@
 <Section>
 	<H3>{$LL.CASHFLOW()}</H3>
 
-	<table>
-		<thead>
-			<tr>
-				<th>Month</th>
-				<th>Income</th>
-				<th>Expenses</th>
-				<th>Balance</th>
-				<th>Height</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each cashflow.periods as period}
-				{@const isJanuary = period.month.getMonth() === 0}
-				<tr
-					style={`color: ${period.isHighestBalance ? 'green' : period.isLowestBalance ? 'red' : ''}`}
-				>
-					<td>
-						<time>
-							{format(period.month, 'MMM')}
-							{isJanuary ? `'${format(period.month, 'yy')}` : ''}
-						</time>
-					</td>
-					<td>{formatCurrency(period.income)}</td>
-					<td>{formatCurrency(period.expenses)}</td>
-					<td>{formatCurrency(period.balance)}</td>
-					<td>{period.chartRatio}%</td>
+	<Plate>
+		<table>
+			<thead>
+				<tr>
+					<th>Month</th>
+					<th>Income</th>
+					<th>Expenses</th>
+					<th>Balance</th>
+					<th>Height</th>
 				</tr>
-			{/each}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				{#each cashflow.periods as period}
+					{@const isJanuary = period.month.getMonth() === 0}
+					<tr
+						style={`color: ${period.isHighestBalance ? 'green' : period.isLowestBalance ? 'red' : ''}`}
+					>
+						<td>
+							<time>
+								{format(period.month, 'MMM')}
+								{isJanuary ? `'${format(period.month, 'yy')}` : ''}
+							</time>
+						</td>
+						<td>{formatCurrency(period.income)}</td>
+						<td>{formatCurrency(period.expenses)}</td>
+						<td>{formatCurrency(period.balance)}</td>
+						<td>{period.chartRatio}%</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</Plate>
 </Section>
 
 <Section>
-	<H3>{$LL.TRAILING_CASHFLOW()}</H3>
+	<header class="section-header flex flex-row justify-between">
+		<H3>{$LL.TRAILING_CASHFLOW()}</H3>
 
-	<nav>
-		<button onclick={() => (trailingCashflowPeriod = 'last6Months')}>
-			{$LL.PREVIOUS_6_MONTHS()}
-		</button>
-		<button onclick={() => (trailingCashflowPeriod = 'last12Months')}>
-			{$LL.PREVIOUS_12_MONTHS()}
-		</button>
-	</nav>
+		<nav>
+			<button onclick={() => (trailingCashflowPeriod = 'last6Months')}>
+				{$LL.PREVIOUS_6_MONTHS()}
+			</button>
+			<button onclick={() => (trailingCashflowPeriod = 'last12Months')}>
+				{$LL.PREVIOUS_12_MONTHS()}
+			</button>
+		</nav>
+	</header>
 
-	<div class="card">
-		{$LL.INCOME_PER_MONTH()}
-		<p>
-			{formatCurrency(
-				trailingCashflowPeriod === 'last6Months'
-					? trailingCashflow.last6Months.incomeAverage
-					: trailingCashflow.last12Months.incomeAverage
-			)}
-		</p>
-	</div>
-	<div class="card">
-		{$LL.EXPENSES_PER_MONTH()}
-		<p>
-			{formatCurrency(
-				trailingCashflowPeriod === 'last6Months'
-					? trailingCashflow.last6Months.expensesAverage
-					: trailingCashflow.last12Months.expensesAverage
-			)}
-		</p>
-	</div>
-	<div class="card">
-		{$LL.BALANCE_PER_MONTH()}
-		<p>
-			{formatCurrency(
-				trailingCashflowPeriod === 'last6Months'
-					? trailingCashflow.last6Months.balanceAverage
-					: trailingCashflow.last12Months.balanceAverage
-			)}
-		</p>
+	<div class="grid grid-cols-3 gap-2">
+		<Plate>
+			{$LL.INCOME_PER_MONTH()}
+			<p>
+				{formatCurrency(
+					trailingCashflowPeriod === 'last6Months'
+						? trailingCashflow.last6Months.incomeAverage
+						: trailingCashflow.last12Months.incomeAverage
+				)}
+			</p>
+		</Plate>
+		<Plate>
+			{$LL.EXPENSES_PER_MONTH()}
+			<p>
+				{formatCurrency(
+					trailingCashflowPeriod === 'last6Months'
+						? trailingCashflow.last6Months.expensesAverage
+						: trailingCashflow.last12Months.expensesAverage
+				)}
+			</p>
+		</Plate>
+		<Plate>
+			{$LL.BALANCE_PER_MONTH()}
+			<p>
+				{formatCurrency(
+					trailingCashflowPeriod === 'last6Months'
+						? trailingCashflow.last6Months.balanceAverage
+						: trailingCashflow.last12Months.balanceAverage
+				)}
+			</p>
+		</Plate>
 	</div>
 </Section>
