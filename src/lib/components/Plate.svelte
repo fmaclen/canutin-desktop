@@ -13,11 +13,11 @@
 
 	// Define variant-specific classes
 	const variantClasses = {
-		netWorth: 'bg-chromeo-950 text-chromeo-50 h-full',
-		cash: 'bg-emerald-600 text-chromeo-50',
-		investments: 'bg-yellow-600 text-chromeo-50',
-		debt: 'bg-red-500 text-chromeo-50',
-		otherAssets: 'bg-indigo-600 text-chromeo-50',
+		netWorth: 'bg-netWorth text-chromeo-50 h-full',
+		cash: 'bg-cash text-chromeo-50',
+		investments: 'bg-investments text-chromeo-50',
+		debt: 'bg-debt text-chromeo-50',
+		otherAssets: 'bg-otherAssets text-chromeo-50',
 		default: 'bg-chromeo-100'
 	};
 </script>

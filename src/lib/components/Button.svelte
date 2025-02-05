@@ -23,7 +23,7 @@
 	const variantClasses = {
 		default: 'hover:border-chromeo-300 hover:bg-chromeo-300',
 		icon: 'p-0',
-		primary: 'border-accent bg-accent text-white hover:border-accent hover:bg-accent/80',
+		primary: 'border-brand bg-brand text-white hover:border-brand hover:bg-brand/80',
 		mobile: 'md:hidden'
 	};
 </script>

@@ -14,7 +14,16 @@
 	--color-chromeo-900: hsl(26, 6%, 35%);
 	--color-chromeo-950: hsl(26, 6%, 20%);
 
-	--color-accent: hsl(211.85deg 97.24% 42.55%);
+	--color-brand: hsl(211.85deg 97.24% 42.55%);
+
+	--color-netWorth: var(--color-chromeo-950);
+	--color-cash: hsl(160.86deg 100% 31.96%);
+	--color-debt: hsl(357.58deg 75.63% 61.37%);
+	--color-investments: hsl(39.69deg 29.41% 56.67%);
+	--color-otherAssets: hsl(238deg 35.43% 49.8%);
+
+	--font-sans: 'Inter', sans-serif;
+	--font-mono: 'JetBrains Mono', monospace;
 }
 
 body {
