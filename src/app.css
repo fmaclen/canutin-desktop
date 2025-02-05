@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tailwindcss/theme";
+@import 'tailwindcss';
+@import 'tailwindcss/theme';
 
 @theme {
 	--color-chromeo-50: hsl(26, 6%, 99%);

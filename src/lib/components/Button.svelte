@@ -37,7 +37,7 @@
 >
 	{#if variant === 'icon'}
 		<span
-			class="block h-full p-2 opacity-40 hover:opacity-100 hover:scale-125 active:scale-75 transition-all duration-100"
+			class="block h-full p-2 opacity-40 transition-all duration-100 hover:scale-125 hover:opacity-100 active:scale-75"
 		>
 			{@render children()}
 		</span>

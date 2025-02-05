@@ -22,13 +22,15 @@
 	}: Props = $props();
 </script>
 
-<div class={[
-	'flex w-full items-center rounded bg-chromeo-200 outline-1 outline-chromeo-500',
-	'focus-within:bg-transparent focus-within:outline-chromeo-900 focus-within:outline-2'
-]}>
+<div
+	class={[
+		'bg-chromeo-200 outline-chromeo-500 flex w-full items-center rounded outline-1',
+		'focus-within:outline-chromeo-900 focus-within:bg-transparent focus-within:outline-2'
+	]}
+>
 	<input
 		bind:value
-		class="block w-full bg-transparent p-2 font-mono text-xs text-chromeo-900 outline-none placeholder:text-chromeo-950/30"
+		class="text-chromeo-900 placeholder:text-chromeo-950/30 block w-full bg-transparent p-2 font-mono text-xs outline-none"
 		{type}
 		{disabled}
 		{placeholder}
