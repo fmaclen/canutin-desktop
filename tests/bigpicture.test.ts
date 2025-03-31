@@ -81,11 +81,11 @@ test('summary totals by balance group', async ({ page }) => {
 
 	// Check the calculations
 	await signInAsUser(page, pbAlice);
-	const netWorthCard = page.locator('.card', { hasText: 'Net worth' });
-	const cashCard = page.locator('.card', { hasText: 'Cash' });
-	const debtCard = page.locator('.card', { hasText: 'Debt' });
-	const investmentsCard = page.locator('.card', { hasText: 'Investments' });
-	const otherAssetsCard = page.locator('.card', { hasText: 'Other assets' });
+	const netWorthCard = page.locator('.plate', { hasText: 'Net worth' });
+	const cashCard = page.locator('.plate', { hasText: 'Cash' });
+	const debtCard = page.locator('.plate', { hasText: 'Debt' });
+	const investmentsCard = page.locator('.plate', { hasText: 'Investments' });
+	const otherAssetsCard = page.locator('.plate', { hasText: 'Other assets' });
 	await expect(netWorthCard).toBeVisible();
 	await expect(cashCard).toBeVisible();
 	await expect(debtCard).toBeVisible();
@@ -137,8 +137,8 @@ test('summary totals update in real-time', async ({ page }) => {
 	const account401k = await createAccount(pbAlice, account401kDetails);
 
 	await signInAsUser(page, pbAlice);
-	const netWorthCard = page.locator('.card', { hasText: 'Net worth' });
-	const investmentsCard = page.locator('.card', { hasText: 'Investments' });
+	const netWorthCard = page.locator('.plate', { hasText: 'Net worth' });
+	const investmentsCard = page.locator('.plate', { hasText: 'Investments' });
 	await expect(netWorthCard).toContainText('$0');
 	await expect(investmentsCard).toContainText('$0');
 
@@ -186,9 +186,9 @@ test('cashflow calculations', async ({ page }) => {
 	await expect(page.getByText(`Jan '${format(today, 'yy')}`)).toBeVisible();
 
 	// Trailing cashflow
-	const incomeCard = page.locator('.card', { hasText: 'Income per month' });
-	const expenseCard = page.locator('.card', { hasText: 'Expenses per month' });
-	const balanceCard = page.locator('.card', { hasText: 'Balance per month' });
+	const incomeCard = page.locator('.plate', { hasText: 'Income per month' });
+	const expenseCard = page.locator('.plate', { hasText: 'Expenses per month' });
+	const balanceCard = page.locator('.plate', { hasText: 'Balance per month' });
 	await expect(incomeCard).toContainText('$1,680');
 	await expect(expenseCard).toContainText('-$1,457');
 	await expect(balanceCard).toContainText('$223');
