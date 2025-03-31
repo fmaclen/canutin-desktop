@@ -8,8 +8,8 @@
 	import Head from '$lib/components/Head.svelte';
 	import MainHeader from '$lib/components/MainHeader.svelte';
 	import Notice from '$lib/components/Notice.svelte';
-	import { formatCurrency } from '$lib/utils';
 	import Section from '$lib/components/Section.svelte';
+	import { formatCurrency } from '$lib/utils';
 
 	const accountsStore = getAccountsContext();
 </script>
@@ -24,35 +24,33 @@
 	</nav>
 </MainHeader>
 
-
 <Section>
-
-{#if !accountsStore.accounts.length}
-	<Notice>{$LL.NO_ACCOUNTS_FOUND()}</Notice>
-{:else}
-	<table>
-		<thead>
-			<tr>
-				<th>{$LL.NAME()}</th>
-				<th>{$LL.INSTITUTION()}</th>
-				<th>{$LL.ACCOUNT_TYPE()}</th>
-				<th>{$LL.BALANCE_TYPE()}</th>
-				<th>{$LL.BALANCE()}</th>
-				<th>{$LL.LAST_UPDATED()}</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each accountsStore.accounts as account}
+	{#if !accountsStore.accounts.length}
+		<Notice>{$LL.NO_ACCOUNTS_FOUND()}</Notice>
+	{:else}
+		<table>
+			<thead>
 				<tr>
-					<td><a href="/accounts/{account.id}">{account.name}</a></td>
-					<td>{account.institution}</td>
-					<td>{account.expand.tag.name}</td>
-					<td>{account.isAutoCalculated ? $LL.AUTO_CALCULATED() : '~'}</td>
-					<td>{formatCurrency(account.balance ?? 0, 2, 2)}</td>
-					<td>{format(account.updated, 'MMM d, yyyy')}</td>
+					<th>{$LL.NAME()}</th>
+					<th>{$LL.INSTITUTION()}</th>
+					<th>{$LL.ACCOUNT_TYPE()}</th>
+					<th>{$LL.BALANCE_TYPE()}</th>
+					<th>{$LL.BALANCE()}</th>
+					<th>{$LL.LAST_UPDATED()}</th>
 				</tr>
-			{/each}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				{#each accountsStore.accounts as account}
+					<tr>
+						<td><a href="/accounts/{account.id}">{account.name}</a></td>
+						<td>{account.institution}</td>
+						<td>{account.expand.tag.name}</td>
+						<td>{account.isAutoCalculated ? $LL.AUTO_CALCULATED() : '~'}</td>
+						<td>{formatCurrency(account.balance ?? 0, 2, 2)}</td>
+						<td>{format(account.updated, 'MMM d, yyyy')}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
 	{/if}
 </Section>
