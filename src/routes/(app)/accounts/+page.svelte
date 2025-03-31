@@ -9,6 +9,7 @@
 	import MainHeader from '$lib/components/MainHeader.svelte';
 	import Notice from '$lib/components/Notice.svelte';
 	import { formatCurrency } from '$lib/utils';
+	import Section from '$lib/components/Section.svelte';
 
 	const accountsStore = getAccountsContext();
 </script>
@@ -23,6 +24,8 @@
 	</nav>
 </MainHeader>
 
+
+<Section>
 
 {#if !accountsStore.accounts.length}
 	<Notice>{$LL.NO_ACCOUNTS_FOUND()}</Notice>
@@ -51,4 +54,5 @@
 			{/each}
 		</tbody>
 	</table>
-{/if}
+	{/if}
+</Section>
