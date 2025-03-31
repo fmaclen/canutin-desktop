@@ -3,6 +3,7 @@
 	import { format } from 'date-fns';
 
 	import { getAccountsContext } from '$lib/accounts.svelte';
+	import A from '$lib/components/A.svelte';
 	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
 	import MainHeader from '$lib/components/MainHeader.svelte';
@@ -15,9 +16,12 @@
 
 <MainHeader>
 	<H1>{$LL.ACCOUNTS()}</H1>
+	<nav class="flex gap-4">
+		<A href="/accounts/new">{$LL.ADD_ACCOUNT()}</A>
+		<A href="/data">{$LL.IMPORT()}</A>
+	</nav>
 </MainHeader>
 
-<a href="/accounts/new">{$LL.ADD_ACCOUNT()}</a>
 
 {#if !accountsStore.accounts.length}
 	<p>{$LL.NO_ACCOUNTS_FOUND()}</p>
