@@ -6,6 +6,7 @@
 	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
 	import MainHeader from '$lib/components/MainHeader.svelte';
+	import Notice from '$lib/components/Notice.svelte';
 	import { formatCurrency } from '$lib/utils';
 
 	const assetsStore = getAssetsContext();
@@ -18,7 +19,7 @@
 </MainHeader>
 
 {#if !assetsStore.assets.length}
-	<p>{$LL.NO_ASSETS_FOUND()}</p>
+	<Notice>{$LL.NO_ASSETS_FOUND()}</Notice>
 {:else}
 	<table>
 		<thead>
