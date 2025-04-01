@@ -8,12 +8,7 @@
 		maximumFractionDigits?: number;
 	}
 
-	let {
-		value,
-		currency,
-		locale,
-		maximumFractionDigits = 0,
-	}: Props = $props();
+	let { value, currency, locale, maximumFractionDigits = 0 }: Props = $props();
 
 	// Format: $1,523.00 || -$1,523.00
 	const formattedValue = $derived(

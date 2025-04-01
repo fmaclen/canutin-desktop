@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { format } from 'date-fns';
 
-	import { dateInUTC } from '$lib/utils';
-
 	interface Props {
 		date?: Date;
 	}
