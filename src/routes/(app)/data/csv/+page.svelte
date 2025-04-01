@@ -13,7 +13,8 @@
 	import type { TransactionsRecord } from '$lib/pocketbase-types';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { TransactionDetails } from '$lib/seed/data/transactions';
-	import { formatCurrency } from '$lib/utils';
+	import Timestamp from '$lib/components/Timestamp.svelte';
+	import Currency from '$lib/components/Currency.svelte';
 
 	interface PreviewTransaction {
 		date?: Date;
@@ -249,9 +250,14 @@
 				{#each transactionFields as field}
 					<td>
 						{#if field === 'date'}
-							{transaction.date ? format(transaction.date, 'MMM d, yyyy') : '~'}
+							<Timestamp date={transaction.date} />
 						{:else if field === 'value'}
-							{typeof transaction.value === 'number' ? formatCurrency(transaction.value, 2) : '~'}
+							<Currency
+								value={transaction.value}
+								currency="USD"
+								locale="en-US"
+								maximumFractionDigits={2}
+							/>
 						{:else if field === 'account' && columnMapping.account}
 							{@const account = accountsStore.accounts.find(
 								(account) => account.id === columnMapping.account

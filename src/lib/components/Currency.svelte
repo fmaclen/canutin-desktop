@@ -6,7 +6,6 @@
 		currency?: string;
 		locale?: string;
 		maximumFractionDigits?: number;
-		minimumFractionDigits?: number;
 	}
 
 	let {
@@ -14,7 +13,6 @@
 		currency,
 		locale,
 		maximumFractionDigits = 0,
-		minimumFractionDigits = 0
 	}: Props = $props();
 
 	// Format: $1,523.00 || -$1,523.00
@@ -22,8 +20,7 @@
 		new Intl.NumberFormat(locale, {
 			currency,
 			style: 'currency',
-			maximumFractionDigits,
-			minimumFractionDigits
+			maximumFractionDigits
 		}).format(value ?? 0)
 	);
 </script>

@@ -52,7 +52,6 @@
 								currency="USD"
 								locale="en-US"
 								maximumFractionDigits={2}
-								minimumFractionDigits={2}
 							/>
 						</td>
 						<td><Timestamp date={new Date(account.updated)} /></td>
