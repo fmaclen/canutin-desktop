@@ -7,8 +7,9 @@
 	import Head from '$lib/components/Head.svelte';
 	import MainHeader from '$lib/components/MainHeader.svelte';
 	import Notice from '$lib/components/Notice.svelte';
-	import Number from '$lib/components/Number.svelte';
 	import Section from '$lib/components/Section.svelte';
+	import { formatCurrency } from '$lib/utils';
+	import Number from '$lib/components/Number.svelte';
 
 	const assetsStore = getAssetsContext();
 </script>
@@ -40,11 +41,11 @@
 					<tr>
 						<td>{asset.name}</td>
 						<td>{asset.expand.tag.name}</td>
-						<td>{asset.symbol ?? '~'}</td>
-						<td><Number value={asset.quantity ?? 0} /></td>
-						<td><Number value={asset.cost ?? 0} /></td>
-						<td><Number value={asset.balance ?? 0} /></td>
-						<td>{format(asset.updated, 'MMM d, yyyy')}</td>
+						<td><Number>{asset.symbol ?? '~'}</Number></td>
+						<td><Number>{asset.quantity ?? 0}</Number></td>
+						<td><Number>{formatCurrency(asset.cost ?? 0)}</Number></td>
+						<td><Number>{formatCurrency(asset.balance ?? 0)}</Number></td>
+						<td><Number>{format(asset.updated, 'MMM d, yyyy')}</Number></td>
 					</tr>
 				{/each}
 			</tbody>

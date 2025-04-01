@@ -9,6 +9,7 @@
 	import Number from '$lib/components/Number.svelte';
 	import Plate from '$lib/components/Plate.svelte';
 	import Section from '$lib/components/Section.svelte';
+	import { formatCurrency } from '$lib/utils';
 
 	const accountsStore = getAccountsContext();
 	const assetsStore = getAssetsContext();
@@ -33,8 +34,8 @@
 			<Plate variant="netWorth">
 				<div class="summary__net-worth flex h-full flex-col justify-between">
 					<p class="p-4 text-sm font-bold">{$LL.NET_WORTH()}</p>
-					<p class="px-4 pb-4 text-3xl font-light">
-						<Number value={balanceGroups.netWorth} />
+					<p class="px-4 pb-4 font-mono text-3xl font-light">
+						<Number>{formatCurrency(balanceGroups.netWorth)}</Number>
 					</p>
 				</div>
 			</Plate>
@@ -42,25 +43,25 @@
 
 		<Plate variant="cash">
 			<div class="summary__cash flex flex-row justify-between">
-				<KeyValue key={$LL.CASH()} value={balanceGroups.cash} />
+				<KeyValue key={$LL.CASH()} value={formatCurrency(balanceGroups.cash)} />
 			</div>
 		</Plate>
 
 		<Plate variant="investments">
 			<div class="summary__investments flex flex-row justify-between">
-				<KeyValue key={$LL.INVESTMENTS()} value={balanceGroups.investments} />
+				<KeyValue key={$LL.INVESTMENTS()} value={formatCurrency(balanceGroups.investments)} />
 			</div>
 		</Plate>
 
 		<Plate variant="debt">
 			<div class="summary__debt text-chromeo-50 flex flex-row justify-between">
-				<KeyValue key={$LL.DEBT()} value={balanceGroups.debt} />
+				<KeyValue key={$LL.DEBT()} value={formatCurrency(balanceGroups.debt)} />
 			</div>
 		</Plate>
 
 		<Plate variant="otherAssets">
 			<div class="summary__other-assets flex flex-row justify-between">
-				<KeyValue key={$LL.OTHER_ASSETS()} value={balanceGroups.otherAssets} />
+				<KeyValue key={$LL.OTHER_ASSETS()} value={formatCurrency(balanceGroups.otherAssets)} />
 			</div>
 		</Plate>
 	</div>
