@@ -33,7 +33,7 @@
 			<Plate variant="netWorth">
 				<div class="summary__net-worth flex h-full flex-col justify-between">
 					<p class="p-4 text-sm font-bold">{$LL.NET_WORTH()}</p>
-					<p class="px-4 pb-4 font-mono text-3xl font-light">
+					<p class="px-4 pb-4 font-mono text-3xl font-light tracking-widest">
 						{formatCurrency(balanceGroups.netWorth)}
 					</p>
 				</div>
