@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "concurrently \"vite dev\" \"typesafe-i18n\" \"npm run pb\"",
-		"build": "vite build",
+		"build": "svelte-check && vite build",
 		"preview": "vite preview",
 		"test": "playwright test",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
