@@ -1,12 +1,22 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import NumberFlow from '@number-flow/svelte';
 
 	interface Props {
 		size?: string;
-		children: Snippet;
+		value: number;
 	}
 
-	let { children, size = 'base' }: Props = $props();
+	let { value, size = 'base' }: Props = $props();
 </script>
 
-<span class="font-mono text-inherit uppercase tracking-widest text-{size}">{@render children()}</span>
+<span class="font-mono tracking-widest text-inherit uppercase text-{size}">
+	<NumberFlow
+		{value}
+		format={{
+			style: 'currency',
+			currency: 'USD',
+			maximumFractionDigits: 0,
+			minimumFractionDigits: 0
+		}}
+	/>
+</span>

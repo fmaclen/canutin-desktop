@@ -8,9 +8,8 @@
 	import Head from '$lib/components/Head.svelte';
 	import MainHeader from '$lib/components/MainHeader.svelte';
 	import Notice from '$lib/components/Notice.svelte';
-	import Section from '$lib/components/Section.svelte';
-	import { formatCurrency } from '$lib/utils';
 	import Number from '$lib/components/Number.svelte';
+	import Section from '$lib/components/Section.svelte';
 
 	const accountsStore = getAccountsContext();
 </script>
@@ -47,8 +46,8 @@
 						<td>{account.institution}</td>
 						<td>{account.expand.tag.name}</td>
 						<td>{account.isAutoCalculated ? $LL.AUTO_CALCULATED() : '~'}</td>
-						<td><Number>{formatCurrency(account.balance ?? 0, 2, 2)}</Number></td>
-						<td><Number>{format(account.updated, 'MMM d, yyyy')}</Number></td>
+						<td><Number value={account.balance ?? 0} /></td>
+						<td>{format(account.updated, 'MMM d, yyyy')}</td>
 					</tr>
 				{/each}
 			</tbody>

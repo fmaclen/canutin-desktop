@@ -9,11 +9,11 @@
 	import H3 from '$lib/components/H3.svelte';
 	import Head from '$lib/components/Head.svelte';
 	import MainHeader from '$lib/components/MainHeader.svelte';
+	import Number from '$lib/components/Number.svelte';
 	import { createTransactions } from '$lib/pocketbase';
 	import type { TransactionsRecord } from '$lib/pocketbase-types';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import type { TransactionDetails } from '$lib/seed/data/transactions';
-	import { formatCurrency } from '$lib/utils';
 
 	interface PreviewTransaction {
 		date?: Date;
@@ -251,7 +251,11 @@
 						{#if field === 'date'}
 							{transaction.date ? format(transaction.date, 'MMM d, yyyy') : '~'}
 						{:else if field === 'value'}
-							{typeof transaction.value === 'number' ? formatCurrency(transaction.value, 2) : '~'}
+							{#if typeof transaction.value === 'number'}
+								<Number value={transaction.value ?? 0} />
+							{:else}
+								~
+							{/if}
 						{:else if field === 'account' && columnMapping.account}
 							{@const account = accountsStore.accounts.find(
 								(account) => account.id === columnMapping.account
