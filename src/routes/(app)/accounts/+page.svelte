@@ -10,6 +10,7 @@
 	import Notice from '$lib/components/Notice.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import { formatCurrency } from '$lib/utils';
+	import Number from '$lib/components/Number.svelte';
 
 	const accountsStore = getAccountsContext();
 </script>
@@ -28,7 +29,7 @@
 	{#if !accountsStore.accounts.length}
 		<Notice>{$LL.NO_ACCOUNTS_FOUND()}</Notice>
 	{:else}
-		<table>
+		<table class="text-sm">
 			<thead>
 				<tr>
 					<th>{$LL.NAME()}</th>
@@ -46,8 +47,8 @@
 						<td>{account.institution}</td>
 						<td>{account.expand.tag.name}</td>
 						<td>{account.isAutoCalculated ? $LL.AUTO_CALCULATED() : '~'}</td>
-						<td>{formatCurrency(account.balance ?? 0, 2, 2)}</td>
-						<td>{format(account.updated, 'MMM d, yyyy')}</td>
+						<td><Number>{formatCurrency(account.balance ?? 0, 2, 2)}</Number></td>
+						<td><Number>{format(account.updated, 'MMM d, yyyy')}</Number></td>
 					</tr>
 				{/each}
 			</tbody>

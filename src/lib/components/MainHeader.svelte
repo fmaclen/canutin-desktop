@@ -9,7 +9,7 @@
 </script>
 
 <header class="bg-chromeo-100">
-	<div class="container mx-auto flex flex-row items-baseline justify-between px-24 py-6 text-sm">
+	<div class="container mx-auto flex flex-row items-baseline justify-between px-24 py-8 text-sm border-b border-chromeo-300">
 		{@render children()}
 	</div>
 </header>

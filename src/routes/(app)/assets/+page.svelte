@@ -9,6 +9,7 @@
 	import Notice from '$lib/components/Notice.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import { formatCurrency } from '$lib/utils';
+	import Number from '$lib/components/Number.svelte';
 
 	const assetsStore = getAssetsContext();
 </script>
@@ -23,9 +24,9 @@
 	{#if !assetsStore.assets.length}
 		<Notice>{$LL.NO_ASSETS_FOUND()}</Notice>
 	{:else}
-		<table>
+		<table class="text-sm">
 			<thead>
-				<tr>
+				<tr class="text-left">
 					<th>{$LL.NAME()}</th>
 					<th>{$LL.ASSET_TYPE()}</th>
 					<th>{$LL.SYMBOL()}</th>
@@ -40,11 +41,11 @@
 					<tr>
 						<td>{asset.name}</td>
 						<td>{asset.expand.tag.name}</td>
-						<td>{asset.symbol ? asset.symbol : '~'}</td>
-						<td>{asset.quantity ? asset.quantity : '~'}</td>
-						<td>{asset.cost ? formatCurrency(asset.cost) : '~'}</td>
-						<td>{formatCurrency(asset.balance ?? 0)}</td>
-						<td>{format(asset.updated, 'MMM d, yyyy')}</td>
+						<td><Number>{asset.symbol ?? '~'}</Number></td>
+						<td><Number>{asset.quantity ?? 0}</Number></td>
+						<td><Number>{formatCurrency(asset.cost ?? 0)}</Number></td>
+						<td><Number>{formatCurrency(asset.balance ?? 0)}</Number></td>
+						<td><Number>{format(asset.updated, 'MMM d, yyyy')}</Number></td>
 					</tr>
 				{/each}
 			</tbody>

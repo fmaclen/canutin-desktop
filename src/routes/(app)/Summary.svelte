@@ -6,6 +6,7 @@
 	import { BalanceGroup, calculateTotalBalance } from '$lib/balanceGroups';
 	import H3 from '$lib/components/H3.svelte';
 	import KeyValue from '$lib/components/KeyValue.svelte';
+	import Number from '$lib/components/Number.svelte';
 	import Plate from '$lib/components/Plate.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import { formatCurrency } from '$lib/utils';
@@ -33,8 +34,8 @@
 			<Plate variant="netWorth">
 				<div class="summary__net-worth flex h-full flex-col justify-between">
 					<p class="p-4 text-sm font-bold">{$LL.NET_WORTH()}</p>
-					<p class="px-4 pb-4 font-mono text-3xl font-light tracking-widest">
-						{formatCurrency(balanceGroups.netWorth)}
+					<p class="px-4 pb-4 font-mono text-3xl font-light">
+						<Number>{formatCurrency(balanceGroups.netWorth)}</Number>
 					</p>
 				</div>
 			</Plate>

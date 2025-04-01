@@ -9,6 +9,7 @@
 	import Head from '$lib/components/Head.svelte';
 	import KeyValue from '$lib/components/KeyValue.svelte';
 	import MainHeader from '$lib/components/MainHeader.svelte';
+	import Number from '$lib/components/Number.svelte';
 	import Plate from '$lib/components/Plate.svelte';
 	import Section from '$lib/components/Section.svelte';
 	import { formatCurrency } from '$lib/utils';
@@ -47,7 +48,7 @@
 <Section>
 	<H3>{$LL.BALANCES()}</H3>
 
-	<ul class="balance-sheet grid grid-cols-4 gap-6">
+	<ul class="balance-sheet grid grid-cols-4 gap-4">
 		{#each balanceGroups as balanceGroup, index}
 			<li class="balance-sheet__item flex flex-col gap-3">
 				{#if index === BalanceGroup.CASH}
@@ -68,22 +69,22 @@
 					</Plate>
 				{/if}
 
-				<ul class="card-group">
+				<ul class="card-group flex flex-col gap-3">
 					{#each Object.entries(balanceGroup.groups) as [name, accountsOrAssets]}
 						{#if accountsOrAssets}
-							<li>
+							<li class="">
 								<Plate>
 									<KeyValue
 										key={name}
 										value={formatCurrency(calculateTotalBalance(accountsOrAssets))}
 									/>
-									<ul>
+									<ul class="py-1.5 border-t border-chromeo-300">
 										{#each accountsOrAssets as accountOrAsset}
-											<li>
+											<li class="flex flex-row items-center justify-between text-xs px-4 my-3 ">
 												{accountOrAsset.name}
-												<span>
+												<Number>
 													{formatCurrency(accountOrAsset.balance ?? 0)}
-												</span>
+												</Number>
 											</li>
 										{/each}
 									</ul>
