@@ -14,6 +14,7 @@
 	import KeyValue from '$lib/components/KeyValue.svelte';
 	import Plate from '$lib/components/Plate.svelte';
 	import Section from '$lib/components/Section.svelte';
+	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
 	import type { TransactionsResponse } from '$lib/pocketbase-types';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
 	import { dateInUTC, formatCurrency, proportionBetween } from '$lib/utils';
@@ -265,17 +266,16 @@
 </Section>
 
 <Section>
-	<header class="section-header flex flex-row justify-between">
+	<header class="section-header flex flex-row justify-between items-center">
 		<H3>{$LL.TRAILING_CASHFLOW()}</H3>
 
-		<nav>
-			<button onclick={() => (trailingCashflowPeriod = 'last6Months')}>
-				{$LL.PREVIOUS_6_MONTHS()}
-			</button>
-			<button onclick={() => (trailingCashflowPeriod = 'last12Months')}>
-				{$LL.PREVIOUS_12_MONTHS()}
-			</button>
-		</nav>
+		<SegmentedControl
+			bind:value={trailingCashflowPeriod}
+			options={[
+				{ value: 'last6Months', label: $LL.PREVIOUS_6_MONTHS() },
+				{ value: 'last12Months', label: $LL.PREVIOUS_12_MONTHS() }
+			]}
+		/>
 	</header>
 
 	<div class="grid grid-cols-3 gap-2">
