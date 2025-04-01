@@ -31,11 +31,11 @@ class Accounts {
 	}
 
 	async getAccount(id: string): Promise<Account> {
-		const account = await this.pb.collection('accounts').getOne(id, {
+		const accountResponse = await this.pb.collection('accounts').getOne(id, {
 			expand: 'tag'
 		});
-		const balance = await this.getAccountBalance(account);
-		return { ...account, balance };
+		const balance = await this.getAccountBalance(accountResponse);
+		return { ...accountResponse, balance } as Account;
 	}
 
 	private async fetchAccounts() {
@@ -67,7 +67,7 @@ class Accounts {
 		}
 	}
 
-	private async getAccountBalance(account: Account): Promise<number | null> {
+	private async getAccountBalance(account: AccountsResponse): Promise<number | null> {
 		try {
 			if (account.isAutoCalculated) {
 				let transactions: TransactionsResponse[] = [];
