@@ -1,3 +1,20 @@
+/* Import Iosevka font */
+@font-face {
+	font-family: 'Iosevka';
+	src: url('/fonts/Iosevka-Regular.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Iosevka';
+	src: url('/fonts/Iosevka-SemiBold.woff2') format('woff2');
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+
 @import 'tailwindcss';
 @import 'tailwindcss/theme';
 
@@ -23,7 +40,7 @@
 	--color-otherAssets: hsl(238deg 35.43% 49.8%);
 
 	--font-sans: 'Inter', sans-serif;
-	--font-mono: 'JetBrains Mono', monospace;
+	--font-mono: 'Iosevka', monospace;
 }
 
 body {

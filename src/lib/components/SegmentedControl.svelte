@@ -14,7 +14,7 @@
 		<button
 			{disabled}
 			onclick={() => (value = option.value)}
-			class="rounded px-4 py-1 font-mono text-xs uppercase transition-colors duration-200 cursor-pointer {isActive
+			class="rounded px-3 py-1.5 font-mono text-xs uppercase tracking-widest transition-colors duration-200 cursor-pointer {isActive
 				? 'text-brand bg-white shadow-sm'
 				: 'text-chromeo-700 hover:text-chromeo-900'} {disabled
 				? 'cursor-not-allowed opacity-50'
