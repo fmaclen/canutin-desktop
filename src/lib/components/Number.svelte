@@ -1,12 +1,13 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-
 	interface Props {
-		size?: string;
-		children: Snippet;
+		value: string | number | null;
 	}
 
-	let { children, size = 'base' }: Props = $props();
+	let { value }: Props = $props();
 </script>
 
-<span class="font-mono text-inherit uppercase tracking-widest text-{size}">{@render children()}</span>
+{#if value}
+	<span class="font-mono tracking-widest text-inherit uppercase">{value}</span>
+{:else}
+	~
+{/if}

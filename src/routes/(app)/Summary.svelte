@@ -4,12 +4,11 @@
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import { getAssetsContext } from '$lib/assets.svelte';
 	import { BalanceGroup, calculateTotalBalance } from '$lib/balanceGroups';
+	import Currency from '$lib/components/Currency.svelte';
 	import H3 from '$lib/components/H3.svelte';
 	import KeyValue from '$lib/components/KeyValue.svelte';
-	import Number from '$lib/components/Number.svelte';
 	import Plate from '$lib/components/Plate.svelte';
 	import Section from '$lib/components/Section.svelte';
-	import { formatCurrency } from '$lib/utils';
 
 	const accountsStore = getAccountsContext();
 	const assetsStore = getAssetsContext();
@@ -35,7 +34,7 @@
 				<div class="summary__net-worth flex h-full flex-col justify-between">
 					<p class="p-4 text-sm font-bold">{$LL.NET_WORTH()}</p>
 					<p class="px-4 pb-4 font-mono text-3xl font-light">
-						<Number>{formatCurrency(balanceGroups.netWorth)}</Number>
+						<Currency value={balanceGroups.netWorth} currency="USD" locale="en-US" />
 					</p>
 				</div>
 			</Plate>
@@ -43,25 +42,25 @@
 
 		<Plate variant="cash">
 			<div class="summary__cash flex flex-row justify-between">
-				<KeyValue key={$LL.CASH()} value={formatCurrency(balanceGroups.cash)} />
+				<KeyValue key={$LL.CASH()} value={balanceGroups.cash} />
 			</div>
 		</Plate>
 
 		<Plate variant="investments">
 			<div class="summary__investments flex flex-row justify-between">
-				<KeyValue key={$LL.INVESTMENTS()} value={formatCurrency(balanceGroups.investments)} />
+				<KeyValue key={$LL.INVESTMENTS()} value={balanceGroups.investments} />
 			</div>
 		</Plate>
 
 		<Plate variant="debt">
 			<div class="summary__debt text-chromeo-50 flex flex-row justify-between">
-				<KeyValue key={$LL.DEBT()} value={formatCurrency(balanceGroups.debt)} />
+				<KeyValue key={$LL.DEBT()} value={balanceGroups.debt} />
 			</div>
 		</Plate>
 
 		<Plate variant="otherAssets">
 			<div class="summary__other-assets flex flex-row justify-between">
-				<KeyValue key={$LL.OTHER_ASSETS()} value={formatCurrency(balanceGroups.otherAssets)} />
+				<KeyValue key={$LL.OTHER_ASSETS()} value={balanceGroups.otherAssets} />
 			</div>
 		</Plate>
 	</div>

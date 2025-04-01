@@ -10,6 +10,7 @@
 		sub
 	} from 'date-fns';
 
+	import Currency from '$lib/components/Currency.svelte';
 	import H3 from '$lib/components/H3.svelte';
 	import KeyValue from '$lib/components/KeyValue.svelte';
 	import Plate from '$lib/components/Plate.svelte';
@@ -17,7 +18,7 @@
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
 	import type { TransactionsResponse } from '$lib/pocketbase-types';
 	import { getPbClientContext } from '$lib/pocketbase.svelte';
-	import { dateInUTC, formatCurrency, proportionBetween } from '$lib/utils';
+	import { dateInUTC, proportionBetween } from '$lib/utils';
 
 	interface PeriodCashflow {
 		id: number;
@@ -254,9 +255,9 @@
 								{isJanuary ? `'${format(period.month, 'yy')}` : ''}
 							</time>
 						</td>
-						<td>{formatCurrency(period.income)}</td>
-						<td>{formatCurrency(period.expenses)}</td>
-						<td>{formatCurrency(period.balance)}</td>
+						<td><Currency value={period.income} currency="USD" locale="en-US" /></td>
+						<td><Currency value={period.expenses} currency="USD" locale="en-US" /></td>
+						<td><Currency value={period.balance} currency="USD" locale="en-US" /></td>
 						<td>{period.chartRatio}%</td>
 					</tr>
 				{/each}
@@ -266,7 +267,7 @@
 </Section>
 
 <Section>
-	<header class="section-header flex flex-row justify-between items-center">
+	<header class="section-header flex flex-row items-center justify-between">
 		<H3>{$LL.TRAILING_CASHFLOW()}</H3>
 
 		<SegmentedControl
@@ -282,31 +283,25 @@
 		<Plate>
 			<KeyValue
 				key={$LL.INCOME_PER_MONTH()}
-				value={formatCurrency(
-					trailingCashflowPeriod === 'last6Months'
-						? trailingCashflow.last6Months.incomeAverage
-						: trailingCashflow.last12Months.incomeAverage
-				)}
+				value={trailingCashflowPeriod === 'last6Months'
+					? trailingCashflow.last6Months.incomeAverage
+					: trailingCashflow.last12Months.incomeAverage}
 			/>
 		</Plate>
 		<Plate>
 			<KeyValue
 				key={$LL.EXPENSES_PER_MONTH()}
-				value={formatCurrency(
-					trailingCashflowPeriod === 'last6Months'
-						? trailingCashflow.last6Months.expensesAverage
-						: trailingCashflow.last12Months.expensesAverage
-				)}
+				value={trailingCashflowPeriod === 'last6Months'
+					? trailingCashflow.last6Months.expensesAverage
+					: trailingCashflow.last12Months.expensesAverage}
 			/>
 		</Plate>
 		<Plate>
 			<KeyValue
 				key={$LL.BALANCE_PER_MONTH()}
-				value={formatCurrency(
-					trailingCashflowPeriod === 'last6Months'
-						? trailingCashflow.last6Months.balanceAverage
-						: trailingCashflow.last12Months.balanceAverage
-				)}
+				value={trailingCashflowPeriod === 'last6Months'
+					? trailingCashflow.last6Months.balanceAverage
+					: trailingCashflow.last12Months.balanceAverage}
 			/>
 		</Plate>
 	</div>

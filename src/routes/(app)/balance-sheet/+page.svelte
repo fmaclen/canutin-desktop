@@ -4,15 +4,14 @@
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import { getAssetsContext } from '$lib/assets.svelte';
 	import { BalanceGroup, calculateTotalBalance } from '$lib/balanceGroups';
+	import Currency from '$lib/components/Currency.svelte';
 	import H1 from '$lib/components/H1.svelte';
 	import H3 from '$lib/components/H3.svelte';
 	import Head from '$lib/components/Head.svelte';
 	import KeyValue from '$lib/components/KeyValue.svelte';
 	import MainHeader from '$lib/components/MainHeader.svelte';
-	import Number from '$lib/components/Number.svelte';
 	import Plate from '$lib/components/Plate.svelte';
 	import Section from '$lib/components/Section.svelte';
-	import { formatCurrency } from '$lib/utils';
 
 	const accountsStore = getAccountsContext();
 	const assetsStore = getAssetsContext();
@@ -53,19 +52,19 @@
 			<li class="balance-sheet__item flex flex-col gap-3">
 				{#if index === BalanceGroup.CASH}
 					<Plate variant="cash">
-						<KeyValue key={$LL.CASH()} value={formatCurrency(balanceGroup.balance)} />
+						<KeyValue key={$LL.CASH()} value={balanceGroup.balance} />
 					</Plate>
 				{:else if index === BalanceGroup.DEBT}
 					<Plate variant="debt">
-						<KeyValue key={$LL.DEBT()} value={formatCurrency(balanceGroup.balance)} />
+						<KeyValue key={$LL.DEBT()} value={balanceGroup.balance} />
 					</Plate>
 				{:else if index === BalanceGroup.INVESTMENTS}
 					<Plate variant="investments">
-						<KeyValue key={$LL.INVESTMENTS()} value={formatCurrency(balanceGroup.balance)} />
+						<KeyValue key={$LL.INVESTMENTS()} value={balanceGroup.balance} />
 					</Plate>
 				{:else if index === BalanceGroup.OTHER_ASSETS}
 					<Plate variant="otherAssets">
-						<KeyValue key={$LL.OTHER_ASSETS()} value={formatCurrency(balanceGroup.balance)} />
+						<KeyValue key={$LL.OTHER_ASSETS()} value={balanceGroup.balance} />
 					</Plate>
 				{/if}
 
@@ -74,17 +73,16 @@
 						{#if accountsOrAssets}
 							<li class="">
 								<Plate>
-									<KeyValue
-										key={name}
-										value={formatCurrency(calculateTotalBalance(accountsOrAssets))}
-									/>
-									<ul class="py-1.5 border-t border-chromeo-300">
+									<KeyValue key={name} value={calculateTotalBalance(accountsOrAssets)} />
+									<ul class="border-chromeo-300 border-t py-1.5">
 										{#each accountsOrAssets as accountOrAsset}
-											<li class="flex flex-row items-center justify-between text-xs px-4 my-3 ">
+											<li class="my-3 flex flex-row items-center justify-between px-4 text-xs">
 												{accountOrAsset.name}
-												<Number>
-													{formatCurrency(accountOrAsset.balance ?? 0)}
-												</Number>
+												<Currency
+													value={accountOrAsset.balance ?? 0}
+													currency="USD"
+													locale="en-US"
+												/>
 											</li>
 										{/each}
 									</ul>

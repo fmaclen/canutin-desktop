@@ -1,16 +1,15 @@
 <script lang="ts">
 	import LL from '$i18n/i18n-svelte';
-	import { format } from 'date-fns';
 
 	import { getAccountsContext } from '$lib/accounts.svelte';
 	import A from '$lib/components/A.svelte';
+	import Currency from '$lib/components/Currency.svelte';
 	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
 	import MainHeader from '$lib/components/MainHeader.svelte';
 	import Notice from '$lib/components/Notice.svelte';
 	import Section from '$lib/components/Section.svelte';
-	import { formatCurrency } from '$lib/utils';
-	import Number from '$lib/components/Number.svelte';
+	import Timestamp from '$lib/components/Timestamp.svelte';
 
 	const accountsStore = getAccountsContext();
 </script>
@@ -47,8 +46,16 @@
 						<td>{account.institution}</td>
 						<td>{account.expand.tag.name}</td>
 						<td>{account.isAutoCalculated ? $LL.AUTO_CALCULATED() : '~'}</td>
-						<td><Number>{formatCurrency(account.balance ?? 0, 2, 2)}</Number></td>
-						<td><Number>{format(account.updated, 'MMM d, yyyy')}</Number></td>
+						<td>
+							<Currency
+								value={account.balance}
+								currency="USD"
+								locale="en-US"
+								maximumFractionDigits={2}
+								minimumFractionDigits={2}
+							/>
+						</td>
+						<td><Timestamp date={new Date(account.updated)} /></td>
 					</tr>
 				{/each}
 			</tbody>

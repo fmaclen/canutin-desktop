@@ -1,15 +1,15 @@
 <script lang="ts">
 	import LL from '$i18n/i18n-svelte';
-	import { format } from 'date-fns';
 
 	import { getAssetsContext } from '$lib/assets.svelte';
+	import Currency from '$lib/components/Currency.svelte';
 	import H1 from '$lib/components/H1.svelte';
 	import Head from '$lib/components/Head.svelte';
 	import MainHeader from '$lib/components/MainHeader.svelte';
 	import Notice from '$lib/components/Notice.svelte';
-	import Section from '$lib/components/Section.svelte';
-	import { formatCurrency } from '$lib/utils';
 	import Number from '$lib/components/Number.svelte';
+	import Section from '$lib/components/Section.svelte';
+	import Timestamp from '$lib/components/Timestamp.svelte';
 
 	const assetsStore = getAssetsContext();
 </script>
@@ -41,11 +41,11 @@
 					<tr>
 						<td>{asset.name}</td>
 						<td>{asset.expand.tag.name}</td>
-						<td><Number>{asset.symbol ?? '~'}</Number></td>
-						<td><Number>{asset.quantity ?? 0}</Number></td>
-						<td><Number>{formatCurrency(asset.cost ?? 0)}</Number></td>
-						<td><Number>{formatCurrency(asset.balance ?? 0)}</Number></td>
-						<td><Number>{format(asset.updated, 'MMM d, yyyy')}</Number></td>
+						<td>{asset.symbol ? asset.symbol : '~'}</td>
+						<td><Number value={asset.quantity} /></td>
+						<td><Currency value={asset.cost} currency="USD" locale="en-US" /></td>
+						<td><Currency value={asset.balance} currency="USD" locale="en-US" /></td>
+						<td><Timestamp date={new Date(asset.updated)} /></td>
 					</tr>
 				{/each}
 			</tbody>
