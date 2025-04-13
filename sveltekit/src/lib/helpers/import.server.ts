@@ -1,4 +1,4 @@
-import { fromUnixTime } from 'date-fns';
+import { endOfDay, fromUnixTime, startOfDay } from 'date-fns';
 import { Prisma, type Setting } from '@prisma/client';
 
 import prisma from '$lib/helpers/prisma.server';
@@ -12,6 +12,7 @@ import { SyncSettings } from './constants';
 import type { SyncStatusStore } from '$lib/stores/syncStatusStore';
 import type { CanutinFile, ImportedAccounts, ImportedAssets } from './import';
 import { env } from '$env/dynamic/private';
+import { dateInUTC } from './misc';
 
 export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 	const importedAccounts: ImportedAccounts = {
@@ -109,18 +110,70 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 						}
 
 						// Minimize duplicate Transactions by matching key values against existing transactions
+						console.warn({
+							where: {
+								accountId: transactionImportBlueprint.accountId,
+								description: transactionImportBlueprint.description,
+								date: {
+									gte: new Date(Date.UTC(
+										transactionImportBlueprint.date.getUTCFullYear(),
+										transactionImportBlueprint.date.getUTCMonth(),
+										transactionImportBlueprint.date.getUTCDate(),
+										0, 0, 0, 0
+									)),
+									lt: new Date(Date.UTC(
+										transactionImportBlueprint.date.getUTCFullYear(),
+										transactionImportBlueprint.date.getUTCMonth(),
+										transactionImportBlueprint.date.getUTCDate() + 1,
+										0, 0, 0, 0
+									))
+								},
+								value: transactionImportBlueprint.value,
+								categoryId: await getTransactionCategoryId(transaction.categoryName)
+							}
+						})
+						const allTransactions = await prisma.transaction.findMany({
+							where: {
+								accountId: transactionImportBlueprint.accountId
+							}
+						});
+						console.warn('All transactions in DB:', allTransactions.map(t => ({
+							description: t.description,
+							date: t.date,
+							value: t.value,
+							categoryName: t.categoryId
+						})));
 						const existingTransaction = await prisma.transaction.findFirst({
 							where: {
 								accountId: transactionImportBlueprint.accountId,
 								description: transactionImportBlueprint.description,
-								date: transactionImportBlueprint.date,
+								date: {
+									gte: new Date(Date.UTC(
+										transactionImportBlueprint.date.getUTCFullYear(),
+										transactionImportBlueprint.date.getUTCMonth(),
+										transactionImportBlueprint.date.getUTCDate(),
+										0, 0, 0, 0
+									)),
+									lt: new Date(Date.UTC(
+										transactionImportBlueprint.date.getUTCFullYear(),
+										transactionImportBlueprint.date.getUTCMonth(),
+										transactionImportBlueprint.date.getUTCDate() + 1,
+										0, 0, 0, 0
+									))
+								},
 								value: transactionImportBlueprint.value
 							}
 						});
 						if (existingTransaction) {
+							console.warn('skipped');
+							console.warn('====>>>>>>')
+
 							importedAccounts.transactions.skipped.push(transaction);
 							continue;
 						}
+
+						console.warn('created');
+						console.warn('###################################################')
 
 						// Create Transaction
 						const { id } = await prisma.transaction.create({
@@ -130,10 +183,20 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 							}
 						});
 
+						console.warn('CREATING THIS TRANS', {
+							data: {
+								...transactionImportBlueprint,
+								date: dateInUTC(transactionImportBlueprint.date),
+								transactionId: id,
+								categoryName: transaction.categoryName
+							}
+						});
+
 						// Create TransactionImport
 						const transactionImport = await prisma.transactionImport.create({
 							data: {
 								...transactionImportBlueprint,
+								date: dateInUTC(transactionImportBlueprint.date),
 								transactionId: id,
 								categoryName: transaction.categoryName
 							}
