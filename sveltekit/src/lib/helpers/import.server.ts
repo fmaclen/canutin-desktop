@@ -1,4 +1,4 @@
-import { endOfDay, fromUnixTime, startOfDay } from 'date-fns';
+import { fromUnixTime } from 'date-fns';
 import { Prisma, type Setting } from '@prisma/client';
 
 import prisma from '$lib/helpers/prisma.server';
@@ -110,39 +110,6 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 						}
 
 						// Minimize duplicate Transactions by matching key values against existing transactions
-						console.warn({
-							where: {
-								accountId: transactionImportBlueprint.accountId,
-								description: transactionImportBlueprint.description,
-								date: {
-									gte: new Date(Date.UTC(
-										transactionImportBlueprint.date.getUTCFullYear(),
-										transactionImportBlueprint.date.getUTCMonth(),
-										transactionImportBlueprint.date.getUTCDate(),
-										0, 0, 0, 0
-									)),
-									lt: new Date(Date.UTC(
-										transactionImportBlueprint.date.getUTCFullYear(),
-										transactionImportBlueprint.date.getUTCMonth(),
-										transactionImportBlueprint.date.getUTCDate() + 1,
-										0, 0, 0, 0
-									))
-								},
-								value: transactionImportBlueprint.value,
-								categoryId: await getTransactionCategoryId(transaction.categoryName)
-							}
-						})
-						const allTransactions = await prisma.transaction.findMany({
-							where: {
-								accountId: transactionImportBlueprint.accountId
-							}
-						});
-						console.warn('All transactions in DB:', allTransactions.map(t => ({
-							description: t.description,
-							date: t.date,
-							value: t.value,
-							categoryName: t.categoryId
-						})));
 						const existingTransaction = await prisma.transaction.findFirst({
 							where: {
 								accountId: transactionImportBlueprint.accountId,
@@ -165,30 +132,15 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 							}
 						});
 						if (existingTransaction) {
-							console.warn('skipped');
-							console.warn('====>>>>>>')
-
 							importedAccounts.transactions.skipped.push(transaction);
 							continue;
 						}
-
-						console.warn('created');
-						console.warn('###################################################')
 
 						// Create Transaction
 						const { id } = await prisma.transaction.create({
 							data: {
 								...transactionImportBlueprint,
 								categoryId: await getTransactionCategoryId(transaction.categoryName)
-							}
-						});
-
-						console.warn('CREATING THIS TRANS', {
-							data: {
-								...transactionImportBlueprint,
-								date: dateInUTC(transactionImportBlueprint.date),
-								transactionId: id,
-								categoryName: transaction.categoryName
 							}
 						});
 
