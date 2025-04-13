@@ -1,14 +1,16 @@
 <script lang="ts">
 	import FormSelect from './FormSelect.svelte';
-	import { LOCALE } from '$lib/helpers/misc';
+	import { LOCALE, dateInUTC } from '$lib/helpers/misc';
 
-	export let date: Date = new Date();
+	export let date: Date | undefined;
 	export let name: string;
 	export let disabled: boolean = false;
 
-	$: inputDate = new Date(`${thisYear}-${thisMonth}-${thisDate}`).getTime() / 1000;
+	const zonedDate = date ? dateInUTC(date) : new Date();
 
-	let thisYear = date.getFullYear();
+	const days = Array.from(Array(31).keys()).map((i) => i + 1); // 31 days in a month
+
+	let thisYear = zonedDate.getFullYear();
 	const years = [
 		// Past 15 years
 		...Array.from(Array(15).keys())
@@ -19,11 +21,11 @@
 		...Array.from(Array(15).keys()).map((i) => thisYear + 1 + i)
 	];
 
-	let thisMonth = date.getMonth() + 1;
+	let thisMonth = zonedDate.getMonth() + 1;
 	let months = Array.from(Array(12).keys()).map((i) => i + 1); // 12 months in a year
+	let thisDate = zonedDate.getDate();
 
-	let thisDate = date ? date.getDate() : new Date().getDate();
-	const days = Array.from(Array(31).keys()).map((i) => i + 1); // 31 days in a month
+	$: inputUnixTimeInUTC = new Date(`${thisYear}-${thisMonth}-${thisDate} 00:00:00 UTC`).getTime() / 1000;
 
 	const getDateSelects = (dates: number[]) => {
 		const isMonth = dates.length === 12;
@@ -33,7 +35,7 @@
 				label: isMonth
 					? `${date} - ${new Date(thisYear, date - 1, 1).toLocaleString(LOCALE, {
 							month: 'short'
-					  })}` // e.g. "9 - Sep"
+						})}` // e.g. "9 - Sep"
 					: date.toString(),
 				value: date
 			};
@@ -42,7 +44,7 @@
 </script>
 
 <div class="form__date-field">
-	<input type="hidden" {name} value={inputDate} />
+	<input type="hidden" {name} value={inputUnixTimeInUTC} />
 	<FormSelect name="yearSelect" options={getDateSelects(years)} {disabled} bind:value={thisYear} />
 	<FormSelect
 		name="monthSelect"

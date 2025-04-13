@@ -17,7 +17,6 @@
 	import type { FormSelectOption } from '$lib/components/FormSelect';
 	import type { Transaction } from '@prisma/client';
 	import FormDateInput from '$lib/components/FormDateInput.svelte';
-
 	export let handleSubmit: (e: SubmitEvent) => void;
 	export let transaction: Transaction | null = null;
 	export let selectAccounts: FormSelectOption[];
