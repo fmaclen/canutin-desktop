@@ -946,9 +946,6 @@ test.describe('Transactions', () => {
 			await page.locator('a', { hasText: 'Transactions' }).click();
 			await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
 
-			// Log current time in test environment
-			const currentDate = new Date();
-
 			// Create a new transaction
 			await page.locator('a', { hasText: 'Add transaction' }).click();
 			await expect(page.locator('h1', { hasText: 'Add transaction' })).toBeVisible();
@@ -986,9 +983,6 @@ test.describe('Transactions', () => {
 
 			// Click into the transaction to verify the date components
 			await page.locator('a', { hasText: 'Timezone Test Transaction' }).click();
-			const yearValue = await yearSelect.inputValue();
-			const monthValue = await monthSelect.inputValue();
-			const dateValue = await dateSelect.inputValue();
 			await expect(yearSelect).toHaveValue('2025');
 			await expect(monthSelect).toHaveValue('4');
 			await expect(dateSelect).toHaveValue('28');
