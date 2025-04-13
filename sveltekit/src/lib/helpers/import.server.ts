@@ -102,18 +102,28 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 								accountId: transactionImportBlueprint.accountId,
 								description: transactionImportBlueprint.description,
 								date: {
-									gte: new Date(Date.UTC(
-										transactionImportBlueprint.date.getUTCFullYear(),
-										transactionImportBlueprint.date.getUTCMonth(),
-										transactionImportBlueprint.date.getUTCDate(),
-										0, 0, 0, 0
-									)),
-									lt: new Date(Date.UTC(
-										transactionImportBlueprint.date.getUTCFullYear(),
-										transactionImportBlueprint.date.getUTCMonth(),
-										transactionImportBlueprint.date.getUTCDate() + 1,
-										0, 0, 0, 0
-									))
+									gte: new Date(
+										Date.UTC(
+											transactionImportBlueprint.date.getUTCFullYear(),
+											transactionImportBlueprint.date.getUTCMonth(),
+											transactionImportBlueprint.date.getUTCDate(),
+											0,
+											0,
+											0,
+											0
+										)
+									),
+									lt: new Date(
+										Date.UTC(
+											transactionImportBlueprint.date.getUTCFullYear(),
+											transactionImportBlueprint.date.getUTCMonth(),
+											transactionImportBlueprint.date.getUTCDate() + 1,
+											0,
+											0,
+											0,
+											0
+										)
+									)
 								},
 								value: transactionImportBlueprint.value
 							}
@@ -131,18 +141,28 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 								accountId: transactionImportBlueprint.accountId,
 								description: transactionImportBlueprint.description,
 								date: {
-									gte: new Date(Date.UTC(
-										transactionImportBlueprint.date.getUTCFullYear(),
-										transactionImportBlueprint.date.getUTCMonth(),
-										transactionImportBlueprint.date.getUTCDate(),
-										0, 0, 0, 0
-									)),
-									lt: new Date(Date.UTC(
-										transactionImportBlueprint.date.getUTCFullYear(),
-										transactionImportBlueprint.date.getUTCMonth(),
-										transactionImportBlueprint.date.getUTCDate() + 1,
-										0, 0, 0, 0
-									))
+									gte: new Date(
+										Date.UTC(
+											transactionImportBlueprint.date.getUTCFullYear(),
+											transactionImportBlueprint.date.getUTCMonth(),
+											transactionImportBlueprint.date.getUTCDate(),
+											0,
+											0,
+											0,
+											0
+										)
+									),
+									lt: new Date(
+										Date.UTC(
+											transactionImportBlueprint.date.getUTCFullYear(),
+											transactionImportBlueprint.date.getUTCMonth(),
+											transactionImportBlueprint.date.getUTCDate() + 1,
+											0,
+											0,
+											0,
+											0
+										)
+									)
 								},
 								value: transactionImportBlueprint.value
 							}

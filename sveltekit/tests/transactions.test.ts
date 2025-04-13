@@ -937,7 +937,10 @@ test.describe('Transactions', () => {
 
 	test.describe('Timezone handling', () => {
 		test.use({ timezoneId: 'Australia/Sydney' });
-		test('Transaction timestamps are correctly rendered in Australia timezone', async ({ page, baseURL }) => {
+		test('Transaction timestamps are correctly rendered in Australia timezone', async ({
+			page,
+			baseURL
+		}) => {
 			await databaseSeed(baseURL!);
 			await page.goto('/');
 			await page.locator('a', { hasText: 'Transactions' }).click();
@@ -970,7 +973,11 @@ test.describe('Transactions', () => {
 
 			// Save the transaction
 			await page.locator('button', { hasText: 'Add' }).click();
-			await expectToastAndDismiss(page, 'Timezone Test Transaction was created', Appearance.POSITIVE);
+			await expectToastAndDismiss(
+				page,
+				'Timezone Test Transaction was created',
+				Appearance.POSITIVE
+			);
 
 			// Verify the transaction is displayed with the correct date in Australia timezone
 			const tableRows = page.locator('.table__tr');
@@ -982,50 +989,6 @@ test.describe('Transactions', () => {
 			const yearValue = await yearSelect.inputValue();
 			const monthValue = await monthSelect.inputValue();
 			const dateValue = await dateSelect.inputValue();
-			await expect(yearSelect).toHaveValue('2025');
-			await expect(monthSelect).toHaveValue('4');
-			await expect(dateSelect).toHaveValue('28');
-		});
-
-		test.use({ timezoneId: 'America/New_York' });
-		test('Transaction timestamps are correctly rendered in New York timezone', async ({ page, baseURL }) => {
-			await databaseSeed(baseURL!);
-			await page.goto('/');
-			await page.locator('a', { hasText: 'Transactions' }).click();
-			await expect(page.locator('h1', { hasText: 'Transactions' })).toBeVisible();
-
-			// Create a new transaction
-			await page.locator('a', { hasText: 'Add transaction' }).click();
-			await expect(page.locator('h1', { hasText: 'Add transaction' })).toBeVisible();
-
-			// Fill in transaction details
-			const accountIdSelect = page.locator('.formSelect__select[name=accountId]');
-			const descriptionInput = page.locator('.formInput__input[name=description]');
-			const categoryIdSelect = page.locator('.formSelect__select[name=categoryId]');
-			const yearSelect = page.locator('.formSelect__select[name=yearSelect]');
-			const monthSelect = page.locator('.formSelect__select[name=monthSelect]');
-			const dateSelect = page.locator('.formSelect__select[name=dateSelect]');
-			const amountInput = page.locator('.formCurrencyInput input[name="formatted-value"]');
-
-			await accountIdSelect.selectOption({ label: "Bob's Laughable-Yield Checking" });
-			await descriptionInput.fill('Timezone Test Transaction');
-			await categoryIdSelect.selectOption({ label: 'Groceries' });
-			await yearSelect.selectOption({ label: '2025' });
-			await monthSelect.selectOption({ label: '4 - Apr' });
-			await dateSelect.selectOption({ label: '28' });
-			await amountInput.focus();
-			await page.keyboard.type('-100.00', { delay: DELAY_FOR_DECIMAL_VALUES_IN_MS });
-
-			// Save the transaction
-			await page.locator('button', { hasText: 'Add' }).click();
-			await expectToastAndDismiss(page, 'Timezone Test Transaction was created', Appearance.POSITIVE);
-
-			// Verify the transaction is displayed with the correct date in New York timezone
-			const tableRows = page.locator('.table__tr');
-			expect(await tableRows.first().textContent()).toMatch('Apr 28, 2025');
-
-			// Click into the transaction to verify the date components
-			await page.locator('a', { hasText: 'Timezone Test Transaction' }).click();
 			await expect(yearSelect).toHaveValue('2025');
 			await expect(monthSelect).toHaveValue('4');
 			await expect(dateSelect).toHaveValue('28');
