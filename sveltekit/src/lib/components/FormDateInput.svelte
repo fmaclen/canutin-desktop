@@ -6,11 +6,12 @@
 	export let name: string;
 	export let disabled: boolean = false;
 
-	const zonedDate = date ? dateInUTC(date) : new Date();
+	// When reading a date, we want to preserve the UTC midnight time
+	const zonedDate = date ? new Date(date) : new Date();
 
 	const days = Array.from(Array(31).keys()).map((i) => i + 1); // 31 days in a month
 
-	let thisYear = zonedDate.getFullYear();
+	let thisYear = zonedDate.getUTCFullYear();
 	const years = [
 		// Past 15 years
 		...Array.from(Array(15).keys())
@@ -21,11 +22,11 @@
 		...Array.from(Array(15).keys()).map((i) => thisYear + 1 + i)
 	];
 
-	let thisMonth = zonedDate.getMonth() + 1;
+	let thisMonth = zonedDate.getUTCMonth() + 1;
 	let months = Array.from(Array(12).keys()).map((i) => i + 1); // 12 months in a year
-	let thisDate = zonedDate.getDate();
+	let thisDate = zonedDate.getUTCDate();
 
-	$: inputUnixTimeInUTC = new Date(`${thisYear}-${thisMonth}-${thisDate} 00:00:00 UTC`).getTime() / 1000;
+	$: inputUnixTimeInUTC = new Date(Date.UTC(thisYear, thisMonth - 1, thisDate, 0, 0, 0)).getTime() / 1000;
 
 	const getDateSelects = (dates: number[]) => {
 		const isMonth = dates.length === 12;
@@ -41,6 +42,11 @@
 			};
 		});
 	};
+
+	$: console.warn('FormDateInput - Selected date components:', { year: thisYear, month: thisMonth, date: thisDate });
+	$: console.warn('FormDateInput - Generated UTC timestamp:', inputUnixTimeInUTC);
+	$: console.warn('FormDateInput - UTC date object:', new Date(inputUnixTimeInUTC * 1000));
+	$: console.warn('FormDateInput - Local date string:', new Date(inputUnixTimeInUTC * 1000).toLocaleString());
 </script>
 
 <div class="form__date-field">
