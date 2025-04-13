@@ -119,8 +119,6 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 							}
 						});
 
-						console.warn('existingTransactionImport', existingTransactionImport);
-
 						// Skip duplicate TransactionImports
 						if (existingTransactionImport) {
 							importedAccounts.transactions.skipped.push(transaction);
@@ -149,14 +147,10 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 								value: transactionImportBlueprint.value
 							}
 						});
-						console.warn('existingTransaction', existingTransaction);
 						if (existingTransaction) {
 							importedAccounts.transactions.skipped.push(transaction);
 							continue;
 						}
-
-						console.warn('creating transaction', transactionImportBlueprint);
-						console.warn('################################################');
 
 						// Create Transaction
 						const { id } = await prisma.transaction.create({
