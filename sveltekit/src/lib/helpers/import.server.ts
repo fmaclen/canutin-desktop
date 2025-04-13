@@ -99,9 +99,27 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 						// Check if a TransactionImport already exists
 						const existingTransactionImport = await prisma.transactionImport.findFirst({
 							where: {
-								...transactionImportBlueprint
+								accountId: transactionImportBlueprint.accountId,
+								description: transactionImportBlueprint.description,
+								date: {
+									gte: new Date(Date.UTC(
+										transactionImportBlueprint.date.getUTCFullYear(),
+										transactionImportBlueprint.date.getUTCMonth(),
+										transactionImportBlueprint.date.getUTCDate(),
+										0, 0, 0, 0
+									)),
+									lt: new Date(Date.UTC(
+										transactionImportBlueprint.date.getUTCFullYear(),
+										transactionImportBlueprint.date.getUTCMonth(),
+										transactionImportBlueprint.date.getUTCDate() + 1,
+										0, 0, 0, 0
+									))
+								},
+								value: transactionImportBlueprint.value
 							}
 						});
+
+						console.warn('existingTransactionImport', existingTransactionImport);
 
 						// Skip duplicate TransactionImports
 						if (existingTransactionImport) {
@@ -131,10 +149,14 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 								value: transactionImportBlueprint.value
 							}
 						});
+						console.warn('existingTransaction', existingTransaction);
 						if (existingTransaction) {
 							importedAccounts.transactions.skipped.push(transaction);
 							continue;
 						}
+
+						console.warn('creating transaction', transactionImportBlueprint);
+						console.warn('################################################');
 
 						// Create Transaction
 						const { id } = await prisma.transaction.create({
