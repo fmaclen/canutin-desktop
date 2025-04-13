@@ -133,9 +133,6 @@ export const formatTransactionDescription = (description: string) => {
 
 // Transaction dates are normalized to UTC at midnight
 export const formatTransactionDate = (date: string | number | Date) => {
-	console.warn('formatTransactionDate - Input date:', date);
-	console.warn('formatTransactionDate - Input date type:', typeof date);
-	
 	let result: Date;
 	switch (typeof date) {
 		case 'string':
@@ -150,9 +147,6 @@ export const formatTransactionDate = (date: string | number | Date) => {
 		default:
 			throw new Error(`Invalid date type: ${typeof date}`);
 	}
-	
-	console.warn('formatTransactionDate - Resulting UTC date:', result);
-	console.warn('formatTransactionDate - Resulting local date string:', result.toLocaleString());
 	return result;
 };
 

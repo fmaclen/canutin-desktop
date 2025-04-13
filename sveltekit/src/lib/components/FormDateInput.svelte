@@ -42,11 +42,6 @@
 			};
 		});
 	};
-
-	$: console.warn('FormDateInput - Selected date components:', { year: thisYear, month: thisMonth, date: thisDate });
-	$: console.warn('FormDateInput - Generated UTC timestamp:', inputUnixTimeInUTC);
-	$: console.warn('FormDateInput - UTC date object:', new Date(inputUnixTimeInUTC * 1000));
-	$: console.warn('FormDateInput - Local date string:', new Date(inputUnixTimeInUTC * 1000).toLocaleString());
 </script>
 
 <div class="form__date-field">
