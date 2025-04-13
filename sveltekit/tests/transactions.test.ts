@@ -945,8 +945,6 @@ test.describe('Transactions', () => {
 
 			// Log current time in test environment
 			const currentDate = new Date();
-			console.log('Current time in test environment:', currentDate.toISOString());
-			console.log('Current time in Australia/Sydney:', currentDate.toLocaleString('en-AU', { timeZone: 'Australia/Sydney' }));
 
 			// Create a new transaction
 			await page.locator('a', { hasText: 'Add transaction' }).click();
@@ -977,7 +975,6 @@ test.describe('Transactions', () => {
 			// Verify the transaction is displayed with the correct date in Australia timezone
 			const tableRows = page.locator('.table__tr');
 			const displayedDate = await tableRows.first().textContent();
-			console.log('Displayed date in table:', displayedDate);
 			expect(displayedDate).toMatch('Apr 28, 2025');
 
 			// Click into the transaction to verify the date components
@@ -985,7 +982,6 @@ test.describe('Transactions', () => {
 			const yearValue = await yearSelect.inputValue();
 			const monthValue = await monthSelect.inputValue();
 			const dateValue = await dateSelect.inputValue();
-			console.log('Transaction date components:', { year: yearValue, month: monthValue, date: dateValue });
 			await expect(yearSelect).toHaveValue('2025');
 			await expect(monthSelect).toHaveValue('4');
 			await expect(dateSelect).toHaveValue('28');
