@@ -17,11 +17,11 @@
 	import { toCamelCase } from '$lib/helpers/misc';
 	import {
 		formatCurrency,
-		formatInUTC,
 		sortByBoolean,
 		sortByString,
 		sortByNumber
 	} from '$lib/helpers/misc';
+	import { formatInUTC } from '$lib/helpers/timezone';
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { PageData } from './$types';
 

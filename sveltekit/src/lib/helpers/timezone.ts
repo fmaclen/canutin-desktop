@@ -1,5 +1,3 @@
-import formatInTimeZone from 'date-fns-tz/esm/formatInTimeZone';
-
 export function toZonedTime(date: Date, timeZone: string): Date {
 	const formatter = new Intl.DateTimeFormat('en-US', {
 		timeZone,
@@ -31,5 +29,26 @@ export const dateInUTC = (date: Date) => {
 };
 
 export const formatInUTC = (date: Date, format: string) => {
-	return formatInTimeZone(date, 'UTC', format);
+	const formatter = new Intl.DateTimeFormat('en-US', {
+		timeZone: 'UTC',
+		year: 'numeric',
+		month: 'short',
+		day: 'numeric',
+		hour: 'numeric',
+		minute: 'numeric',
+		second: 'numeric',
+		hour12: false
+	});
+
+	const parts = formatter.formatToParts(date);
+	const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+	// Replace format tokens with actual values
+	return format
+		.replace('yyyy', values.year)
+		.replace('MMM', values.month)
+		.replace('dd', values.day)
+		.replace('HH', values.hour)
+		.replace('mm', values.minute)
+		.replace('ss', values.second);
 };
