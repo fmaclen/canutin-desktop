@@ -11,7 +11,7 @@
 
 	const days = Array.from(Array(31).keys()).map((i) => i + 1); // 31 days in a month
 
-	let thisYear = zonedDate.getUTCFullYear();
+	let thisYear = zonedDate.getFullYear();
 	const years = [
 		// Past 15 years
 		...Array.from(Array(15).keys())
@@ -22,9 +22,9 @@
 		...Array.from(Array(15).keys()).map((i) => thisYear + 1 + i)
 	];
 
-	let thisMonth = zonedDate.getUTCMonth() + 1;
+	let thisMonth = zonedDate.getMonth() + 1;
 	let months = Array.from(Array(12).keys()).map((i) => i + 1); // 12 months in a year
-	let thisDate = zonedDate.getUTCDate();
+	let thisDate = zonedDate.getDate();
 
 	$: inputUnixTimeInUTC = new Date(Date.UTC(thisYear, thisMonth - 1, thisDate, 0, 0, 0)).getTime() / 1000;
 
