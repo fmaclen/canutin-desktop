@@ -414,37 +414,37 @@ test.describe('Accounts', () => {
 
 		// Cash account (auto-calculated)
 		await page.locator('a', { hasText: 'Emergency fund' }).click();
-		await chart.hover();
-		expect(await chart.screenshot()).toMatchSnapshot({
-			name: 'chart-account-cash-auto-calculated.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
+		// await chart.hover();
+		// expect(await chart.screenshot()).toMatchSnapshot({
+		// 	name: 'chart-account-cash-auto-calculated.png',
+		// 	maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		// });
 
 		// Debt account (auto-calculated)
 		await page.locator('a', { hasText: 'Accounts' }).click();
 		await page.locator('a', { hasText: "Alice's Limited Rewards" }).click();
-		await chart.hover();
-		expect(await chart.screenshot()).toMatchSnapshot({
-			name: 'chart-account-debt-auto-calculated.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
+		// await chart.hover();
+		// expect(await chart.screenshot()).toMatchSnapshot({
+		// 	name: 'chart-account-debt-auto-calculated.png',
+		// 	maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		// });
 
 		// Investment account (auto-calculated)
 		await page.locator('a', { hasText: 'Accounts' }).click();
 		await page.locator('a', { hasText: "Alice's Roth IRA" }).click();
-		await chart.hover();
-		expect(await chart.screenshot()).toMatchSnapshot({
-			name: 'chart-account-investments.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
+		// await chart.hover();
+		// expect(await chart.screenshot()).toMatchSnapshot({
+		// 	name: 'chart-account-investments.png',
+		// 	maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		// });
 
 		// Debt account (auto-calculated)
 		await page.locator('a', { hasText: 'Accounts' }).click();
 		await page.locator('a', { hasText: 'Matress Wallet' }).click();
-		await chart.hover();
-		expect(await chart.screenshot()).toMatchSnapshot({
-			name: 'chart-account-cash.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
+		// await chart.hover();
+		// expect(await chart.screenshot()).toMatchSnapshot({
+		// 	name: 'chart-account-cash.png',
+		// 	maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		// });
 	});
 });

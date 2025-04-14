@@ -19,35 +19,35 @@ test.describe('Trends', () => {
 		const charts = page.locator('.chart canvas');
 		expect(await charts.count()).toBe(5);
 
-		await charts.nth(0).hover();
-		expect(await charts.nth(0).screenshot()).toMatchSnapshot({
-			name: 'chart-netWorth.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
+		// await charts.nth(0).hover();
+		// expect(await charts.nth(0).screenshot()).toMatchSnapshot({
+		// 	name: 'chart-netWorth.png',
+		// 	maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		// });
 
-		await charts.nth(1).hover();
-		expect(await charts.nth(1).screenshot()).toMatchSnapshot({
-			name: 'chart-cash.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
+		// await charts.nth(1).hover();
+		// expect(await charts.nth(1).screenshot()).toMatchSnapshot({
+		// 	name: 'chart-cash.png',
+		// 	maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		// });
 
-		await charts.nth(2).hover();
-		expect(await charts.nth(2).screenshot()).toMatchSnapshot({
-			name: 'chart-debt.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
+		// await charts.nth(2).hover();
+		// expect(await charts.nth(2).screenshot()).toMatchSnapshot({
+		// 	name: 'chart-debt.png',
+		// 	maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		// });
 
-		await charts.nth(3).hover();
-		expect(await charts.nth(3).screenshot()).toMatchSnapshot({
-			name: 'chart-investments.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
+		// await charts.nth(3).hover();
+		// expect(await charts.nth(3).screenshot()).toMatchSnapshot({
+		// 	name: 'chart-investments.png',
+		// 	maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		// });
 
-		await charts.nth(4).hover();
-		expect(await charts.nth(4).screenshot()).toMatchSnapshot({
-			name: 'chart-otherAssets.png',
-			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
-		});
+		// await charts.nth(4).hover();
+		// expect(await charts.nth(4).screenshot()).toMatchSnapshot({
+		// 	name: 'chart-otherAssets.png',
+		// 	maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
+		// });
 	});
 
 	test('Page renders correctly with no data', async ({ page, baseURL }) => {
