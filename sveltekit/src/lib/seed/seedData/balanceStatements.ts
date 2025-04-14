@@ -1,5 +1,5 @@
 import { subMonths } from 'date-fns';
-import { dateInUTC } from '../../helpers/misc';
+import { dateInUTC } from '../../helpers/timezone';
 
 // Accounts
 export const accountAutoLoanBalanceStatements = [

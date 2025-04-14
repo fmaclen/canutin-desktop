@@ -1,6 +1,6 @@
 import { getTransactionCategoryId } from '$lib/helpers/models.server';
 import { addDays, startOfMonth, subMonths } from 'date-fns';
-import { dateInUTC } from '$lib//helpers/misc';
+import { dateInUTC } from '$lib/helpers/timezone';
 
 const MONTHS_IN_SET = 24;
 

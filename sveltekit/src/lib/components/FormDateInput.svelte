@@ -1,6 +1,6 @@
 <script lang="ts">
 	import FormSelect from './FormSelect.svelte';
-	import { LOCALE, dateInUTC } from '$lib/helpers/misc';
+	import { LOCALE } from '$lib/helpers/misc';
 
 	export let date: Date | undefined;
 	export let name: string;

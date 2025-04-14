@@ -1,9 +1,8 @@
 import prisma from '$lib/helpers/prisma.server';
 import type { Account } from '@prisma/client';
 import type { Asset } from '@prisma/client';
-import { fromUnixTime } from 'date-fns';
 import { SortOrder } from './constants';
-import { dateInUTC } from './misc';
+import { dateInUTC } from './timezone';
 
 // Gets the Account or Asset type id from the name
 export const getModelType = async (modelTypeName: string, isAccount: boolean) => {
