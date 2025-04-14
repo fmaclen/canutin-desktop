@@ -3,7 +3,10 @@
 	font-family: 'Inter';
 	font-style: normal;
 	font-weight: 400;
-	src: local('Inter'), url('./lib/fonts/Inter-Regular.woff2') format('woff2'), local('Inter'),
+	src:
+		local('Inter'),
+		url('./lib/fonts/Inter-Regular.woff2') format('woff2'),
+		local('Inter'),
 		url('./lib/fonts/Inter-Regular.woff') format('woff');
 }
 
@@ -11,7 +14,10 @@
 	font-family: 'Inter';
 	font-style: normal;
 	font-weight: 600;
-	src: local('Inter'), url('./lib/fonts/Inter-SemiBold.woff2') format('woff2'), local('Inter'),
+	src:
+		local('Inter'),
+		url('./lib/fonts/Inter-SemiBold.woff2') format('woff2'),
+		local('Inter'),
 		url('./lib/fonts/Inter-SemiBold.woff') format('woff');
 }
 
@@ -20,8 +26,11 @@
 	font-family: 'Decima Mono Pro';
 	font-weight: 400;
 	font-style: normal;
-	src: local('Decima Mono Pro'), url('./lib/fonts/DecimaMonoPro-Regular.woff2') format('woff2'),
-		local('Decima Mono Pro'), url('./lib/fonts/DecimaMonoPro-Regular.woff') format('woff');
+	src:
+		local('Decima Mono Pro'),
+		url('./lib/fonts/DecimaMonoPro-Regular.woff2') format('woff2'),
+		local('Decima Mono Pro'),
+		url('./lib/fonts/DecimaMonoPro-Regular.woff') format('woff');
 }
 
 html.html {

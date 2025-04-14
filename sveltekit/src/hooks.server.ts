@@ -41,9 +41,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 		const shouldVaultBeChecked = env.SHOULD_CHECK_VAULT === 'true';
 		if (shouldVaultBeChecked) {
-			return isRequestJson
-				? new Response('Not ready', { status: 202 })
-				: redirect(307, '/vault');
+			return isRequestJson ? new Response('Not ready', { status: 202 }) : redirect(307, '/vault');
 		}
 
 		// Access key
