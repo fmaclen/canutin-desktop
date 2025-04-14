@@ -1,6 +1,7 @@
 import { Appearance } from '../src/lib/helpers/constants.js';
 import { expect, test } from '@playwright/test';
 import { format, addDays, startOfMonth, subMonths } from 'date-fns';
+import { toZonedTime } from '../src/lib/helpers/timezone.js';
 
 import {
 	DELAY_FOR_DECIMAL_VALUES_IN_MS,
@@ -456,6 +457,16 @@ test.describe('Transactions', () => {
 		const isExcludedCheckbox = page.locator('.formInputCheckbox__input[name=isExcluded]');
 		const isPendingCheckbox = page.locator('.formInputCheckbox__input[name=isPending]');
 		const amountInput = page.locator('.formCurrencyInput input[name="formatted-value"]');
+
+		// Verify default date selections match today's date in Australia/Sydney timezone
+		const today = toZonedTime(new Date(), 'Australia/Sydney');
+		const currentYear = today.getFullYear().toString();
+		const currentMonth = (today.getMonth() + 1).toString();
+		const currentDate = today.getDate().toString();
+
+		await expect(yearSelect).toHaveValue(currentYear);
+		await expect(monthSelect).toHaveValue(currentMonth);
+		await expect(dateSelect).toHaveValue(currentDate);
 
 		// Add a transaction
 		await page.locator('a', { hasText: 'Add transaction' }).click();
@@ -958,6 +969,16 @@ test.describe('Transactions', () => {
 			const monthSelect = page.locator('.formSelect__select[name=monthSelect]');
 			const dateSelect = page.locator('.formSelect__select[name=dateSelect]');
 			const amountInput = page.locator('.formCurrencyInput input[name="formatted-value"]');
+
+			// Verify default date selections match today's date in Australia/Sydney timezone
+			const today = toZonedTime(new Date(), 'Australia/Sydney');
+			const currentYear = today.getFullYear().toString();
+			const currentMonth = (today.getMonth() + 1).toString();
+			const currentDate = today.getDate().toString();
+
+			await expect(yearSelect).toHaveValue(currentYear);
+			await expect(monthSelect).toHaveValue(currentMonth);
+			await expect(dateSelect).toHaveValue(currentDate);
 
 			await accountIdSelect.selectOption({ label: "Bob's Laughable-Yield Checking" });
 			await descriptionInput.fill('Timezone Test Transaction');
