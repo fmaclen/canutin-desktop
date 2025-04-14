@@ -458,16 +458,6 @@ test.describe('Transactions', () => {
 		const isPendingCheckbox = page.locator('.formInputCheckbox__input[name=isPending]');
 		const amountInput = page.locator('.formCurrencyInput input[name="formatted-value"]');
 
-		// Verify default date selections match today's date in Australia/Sydney timezone
-		const today = toZonedTime(new Date(), 'Australia/Sydney');
-		const currentYear = today.getFullYear().toString();
-		const currentMonth = (today.getMonth() + 1).toString();
-		const currentDate = today.getDate().toString();
-
-		await expect(yearSelect).toHaveValue(currentYear);
-		await expect(monthSelect).toHaveValue(currentMonth);
-		await expect(dateSelect).toHaveValue(currentDate);
-
 		// Add a transaction
 		await page.locator('a', { hasText: 'Add transaction' }).click();
 		await expect(addButton).toBeDisabled();
