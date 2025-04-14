@@ -34,7 +34,8 @@
 	import TableValue from '$lib/components/TableValue.svelte';
 	import { api, toCamelCase } from '$lib/helpers/misc';
 	import { CardAppearance } from '$lib/components/Card';
-	import { dateInUTC, formatCurrency, formatInUTC } from '$lib/helpers/misc';
+	import { formatCurrency } from '$lib/helpers/misc';
+	import { dateInUTC, formatInUTC } from '$lib/helpers/timezone';
 	import { SortOrder } from '$lib/helpers/constants';
 	import type { TransactionResponse } from '../transactions.json/+server';
 	import type { PageData } from './$types';

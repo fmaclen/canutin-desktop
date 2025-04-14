@@ -12,7 +12,7 @@ import { SyncSettings } from './constants';
 import type { SyncStatusStore } from '$lib/stores/syncStatusStore';
 import type { CanutinFile, ImportedAccounts, ImportedAssets } from './import';
 import { env } from '$env/dynamic/private';
-import { dateInUTC } from './misc';
+import { dateInUTC } from './timezone';
 
 export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 	const importedAccounts: ImportedAccounts = {

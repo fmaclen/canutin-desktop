@@ -105,7 +105,7 @@ test.describe('Transactions', () => {
 		// Check the date column is formatted correctly
 		//
 		// FIXME: date it's zoned to the device's timezone so it's possible this test will fail,
-		// instead of `format(...)` we should use `formatInUTC(...)` from `src/lib/helpers/misc.ts`
+		// instead of `format(...)` we should use `formatInUTC(...)` from `src/lib/helpers/timezone.ts`
 		// but Playwright "Can't find module".
 		expect(await tableRows.first().textContent()).toMatch(
 			format(latestTransactionDate, 'MMM dd, yyyy')
