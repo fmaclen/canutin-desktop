@@ -1,7 +1,7 @@
 {
 	"name": "app",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --host",
 		"build": "vite build",
 		"preview": "vite preview",
 		"test": "npx playwright test",
@@ -15,7 +15,7 @@
 	},
 	"devDependencies": {
 		"@canutin/svelte-currency-input": "^0.11.4",
-		"@playwright/test": "^1.43.0",
+		"@playwright/test": "^1.51.1",
 		"@sveltejs/adapter-node": "^5.0.1",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",

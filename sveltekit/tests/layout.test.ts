@@ -228,7 +228,6 @@ test.describe('Layout', () => {
 		expect(JSON.stringify(currentLocalStorage)).toMatch('lastUpdateCheck');
 	});
 
-
 	test('Can switch color theme to and from dark mode', async ({ page }) => {
 		await page.goto('/');
 		await expect(page.locator('h1', { hasText: 'The big picture' })).toBeVisible();

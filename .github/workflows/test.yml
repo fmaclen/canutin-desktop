@@ -41,7 +41,7 @@ jobs:
 
       - name: Run Playwright tests
         working-directory: ./sveltekit
-        run: npm test
+        run: npx playwright test --update-snapshots --reporter=list
         env:
           NODE_ENV: CI
           BROWSER: ${{ matrix.browser }}

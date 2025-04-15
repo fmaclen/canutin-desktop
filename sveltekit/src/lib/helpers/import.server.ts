@@ -12,6 +12,7 @@ import { SyncSettings } from './constants';
 import type { SyncStatusStore } from '$lib/stores/syncStatusStore';
 import type { CanutinFile, ImportedAccounts, ImportedAssets } from './import';
 import { env } from '$env/dynamic/private';
+import { dateInUTC } from './misc';
 
 export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 	const importedAccounts: ImportedAccounts = {
@@ -98,7 +99,33 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 						// Check if a TransactionImport already exists
 						const existingTransactionImport = await prisma.transactionImport.findFirst({
 							where: {
-								...transactionImportBlueprint
+								accountId: transactionImportBlueprint.accountId,
+								description: transactionImportBlueprint.description,
+								date: {
+									gte: new Date(
+										Date.UTC(
+											transactionImportBlueprint.date.getUTCFullYear(),
+											transactionImportBlueprint.date.getUTCMonth(),
+											transactionImportBlueprint.date.getUTCDate(),
+											0,
+											0,
+											0,
+											0
+										)
+									),
+									lt: new Date(
+										Date.UTC(
+											transactionImportBlueprint.date.getUTCFullYear(),
+											transactionImportBlueprint.date.getUTCMonth(),
+											transactionImportBlueprint.date.getUTCDate() + 1,
+											0,
+											0,
+											0,
+											0
+										)
+									)
+								},
+								value: transactionImportBlueprint.value
 							}
 						});
 
@@ -113,7 +140,30 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 							where: {
 								accountId: transactionImportBlueprint.accountId,
 								description: transactionImportBlueprint.description,
-								date: transactionImportBlueprint.date,
+								date: {
+									gte: new Date(
+										Date.UTC(
+											transactionImportBlueprint.date.getUTCFullYear(),
+											transactionImportBlueprint.date.getUTCMonth(),
+											transactionImportBlueprint.date.getUTCDate(),
+											0,
+											0,
+											0,
+											0
+										)
+									),
+									lt: new Date(
+										Date.UTC(
+											transactionImportBlueprint.date.getUTCFullYear(),
+											transactionImportBlueprint.date.getUTCMonth(),
+											transactionImportBlueprint.date.getUTCDate() + 1,
+											0,
+											0,
+											0,
+											0
+										)
+									)
+								},
 								value: transactionImportBlueprint.value
 							}
 						});
@@ -134,6 +184,7 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 						const transactionImport = await prisma.transactionImport.create({
 							data: {
 								...transactionImportBlueprint,
+								date: dateInUTC(transactionImportBlueprint.date),
 								transactionId: id,
 								categoryName: transaction.categoryName
 							}

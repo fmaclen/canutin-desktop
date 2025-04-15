@@ -133,16 +133,21 @@ export const formatTransactionDescription = (description: string) => {
 
 // Transaction dates are normalized to UTC at midnight
 export const formatTransactionDate = (date: string | number | Date) => {
+	let result: Date;
 	switch (typeof date) {
 		case 'string':
-			return dateInUTC(fromUnixTime(Number(date)));
 		case 'number':
-			return dateInUTC(fromUnixTime(date));
+			// For Unix timestamps, create the date directly in UTC
+			const timestamp = typeof date === 'string' ? Number(date) : date;
+			result = new Date(timestamp * 1000);
+			break;
 		case 'object':
-			return dateInUTC(date);
+			result = dateInUTC(date);
+			break;
 		default:
 			throw new Error(`Invalid date type: ${typeof date}`);
 	}
+	return result;
 };
 
 // Returns dates for the Account's oldest balance and the newest balance
