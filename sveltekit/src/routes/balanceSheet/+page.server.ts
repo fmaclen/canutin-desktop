@@ -10,6 +10,7 @@ interface BalanceSheetItem {
 	type: string;
 	currentBalance: number;
 	isAccount: boolean;
+	isExcludedFromNetWorth: boolean;
 }
 
 interface BalanceItemsTypeGroup {
@@ -29,7 +30,6 @@ export interface BalanceSheetBalanceGroup {
 export const load = async () => {
 	// Get Accounts and Assets
 	const accounts = await prisma.account.findMany({
-		where: { isExcludedFromNetWorth: false },
 		include: {
 			accountType: {
 				select: {
@@ -39,7 +39,6 @@ export const load = async () => {
 		}
 	});
 	const assets = await prisma.asset.findMany({
-		where: { isExcludedFromNetWorth: false },
 		include: {
 			assetType: {
 				select: {
@@ -53,7 +52,7 @@ export const load = async () => {
 	// Get the latest balances for Accounts and Assets
 	const balanceSheetItems: BalanceSheetItem[] = [];
 	for (const balanceItem of balanceItems) {
-		const { id, name, balanceGroup } = balanceItem;
+		const { id, name, balanceGroup, isExcludedFromNetWorth } = balanceItem;
 
 		let currentBalance: number;
 		let type: string;
@@ -77,7 +76,8 @@ export const load = async () => {
 			isAccount,
 			balanceGroup,
 			type,
-			currentBalance
+			currentBalance,
+			isExcludedFromNetWorth
 		});
 	}
 
@@ -87,7 +87,7 @@ export const load = async () => {
 	// Group balanceSheetItems by type
 	const balanceItemsTypeGroups: BalanceItemsTypeGroup[] = [];
 	for (const balanceSheetItem of balanceSheetItems) {
-		const { balanceGroup, type, currentBalance } = balanceSheetItem;
+		const { balanceGroup, type, currentBalance, isExcludedFromNetWorth } = balanceSheetItem;
 
 		// Find an existing group type
 		const balanceSheetTypeGroup = balanceItemsTypeGroups.find(
@@ -96,14 +96,16 @@ export const load = async () => {
 
 		if (balanceSheetTypeGroup) {
 			// Add item to existing group
-			balanceSheetTypeGroup.currentBalance += currentBalance;
+			if (!isExcludedFromNetWorth) {
+				balanceSheetTypeGroup.currentBalance += currentBalance;
+			}
 			balanceSheetTypeGroup.balanceSheetItems.push(balanceSheetItem);
 		} else {
 			// Create a new group and add item
 			balanceItemsTypeGroups.push({
 				type,
 				balanceGroup,
-				currentBalance,
+				currentBalance: isExcludedFromNetWorth ? 0 : currentBalance,
 				balanceSheetItems: [balanceSheetItem]
 			});
 		}
@@ -115,25 +117,25 @@ export const load = async () => {
 	// Group balanceItemsTypeGroups by balanceGroup
 	const balanceSheetBalanceGroups: BalanceSheetBalanceGroup[] = [];
 
-	for (const balanceSheetTypeGroup of balanceItemsTypeGroups) {
-		const { balanceGroup, currentBalance } = balanceSheetTypeGroup;
+	for (const balanceItemsTypeGroup of balanceItemsTypeGroups) {
+		const { balanceGroup, currentBalance } = balanceItemsTypeGroup;
 
-		// Find an existing group type
-		const balanceSheetItemBalanceGroup = balanceSheetBalanceGroups.find(
+		// Find an existing balance group
+		const balanceSheetBalanceGroup = balanceSheetBalanceGroups.find(
 			({ id }) => id === balanceGroup
 		);
 
-		if (balanceSheetItemBalanceGroup) {
-			// Add item to existing group
-			balanceSheetItemBalanceGroup.currentBalance += currentBalance;
-			balanceSheetItemBalanceGroup.balanceItemsTypeGroups.push(balanceSheetTypeGroup);
+		if (balanceSheetBalanceGroup) {
+			// Add type group to existing balance group
+			balanceSheetBalanceGroup.currentBalance += currentBalance;
+			balanceSheetBalanceGroup.balanceItemsTypeGroups.push(balanceItemsTypeGroup);
 		} else {
-			// Create a new group and add item
+			// Create a new balance group and add type group
 			balanceSheetBalanceGroups.push({
 				id: balanceGroup,
 				label: getBalanceGroupLabel(balanceGroup),
 				currentBalance,
-				balanceItemsTypeGroups: [balanceSheetTypeGroup]
+				balanceItemsTypeGroups: [balanceItemsTypeGroup]
 			});
 		}
 	}
