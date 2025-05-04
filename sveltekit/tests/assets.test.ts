@@ -286,4 +286,38 @@ test.describe('Assets', () => {
 			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
 		});
 	});
+
+	test('An asset can be excluded from net worth', async ({ baseURL, page }) => {
+		await databaseSeed(baseURL!);
+
+		// Navigate to an asset page
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Assets' }).click();
+		await page.locator('a', { hasText: 'Bitcoin' }).click();
+		await expect(page.locator('h1', { hasText: 'Bitcoin' })).toBeVisible();
+
+		const excludeCheckbox = page.locator('.formInputCheckbox__input[name=isExcludedFromNetWorth]');
+		const saveButton = page.locator('button', { hasText: 'Save' });
+
+		// Check initial state (should be unchecked)
+		await expect(excludeCheckbox).not.toBeChecked();
+
+		// Check the box and save
+		await excludeCheckbox.check();
+		await saveButton.click();
+		await expectToastAndDismiss(page, 'Bitcoin was updated', Appearance.POSITIVE);
+
+		// Re-navigate and check state (should be checked)
+		await page.locator('a', { hasText: 'Bitcoin' }).click();
+		await expect(excludeCheckbox).toBeChecked();
+
+		// Uncheck the box and save
+		await excludeCheckbox.uncheck();
+		await saveButton.click();
+		await expectToastAndDismiss(page, 'Bitcoin was updated', Appearance.POSITIVE);
+
+		// Re-navigate and check state (should be unchecked again)
+		await page.locator('a', { hasText: 'Bitcoin' }).click();
+		await expect(excludeCheckbox).not.toBeChecked();
+	});
 });

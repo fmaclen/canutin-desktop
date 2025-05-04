@@ -447,4 +447,38 @@ test.describe('Accounts', () => {
 			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
 		});
 	});
+
+	test('An account can be excluded from net worth', async ({ baseURL, page }) => {
+		await databaseSeed(baseURL!);
+
+		// Navigate to an account page
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Accounts' }).click();
+		await page.locator('a', { hasText: 'Emergency fund' }).click();
+		await expect(page.locator('h1', { hasText: 'Emergency fund' })).toBeVisible();
+
+		const excludeCheckbox = page.locator('.formInputCheckbox__input[name=isExcludedFromNetWorth]');
+		const saveButton = page.locator('button', { hasText: 'Save' });
+
+		// Check initial state (should be unchecked)
+		await expect(excludeCheckbox).not.toBeChecked();
+
+		// Check the box and save
+		await excludeCheckbox.check();
+		await saveButton.click();
+		await expectToastAndDismiss(page, 'Emergency fund was updated', Appearance.POSITIVE);
+
+		// Re-navigate and check state (should be checked)
+		await page.locator('a', { hasText: 'Emergency fund' }).click();
+		await expect(excludeCheckbox).toBeChecked();
+
+		// Uncheck the box and save
+		await excludeCheckbox.uncheck();
+		await saveButton.click();
+		await expectToastAndDismiss(page, 'Emergency fund was updated', Appearance.POSITIVE);
+
+		// Re-navigate and check state (should be unchecked again)
+		await page.locator('a', { hasText: 'Emergency fund' }).click();
+		await expect(excludeCheckbox).not.toBeChecked();
+	});
 });
