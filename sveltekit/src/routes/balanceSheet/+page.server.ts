@@ -29,6 +29,7 @@ export interface BalanceSheetBalanceGroup {
 export const load = async () => {
 	// Get Accounts and Assets
 	const accounts = await prisma.account.findMany({
+		where: { isExcludedFromNetWorth: false },
 		include: {
 			accountType: {
 				select: {
@@ -38,6 +39,7 @@ export const load = async () => {
 		}
 	});
 	const assets = await prisma.asset.findMany({
+		where: { isExcludedFromNetWorth: false },
 		include: {
 			assetType: {
 				select: {

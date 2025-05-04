@@ -137,8 +137,12 @@ const generateEmptyDataset = (accounts: Account[] | null, assets: Asset[] | null
 };
 
 export const load = async () => {
-	const accounts = await prisma.account.findMany();
-	const assets = await prisma.asset.findMany();
+	const accounts = await prisma.account.findMany({
+		where: { isExcludedFromNetWorth: false }
+	});
+	const assets = await prisma.asset.findMany({
+		where: { isExcludedFromNetWorth: false }
+	});
 
 	if (accounts) {
 		for (const account of accounts) {
