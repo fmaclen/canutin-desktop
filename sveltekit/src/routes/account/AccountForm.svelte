@@ -47,7 +47,7 @@
 		</FormField>
 	</FormFieldset>
 	<FormFieldset>
-		<FormField name="markedAs" label="Marked as">
+		<FormField name="flags" label="Marked as">
 			<FormFieldFlags>
 				<FormInputCheckbox name="isExcludedFromNetWorth" label="Excluded from net worth" bind:checked={isExcludedFromNetWorth} />
 				<FormInputCheckbox name="isClosed" label="Closed" bind:checked={isClosed} />

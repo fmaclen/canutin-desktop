@@ -29,6 +29,7 @@
 			balanceGroup: parseInt(event.target.balanceGroup?.value),
 			assetTypeId: parseInt(event.target.assetTypeId?.value),
 			isSold: event.target.isSold?.checked ? true : false,
+			isExcludedFromNetWorth: event.target.isExcludedFromNetWorth?.checked ? true : false,
 			assetBalanceStatements: {
 				create: [
 					{
