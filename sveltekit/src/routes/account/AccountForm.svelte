@@ -10,7 +10,8 @@
 	import Button from '$lib/components/Button.svelte';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { FormSelectOption } from '$lib/components/FormSelect';
-	import type { Account, AccountBalanceStatement } from '@prisma/client';
+	import type { Account } from '@prisma/client';
+	import FormFieldFlags from '$lib/components/FormFieldFlags.svelte';
 
 	export let handleSubmit: (e: SubmitEvent) => void;
 	export let account: Account | null = null;
@@ -23,6 +24,7 @@
 	let accountTypeId = account ? account.accountTypeId : 1;
 	let isClosed = account ? account.isClosed : false;
 	let isAutoCalculated = account ? account.isAutoCalculated : false;
+	let isExcludedFromNetWorth = account ? account.isExcludedFromNetWorth : false;
 </script>
 
 <Form on:submit={handleSubmit}>
@@ -45,8 +47,11 @@
 		</FormField>
 	</FormFieldset>
 	<FormFieldset>
-		<FormField name="isClosed" label="Mark as">
-			<FormInputCheckbox name="isClosed" label="Closed" bind:checked={isClosed} />
+		<FormField name="markedAs" label="Marked as">
+			<FormFieldFlags>
+				<FormInputCheckbox name="isExcludedFromNetWorth" label="Excluded from net worth" bind:checked={isExcludedFromNetWorth} />
+				<FormInputCheckbox name="isClosed" label="Closed" bind:checked={isClosed} />
+			</FormFieldFlags>
 		</FormField>
 	</FormFieldset>
 	<FormFieldset>
