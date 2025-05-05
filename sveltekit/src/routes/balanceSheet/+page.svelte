@@ -6,6 +6,7 @@
 	import Plate from '$lib/components/Plate.svelte';
 	import Link from '$lib/components/Link.svelte';
 	import Notice from '$lib/components/Notice.svelte';
+	import TableValue from '$lib/components/TableValue.svelte';
 	import { balanceGroupAppearance } from '$lib/components/Card';
 	import { formatCurrency } from '$lib/helpers/misc';
 	import type { PageData } from './$types';
@@ -43,7 +44,9 @@
 								<header class="balanceSheet__typeHeader">
 									<p class="balanceSheet__typeName">{balanceSheetTypeGroup.type}</p>
 									<p class="balanceSheet__typeValue">
-										{formatCurrency(balanceSheetTypeGroup.currentBalance)}
+										<TableValue isNumeric={true}>
+											{formatCurrency(balanceSheetTypeGroup.currentBalance)}
+										</TableValue>
 									</p>
 								</header>
 								<ol class="balanceSheet__items">
@@ -56,8 +59,16 @@
 													}`}>{balanceSheetItem.name}</Link
 												>
 											</p>
-											<p class="balanceSheet__itemValue">
-												{formatCurrency(balanceSheetItem.currentBalance)}
+											<p class="balanceSheet__itemValue" data-test-id={`balance-item-${balanceSheetItem.name}`}>
+												<TableValue
+													isExcluded={balanceSheetItem.isExcludedFromNetWorth}
+													isNumeric={true}
+													title={balanceSheetItem.isExcludedFromNetWorth
+														? 'This balance is excluded from the net worth calculations'
+														: undefined}
+												>
+													{formatCurrency(balanceSheetItem.currentBalance)}
+												</TableValue>
 											</p>
 										</li>
 									{/each}

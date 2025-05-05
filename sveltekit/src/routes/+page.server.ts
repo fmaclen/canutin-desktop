@@ -40,8 +40,12 @@ export interface BigPictureSummary {
 
 const getSummary = async () => {
 	// Get Accounts and Assets
-	const accounts = await prisma.account.findMany();
-	const assets = await prisma.asset.findMany();
+	const accounts = await prisma.account.findMany({
+		where: { isExcludedFromNetWorth: false }
+	});
+	const assets = await prisma.asset.findMany({
+		where: { isExcludedFromNetWorth: false }
+	});
 	const balanceItems = [...accounts, ...assets];
 
 	const bigPictureBalanceGroups: BigPictureBalanceGroup[] = [];

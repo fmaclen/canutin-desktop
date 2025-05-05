@@ -22,6 +22,7 @@ interface CanutinFileAccount {
 	accountTypeName: string;
 	balanceStatements: CanutinFileAccountBalanceStatement[];
 	transactions: CanutinFileTransaction[];
+	isExcludedFromNetWorth?: boolean;
 }
 
 interface CanutinFileAssetBalanceStatement {
@@ -38,6 +39,7 @@ interface CanutinFileAsset {
 	symbol?: string;
 	assetTypeName: string;
 	balanceStatements: CanutinFileAssetBalanceStatement[];
+	isExcludedFromNetWorth?: boolean;
 }
 
 export interface CanutinFile {

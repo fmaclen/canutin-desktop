@@ -10,6 +10,7 @@ interface BalanceSheetItem {
 	type: string;
 	currentBalance: number;
 	isAccount: boolean;
+	isExcludedFromNetWorth: boolean;
 }
 
 interface BalanceItemsTypeGroup {
@@ -51,7 +52,7 @@ export const load = async () => {
 	// Get the latest balances for Accounts and Assets
 	const balanceSheetItems: BalanceSheetItem[] = [];
 	for (const balanceItem of balanceItems) {
-		const { id, name, balanceGroup } = balanceItem;
+		const { id, name, balanceGroup, isExcludedFromNetWorth } = balanceItem;
 
 		let currentBalance: number;
 		let type: string;
@@ -75,7 +76,8 @@ export const load = async () => {
 			isAccount,
 			balanceGroup,
 			type,
-			currentBalance
+			currentBalance,
+			isExcludedFromNetWorth
 		});
 	}
 
@@ -83,29 +85,35 @@ export const load = async () => {
 	sortByKey(balanceSheetItems, 'currentBalance', SortOrder.ASC);
 
 	// Group balanceSheetItems by type
-	const balanceItemsTypeGroups: BalanceItemsTypeGroup[] = [];
+	const balanceItemsTypeGroupsMap = new Map<string, BalanceItemsTypeGroup>();
+
 	for (const balanceSheetItem of balanceSheetItems) {
-		const { balanceGroup, type, currentBalance } = balanceSheetItem;
+		const { balanceGroup, type, currentBalance, isExcludedFromNetWorth } = balanceSheetItem;
+		const groupKey = `${balanceGroup}-${type}`;
 
-		// Find an existing group type
-		const balanceSheetTypeGroup = balanceItemsTypeGroups.find(
-			(balanceSheetItemType) => balanceSheetItemType.type === type
-		);
+		let balanceSheetTypeGroup = balanceItemsTypeGroupsMap.get(groupKey);
 
-		if (balanceSheetTypeGroup) {
-			// Add item to existing group
-			balanceSheetTypeGroup.currentBalance += currentBalance;
-			balanceSheetTypeGroup.balanceSheetItems.push(balanceSheetItem);
-		} else {
-			// Create a new group and add item
-			balanceItemsTypeGroups.push({
+		if (!balanceSheetTypeGroup) {
+			// Create new group
+			balanceSheetTypeGroup = {
 				type,
 				balanceGroup,
-				currentBalance,
-				balanceSheetItems: [balanceSheetItem]
-			});
+				currentBalance: 0, // Initialize to 0
+				balanceSheetItems: []
+			};
+			balanceItemsTypeGroupsMap.set(groupKey, balanceSheetTypeGroup);
+		}
+
+		// Add item to the group's list
+		balanceSheetTypeGroup.balanceSheetItems.push(balanceSheetItem);
+
+		// Add to currentBalance only if not excluded
+		if (!isExcludedFromNetWorth) {
+			balanceSheetTypeGroup.currentBalance += currentBalance;
 		}
 	}
+
+	const balanceItemsTypeGroups = Array.from(balanceItemsTypeGroupsMap.values());
 
 	// Sort `balanceItemsTypeGroups` by `currentBalance`
 	sortByKey(balanceItemsTypeGroups, 'currentBalance', SortOrder.ASC);
@@ -113,25 +121,23 @@ export const load = async () => {
 	// Group balanceItemsTypeGroups by balanceGroup
 	const balanceSheetBalanceGroups: BalanceSheetBalanceGroup[] = [];
 
-	for (const balanceSheetTypeGroup of balanceItemsTypeGroups) {
-		const { balanceGroup, currentBalance } = balanceSheetTypeGroup;
+	for (const balanceItemsTypeGroup of balanceItemsTypeGroups) {
+		const { balanceGroup, currentBalance } = balanceItemsTypeGroup; // `currentBalance` here is already calculated correctly for the type group
 
-		// Find an existing group type
-		const balanceSheetItemBalanceGroup = balanceSheetBalanceGroups.find(
-			({ id }) => id === balanceGroup
-		);
+		// Find an existing balance group
+		const balanceSheetBalanceGroup = balanceSheetBalanceGroups.find(({ id }) => id === balanceGroup);
 
-		if (balanceSheetItemBalanceGroup) {
-			// Add item to existing group
-			balanceSheetItemBalanceGroup.currentBalance += currentBalance;
-			balanceSheetItemBalanceGroup.balanceItemsTypeGroups.push(balanceSheetTypeGroup);
+		if (balanceSheetBalanceGroup) {
+			// Add type group's calculated balance to existing balance group
+			balanceSheetBalanceGroup.currentBalance += currentBalance;
+			balanceSheetBalanceGroup.balanceItemsTypeGroups.push(balanceItemsTypeGroup);
 		} else {
-			// Create a new group and add item
+			// Create a new balance group and add type group
 			balanceSheetBalanceGroups.push({
 				id: balanceGroup,
 				label: getBalanceGroupLabel(balanceGroup),
-				currentBalance,
-				balanceItemsTypeGroups: [balanceSheetTypeGroup]
+				currentBalance, // Initialize with the type group's calculated balance
+				balanceItemsTypeGroups: [balanceItemsTypeGroup]
 			});
 		}
 	}

@@ -7,6 +7,7 @@
 	import FormSelect from '$lib/components/FormSelect.svelte';
 	import FormInputCheckbox from '$lib/components/FormInputCheckbox.svelte';
 	import FormCurrency from '$lib/components/FormCurrency.svelte';
+	import FormFieldFlags from '$lib/components/FormFieldFlags.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import { Appearance } from '$lib/helpers/constants';
 	import type { FormSelectOption } from '$lib/components/FormSelect';
@@ -23,6 +24,7 @@
 	let name = asset ? asset.name : '';
 	let assetTypeId = asset ? asset.assetTypeId : 1;
 	let isSold = asset ? asset.isSold : false;
+	let isExcludedFromNetWorth = asset ? asset.isExcludedFromNetWorth : false;
 	let balanceQuantity = lastBalanceStatement?.quantity || 0;
 	let balanceCost = lastBalanceStatement?.cost || 0;
 	$: isQuantifiable = quantifiableAssetTypes.includes(assetTypeId);
@@ -51,8 +53,11 @@
 		{/if}
 	</FormFieldset>
 	<FormFieldset>
-		<FormField name="isSold" label="Mark as">
-			<FormInputCheckbox name="isSold" label="Sold" bind:checked={isSold} />
+		<FormField name="flags" label="Marked as">
+			<FormFieldFlags>
+				<FormInputCheckbox name="isExcludedFromNetWorth" label="Exclude from net worth" bind:checked={isExcludedFromNetWorth} />
+				<FormInputCheckbox name="isSold" label="Sold" bind:checked={isSold} />
+			</FormFieldFlags>
 		</FormField>
 	</FormFieldset>
 	<FormFieldset>

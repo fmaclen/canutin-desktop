@@ -28,6 +28,7 @@
 			accountTypeId: parseInt(event.target.accountTypeId?.value),
 			isAutoCalculated: event.target.isAutoCalculated?.checked ? true : false,
 			isClosed: event.target.isClosed?.checked ? true : false,
+			isExcludedFromNetWorth: event.target.isExcludedFromNetWorth?.checked ? true : false,
 			accountBalanceStatements: { create: [{ value: parseFloat(event.target.value?.value) }] }
 		};
 		account = await api({ endpoint: 'account', method: 'POST', payload });

@@ -11,6 +11,7 @@ import {
 	prepareToAcceptDialog,
 	setSnapshotPath
 } from './fixtures/helpers.js';
+import { formatCurrency } from '../src/lib/helpers/misc';
 
 test.describe('Accounts', () => {
 	test.beforeEach(async ({ baseURL }) => {
@@ -446,5 +447,181 @@ test.describe('Accounts', () => {
 			name: 'chart-account-cash.png',
 			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
 		});
+	});
+
+	test('An account can be excluded from net worth', async ({ baseURL, page }) => {
+		await databaseSeed(baseURL!);
+
+		// Navigate to an account page
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Accounts' }).click();
+		await page.locator('a', { hasText: 'Emergency fund' }).click();
+		await expect(page.locator('h1', { hasText: 'Emergency fund' })).toBeVisible();
+
+		const excludeCheckbox = page.locator('.formInputCheckbox__input[name=isExcludedFromNetWorth]');
+		const saveButton = page.locator('button', { hasText: 'Save' });
+
+		// Check initial state (should be unchecked)
+		await expect(excludeCheckbox).not.toBeChecked();
+
+		// Check the box and save
+		await excludeCheckbox.check();
+		await saveButton.click();
+		await expectToastAndDismiss(page, 'Emergency fund was updated', Appearance.POSITIVE);
+
+		// Re-navigate and check state (should be checked)
+		await page.locator('a', { hasText: 'Emergency fund' }).click();
+		await expect(excludeCheckbox).toBeChecked();
+
+		// Uncheck the box and save
+		await excludeCheckbox.uncheck();
+		await saveButton.click();
+		await expectToastAndDismiss(page, 'Emergency fund was updated', Appearance.POSITIVE);
+
+		// Re-navigate and check state (should be unchecked again)
+		await page.locator('a', { hasText: 'Emergency fund' }).click();
+		await expect(excludeCheckbox).not.toBeChecked();
+	});
+
+	test('Excluded accounts are shown but not included in totals', async ({ page, baseURL }) => {
+		await page.goto('/');
+
+		await page.request.post(`${baseURL}/devTools.json`, { data: { action: 'WIPE_DATABASE' } });
+
+		const now = Math.floor(Date.now() / 1000);
+		const canutinFile = {
+			accounts: [
+				// Cash
+				{
+					name: 'Cash Included',
+					balanceGroup: 0,
+					isAutoCalculated: false,
+					isClosed: false,
+					accountTypeName: 'Savings',
+					balanceStatements: [{ createdAt: now, value: 1000 }],
+					transactions: []
+				},
+				{
+					name: 'Cash Excluded',
+					balanceGroup: 0,
+					isAutoCalculated: false,
+					isClosed: false,
+					accountTypeName: 'Savings',
+					balanceStatements: [{ createdAt: now, value: 1000 }],
+					transactions: [],
+					isExcludedFromNetWorth: true
+				},
+				// Debt
+				{
+					name: 'Debt Included',
+					balanceGroup: 1,
+					isAutoCalculated: false,
+					isClosed: false,
+					accountTypeName: 'Credit card',
+					balanceStatements: [{ createdAt: now, value: 1000 }],
+					transactions: []
+				},
+				{
+					name: 'Debt Excluded',
+					balanceGroup: 1,
+					isAutoCalculated: false,
+					isClosed: false,
+					accountTypeName: 'Credit card',
+					balanceStatements: [{ createdAt: now, value: 1000 }],
+					transactions: [],
+					isExcludedFromNetWorth: true
+				},
+				// Investments
+				{
+					name: 'Investments Included',
+					balanceGroup: 2,
+					isAutoCalculated: false,
+					isClosed: false,
+					accountTypeName: 'Brokerage',
+					balanceStatements: [{ createdAt: now, value: 1000 }],
+					transactions: []
+				},
+				{
+					name: 'Investments Excluded',
+					balanceGroup: 2,
+					isAutoCalculated: false,
+					isClosed: false,
+					accountTypeName: 'Brokerage',
+					balanceStatements: [{ createdAt: now, value: 1000 }],
+					transactions: [],
+					isExcludedFromNetWorth: true
+				},
+				// Other accounts
+				{
+					name: 'Other Included',
+					balanceGroup: 3,
+					isAutoCalculated: false,
+					isClosed: false,
+					accountTypeName: 'PayPal',
+					balanceStatements: [{ createdAt: now, value: 1000 }],
+					transactions: []
+				},
+				{
+					name: 'Other Excluded',
+					balanceGroup: 3,
+					isAutoCalculated: false,
+					isClosed: false,
+					accountTypeName: 'PayPal',
+					balanceStatements: [{ createdAt: now, value: 1000 }],
+					transactions: [],
+					isExcludedFromNetWorth: true
+				}
+			],
+			assets: []
+		};
+
+		await page.request.post(`${baseURL}/import.json`, { data: canutinFile });
+		await page.reload();
+
+		const netWorth = 1000 * 4; // Only included accounts
+		await expect(page.locator('.card', { hasText: 'Net worth' })).toContainText(formatCurrency(netWorth));
+
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+
+		// Align group structure with assets.test.ts
+		const groups = [
+			{ label: 'Cash', included: 1000, excluded: 1000, includedName: 'Cash Included', excludedName: 'Cash Excluded', accountTypeName: 'Savings' },
+			{ label: 'Debt', included: 1000, excluded: 1000, includedName: 'Debt Included', excludedName: 'Debt Excluded', accountTypeName: 'Credit card' },
+			{ label: 'Investments', included: 1000, excluded: 1000, includedName: 'Investments Included', excludedName: 'Investments Excluded', accountTypeName: 'Brokerage' },
+			{ label: 'Other assets', included: 1000, excluded: 1000, includedName: 'Other Included', excludedName: 'Other Excluded', accountTypeName: 'PayPal' }
+		];
+
+		for (const group of groups) {
+			const balanceGroupCard = page.locator('.balanceSheet__balanceGroup', { hasText: group.label });
+			const typeGroup = balanceGroupCard.locator('[data-test-id="balance-sheet-type-group"]');
+			await expect(typeGroup.locator('.balanceSheet__typeName', { hasText: group.accountTypeName } )).toBeVisible(); // Check the type name within the header
+
+			// Use includedName and excludedName for clarity
+			await expect(typeGroup.locator('a', { hasText: group.includedName })).toBeVisible();
+			await expect(typeGroup.locator('a', { hasText: group.excludedName })).toBeVisible();
+
+			const includedValue = typeGroup.locator(`[data-test-id="balance-item-${group.includedName}"]`);
+			await expect(includedValue).toBeVisible();
+			await expect(includedValue.locator('.tableValue--excluded')).toHaveCount(0);
+
+			const excludedValue = typeGroup.locator(`[data-test-id="balance-item-${group.excludedName}"]`);
+			await expect(excludedValue).toBeVisible();
+			await expect(excludedValue.locator('.tableValue--excluded')).toBeVisible();
+			await expect(excludedValue.locator('[title*="excluded from the net worth"]')).toBeVisible();
+
+			const typeTotal = typeGroup.locator('.balanceSheet__typeValue');
+			await expect(typeTotal).toContainText(formatCurrency(group.included));
+		}
+
+		const expectedTotals = {
+			'Cash': 1000,
+			'Debt': 1000,
+			'Investments': 1000,
+			'Other assets': 1000
+		};
+		for (const [label, total] of Object.entries(expectedTotals)) {
+			const card = page.locator('.card', { hasText: label });
+			await expect(card).toContainText(formatCurrency(total));
+		}
 	});
 });

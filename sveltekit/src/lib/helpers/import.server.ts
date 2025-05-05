@@ -49,6 +49,7 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 							isAutoCalculated: account.isAutoCalculated,
 							isClosed: account.isClosed,
 							institution: account.institution,
+							isExcludedFromNetWorth: account.isExcludedFromNetWorth,
 							accountTypeId: await getModelType(account.accountTypeName, true)
 						}
 					});
@@ -215,6 +216,7 @@ export const importFromCanutinFile = async (canutinFile: CanutinFile) => {
 							balanceGroup: asset.balanceGroup,
 							isSold: asset.isSold,
 							symbol: asset.symbol,
+							isExcludedFromNetWorth: asset.isExcludedFromNetWorth,
 							assetTypeId: await getModelType(asset.assetTypeName, false)
 						}
 					});

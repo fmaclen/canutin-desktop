@@ -9,6 +9,7 @@ import {
 	prepareToAcceptDialog,
 	setSnapshotPath
 } from './fixtures/helpers.js';
+import { formatCurrency } from '../src/lib/helpers/misc';
 
 test.describe('Assets', () => {
 	test.beforeEach(async ({ baseURL }) => {
@@ -286,4 +287,165 @@ test.describe('Assets', () => {
 			maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO
 		});
 	});
+
+	test('An asset can be excluded from net worth', async ({ baseURL, page }) => {
+		await databaseSeed(baseURL!);
+
+		// Navigate to an asset page
+		await page.goto('/');
+		await page.locator('a', { hasText: 'Assets' }).click();
+		await page.locator('a', { hasText: 'Bitcoin' }).click();
+		await expect(page.locator('h1', { hasText: 'Bitcoin' })).toBeVisible();
+
+		const excludeCheckbox = page.locator('.formInputCheckbox__input[name=isExcludedFromNetWorth]');
+		const saveButton = page.locator('button', { hasText: 'Save' });
+
+		// Check initial state (should be unchecked)
+		await expect(excludeCheckbox).not.toBeChecked();
+
+		// Check the box and save
+		await excludeCheckbox.check();
+		await saveButton.click();
+		await expectToastAndDismiss(page, 'Bitcoin was updated', Appearance.POSITIVE);
+
+		// Re-navigate and check state (should be checked)
+		await page.locator('a', { hasText: 'Bitcoin' }).click();
+		await expect(excludeCheckbox).toBeChecked();
+
+		// Uncheck the box and save
+		await excludeCheckbox.uncheck();
+		await saveButton.click();
+		await expectToastAndDismiss(page, 'Bitcoin was updated', Appearance.POSITIVE);
+
+		// Re-navigate and check state (should be unchecked again)
+		await page.locator('a', { hasText: 'Bitcoin' }).click();
+		await expect(excludeCheckbox).not.toBeChecked();
+	});
+
+	test('Excluded assets are shown but not included in totals', async ({ page, baseURL }) => {
+		await page.goto('/');
+
+		await page.request.post(`${baseURL}/devTools.json`, { data: { action: 'WIPE_DATABASE' } });
+
+		const now = Math.floor(Date.now() / 1000);
+		const canutinFile = {
+			accounts: [],
+			assets: [
+				// Cash
+				{
+					name: 'Cash Asset Included',
+					balanceGroup: 0,
+					isSold: false,
+					assetTypeName: 'Currency',
+					balanceStatements: [{ createdAt: now, value: 1000 }]
+				},
+				{
+					name: 'Cash Asset Excluded',
+					balanceGroup: 0,
+					isSold: false,
+					assetTypeName: 'Currency',
+					balanceStatements: [{ createdAt: now, value: 1000 }],
+					isExcludedFromNetWorth: true
+				},
+				// Debt
+				{
+					name: 'Debt Asset Included',
+					balanceGroup: 1,
+					isSold: false,
+					assetTypeName: 'Currency',
+					balanceStatements: [{ createdAt: now, value: 1000 }]
+				},
+				{
+					name: 'Debt Asset Excluded',
+					balanceGroup: 1,
+					isSold: false,
+					assetTypeName: 'Currency',
+					balanceStatements: [{ createdAt: now, value: 1000 }],
+					isExcludedFromNetWorth: true
+				},
+				// Investments
+				{
+					name: 'Investments Asset Included',
+					balanceGroup: 2,
+					isSold: false,
+					assetTypeName: 'Security',
+					balanceStatements: [{ createdAt: now, value: 1000 }]
+				},
+				{
+					name: 'Investments Asset Excluded',
+					balanceGroup: 2,
+					isSold: false,
+					assetTypeName: 'Security',
+					balanceStatements: [{ createdAt: now, value: 1000 }],
+					isExcludedFromNetWorth: true
+				},
+				// Other assets
+				{
+					name: 'Other Asset Included',
+					balanceGroup: 3,
+					isSold: false,
+					assetTypeName: 'Vehicle',
+					balanceStatements: [{ createdAt: now, value: 1000 }]
+				},
+				{
+					name: 'Other Asset Excluded',
+					balanceGroup: 3,
+					isSold: false,
+					assetTypeName: 'Vehicle',
+					balanceStatements: [{ createdAt: now, value: 1000 }],
+					isExcludedFromNetWorth: true
+				}
+			]
+		};
+
+		await page.request.post(`${baseURL}/import.json`, { data: canutinFile });
+		await page.reload();
+
+		const netWorth = 1000 * 4; // Only included assets
+		await expect(page.locator('.card', { hasText: 'Net worth' })).toContainText(formatCurrency(netWorth));
+
+		await page.locator('a', { hasText: 'Balance sheet' }).click();
+
+		const groups = [
+			{ label: 'Cash', included: 1000, excluded: 1000, includedName: 'Cash Asset Included', excludedName: 'Cash Asset Excluded', assetTypeName: 'Currency' },
+			{ label: 'Debt', included: 1000, excluded: 1000, includedName: 'Debt Asset Included', excludedName: 'Debt Asset Excluded', assetTypeName: 'Currency' },
+			{ label: 'Investments', included: 1000, excluded: 1000, includedName: 'Investments Asset Included', excludedName: 'Investments Asset Excluded', assetTypeName: 'Security' },
+			{ label: 'Other assets', included: 1000, excluded: 1000, includedName: 'Other Asset Included', excludedName: 'Other Asset Excluded', assetTypeName: 'Vehicle' }
+		];
+
+		for (const group of groups) {
+			const balanceGroupCard = page.locator('.balanceSheet__balanceGroup', { hasText: group.label });
+			const typeGroup = balanceGroupCard.locator('[data-test-id="balance-sheet-type-group"]');
+			await expect(typeGroup.locator('.balanceSheet__typeName', { hasText: group.assetTypeName } )).toBeVisible(); // Check the type name within the header
+			await expect(typeGroup.locator('a', { hasText: group.includedName })).toBeVisible();
+			await expect(typeGroup.locator('a', { hasText: group.excludedName })).toBeVisible();
+
+			const includedValue = typeGroup.locator(`[data-test-id="balance-item-${group.includedName}"]`);
+			await expect(includedValue).toBeVisible();
+			await expect(includedValue.locator('.tableValue--excluded')).toHaveCount(0);
+
+			const excludedValue = typeGroup.locator(`[data-test-id="balance-item-${group.excludedName}"]`);
+			await expect(excludedValue).toBeVisible();
+			await expect(excludedValue.locator('.tableValue--excluded')).toBeVisible();
+			await expect(excludedValue.locator('[title*="excluded from the net worth"]')).toBeVisible();
+
+			const typeTotal = typeGroup.locator('.balanceSheet__typeValue');
+			await expect(typeTotal).toContainText(formatCurrency(group.included));
+		}
+
+		const expectedTotals = {
+			'Cash': 1000,
+			'Debt': 1000,
+			'Investments': 1000,
+			'Other assets': 1000
+		};
+		for (const [label, total] of Object.entries(expectedTotals)) {
+			const card = page.locator('.card', { hasText: label });
+			await expect(card).toContainText(formatCurrency(total));
+		}
+	});
 });
+
+function delay(ms: number) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}

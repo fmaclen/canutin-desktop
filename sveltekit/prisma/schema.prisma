@@ -22,6 +22,7 @@ model Account {
   accountBalanceStatements AccountBalanceStatement[]
   transactions             Transaction[]
   transactionImports       TransactionImport[]
+  isExcludedFromNetWorth   Boolean                   @default(false)
 }
 
 model AccountBalanceStatement {
@@ -54,6 +55,7 @@ model Asset {
   assetTypeId            Int
   assetType              AssetType               @relation(fields: [assetTypeId], references: [id])
   assetBalanceStatements AssetBalanceStatement[]
+  isExcludedFromNetWorth Boolean                 @default(false)
 }
 
 model AssetBalanceStatement {
