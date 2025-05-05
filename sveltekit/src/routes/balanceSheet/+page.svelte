@@ -59,7 +59,7 @@
 													}`}>{balanceSheetItem.name}</Link
 												>
 											</p>
-											<p class="balanceSheet__itemValue">
+											<p class="balanceSheet__itemValue" data-test-id={`balance-item-${balanceSheetItem.name}`}>
 												<TableValue
 													isExcluded={balanceSheetItem.isExcludedFromNetWorth}
 													isNumeric={true}

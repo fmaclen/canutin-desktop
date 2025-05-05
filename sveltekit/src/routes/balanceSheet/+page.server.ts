@@ -85,31 +85,35 @@ export const load = async () => {
 	sortByKey(balanceSheetItems, 'currentBalance', SortOrder.ASC);
 
 	// Group balanceSheetItems by type
-	const balanceItemsTypeGroups: BalanceItemsTypeGroup[] = [];
+	const balanceItemsTypeGroupsMap = new Map<string, BalanceItemsTypeGroup>();
+
 	for (const balanceSheetItem of balanceSheetItems) {
 		const { balanceGroup, type, currentBalance, isExcludedFromNetWorth } = balanceSheetItem;
+		const groupKey = `${balanceGroup}-${type}`;
 
-		// Find an existing group type
-		const balanceSheetTypeGroup = balanceItemsTypeGroups.find(
-			(balanceSheetItemType) => balanceSheetItemType.type === type
-		);
+		let balanceSheetTypeGroup = balanceItemsTypeGroupsMap.get(groupKey);
 
-		if (balanceSheetTypeGroup) {
-			// Add item to existing group
-			if (!isExcludedFromNetWorth) {
-				balanceSheetTypeGroup.currentBalance += currentBalance;
-			}
-			balanceSheetTypeGroup.balanceSheetItems.push(balanceSheetItem);
-		} else {
-			// Create a new group and add item
-			balanceItemsTypeGroups.push({
+		if (!balanceSheetTypeGroup) {
+			// Create new group
+			balanceSheetTypeGroup = {
 				type,
 				balanceGroup,
-				currentBalance: isExcludedFromNetWorth ? 0 : currentBalance,
-				balanceSheetItems: [balanceSheetItem]
-			});
+				currentBalance: 0, // Initialize to 0
+				balanceSheetItems: []
+			};
+			balanceItemsTypeGroupsMap.set(groupKey, balanceSheetTypeGroup);
+		}
+
+		// Add item to the group's list
+		balanceSheetTypeGroup.balanceSheetItems.push(balanceSheetItem);
+
+		// Add to currentBalance only if not excluded
+		if (!isExcludedFromNetWorth) {
+			balanceSheetTypeGroup.currentBalance += currentBalance;
 		}
 	}
+
+	const balanceItemsTypeGroups = Array.from(balanceItemsTypeGroupsMap.values());
 
 	// Sort `balanceItemsTypeGroups` by `currentBalance`
 	sortByKey(balanceItemsTypeGroups, 'currentBalance', SortOrder.ASC);
@@ -118,15 +122,13 @@ export const load = async () => {
 	const balanceSheetBalanceGroups: BalanceSheetBalanceGroup[] = [];
 
 	for (const balanceItemsTypeGroup of balanceItemsTypeGroups) {
-		const { balanceGroup, currentBalance } = balanceItemsTypeGroup;
+		const { balanceGroup, currentBalance } = balanceItemsTypeGroup; // `currentBalance` here is already calculated correctly for the type group
 
 		// Find an existing balance group
-		const balanceSheetBalanceGroup = balanceSheetBalanceGroups.find(
-			({ id }) => id === balanceGroup
-		);
+		const balanceSheetBalanceGroup = balanceSheetBalanceGroups.find(({ id }) => id === balanceGroup);
 
 		if (balanceSheetBalanceGroup) {
-			// Add type group to existing balance group
+			// Add type group's calculated balance to existing balance group
 			balanceSheetBalanceGroup.currentBalance += currentBalance;
 			balanceSheetBalanceGroup.balanceItemsTypeGroups.push(balanceItemsTypeGroup);
 		} else {
@@ -134,7 +136,7 @@ export const load = async () => {
 			balanceSheetBalanceGroups.push({
 				id: balanceGroup,
 				label: getBalanceGroupLabel(balanceGroup),
-				currentBalance,
+				currentBalance, // Initialize with the type group's calculated balance
 				balanceItemsTypeGroups: [balanceItemsTypeGroup]
 			});
 		}
