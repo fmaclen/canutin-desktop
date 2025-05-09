@@ -1,7 +1,7 @@
-FROM node:20-alpine
+FROM node:20-slim
 
 # Install OpenSSL for Prisma
-RUN apk add --no-cache openssl1.1-compat
+RUN apt-get update -y && apt-get install -y openssl
 
 WORKDIR /canutin
 
